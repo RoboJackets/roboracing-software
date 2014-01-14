@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>iarrc_tutorial</name>
+  <name>iarrc_tutorials</name>
   <version>0.0.1</version>
-  <description>The iarrc_tutorial package</description>
+  <description>The iarrc_tutorials package</description>
   <maintainer email="ehuang3@gatech.edu">Eric Huang</maintainer>
   <license>BSD</license>
 
