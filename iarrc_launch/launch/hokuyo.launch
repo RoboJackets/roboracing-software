@@ -1,0 +1,14 @@
+<launch>
+	<!-- Hokuyo Node -->
+	<node name="hokuyo_node" pkg="hokuyo_node" type="hokuyo_node" output="screen" respawn="false">
+		<param name="calibrate_time" type="bool" value="false"/> 
+		<param name="port" type="str" value="/dev/ttyACM0"/> 
+	</node>
+</launch>
+
+
+<!--rosparam set hokuyo_node/calibrate_time false-->
+<!--rosparam set hokuyo_node/port /dev/ttyACM0-->
+<!--rosrun hokuyo_node hokuyo_node-->
+
+<!--output="screen" prints out to terminal-->
