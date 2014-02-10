@@ -6,7 +6,7 @@ set(BUILD_FLAGS "-std=c++0x -Wreturn-type -Wno-enum-compare")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS message_generation roscpp sensor_msgs std_msgs tf)
+find_package(catkin REQUIRED COMPONENTS message_generation roscpp sensor_msgs std_msgs tf cv_bridge)
 
 ## Include Eigen
 find_package(Eigen REQUIRED)
@@ -16,6 +16,45 @@ add_definitions(${EIGEN_DEFINITIONS})
 ## Include Qt
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include(${QT_USE_FILE})
+
+# Include the OpenCV library
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIR})
+link_libraries(${OpenCV_LIBS})
+
+#######################################
+## Declare ROS messages and services ##
+#######################################
+
+## Generate actions in the 'action' folder
+# add_action_files(
+#   DIRECTORY
+#   action
+#   FILES
+#   LaserScan.action
+# )
+
+## Generate messages in the 'msg' folder
+add_message_files(
+  DIRECTORY
+  msg
+  FILES
+  Empty.msg
+)
+
+## Generate services in the 'srv' folder
+# add_service_files(
+#   DIRECTORY
+#   FILES
+#   LidarAggregation.srv
+# )
+
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -28,7 +67,7 @@ include(${QT_USE_FILE})
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES iarrc_tutorials
-  CATKIN_DEPENDS message_runtime sensor_msgs std_msgs tf
+  CATKIN_DEPENDS message_runtime sensor_msgs std_msgs tf cv_bridge
   DEPENDS system_lib QtCore QtGui)
 
 ######################

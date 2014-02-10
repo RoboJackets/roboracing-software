@@ -1,6 +1,8 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
 #include <string>
+#include <iarrc_tutorials/Empty.h>
+
 
 // TODO: 
 // + Access more realistic data structures with ROS headers and such
