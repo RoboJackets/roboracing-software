@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <ros/publisher.h>
 #include <std_msgs/Float32.h>
 #include <string>
 #include <iarrc_tutorials/Empty.h>
@@ -25,7 +26,7 @@ void FloatCommandCB(const std_msgs::Float32::ConstPtr& msg) {
     // Republish the data onto another topic
     ROS_DEBUG("Publishing this float to the topic: %s, which has %d subscribers.", 
               float_publisher.getTopic().c_str(), float_publisher.getNumSubscribers());
-    float_publisher.publish(msg->data);
+    float_publisher.publish(msg);
 }
 
 int main(int argc, char** argv)
