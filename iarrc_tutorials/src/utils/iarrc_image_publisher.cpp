@@ -1,12 +1,14 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <stdio.h>
 
-std::string type2str(int type) {
+// Convert OpenCV Mat encoding to printable string
+std::string CvToStr(int type) {
 	std::string r;
 
 	uchar depth = type & CV_MAT_DEPTH_MASK;
@@ -29,6 +31,40 @@ std::string type2str(int type) {
 	return r;
 }
 
+// Convert OpenCV Mat encoding to ROS encoding
+// FIXME: Not all encodings have obvious conversions. Check
+// sensor_msgs/image_encodings.h for a list of all the possible ROS
+// encodings
+std::string CvToRos(int type, std::string channels="bgr") {
+	std::string encoding;
+
+	uchar depth = type & CV_MAT_DEPTH_MASK;
+	uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+	encoding = channels;
+	if(chans == 4)
+		encoding += "a";
+
+	switch (depth) {
+	case CV_8U:
+	case CV_8S:
+		encoding += "8";
+		break;
+	case CV_16U: 
+	case CV_16S:
+		encoding += "16";
+		break;
+	case CV_32S:
+	case CV_32F:
+	case CV_64F:
+	default:
+		ROS_ERROR("No ROS encoding exists with bit-depth > 16: %s", CvToStr(type).c_str());
+		return "";
+	}
+
+	return encoding;
+}
+
 void help(std::ostream& ostr) {
 	ostr << "Usage: iarrc_image_publisher _img_topic:=<image-topic> _img_file:=<file-name>" << std::endl;
 }
@@ -48,8 +84,8 @@ int main(int argc, char* argv[]) {
     nhp.param(std::string("img_topic"), img_topic, std::string("/image_raw"));
     nhp.param(std::string("img_file"), img_file, std::string("default.jpg"));
 
-    ROS_INFO("Image topic:= %s", img_topic.c_str());
-    ROS_INFO("Image file:= %s", img_file.c_str());
+    ROS_INFO("img_topic:= %s", img_topic.c_str());
+    ROS_INFO("img_file:= %s", img_file.c_str());
 
     ros::Publisher img_pub = nh.advertise<sensor_msgs::Image>(img_topic, 1);
 
@@ -63,19 +99,23 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Convert to ROS and publish
+	// Print out image information
+	std::string type =  CvToStr(cv_img.image.type());
+	ROS_INFO("Read in OpenCV image: %s %dx%d", type.c_str(), cv_img.image.cols, cv_img.image.rows);
+
+	// Convert to ROS format
 	sensor_msgs::Image image;
+	cv_img.encoding = CvToRos(cv_img.image.type());
 	cv_img.toImageMsg(image);
-
-	std::string ty =  type2str( cv_img.image.type());
-	ROS_INFO("Matrix: %s %dx%d \n", ty.c_str(), cv_img.image.cols, cv_img.image.rows);
-
-	ROS_INFO("Publishing ROS Image");
-	img_pub.publish(image);
+	ROS_INFO("As ROS image: %s %dx%d", image.encoding.c_str(), image.width, image.height);
 
 	// Sleep so that ROS will finish publishing the image before shutdown
-	ros::Rate rate(10);
-	rate.sleep();
+	ros::Rate rate(1);
+	while(ros::ok()) {
+		ROS_INFO("Publishing ROS Image");
+		img_pub.publish(image);
+		rate.sleep();
+	}
 
 	ROS_INFO("Shutting down IARRC image saver node.");
 	return 0;
