@@ -1,0 +1,2 @@
+ATTRS{idVendor}=="1415", ATTRS{manufacturer}=="OmniVision Technologies, Inc.", ATTRS{product}=="USB Camera-B4.09.24.1", SYMLINK+="ps3eye"
+
