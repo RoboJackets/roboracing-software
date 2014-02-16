@@ -7,6 +7,7 @@
 
 std::string img_file;
 
+// ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
 
@@ -46,6 +47,7 @@ int main(int argc, char* argv[]) {
     ROS_INFO("Image topic:= %s", img_topic.c_str());
     ROS_INFO("Image file:= %s", img_file.c_str());
 
+    // Subscribe to ROS topic with callback
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageSaverCB);
 
 	ROS_INFO("IARRC image saver node ready.");
