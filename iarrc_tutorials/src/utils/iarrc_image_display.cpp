@@ -14,7 +14,8 @@ int CannyThreshold;
 int ratio=2;
 int sigma=0;
 int brightThreshold=80;
-
+ros::Publisher img_pub;
+sensor_msgs::Image rosimage;
 
 using namespace cv;
 using namespace std;
@@ -36,7 +37,7 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	Mat circlesImg;
 	Mat kernel=getGaussianKernel(15,sigma);
 	//createTrackbar("Min Threshold:","Edge Threshold",&low_Threshold,max_lowThreshold,CannyThreshold);
-	ROS_INFO("Received image with %s encoding", msg->encoding.c_str());
+	//ROS_INFO("Received image with %s encoding", msg->encoding.c_str());
 
 	// Convert ROS to OpenCV
 	try {
@@ -65,18 +66,27 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
       		Point center(cvRound(circlesdata[i][0]), cvRound(circlesdata[i][1]));
       		int radius = cvRound(circlesdata[i][2]);
       		circle( circlesImg, center, 3, Scalar(0,255,0), -1, 8, 0 );
-      		circle( circlesImg, center, radius, Scalar(0,0,255), 3, 8, 0 );
+      		circle( circlesImg, center, radius, Scalar(127,0,127), 2, 8, 0 );
       	}
-      else
+    /*  else
       {
       		Point center(cvRound(circlesdata[i][0]), cvRound(circlesdata[i][1]));
       		int radius = cvRound(circlesdata[i][2]);
       		circle( circlesImg, center, 3, Scalar(255,255,255), -1, 8, 0 );
       		circle( circlesImg, center, radius, Scalar(0,0,0), 3, 8, 0 );
       	}
+      */
    }
+
+   cv_ptr->image=circlesImg;
+   cv_ptr->encoding="bgr8";
+   cv_ptr->toImageMsg(rosimage);
+   img_pub.publish(rosimage);
+
+
    //ROS_INFO("I");
 
+   	/*
    	//namedWindow("Gaussian Kernel",WINDOW_AUTOSIZE);
 	namedWindow("BlurWindow",WINDOW_AUTOSIZE);
 	//namedWindow("Original",WINDOW_AUTOSIZE);
@@ -90,6 +100,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	//imshow("Original", cv_ptr->image);
 	imshow("BlurWindow",grayscaleImg);
 	waitKey(0);
+	*/
+
 
 }
 
@@ -117,6 +129,7 @@ int main(int argc, char* argv[]) {
 
     // Subscribe to ROS topic with callback
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageSaverCB);
+    img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
 
 
 	ROS_INFO("IARRC image saver node ready.");
@@ -132,11 +145,10 @@ bool goodCircle(Vec3f &info,Mat &img)
 	int centerx=info[0];
 	int centery=info[1];
 	float radius=info[2];
-	ROS_INFO("x:%d\ty:%d\tradius:%f",centerx,centery,radius);
-	radius-=0;
+	//ROS_INFO("x:%d\ty:%d\tradius:%f",centerx,centery,radius);
 	double goodPoints=0;
 	double totalPoints=0;
-	ROS_INFO("Test Value:%d",img.at<uchar>(centery,centerx));
+	//ROS_INFO("Test Value:%d",img.at<uchar>(centery,centerx));
 	
 	for (int i = 0; i < img.cols; i++)
 	{
@@ -157,7 +169,7 @@ bool goodCircle(Vec3f &info,Mat &img)
 	totalPoints=3.14*pow(radius,2);
 	double percent=goodPoints/totalPoints*100;
 
-	ROS_INFO("Good:%f, Total:%f, Ratio:%f",goodPoints,totalPoints,percent);
+	//ROS_INFO("Good:%f, Total:%f, Ratio:%f",goodPoints,totalPoints,percent);
 
 	if (percent>=brightThreshold)
 	{
