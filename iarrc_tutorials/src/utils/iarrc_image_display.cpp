@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <ros/subscriber.h>
 #include <sensor_msgs/Image.h>
+#include <std_msgs/Bool.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -14,8 +15,11 @@ int CannyThreshold;
 int ratio=2;
 int sigma=0;
 int brightThreshold=80;
+int curPos;
 ros::Publisher img_pub;
+ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
+
 
 using namespace cv;
 using namespace std;
@@ -26,7 +30,7 @@ bool goodCircle(Vec3f &info,Mat &img);
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
 	//cout<<"Sigma:";
-	//cin>>sigma;
+	//cin>>sigma;	
 	cv_bridge::CvImagePtr cv_ptr;
 	Mat blurImg;
 	Mat downBlurImg;
@@ -63,10 +67,22 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
   {	
       if (goodCircle(circlesdata [i],grayscaleImg))
       { 
+
+      		if  (abs(circlesdata[i][1]-curPos)>circlesdata[i][2])
+      		{
+      			
+      			std_msgs::Bool change;
+      			change.data=true;
+      			bool_pub.publish(change);
+      		}
+
       		Point center(cvRound(circlesdata[i][0]), cvRound(circlesdata[i][1]));
       		int radius = cvRound(circlesdata[i][2]);
       		circle( circlesImg, center, 3, Scalar(0,255,0), -1, 8, 0 );
       		circle( circlesImg, center, radius, Scalar(127,0,127), 2, 8, 0 );
+      		ROS_INFO("x:%f\ty:%f\tradius:%f",circlesdata[i][0],circlesdata[i][1],circlesdata[i][2]);
+      		curPos=circlesdata[i][1];
+      		
       	}
     /*  else
       {
@@ -130,6 +146,7 @@ int main(int argc, char* argv[]) {
     // Subscribe to ROS topic with callback
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageSaverCB);
     img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
+    bool_pub = nh.advertise<std_msgs::Bool>("/light_change",1);
 
 
 	ROS_INFO("IARRC image saver node ready.");
