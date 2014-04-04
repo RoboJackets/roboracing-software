@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <ros/ros.h>
 #include <ros/subscriber.h>
@@ -18,11 +17,18 @@ ros::Publisher cone_publisher;
 
 
 void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
+	// cout << *msg << endl;
+	float angle = msg->angle_increment;
+	vector<float> eps;
 
-
-
-
-
+	int size = msg->ranges.size();
+	float d;
+	for (int i=0; i<size; i++){
+		d = msg->ranges[i]*msg->ranges[i]+msg->ranges[i+1]*msg->ranges[i+1]-2.0*msg->ranges[i]*msg->ranges[i+1]*cos(angle);
+		d = sqrt(d);
+		eps.push_back(d);
+		cout << "epsilon[" << i << "]: " << d << endl;
+	}
 }
 
 void help(std::ostream& ostr) {
