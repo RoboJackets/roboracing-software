@@ -109,13 +109,19 @@ int main(int argc, char* argv[]) {
 	cv_img.toImageMsg(image);
 	ROS_INFO("As ROS image: %s %dx%d", image.encoding.c_str(), image.width, image.height);
 
+	// Wait until a subscriber has connected
+	ros::Rate poll_rate(100);
+	while(img_pub.getNumSubscribers() < 2) {
+		ROS_INFO("%d subscribers", img_pub.getNumSubscribers());
+		poll_rate.sleep();
+	}
+	ROS_INFO("All connected!");
+
 	// Sleep so that ROS will finish publishing the image before shutdown
 	ros::Rate rate(1);
-	while(ros::ok()) {
-		ROS_INFO("Publishing ROS Image");
-		img_pub.publish(image);
-		rate.sleep();
-	}
+	ROS_INFO("Publishing ROS Image");
+	img_pub.publish(image);
+	rate.sleep();
 
 	ROS_INFO("Shutting down IARRC image saver node.");
 	return 0;
