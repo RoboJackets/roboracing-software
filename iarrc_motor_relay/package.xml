@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>iarrc_msgs</name>
+  <name>iarrc_motor_relay</name>
   <version>0.0.1</version>
-  <description>The iarrc_msgs package</description>
+  <description>The iarrc_motor_relay package</description>
 
   <maintainer email="ehuang3@gatech.edu">Eric Huang</maintainer>
 
@@ -10,16 +10,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>actionlib</build_depend>
-  <build_depend>actionlib_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>iarrc_msgs</build_depend>
   <build_depend>message_generation</build_depend>
 
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>actionlib_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>iarrc_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
 
 
@@ -29,5 +27,6 @@
     <!-- <metapackage/> -->
 
     <!-- Other tools can request additional information be placed here -->
+
   </export>
 </package>
