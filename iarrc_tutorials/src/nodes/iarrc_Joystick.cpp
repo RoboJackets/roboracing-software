@@ -23,14 +23,14 @@ void FloatCommandCB(const sensor_msgs::Joy::ConstPtr& scan_in) {
     //ROS_INFO("Button 1: %d !", scan_in->buttons[1]); // print button[1]
     iarrc_msgs::DriveCommand StateVehicle; 
     if ((scan_in->buttons[1])>0){ //if the x button is pushed then accelerate to the speed.
-        StateVehicle.motor_speed = 255;
+        StateVehicle.motor_speed = 50;
     }else{
         StateVehicle.motor_speed = 0;
     }
     if((scan_in->axes[0])>0){ // if pressed left on d-pad
-        StateVehicle.servo_position = -255;
+        StateVehicle.servo_position = -30;
     }else if ((scan_in->axes[0])<0){ //if pressed right on d-pad
-        StateVehicle.servo_position = 255;
+        StateVehicle.servo_position = 30;
     }else{
         StateVehicle.servo_position = 0;
     }

@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 		if(!new_cmd) {
 			std::stringstream ss;
-			ss << (char)181 << (char)cmd.servo_position << (char)cmd.motor_speed;
+			ss << (char)181 << (char)(cmd.servo_position + 90) << (char)cmd.motor_speed;
 			try {
 				std::string msg = ss.str();
 				boost::asio::write(serial, boost::asio::buffer(msg.c_str(), msg.size()));
