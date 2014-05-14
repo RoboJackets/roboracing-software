@@ -23,7 +23,9 @@ int main(int argc, char** argv)
     std::string drive_command_topic;
     nhp.param(std::string("drive_command_topic"), drive_command_topic, std::string("/drive_command_topic"));
     ros::Subscriber drive_command_sub = nh.subscribe(drive_command_topic, 1, DriveCommandCB);
-    
+
+    ROS_INFO_STREAM("Drive Command topic = " << drive_command_topic);
+
     // 
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB0"));
@@ -36,12 +38,29 @@ int main(int argc, char** argv)
 	while(ros::ok() && serial.is_open()) {
 		ros::spinOnce();
 
-		if(!new_cmd) {
+		// if(new_cmd) {
+		if(true) {
+
 			std::stringstream ss;
-			ss << (char)181 << (char)(cmd.servo_position + 90) << (char)cmd.motor_speed;
+
+			ROS_INFO("Sending command: servo=%d, motor=%d", cmd.servo_position, cmd.motor_speed);
+
+			ss << (char)181 << (char)(cmd.motor_speed + 90) << (char)(cmd.servo_position + 90) << (char)182;
+
+			char m[4];
+			m[0] = 181;
+			m[1] = (char)(cmd.motor_speed + 90);
+			m[2] = (char)(cmd.servo_position + 90);
+			m[3] = 182;
+
+			std::string msg = ss.str();
+			for(int i=0; i < 4; i++) {
+				if(m[i] != msg[i])
+					ROS_INFO("WTF");
+			}
+
 			try {
-				std::string msg = ss.str();
-				boost::asio::write(serial, boost::asio::buffer(msg.c_str(), msg.size()));
+				boost::asio::write(serial, boost::asio::buffer(m, 4));
 			} catch (boost::system::system_error& err) {
 				ROS_ERROR("%s", err.what());
 			}

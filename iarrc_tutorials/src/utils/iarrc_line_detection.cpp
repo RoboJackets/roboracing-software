@@ -12,12 +12,25 @@ int low_Threshold = 5;
 int ratio = 4;
 int sigma=0;
 ros::Publisher img_pub;
+ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
 int erosion_size=3;
 int erosion_type=0;
 
+// Car-body region to subtract out from edge image
+cv::Rect car_body(0,0,50,50);
+
 using namespace std;
 using namespace cv;
+
+sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
+	cv_bridge::CvImagePtr cv_ptr;
+	sensor_msgs::Image ros_img;
+	cv_ptr->image=img;
+    cv_ptr->encoding=encoding;
+    cv_ptr->toImageMsg(ros_img);
+    return ros_img;
+}
 
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
@@ -49,7 +62,7 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	int width = cv_ptr->image.cols;
 	int height = cv_ptr->image.rows;
 	
-	//crop image
+	// Crop image
 	Rect myRect = Rect(0,3*height/4,width,height/4);
 	Mat tmp;
 	Mat(cv_ptr->image,myRect).copyTo(tmp);
@@ -57,10 +70,29 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 
 	GaussianBlur(tmp,blurImg,Size(9,9),sigma,sigma);
 	cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
+
+	// Detect edges
 	Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
+
+	// Draw rectangle we are going to subtract
+	Mat edgeNoCar;
+	edgeOp.copyTo(edgeNoCar);
+	rectangle(edgeNoCar, car_body.tl(), car_body.br(), cv::Scalar(255,0,0));
+	debug_pub.publish(CvMatToRosImage(edgeNoCar, "mono8"));
+
+	// Subtract self (car body)
+	for(int i=car_body.x; i < car_body.width; i++) {
+		for(int j=car_body.y; j < car_body.height; j++) {
+			// edgeOp.at<uchar>(i,j) = 0;
+		}
+	}
+
+	// 
 	edgeOp.copyTo(edgeCopy);
 	dilate(edgeCopy,edgeCopy,element);
 	erode(edgeCopy,edgeCopy,element);
+
+	// Find contours
 	edgeCopy.copyTo(edgeCopy2);
 	addWeighted(edgeOp,0.5,grayscaleImg,0.5,0,out);	
 	findContours(edgeCopy2,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
@@ -69,13 +101,13 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	for(int i=0; i < contours.size();i++)
 	{
 		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
-		 drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
+		drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
 	}
 
 	//ROS_INFO("Hi");
 
-	// namedWindow("Contours",WINDOW_AUTOSIZE);
- // 	imshow("Contours",drawing);
+	namedWindow("Contours",WINDOW_AUTOSIZE);
+	imshow("Contours",drawing);
 
 	namedWindow("Edges",WINDOW_AUTOSIZE);
  	imshow("Edges",edgeOp);
@@ -87,8 +119,6 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
     //cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);
-
-	
 }
 
 void help(std::ostream& ostr) {
@@ -116,6 +146,9 @@ int main(int argc, char* argv[]) {
     // Subscribe to ROS topic with callback
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageSaverCB);
     img_pub = nh.advertise<sensor_msgs::Image>("/image_lines", 1);//image publisher
+
+    // Debug publisher
+    debug_pub = nh.advertise<sensor_msgs::Image>("/image_debug", 1);
 
     ROS_INFO("Hi");
 
