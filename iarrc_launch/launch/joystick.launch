@@ -1,12 +1,16 @@
 <launch>
-	<!-- Joystick Node -->
+
+	<!-- Joystick node -->
 	<node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="false">
-		<param name="dev" type="str" value="/dev/input/js0"/> 
+		<param name="dev" type="str" value="/dev/input/js0"/>
 	</node>
+
+    <!-- IARRC joystick node -->
+	<node name="iarrc_joystick" pkg="iarrc_tutorials" type="iarrc_joystick" output="screen" respawn="false">
+		<param name="joystick_topic" type="str" value="/joy"/>
+		<param name="motor_topic" type="str" value="/iarrc/motor_command"/>
+		<param name="angle_max" type="int" value="20"/>
+		<param name="speed_max" type="int" value="10"/>
+	</node>
+
 </launch>
-
-
-<!--rosparam set joy_node/dev /dev/input/js0-->
-<!--rosrun joy joy_node-->
-
-<!--output="screen" prints out to terminal-->
