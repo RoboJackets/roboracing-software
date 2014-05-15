@@ -24,12 +24,23 @@ using namespace std;
 using namespace cv;
 
 sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
-	cv_bridge::CvImagePtr cv_ptr;
+	cv_bridge::CvImage cv_img;
 	sensor_msgs::Image ros_img;
-	cv_ptr->image=img;
-    cv_ptr->encoding=encoding;
-    cv_ptr->toImageMsg(ros_img);
+	cv_img.image=img;
+    cv_img.encoding=encoding;
+    cv_img.toImageMsg(ros_img);
     return ros_img;
+}
+
+void zeroOutRegion(cv::Mat& mat, cv::Rect& r) {
+	for(int i=0; i < r.height; i++) {
+		for(int j=0; j < r.width; j++) {
+			if((r.y + i < mat.rows) && (0 < r.y + i) && 
+			   (r.x + j < mat.cols) && (0 < r.x + j)) {
+				mat.at<char>(r.y+i,r.x+j) = 0;
+			}
+		}
+	}
 }
 
 // ROS image callback
@@ -74,20 +85,17 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	// Detect edges
 	Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
 
-	// Draw rectangle we are going to subtract
-	Mat edgeNoCar;
-	edgeOp.copyTo(edgeNoCar);
-	rectangle(edgeNoCar, car_body.tl(), car_body.br(), cv::Scalar(255,0,0));
-	debug_pub.publish(CvMatToRosImage(edgeNoCar, "mono8"));
+	// Draw rectangle we are going to subtract (DEBUG)
+	// Mat edgeNoCar;
+	// edgeOp.copyTo(edgeNoCar);
+	// rectangle(edgeNoCar, car_body.tl(), car_body.br(), cv::Scalar(255,0,0));
+	// debug_pub.publish(CvMatToRosImage(edgeNoCar, "mono8"));
 
-	// Subtract self (car body)
-	for(int i=car_body.x; i < car_body.width; i++) {
-		for(int j=car_body.y; j < car_body.height; j++) {
-			// edgeOp.at<uchar>(i,j) = 0;
-		}
-	}
+	// Subtract self (car body) from image
+	zeroOutRegion(edgeOp, car_body);
+	// debug_pub.publish(CvMatToRosImage(edgeOp, "mono8"));
 
-	// 
+	// Post processing dilate/erosion
 	edgeOp.copyTo(edgeCopy);
 	dilate(edgeCopy,edgeCopy,element);
 	erode(edgeCopy,edgeCopy,element);
@@ -104,8 +112,6 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
 	}
 
-	//ROS_INFO("Hi");
-
 	namedWindow("Contours",WINDOW_AUTOSIZE);
 	imshow("Contours",drawing);
 
@@ -113,7 +119,7 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
  	imshow("Edges",edgeOp);
 	namedWindow("Eroded/Dilated",WINDOW_AUTOSIZE);
  	imshow("Eroded/Dilated",edgeCopy);
- 	waitKey(0);
+ 	// waitKey(0);
  	cv_ptr->image=drawing;
     cv_ptr->encoding="bgr8";
     //cv_ptr->encoding="mono8";
@@ -149,6 +155,12 @@ int main(int argc, char* argv[]) {
 
     // Debug publisher
     debug_pub = nh.advertise<sensor_msgs::Image>("/image_debug", 1);
+
+    // Car body
+    nhp.param(std::string("car_x"), car_body.x, 0);
+    nhp.param(std::string("car_y"), car_body.y, 0);
+    nhp.param(std::string("car_w"), car_body.width, 50);
+    nhp.param(std::string("car_h"), car_body.height, 50);
 
     ROS_INFO("Hi");
 
