@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(iarrc_tutorials)
-SET(CMAKE_BUILD_TYPE "Release")
-set(BUILD_FLAGS "-std=c++0x -Wreturn-type -Wno-enum-compare -g")
+
+SET(CMAKE_BUILD_TYPE "Debug")
+set(BUILD_FLAGS "-std=c++0x -Wreturn-type -Wno-enum-compare")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS message_generation roscpp sensor_msgs std_msgs tf cv_bridge pcl_ros pcl)
+find_package(catkin REQUIRED COMPONENTS message_generation roscpp sensor_msgs std_msgs iarrc_msgs tf cv_bridge pcl_ros pcl)
 
 ## Include Eigen
 find_package(Eigen REQUIRED)
@@ -67,7 +68,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES iarrc_tutorials
-  CATKIN_DEPENDS message_runtime sensor_msgs std_msgs tf cv_bridge pcl_ros pcl
+  CATKIN_DEPENDS message_runtime sensor_msgs std_msgs iarrc_msgs tf cv_bridge pcl_ros pcl
   DEPENDS system_lib QtCore QtGui)
 
 ######################
