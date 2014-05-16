@@ -108,22 +108,34 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
     mypointloc.x = 0;
     mypointloc.y = 0;
     vector<pointloc> pointlocs;
+
+    int num_clusters = 0;
+
     for (int i=0; i<size; i++){
         if (l[i].size>0){
+
+	        num_clusters++;
+
             npoint = (i+1)+(l[i].size)/2;
             myangle = anglemin + npoint*angle;
             mylength = msg->ranges[npoint];
             mypointloc.x = cos(myangle) * mylength;
             mypointloc.y = sin(myangle) * mylength;
             pointlocs.push_back(mypointloc);
-            newmsg->points.push_back (pcl::PointXYZ(mypointloc.x, mypointloc.y, 0.0));
+            newmsg->push_back (pcl::PointXYZ(mypointloc.x, mypointloc.y, 0.0));
+
+            ROS_INFO_STREAM("Cluster at (" << mypointloc.x << ", " << mypointloc.y);
         }
     }
+
+    ROS_INFO_STREAM("Number of clusters = " << num_clusters);
+
+    ROS_INFO_STREAM("# of points = " << newmsg->size());
 
 
      newmsg->header.stamp = ros::Time::now ();
      point_publisher.publish (newmsg);
-     newmsg->points.clear();
+     newmsg->clear();
 }
 
 
