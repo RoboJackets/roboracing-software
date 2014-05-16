@@ -30,6 +30,7 @@ ros::Publisher cone_publisher;
 ros::Publisher point_publisher;
 PointCloud::Ptr newmsg (new PointCloud);
 
+double cone_max, cone_min;
 
 void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
 	// cout << *msg << endl;
@@ -122,16 +123,16 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
             mypointloc.x = cos(myangle) * mylength;
             mypointloc.y = sin(myangle) * mylength;
             pointlocs.push_back(mypointloc);
-            newmsg->push_back (pcl::PointXYZ(mypointloc.x, mypointloc.y, 0.0));
+
+            if(l[i].length < cone_max && l[i].length > cone_min) {
+	            newmsg->push_back (pcl::PointXYZ(mypointloc.x, mypointloc.y, 0.0));
+            }
 
             ROS_INFO_STREAM("Cluster at (" << mypointloc.x << ", " << mypointloc.y);
         }
     }
 
-    ROS_INFO_STREAM("Number of clusters = " << num_clusters);
-
     ROS_INFO_STREAM("# of points = " << newmsg->size());
-
 
      newmsg->header.stamp = ros::Time::now ();
      point_publisher.publish (newmsg);
@@ -176,6 +177,9 @@ int main(int argc, char* argv[]) {
 
     std::string laser_topic;
     nhp.param(std::string("laser_topic"), laser_topic, std::string("/scan"));
+
+    nhp.param(std::string("cone_max"), cone_max, 0.1);
+    nhp.param(std::string("cone_min"), cone_min, 0.0);
 
     ROS_INFO("Laser topic:= %s", laser_topic.c_str());
     ROS_INFO("Laser file:= %s", img_file.c_str());
