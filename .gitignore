@@ -1,0 +1,5 @@
+# Qt Creator project files
+./*.config
+./*.creator
+./*.files
+./*.includes
