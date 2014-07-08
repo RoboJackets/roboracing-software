@@ -33,6 +33,7 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 }
 
 void zeroOutRegion(cv::Mat& mat, cv::Rect& r) {
+	// TODO optimize
 	for(int i=0; i < r.height; i++) {
 		for(int j=0; j < r.width; j++) {
 			if((r.y + i < mat.rows) && (0 < r.y + i) && 

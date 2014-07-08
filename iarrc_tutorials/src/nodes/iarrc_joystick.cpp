@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
     // Convert joystick commands into motor commands on this topic
     std::string motor_topic;
-    nhp.param(std::string("motor_topic"), joystick_topic, std::string("/iarrc/motor_command"));
+    nhp.param(std::string("motor_topic"), motor_topic, std::string("/iarrc/motor_command"));
     command_publisher = nh.advertise<iarrc_msgs::MotorCommand>(motor_topic, 1);
 
     // Driving limits
