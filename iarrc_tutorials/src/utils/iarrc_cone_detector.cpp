@@ -5,13 +5,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-// OKAY THIS GAVE ME ERROR!?
-#include <pcl_ros/point_cloud.h>
-// THIS TOO???
-#include <pcl/point_types.h>
 std::string img_file;
-
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 using namespace cv;
 using namespace std;
@@ -28,7 +22,6 @@ struct pointloc {
 
 ros::Publisher cone_publisher;
 ros::Publisher point_publisher;
-PointCloud::Ptr newmsg (new PointCloud);
 
 double cone_max, cone_min;
 
@@ -98,10 +91,6 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
         }
     }
 
-    newmsg->header.frame_id = "laser";
-    newmsg->height = newmsg->width = 1;
-
-
     int npoint = 0;
     float myangle = 0;
     float mylength = 0;
@@ -124,41 +113,11 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
             mypointloc.y = sin(myangle) * mylength;
             pointlocs.push_back(mypointloc);
 
-            if(l[i].length < cone_max && l[i].length > cone_min) {
-	            newmsg->push_back (pcl::PointXYZ(mypointloc.x, mypointloc.y, 0.0));
-            }
-
             ROS_INFO_STREAM("Cluster at (" << mypointloc.x << ", " << mypointloc.y);
         }
     }
 
-    ROS_INFO_STREAM("# of points = " << newmsg->size());
-
-     newmsg->header.stamp = ros::Time::now ();
-     point_publisher.publish (newmsg);
-     newmsg->clear();
 }
-
-
-/*int main(int argc, char** argv){
-    ros::init (argc, argv, "pub_pcl");
-    ros::NodeHandle nh;
-    ros::Publisher pub = nh.advertise<PointCloud> ("points2", 1);
-
-    PointCloud::Ptr msg (new PointCloud);
-    msg->header.frame_id = "some_tf_frame";
-    msg->height = msg->width = 1;
-    msg->points.push_back (pcl::PointXYZ(1.0, 2.0, 3.0));
-
-
-
-    while (nh.ok()) {
-     msg->header.stamp = ros::Time::now ();
-     pub.publish (msg);
-     ros::spinOnce ();
-     loop_rate.sleep ();
-   }
-} */
 
 void help(std::ostream& ostr) {
     ostr << "Usage: iarrc_cone_detector _laser_topic:=<laser-topic> _img_file:=<file-name>" << std::endl;
@@ -187,7 +146,6 @@ int main(int argc, char* argv[]) {
     // Subscribe to ROS topic with callback
     ros::Subscriber cone_detect_sub = nh.subscribe(laser_topic, 1, ConeDetectorCB);
     //cone_publisher = nh.advertise<sensor_msgs::LaserScan>("hist_cone_pub", 1); //EDIT LATER
-    point_publisher = nh.advertise<PointCloud> ("point_cone_pub", 1);
 
     ROS_INFO("IARRC cone detection node ready.");
     ros::spin();
