@@ -6,7 +6,7 @@
 	</node>
 
     <!-- IARRC joystick node -->
-	<node name="iarrc_joystick" pkg="iarrc_tutorials" type="iarrc_joystick" output="screen" respawn="false">
+	<node name="iarrc_joystick" pkg="iarrc" type="iarrc_joystick" output="screen" respawn="false">
 		<param name="joystick_topic" type="str" value="/joy"/>
 		<param name="motor_topic" type="str" value="/iarrc/drive_command"/>
 		<param name="angle_max" type="int" value="20"/>
