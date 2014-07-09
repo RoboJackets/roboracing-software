@@ -7,7 +7,7 @@ set(BUILD_FLAGS "-std=c++0x -Wreturn-type -Wno-enum-compare")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS message_generation roscpp sensor_msgs std_msgs iarrc_msgs tf cv_bridge)
+find_package(catkin REQUIRED COMPONENTS iarrc_msgs roscpp sensor_msgs std_msgs tf cv_bridge)
 
 ## Include Eigen
 find_package(Eigen REQUIRED)
@@ -49,4 +49,5 @@ foreach(node_src_file ${nodes_source})
 	add_dependencies(${node_base} hubo_gt_msgs_gencpp)
 	set_target_properties(${node_base} PROPERTIES COMPILE_FLAGS ${BUILD_FLAGS})
 	target_link_libraries(${node_base} ${catkin_LIBRARIES})
+	add_dependencies(${node_base} iarrc_msgs_gencpp)
 endforeach(node_src_file)

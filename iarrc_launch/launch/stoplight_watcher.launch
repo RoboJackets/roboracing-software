@@ -1,0 +1,3 @@
+<launch>
+  <node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen" />
+</launch>
