@@ -1,15 +1,23 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
-#include <iarrc_msgs/MotorCommand.h>
+#include <iarrc_msgs/iarrc_speed.h>
+#include <iarrc_msgs/iarrc_steering.h>
 #include <boost/asio.hpp>
 #include <string>
 
-iarrc_msgs::MotorCommand cmd;
+iarrc_msgs::iarrc_speed speed_cmd;
+iarrc_msgs::iarrc_steering steering_cmd;
 bool new_cmd = false;
 
-void MotorCommandCB(const iarrc_msgs::MotorCommand::ConstPtr& msg)
+void SpeedCallback(const iarrc_msgs::iarrc_speed::ConstPtr& msg)
 {
-	cmd = *msg;
+	speed_cmd = *msg;
+	new_cmd = true;
+}
+
+void SteeringCallback(const iarrc_msgs::iarrc_steering::ConstPtr& msg)
+{
+	steering_cmd = *msg;
 	new_cmd = true;
 }
 
@@ -19,14 +27,19 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    // 
-    std::string drive_command_topic;
-    nhp.param(std::string("drive_command_topic"), drive_command_topic, std::string("/drive_command_topic"));
-    ros::Subscriber drive_command_sub = nh.subscribe(drive_command_topic, 1, MotorCommandCB);
+    // Subscribers
+    std::string speed_topic_name;
+    nhp.param(std::string("speed_topic"), speed_topic_name, std::string("/speed"));
+    ros::Subscriber speed_sub = nh.subscribe(speed_topic_name, 1, SpeedCallback);
 
-    ROS_INFO_STREAM("Drive Command topic = " << drive_command_topic);
+    std::string steering_topic_name;
+    nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
+    ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
 
-    // 
+    ROS_INFO_STREAM("Listening for speed on " << speed_topic_name);
+    ROS_INFO_STREAM("Listening for steer on " << steering_topic_name);
+
+    // Serial port setup
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB0"));
     boost::asio::io_service io_service;
@@ -40,12 +53,12 @@ int main(int argc, char** argv)
 
 		// if(new_cmd) {
 		if(true) {
-			ROS_INFO("Sending command: servo=%d, motor=%d", cmd.angle, cmd.speed);
+			ROS_INFO("Sending command: servo=%d, motor=%d", steering_cmd.angle, speed_cmd.speed);
 
 			char m[4];
 			m[0] = 181;
-			m[1] = (char)(cmd.speed + 90);
-			m[2] = (char)(cmd.angle + 90);
+			m[1] = (char)(speed_cmd.speed + 90);
+			m[2] = (char)(steering_cmd.angle + 90);
 			m[3] = 182;
 
 			try {

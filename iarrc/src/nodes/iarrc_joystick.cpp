@@ -1,10 +1,12 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
+#include <iarrc_msgs/iarrc_speed.h>
+#include <iarrc_msgs/iarrc_steering.h>
 #include <sensor_msgs/Joy.h>
-#include <iarrc_msgs/MotorCommand.h>
 #include <string>
 
-ros::Publisher command_publisher; // Publishes the motor commands
+ros::Publisher speed_publisher;
+ros::Publisher steering_publisher;
 int angle_max;
 int speed_max;
 
@@ -14,13 +16,13 @@ void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
         return;
     }
 
-    iarrc_msgs::MotorCommand command;
-    command.angle = angle_max * msg->axes[0];
-    command.speed = speed_max * msg->axes[3];
+    iarrc_msgs::iarrc_speed sp_cmd;
+    iarrc_msgs::iarrc_steering st_cmd;
+    sp_cmd.speed = speed_max * msg->axes[3];
+    st_cmd.angle = angle_max * msg->axes[0];
 
-    // ROS_INFO_STREAM("Sending motor command:\n" << command);
-
-    command_publisher.publish(command);
+    speed_publisher.publish(sp_cmd);
+    steering_publisher.publish(st_cmd);
 }
 
 int main(int argc, char** argv)
@@ -34,10 +36,13 @@ int main(int argc, char** argv)
     nhp.param(std::string("joystick_topic"), joystick_topic, std::string("/joy"));
     ros::Subscriber float_command_sub = nh.subscribe(joystick_topic, 1, JoystickCB);
 
-    // Convert joystick commands into motor commands on this topic
-    std::string motor_topic;
-    nhp.param(std::string("motor_topic"), motor_topic, std::string("/iarrc/motor_command"));
-    command_publisher = nh.advertise<iarrc_msgs::MotorCommand>(motor_topic, 1);
+    // Convert joystick commands into motor commands on these topics
+    std::string speed_topic;
+    nhp.param(std::string("speed_topic"), speed_topic, std::string("/speed"));
+    speed_publisher = nh.advertise<iarrc_msgs::iarrc_speed>(speed_topic, 1);
+    std::string steering_topic;
+    nhp.param(std::string("steering_topic"), steering_topic, std::string("/steering"));
+    steering_publisher = nh.advertise<iarrc_msgs::iarrc_steering>(steering_topic, 1);
 
     // Driving limits
     nhp.param(std::string("angle_max"), angle_max, 10);

@@ -36,7 +36,8 @@ add_message_files(
     DIRECTORY
     msg
     FILES
-    MotorCommand.msg
+    iarrc_speed.msg
+    iarrc_steering.msg
 )
 
 ## Generate services in the 'srv' folder
