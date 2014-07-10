@@ -1,3 +1,5 @@
 <launch>
-  <node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen" />
+  <node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen">
+    <param name="img_topic" type="string" value="/ps3_eye/image_color" />
+  </node>
 </launch>

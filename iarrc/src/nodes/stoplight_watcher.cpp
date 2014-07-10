@@ -8,35 +8,20 @@
 #include <opencv/highgui.h>
 #include <Eigen/Dense>
 
-std::string img_file;
-int low_Threshold=50;
-int const max_lowThreshold=100;
-int CannyThreshold;
-int ratio=2;
-int sigma=0;
-int brightThreshold=80;
-int curPos;
-ros::Publisher img_pub;
-ros::Publisher bool_pub;
-sensor_msgs::Image rosimage;
-
-
 using namespace cv;
 using namespace std;
 
-bool goodCircle(Vec3f &info,Mat &img);
+ros::Publisher img_pub;
+ros::Publisher bool_pub;
+sensor_msgs::Image rosimage;
+Point lastCenter;
 
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
 	Mat blurImg;
-	Mat downBlurImg;
 	Mat grayscaleImg;
-	Mat downGrayscaleImg;
-	Mat edgeOp;
-	Mat downEdgeOp;
 	Mat circlesImg;
-	Mat kernel=getGaussianKernel(15,sigma);
 
 	// Convert ROS to OpenCV
 	try {
@@ -45,34 +30,54 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-	vector <Vec3f> circlesdata;
-	GaussianBlur(cv_ptr->image,blurImg,Size(9,9),sigma,sigma);
+	GaussianBlur(cv_ptr->image,blurImg,Size(3,3), 0 ,0);
+	{
+		vector<Mat> channels;
+		split(blurImg, channels);
+		for(int i = 0; i < channels.size(); i++)
+			equalizeHist(channels[i], channels[i]);
+		merge(channels, blurImg);
+	}
 	cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
-	Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
-	circlesImg=blurImg.clone();
-	HoughCircles( grayscaleImg, circlesdata, CV_HOUGH_GRADIENT, 1, grayscaleImg.rows/4, low_Threshold*2, 50, 0, 0 );
-
-	for( size_t i = 0; i < circlesdata.size(); i++ )
-	{	
-		if (goodCircle(circlesdata [i],grayscaleImg))
-		{ 
-      			if  (abs(circlesdata[i][1]-curPos)>circlesdata[i][2])
-      			{
-      				std_msgs::Bool change;
-      				change.data=true;
-      				bool_pub.publish(change);
-      			}
-	      		Point center(cvRound(circlesdata[i][0]), cvRound(circlesdata[i][1]));
-	      		int radius = cvRound(circlesdata[i][2]);
-	      		circle( circlesImg, center, 3, Scalar(0,255,0), -1, 8, 0 );
-	      		circle( circlesImg, center, radius, Scalar(127,0,127), 2, 8, 0 );
-	      		ROS_INFO("x:%f\ty:%f\tradius:%f",circlesdata[i][0],circlesdata[i][1],circlesdata[i][2]);
-	      		curPos=circlesdata[i][1];
+	threshold(grayscaleImg, grayscaleImg, 254, 255, CV_THRESH_BINARY);
+	
+	Point center(0,0);
+	int count = 0;
+	for(int r = 0; r < grayscaleImg.rows; r++)
+	{
+		uchar* row = grayscaleImg.ptr<uchar>(r);
+		for(int c = 0; c < grayscaleImg.cols; c++)
+		{
+			if(row[c])
+			{
+				center.x += c;
+				center.y += r;
+				count++;
+			}
 		}
 	}
 
+	center.x /= count;
+	center.y /= count;
+
+	int dx = center.x - lastCenter.x;
+	int dy = center.y - lastCenter.y;
+	
+	if(dx < 10 && dy > 20)
+	{
+		std_msgs::Bool b;
+		b.data = true;
+		bool_pub.publish(b);
+	}
+
+	ROS_INFO("(%i, %i)\t%i", dx, dy, count);
+
+	circlesImg=grayscaleImg.clone();
+	
+	lastCenter = center;
+
 	cv_ptr->image=circlesImg;
-	cv_ptr->encoding="bgr8";
+	cv_ptr->encoding="mono8";
 	cv_ptr->toImageMsg(rosimage);
 	img_pub.publish(rosimage);
 }
@@ -97,47 +102,4 @@ int main(int argc, char* argv[]) {
 	ros::spin();
 	ROS_INFO("Shutting down IARRC stoplight watcher node.");
 	return 0;
-}
-
-
-
-bool goodCircle(Vec3f &info,Mat &img)
-{
-	int centerx=info[0];
-	int centery=info[1];
-	float radius=info[2];
-	//ROS_INFO("x:%d\ty:%d\tradius:%f",centerx,centery,radius);
-	double goodPoints=0;
-	double totalPoints=0;
-	//ROS_INFO("Test Value:%d",img.at<uchar>(centery,centerx));
-	
-	for (int i = 0; i < img.cols; i++)
-	{
-		for (int j = 0; j < img.rows; j++)
-		{
-			double dist=pow((pow((centerx-i),2)+pow((centery-j),2)),(0.5));
-			if (dist<=radius)
-			{
-				if (img.at<uchar>(j,i)>240)
-				{	
-					goodPoints++;
-				}
-			}
-			totalPoints++;
-		}
-	}
-
-	totalPoints=3.14*pow(radius,2);
-	double percent=goodPoints/totalPoints*100;
-
-	//ROS_INFO("Good:%f, Total:%f, Ratio:%f",goodPoints,totalPoints,percent);
-
-	if (percent>=brightThreshold)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
