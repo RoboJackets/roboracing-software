@@ -15,9 +15,12 @@ ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
 Point lastCenter;
+Mat element;
 
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
+	ROS_INFO("start");
+	ROS_INFO("%s", msg->header.frame_id.c_str());
 	cv_bridge::CvImagePtr cv_ptr;
 	Mat blurImg;
 	Mat grayscaleImg;
@@ -27,6 +30,7 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	try {
 		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
 	} catch (cv_bridge::Exception& e) {
+		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
 	}
 
@@ -40,6 +44,11 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
 	threshold(grayscaleImg, grayscaleImg, 254, 255, CV_THRESH_BINARY);
+	rectangle(grayscaleImg, Rect(0,0,grayscaleImg.cols,grayscaleImg.rows), Scalar::all(255));
+	floodFill(grayscaleImg, Point(0,0), Scalar::all(127));
+	threshold(grayscaleImg, grayscaleImg, 250, 255, CV_THRESH_BINARY);
+	erode(grayscaleImg, grayscaleImg, element);
+	dilate(grayscaleImg, grayscaleImg, element);
 	
 	Point center(0,0);
 	int count = 0;
@@ -56,6 +65,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 			}
 		}
 	}
+
+	if(count < 1) count = 1;
 
 	center.x /= count;
 	center.y /= count;
@@ -91,6 +102,8 @@ int main(int argc, char* argv[]) {
 	nhp.param(std::string("img_topic"), img_topic, std::string("/image_raw"));
 
 	ROS_INFO("Image topic:= %s", img_topic.c_str());
+
+	element = getStructuringElement(MORPH_ELLIPSE, Size(5, 5), Point(2,2));
 
 	// Subscribe to ROS topic with callback
 	ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
