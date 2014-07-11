@@ -27,7 +27,6 @@ link_libraries(${OpenCV_LIBS})
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  INCLUDE_DIRS include
   CATKIN_DEPENDS message_runtime sensor_msgs std_msgs iarrc_msgs tf cv_bridge
   DEPENDS system_lib QtCore QtGui)
 

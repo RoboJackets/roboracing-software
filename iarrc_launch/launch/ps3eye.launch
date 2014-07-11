@@ -1,11 +1,11 @@
 <launch>
   <group ns="ps3_eye">
     <node pkg="uvc_camera" type="camera_node" name="uvc_camera" output="screen">
-      <param name="width" type="int" value="320" />
-      <param name="height" type="int" value="240" />
+      <param name="width" type="int" value="640" />
+      <param name="height" type="int" value="480" />
       <param name="fps" type="int" value="40" />
       <param name="frame" type="string" value="wide_stereo" />
-      <param name="device" type="string" value="/dev/video0" />
+      <param name="device" type="string" value="/dev/video1" />
     </node>
     <node pkg="image_proc" type="image_proc" name="ps3eye_proc" output="screen" />
   </group>
