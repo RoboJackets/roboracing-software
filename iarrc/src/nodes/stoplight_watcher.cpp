@@ -16,11 +16,10 @@ ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
 Point lastCenter;
 Mat element;
+int last_dy = 0;
 
 // ROS image callback
-void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
-	ROS_INFO("start");
-	ROS_INFO("%s", msg->header.frame_id.c_str());
+void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
 	cv_bridge::CvImagePtr cv_ptr;
 	Mat blurImg;
 	Mat grayscaleImg;
@@ -74,18 +73,23 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	int dx = center.x - lastCenter.x;
 	int dy = center.y - lastCenter.y;
 	
-	if(dx < 10 && dy > 20)
+	if(dx < 10 && last_dy + dy > 0.1 * count)
 	{
 		std_msgs::Bool b;
 		b.data = true;
 		bool_pub.publish(b);
 	}
 
-	ROS_INFO("(%i, %i)\t%i", dx, dy, count);
+	//ROS_INFO("%i", count);	
+
+	if(dy > 5)
+		ROS_INFO("(%i, %i)\t%i", dx, dy, count);
 
 	circlesImg=grayscaleImg.clone();
 	
 	lastCenter = center;
+
+	last_dy = dy;
 
 	cv_ptr->image=circlesImg;
 	cv_ptr->encoding="mono8";
