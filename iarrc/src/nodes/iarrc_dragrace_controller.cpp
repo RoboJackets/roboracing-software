@@ -1,41 +1,74 @@
 #include <ros/ros.h>
+#include <ros/subscriber.h>
 #include <ros/publisher.h>
+#include <iarrc_msgs/iarrc_speed.h>
+#include <std_msgs/Bool.h>
+#include <string>
 
 #define STATE_LIGHT_WAITING 1
 #define STATE_DRAGRACE_GO 2
 #define STATE_DRAGRACE_STOP 4
 #define STATE_VALID 7
 
-char global_state;
-void transition_state();
-char get_state();
+
+ros::Publisher speed_publisher;
+
+ros::NodeHandle nh;
+ros::NodeHandle nhp("~");
+
+int drive_speed;
+std::string wall_detect_topic;
+
+ros::Subscriber stoplight_subscriber;
+ros::Subscriber wall_detect_subscriber;
+
+void stoplightCB(std_msgs::Bool);
+void wallDetectCB(std_msgs::Bool);
+void racecar_set_speed(int);
+
 int main(int argc, char** argv)
 {
-	global_state = STATE_LIGHT_WAITING;
-	while((global_state & STATE_VALID)) {
-		if(global_state == STATE_LIGHT_WAITING && true) { //light turns green
-			transition_state();
-		}
+	ros::init(argc, argv, "iarrc_dragrace_controller");
 
-		if(global_state == STATE_DRAGRACE_GO && true) { //wall sensed
-			transition_state();
-		}
+	std::string stoplight_topic;
+    	nhp.param(std::string("stoplight_topic"), stoplight_topic, std::string("/light_change"));
+    	stoplight_subscriber = nh.subscribe(stoplight_topic, 1, stoplightCB);
 
-		if(global_state == STATE_DRAGRACE_STOP && true) { //timer expired
-			transition_state();
-		}
-	}
-	std::exit(1);
+	nhp.param(std::string("wall_detect_topic"), wall_detect_topic, std::string("/wall_detect"));
+
+	nhp.param(std::string("drive_speed"), drive_speed, 8);
+
+	std::string speed_topic;
+    	nhp.param(std::string("speed_topic"), speed_topic, std::string("/speed"));
+    	speed_publisher = nh.advertise<iarrc_msgs::iarrc_speed>(speed_topic, 1);
+	racecar_set_speed(0);
+
+	ROS_INFO("IARRC dragrace_controller node ready.");
+	ros::spin();
+	ROS_INFO("Shutting down IARRC dragrace_controller node.");
+
+    	return 0;
 }
 
-void transition_state()
+void stoplightCB(std_msgs::Bool)
 {
-	global_state << 1;
+	racecar_set_speed(drive_speed);
+	stoplight_subscriber.shutdown();
+	wall_detect_subscriber = nh.subscribe(wall_detect_topic, 1, wallDetectCB);
 }
 
-char get_state()
+void wallDetectCB(std_msgs::Bool)
 {
-	return global_state;
+	racecar_set_speed(0);
+	wall_detect_subscriber.shutdown();
+	exit(0);
+}
+
+void racecar_set_speed(int speed)
+{
+	iarrc_msgs::iarrc_speed sp_cmd;
+	sp_cmd.speed = speed;
+	speed_publisher.publish(sp_cmd);
 }
 
 
