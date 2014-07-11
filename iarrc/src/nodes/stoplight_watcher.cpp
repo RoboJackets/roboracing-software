@@ -33,7 +33,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-	GaussianBlur(cv_ptr->image,blurImg,Size(3,3), 0 ,0);
+	resize(cv_ptr->image, blurImg, Size(320,240));
+	GaussianBlur(blurImg,blurImg,Size(3,3), 0 ,0);
 	{
 		vector<Mat> channels;
 		split(blurImg, channels);
