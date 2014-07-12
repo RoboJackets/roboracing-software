@@ -1,0 +1,7 @@
+<launch>
+  <node name="frame_merger" pkg="iarrc" type="frame_merger" output="screen">
+        <param name="frame_topic" type="string" value="/frame_img" />
+        <param name="lines_topic" type="string" value="/lines_img" />
+        <param name="cones_topic" type="string" value="/cones_img" />
+  </node>
+</launch>
