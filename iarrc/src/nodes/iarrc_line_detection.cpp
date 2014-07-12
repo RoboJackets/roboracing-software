@@ -6,6 +6,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <stdlib.h>
+#include "image_utils.hpp"
 
 std::string img_file;
 int low_Threshold = 5;
@@ -61,9 +62,6 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	vector <Vec4i> hierarchy;
 	RNG rng(10305);
 
-
-	ROS_INFO("Received image with %s encoding", msg->encoding.c_str());
-
 	// Convert ROS to OpenCV
 	try {
 		cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
@@ -100,30 +98,38 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	edgeOp.copyTo(edgeCopy);
 	dilate(edgeCopy,edgeCopy,element);
 	erode(edgeCopy,edgeCopy,element);
+	
+	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
+	edgeCopy.copyTo(output(myRect));
 
 	// Find contours
-	edgeCopy.copyTo(edgeCopy2);
-	addWeighted(edgeOp,0.5,grayscaleImg,0.5,0,out);	
-	findContours(edgeCopy2,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
+	//edgeCopy.copyTo(edgeCopy2);
+	//addWeighted(edgeOp,0.5,grayscaleImg,0.5,0,out);	
+	
+	//findContours(edgeCopy2,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
 
-	Mat drawing = Mat::zeros(edgeOp.size(),CV_8UC3);
+	/*Mat drawing = Mat::zeros(edgeOp.size(),CV_8UC3);
 	for(int i=0; i < contours.size();i++)
 	{
 		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
 		drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
-	}
+	}*/
 
-	namedWindow("Contours",WINDOW_AUTOSIZE);
-	imshow("Contours",drawing);
+	//namedWindow("Contours",WINDOW_AUTOSIZE);
+	//imshow("Contours",drawing);
 
-	namedWindow("Edges",WINDOW_AUTOSIZE);
- 	imshow("Edges",edgeOp);
-	namedWindow("Eroded/Dilated",WINDOW_AUTOSIZE);
- 	imshow("Eroded/Dilated",edgeCopy);
+	//namedWindow("Edges",WINDOW_AUTOSIZE);
+ 	//imshow("Edges",edgeOp);
+	//namedWindow("Eroded/Dilated",WINDOW_AUTOSIZE);
+ 	//imshow("Eroded/Dilated",edgeCopy);
  	// waitKey(0);
- 	cv_ptr->image=drawing;
-    cv_ptr->encoding="bgr8";
-    //cv_ptr->encoding="mono8";
+ 	
+ 	resize(output, output, Size(640,480));
+ 	image_utils::transform_perspective(output, output);
+ 	
+ 	cv_ptr->image=output;
+    //cv_ptr->encoding="bgr8";
+    cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);
 }
