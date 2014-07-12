@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string img_topic;
-    nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_raw"));
+    nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_color"));
     nhp.param(std::string("img_file"), img_file, std::string("iarrc_image.png"));
 
     ROS_INFO("Image topic:= %s", img_topic.c_str());

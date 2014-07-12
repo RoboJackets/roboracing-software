@@ -17,10 +17,10 @@ ros::NodeHandle *nh;
 ros::NodeHandle *nhp;
 
 int drive_speed;
-std::string wall_detect_topic;
+std::string race_end_topic;
 
 ros::Subscriber stoplight_subscriber;
-ros::Subscriber wall_detect_subscriber;
+ros::Subscriber race_end_subscriber;
 
 void stoplightCB(std_msgs::Bool);
 void wallDetectCB(std_msgs::Bool);
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     	nhp->param(std::string("stoplight_topic"), stoplight_topic, std::string("/light_change"));
     	stoplight_subscriber = nh->subscribe(stoplight_topic, 1, stoplightCB);
 
-	nhp->param(std::string("wall_detect_topic"), wall_detect_topic, std::string("/wall_detect"));
+	nhp->param(std::string("race_end_topic"), race_end_topic, std::string("/race_end"));
 
 	nhp->param(std::string("drive_speed"), drive_speed, 8);
 
@@ -61,14 +61,14 @@ void stoplightCB(std_msgs::Bool)
 	ROS_INFO("Drag Race Controller got stoplight.");
 	racecar_set_speed(drive_speed);
 	stoplight_subscriber.shutdown();
-	wall_detect_subscriber = nh->subscribe(wall_detect_topic, 1, wallDetectCB);
+	race_end_subscriber = nh->subscribe(race_end_topic, 1, wallDetectCB);
 }
 
 void wallDetectCB(std_msgs::Bool)
 {
 	ROS_INFO("Drag Race Controller got wall.");
 	racecar_set_speed(0);
-	wall_detect_subscriber.shutdown();
+	race_end_subscriber.shutdown();
 	exit(0);
 }
 
