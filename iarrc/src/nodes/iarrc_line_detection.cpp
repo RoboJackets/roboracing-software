@@ -69,6 +69,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		ROS_ERROR("cv_bridge exception: %s", e.what());
 		return;
 	}
+	resize(cv_ptr->image, cv_ptr->image, Size(640,480));
+	
 	int width = cv_ptr->image.cols;
 	int height = cv_ptr->image.rows;
 	
