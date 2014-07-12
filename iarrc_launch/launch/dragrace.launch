@@ -1,0 +1,13 @@
+<launch>
+	<group>
+		<include file="./dragrace_controller.launch" />
+		<include file="./ps3eye.launch" />
+		<include file="./visual_cone_detector.launch" />
+		<include file="./frame_merger.launch" />
+		<include file="./lane_detection.launch" />
+		<include file="./motor_relay.launch" />
+		<include file="./race_end_detector.launch" />
+		<include file="./stoplight_watcher.launch" />
+		<include file="./drag_race_steerer.launch" />
+	</group>
+</launch>
