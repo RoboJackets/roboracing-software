@@ -15,7 +15,12 @@ sensor_msgs::Image rosimage;
 Mat cones, lines, frame;
 
 void mergeFrames() {
-
+	if(cones.rows != lines.rows || cones.cols != lines.cols)
+	{
+		ROS_ERROR("Frame merger size mismatch");
+		return;
+	}
+	add(cones, lines, frame);
 }
 
 void conesCB(const sensor_msgs::Image::ConstPtr& msg) {
@@ -57,6 +62,10 @@ void linesCB(const sensor_msgs::Image::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
+	frame = Mat::zeros(1500, 2000, CV_8UC1);
+	lines = Mat::zeros(1500, 2000, CV_8UC1);
+	cones = Mat::zeros(1500, 2000, CV_8UC1);
+
 	ros::init(argc, argv, "drag_race_steerer");
 	
 	ros::NodeHandle nh;
