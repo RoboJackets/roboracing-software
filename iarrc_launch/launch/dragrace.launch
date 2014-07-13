@@ -1,13 +1,13 @@
 <launch>
 	<group>
-		<include file="./dragrace_controller.launch" />
-		<include file="./ps3eye.launch" />
-		<include file="./visual_cone_detector.launch" />
-		<include file="./frame_merger.launch" />
-		<include file="./lane_detection.launch" />
-		<include file="./motor_relay.launch" />
-		<include file="./race_end_detector.launch" />
-		<include file="./stoplight_watcher.launch" />
-		<include file="./drag_race_steerer.launch" />
+		<include file="$(find iarrc_launch)/launch/dragrace_controller.launch" />
+		<include file="$(find iarrc_launch)/launch/ps3eye.launch" />
+		<include file="$(find iarrc_launch)/launch/visual_cone_detector.launch" />
+		<include file="$(find iarrc_launch)/launch/frame_merger.launch" />
+		<include file="$(find iarrc_launch)/launch/lane_detection.launch" />
+		<include file="$(find iarrc_launch)/launch/motor_relay.launch" />
+		<include file="$(find iarrc_launch)/launch/race_end_detector.launch" />
+		<include file="$(find iarrc_launch)/launch/stoplight_watcher.launch" />
+		<include file="$(find iarrc_launch)/launch/drag_race_steerer.launch" />
 	</group>
 </launch>

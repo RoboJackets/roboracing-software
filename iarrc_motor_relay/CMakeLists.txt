@@ -23,6 +23,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(iarrc_motor_relay_node src/iarrc_motor_relay_node.cpp)
 add_dependencies(iarrc_motor_relay_node ${catkin_EXPORTED_TARGETS})
+add_dependencies(iarrc_motor_relay_node iarrc_msgs_gencpp)
 target_link_libraries(iarrc_motor_relay_node ${catkin_LIBRARIES})
 
 #############
