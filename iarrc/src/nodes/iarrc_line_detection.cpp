@@ -15,11 +15,10 @@ int sigma=0;
 ros::Publisher img_pub;
 ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
-int erosion_size=3;
+int erosion_size=1;
 int erosion_type=0;
 
-// Car-body region to subtract out from edge image
-cv::Rect car_body(0,0,50,50);
+
 
 using namespace std;
 using namespace cv;
@@ -45,6 +44,26 @@ void zeroOutRegion(cv::Mat& mat, cv::Rect& r) {
 	}
 }
 
+void filterLines(cv::Mat& mat, cv::Mat& output){
+	//TODO brightness variability, optomize, correct colors
+	Scalar avg = cv::mean(mat);
+	int average = (avg[0] + avg[1] + avg[2])/3;
+	std::cout<< average <<endl;
+	float low = 1.2;
+	int high = 255;
+	for(int r=0; r<mat.rows; r++){
+		for (int c=0; c<mat.cols; c++){
+			if(mat.at<Vec3b>(r,c)[0] > low*average && mat.at<Vec3b>(r,c)[1] > low*average && mat.at<Vec3b>(r,c)[2] > low*average){
+				output.at<unsigned char>(r,c) = 255;
+			}
+			else{
+				output.at<unsigned char>(r,c) =0;
+			}
+		}
+	}
+
+}
+
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
@@ -52,13 +71,12 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	//cv_bridge::CvImagePtr cv_ptr_2;
 	Mat edgeOp;	
 	Mat blurImg;
-	Mat grayscaleImg;
 	Mat out;
 	Mat edgeCopy;
 	Mat edgeCopy2;
 	int thresh = 100;
 	int max_thresh = 255;
-	vector <vector<Point>> contours;
+	vector <vector<Point> > contours;
 	vector <Vec4i> hierarchy;
 	RNG rng(10305);
 
@@ -69,22 +87,28 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		ROS_ERROR("cv_bridge exception: %s", e.what());
 		return;
 	}
-	resize(cv_ptr->image, cv_ptr->image, Size(640,480));
+//resize(cv_ptr->image, cv_ptr->image, Size(640,480));
 	
 	int width = cv_ptr->image.cols;
 	int height = cv_ptr->image.rows;
 	
 	// Crop image
-	Rect myRect = Rect(0,3*height/4,width,height/4);
+	Rect myRect = Rect(0,height/4,width,height/2);
+	// Car-body region to subtract out from edge image
+	cv::Rect car_body(0,height/4,width,height);
+
 	Mat tmp;
 	Mat(cv_ptr->image,myRect).copyTo(tmp);
 	Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size+1 ),Point( erosion_size, erosion_size ) );
 
 	GaussianBlur(tmp,blurImg,Size(9,9),sigma,sigma);
-	cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
+	Mat grayscaleImg(blurImg.rows, blurImg.cols, CV_8UC1);
+	filterLines(blurImg, grayscaleImg);
+	//cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
 
 	// Detect edges
-	Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
+	//Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
+	
 
 	// Draw rectangle we are going to subtract (DEBUG)
 	// Mat edgeNoCar;
@@ -93,13 +117,15 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	// debug_pub.publish(CvMatToRosImage(edgeNoCar, "mono8"));
 
 	// Subtract self (car body) from image
-	zeroOutRegion(edgeOp, car_body);
+	//zeroOutRegion(grayscaleImg, car_body);
 	// debug_pub.publish(CvMatToRosImage(edgeOp, "mono8"));
 
 	// Post processing dilate/erosion
-	edgeOp.copyTo(edgeCopy);
-	dilate(edgeCopy,edgeCopy,element);
+	grayscaleImg.copyTo(edgeCopy);
 	erode(edgeCopy,edgeCopy,element);
+	dilate(edgeCopy,edgeCopy,element);
+	std::cout << "I"<<endl;
+
 	
 	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
 	edgeCopy.copyTo(output(myRect));
@@ -126,8 +152,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
  	//imshow("Eroded/Dilated",edgeCopy);
  	// waitKey(0);
  	
- 	resize(output, output, Size(640,480));
- 	image_utils::transform_perspective(output, output);
+ //resize(output, output, Size(640,480));
+ //image_utils::transform_perspective(output, output);
  	
  	cv_ptr->image=output;
     //cv_ptr->encoding="bgr8";
@@ -166,10 +192,11 @@ int main(int argc, char* argv[]) {
     debug_pub = nh.advertise<sensor_msgs::Image>("/image_debug", 1);
 
     // Car body
-    nhp.param(std::string("car_x"), car_body.x, 0);
+/*    nhp.param(std::string("car_x"), car_body.x, 0);
     nhp.param(std::string("car_y"), car_body.y, 0);
     nhp.param(std::string("car_w"), car_body.width, 50);
     nhp.param(std::string("car_h"), car_body.height, 50);
+*/
 
     ROS_INFO("Hi");
 
