@@ -7,6 +7,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <Eigen/Dense>
+#include <fstream>
 
 using namespace cv;
 using namespace std;
@@ -17,6 +18,9 @@ sensor_msgs::Image rosimage;
 Point lastCenter;
 Mat element;
 int last_dy = 0;
+ofstream file;
+
+int last_rSum = 0;
 
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
@@ -33,67 +37,32 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-	resize(cv_ptr->image, blurImg, Size(320,240));
-	GaussianBlur(blurImg,blurImg,Size(3,3), 0 ,0);
-	{
-		vector<Mat> channels;
-		split(blurImg, channels);
-		for(int i = 0; i < channels.size(); i++)
-			equalizeHist(channels[i], channels[i]);
-		merge(channels, blurImg);
-	}
-	cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
-	threshold(grayscaleImg, grayscaleImg, 254, 255, CV_THRESH_BINARY);
-	rectangle(grayscaleImg, Rect(0,0,grayscaleImg.cols,grayscaleImg.rows), Scalar::all(255));
-	floodFill(grayscaleImg, Point(0,0), Scalar::all(127));
-	threshold(grayscaleImg, grayscaleImg, 250, 255, CV_THRESH_BINARY);
-	erode(grayscaleImg, grayscaleImg, element);
-	dilate(grayscaleImg, grayscaleImg, element);
+	GaussianBlur(cv_ptr->image,circlesImg,Size(3,3), 0 ,0);
 	
-	Point center(0,0);
-	int count = 0;
-	for(int r = 0; r < grayscaleImg.rows; r++)
-	{
-		uchar* row = grayscaleImg.ptr<uchar>(r);
-		for(int c = 0; c < grayscaleImg.cols; c++)
-		{
-			if(row[c])
-			{
-				center.x += c;
-				center.y += r;
-				count++;
-			}
-		}
-	}
+	vector<Mat> channels;
+	split(circlesImg, channels);
+	int gSum = 0;
+	int rSum = 0;
+	//for(int i = 0; i < 3; i++)
+	//	equalizeHist(channels[i], channels[i]);
+	gSum = sum(channels[1])[0];
+	rSum = sum(channels[2])[0];
+	merge(channels, circlesImg);
 
-	if(count < 1) count = 1;
-
-	center.x /= count;
-	center.y /= count;
-
-	int dx = center.x - lastCenter.x;
-	int dy = center.y - lastCenter.y;
+	int dr = rSum - last_rSum;
+	last_rSum = rSum;
 	
-	if(dx < 10 && last_dy + dy > 0.1 * count)
+	if(dr < -100000)
 	{
 		std_msgs::Bool b;
 		b.data = true;
 		bool_pub.publish(b);
 	}
-
-	//ROS_INFO("%i", count);	
-
-	if(dy > 5)
-		ROS_INFO("(%i, %i)\t%i", dx, dy, count);
-
-	circlesImg=grayscaleImg.clone();
 	
-	lastCenter = center;
-
-	last_dy = dy;
+	file << gSum << "\t" << rSum << "\t" << dr << std::endl;
 
 	cv_ptr->image=circlesImg;
-	cv_ptr->encoding="mono8";
+	cv_ptr->encoding="bgr8";
 	cv_ptr->toImageMsg(rosimage);
 	img_pub.publish(rosimage);
 }
@@ -102,6 +71,11 @@ int main(int argc, char* argv[]) {
 	ros::init(argc, argv, "iarrc_image_display");
 	ros::NodeHandle nh;
 	ros::NodeHandle nhp("~");
+	
+	file.open("/home/matthew/Desktop/data.csv");
+	file << "test" << endl;
+	file.close();
+	file.open("/home/matthew/Desktop/data.csv");
 
 	std::string img_topic;
 	nhp.param(std::string("img_topic"), img_topic, std::string("/image_raw"));
@@ -119,5 +93,6 @@ int main(int argc, char* argv[]) {
 	ROS_INFO("IARRC stoplight watcher node ready.");
 	ros::spin();
 	ROS_INFO("Shutting down IARRC stoplight watcher node.");
+	file.close();
 	return 0;
 }
