@@ -51,7 +51,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	double percent = ((double)count) / 64.;
 	if(percent > 30)
 	{
-		std::cout << percent << "%" << std::endl;
+		//std::cout << percent << "%" << std::endl;
+		ROS_INFO("Race end detected.");
 		std_msgs::Bool b;
 		b.data = true;
 		bool_pub.publish(b);

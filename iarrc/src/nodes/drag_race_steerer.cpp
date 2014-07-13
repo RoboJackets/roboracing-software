@@ -12,6 +12,8 @@ using namespace std;
 using namespace cv;
 
 ros::Publisher steer_pub;
+ros::Publisher img_pub;
+sensor_msgs::Image rosimage;
 
 double penaltyForAngle(int angle) {
 	double mu = 8;
@@ -22,7 +24,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
 	// Convert ROS to OpenCV
 	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+		cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
 	} catch (cv_bridge::Exception& e) {
 		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
@@ -31,27 +33,39 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	int chosen_steer_angle = 0;
 	int cost_of_chosen = INT_MAX;
 	
-	Mat frame = cv_ptr->image, collisionsImg;
+	Mat frame = cv_ptr->image;
+	Mat collisionsImg;
+	Mat chosen_collisionsImg;
 	
 	for(int s = -20; s <= 20; s+=5) {
 		double penalty = penaltyForAngle(s);
 		collisionsImg = Mat::zeros(frame.rows, frame.cols, CV_8UC1);
 		if(s == 0) {
-			line(collisionsImg, Point(frame.cols/2,0), Point(frame.cols/2,frame.rows), Scalar::all(255), constants::wheel_base * 100);
+			line(collisionsImg, Point(frame.cols/2,0), Point(frame.cols/2,frame.rows), Scalar::all(1), constants::wheel_base * 100);
 		} else {
-			double radius = 0.5 * constants::wheel_base + ( constants::chassis_length / tan(s) );
-			Point center(frame.cols / 2 - radius,0);
-			double startAngle = radius > 0 ? 0 : M_PI;
-			double endAngle = M_PI / 2;
-			ellipse(collisionsImg, center, Size(radius*2, radius*2), 0, startAngle, endAngle, Scalar::all(255), constants::wheel_base);
+			double radius = 1000 * ( 0.5 * constants::wheel_base + ( constants::chassis_length / tan(constants::steering_radians_per_pwm*abs(s)) ));
+			radius *= s < 0 ? -1 : 1;
+			double abs_radius = abs(radius);
+			Point center(collisionsImg.cols / 2 - (int)radius, 0);
+			double startAngle = radius > 0 ? 0 : 180;
+			double endAngle = 90;
+			ellipse(collisionsImg, center, Size(abs_radius, abs_radius), 0, startAngle, endAngle, Scalar::all(1), constants::wheel_base * 100);
 		}
 		multiply(collisionsImg, frame, collisionsImg);
 		int cost = sum(collisionsImg)[0] + penalty;
 		if(cost < cost_of_chosen) { 
 			cost_of_chosen = cost;
 			chosen_steer_angle = s;
+			collisionsImg.copyTo(chosen_collisionsImg);
 		}
+		cout << cost << "\t";
 	}
+	cout << endl;
+	
+	cv_ptr->image=chosen_collisionsImg;
+	cv_ptr->encoding="mono8";
+	cv_ptr->toImageMsg(rosimage);
+	img_pub.publish(rosimage);
 	
 	iarrc_msgs::iarrc_steering pmsg;
 	pmsg.angle = chosen_steer_angle;
@@ -71,6 +85,8 @@ int main(int argc, char** argv) {
 	string steer_topic;
 	nhp.param(string("steer_topic"), steer_topic, string("/steering"));
 	steer_pub = nh.advertise<iarrc_msgs::iarrc_steering>(steer_topic,1);
+	
+	img_pub = nh.advertise<sensor_msgs::Image>("/steerer_debug",1);
 	
 	ROS_INFO("IARRC drag race steerer node ready.");
 	ros::spin();

@@ -14,13 +14,14 @@ ros::Publisher frame_pub;
 sensor_msgs::Image rosimage;
 Mat cones, lines, frame;
 
-void mergeFrames() {
+bool mergeFrames() {
 	if(cones.rows != lines.rows || cones.cols != lines.cols)
 	{
-		ROS_ERROR("Frame merger size mismatch");
-		return;
+		//ROS_ERROR("Frame merger size mismatch");
+		return false;
 	}
 	add(cones, lines, frame);
+	return true;
 }
 
 void conesCB(const sensor_msgs::Image::ConstPtr& msg) {
@@ -34,12 +35,12 @@ void conesCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	cones = cv_ptr->image;
 	
-	mergeFrames();
-	
-	cv_ptr->image = frame;
-	cv_ptr->encoding = "mono8";
-	cv_ptr->toImageMsg(rosimage);
-	frame_pub.publish(rosimage);
+	if(mergeFrames()) {
+		cv_ptr->image = frame;
+		cv_ptr->encoding = "mono8";
+		cv_ptr->toImageMsg(rosimage);
+		frame_pub.publish(rosimage);
+	}
 }
 
 void linesCB(const sensor_msgs::Image::ConstPtr& msg) {
@@ -53,12 +54,12 @@ void linesCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	lines = cv_ptr->image;
 	
-	mergeFrames();
-	
-	cv_ptr->image = frame;
-	cv_ptr->encoding = "mono8";
-	cv_ptr->toImageMsg(rosimage);
-	frame_pub.publish(rosimage);
+	if(mergeFrames()) {
+		cv_ptr->image = frame;
+		cv_ptr->encoding = "mono8";
+		cv_ptr->toImageMsg(rosimage);
+		frame_pub.publish(rosimage);
+	}
 }
 
 int main(int argc, char** argv) {

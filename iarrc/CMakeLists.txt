@@ -23,6 +23,15 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIR})
 link_libraries(${OpenCV_LIBS})
 
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+    DEPENDENCIES
+    actionlib_msgs
+    sensor_msgs
+    std_msgs
+    iarrc_msgs
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -33,6 +42,8 @@ catkin_package(
 ###########
 ## Build ##
 ###########
+
+include_directories(${catkin_INCLUDE_DIRS})
 
 ## Collect the source files
 
@@ -45,9 +56,9 @@ foreach(node_src_file ${nodes_source})
 	get_filename_component(node_base ${node_src_file} NAME_WE)
 	message(STATUS "Adding ROS Node ${node_base}" )
 	add_executable(${node_base} ${node_src_file} ${include_source})
-	#add_dependencies(${node_base} hubo_gt_msgs_gencpp)
+	add_dependencies(${node_base} iarrc_msgs_gencpp)
+	add_dependencies(${node_base} hubo_gt_msgs_gencpp)
 	add_dependencies(${node_base} ${catkin_EXPORTED_TARGETS})
-	add_dependencies(${node_base} iarrc_msgs_generate_messages_cpp)
 	set_target_properties(${node_base} PROPERTIES COMPILE_FLAGS ${BUILD_FLAGS})
 	target_link_libraries(${node_base} ${catkin_LIBRARIES})
 endforeach(node_src_file)

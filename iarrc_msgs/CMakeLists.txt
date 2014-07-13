@@ -33,8 +33,7 @@ find_package(catkin REQUIRED COMPONENTS actionlib_msgs sensor_msgs std_msgs mess
 ## Any message used explicitly in an action definition will already be built,
 ## and repeating the generation operation will cause the build to fail.
 add_message_files(
-    DIRECTORY
-    msg
+    DIRECTORY msg
     FILES
     iarrc_speed.msg
     iarrc_steering.msg
