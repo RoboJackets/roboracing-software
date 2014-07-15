@@ -15,8 +15,8 @@ int sigma=0;
 ros::Publisher img_pub;
 ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
-int erosion_size=1;
-int erosion_type=0;
+int erosion_size=2;
+int erosion_type=2;
 
 
 
@@ -32,32 +32,25 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
     return ros_img;
 }
 
-void zeroOutRegion(cv::Mat& mat, cv::Rect& r) {
-	// TODO optimize
-	for(int i=0; i < r.height; i++) {
-		for(int j=0; j < r.width; j++) {
-			if((r.y + i < mat.rows) && (0 < r.y + i) && 
-			   (r.x + j < mat.cols) && (0 < r.x + j)) {
-				mat.at<char>(r.y+i,r.x+j) = 0;
-			}
-		}
-	}
-}
 
 void filterLines(cv::Mat& mat, cv::Mat& output){
+
 	//TODO brightness variability, optomize, correct colors
 	Scalar avg = cv::mean(mat);
 	int average = (avg[0] + avg[1] + avg[2])/3;
-	std::cout<< average <<endl;
-	float low = 1.2;
-	int high = 255;
-	for(int r=0; r<mat.rows; r++){
-		for (int c=0; c<mat.cols; c++){
-			if(mat.at<Vec3b>(r,c)[0] > low*average && mat.at<Vec3b>(r,c)[1] > low*average && mat.at<Vec3b>(r,c)[2] > low*average){
-				output.at<unsigned char>(r,c) = 255;
+    std::cout<< "Average: " << average <<endl;
+    int low = 135;
+    float high = 1.7;
+
+    for(int r=0; r<mat.rows; r++){
+        const uchar* row = mat.ptr<uchar>(r);
+        for (int c=0; c<mat.cols*3; c+=3){
+            if(row[c] > low*.8 && row[c+1] > low && row[c+2] > low
+                    && abs(row[c+1] - row[c+2])<15 && (row[c+2]-row[c])<-10 && row[c] < high*average && row[c+1] < high*average && row[c+2] < high*average){
+                output.at<unsigned char>(r,c/3) = 255;
 			}
 			else{
-				output.at<unsigned char>(r,c) =0;
+                output.at<unsigned char>(r,c/3) =0;
 			}
 		}
 	}
@@ -67,8 +60,7 @@ void filterLines(cv::Mat& mat, cv::Mat& output){
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
-	cv_bridge::CvImagePtr cv_ptr;
-	//cv_bridge::CvImagePtr cv_ptr_2;
+    cv_bridge::CvImagePtr cv_ptr;
 	Mat edgeOp;	
 	Mat blurImg;
 	Mat out;
@@ -87,73 +79,37 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		ROS_ERROR("cv_bridge exception: %s", e.what());
 		return;
 	}
-//resize(cv_ptr->image, cv_ptr->image, Size(640,480));
-	
-	int width = cv_ptr->image.cols;
+
+
+
+
+
+
+    int width = cv_ptr->image.cols;
 	int height = cv_ptr->image.rows;
 	
 	// Crop image
-	Rect myRect = Rect(0,height/4,width,height/2);
-	// Car-body region to subtract out from edge image
-	cv::Rect car_body(0,height/4,width,height);
+    Rect myRect = Rect(0,height*2/3,width,height*1/3);
 
 	Mat tmp;
 	Mat(cv_ptr->image,myRect).copyTo(tmp);
-	Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size+1 ),Point( erosion_size, erosion_size ) );
+    Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size ),Point( erosion_size, 1 ) );
 
 	GaussianBlur(tmp,blurImg,Size(9,9),sigma,sigma);
 	Mat grayscaleImg(blurImg.rows, blurImg.cols, CV_8UC1);
-	filterLines(blurImg, grayscaleImg);
-	//cvtColor(blurImg,grayscaleImg,CV_BGR2GRAY);
+    cvtColor(blurImg, grayscaleImg, CV_BGR2GRAY);
+    equalizeHist(grayscaleImg, grayscaleImg);
+    threshold(grayscaleImg, grayscaleImg, 250, 255,THRESH_BINARY);
+    //filterLines(blurImg, grayscaleImg);
 
-	// Detect edges
-	//Canny(grayscaleImg,edgeOp,low_Threshold,low_Threshold*ratio,3);
-	
-
-	// Draw rectangle we are going to subtract (DEBUG)
-	// Mat edgeNoCar;
-	// edgeOp.copyTo(edgeNoCar);
-	// rectangle(edgeNoCar, car_body.tl(), car_body.br(), cv::Scalar(255,0,0));
-	// debug_pub.publish(CvMatToRosImage(edgeNoCar, "mono8"));
-
-	// Subtract self (car body) from image
-	//zeroOutRegion(grayscaleImg, car_body);
-	// debug_pub.publish(CvMatToRosImage(edgeOp, "mono8"));
-
-	// Post processing dilate/erosion
 	grayscaleImg.copyTo(edgeCopy);
 	erode(edgeCopy,edgeCopy,element);
 	dilate(edgeCopy,edgeCopy,element);
-	std::cout << "I"<<endl;
 
 	
 	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
-	edgeCopy.copyTo(output(myRect));
+    edgeCopy.copyTo(output(myRect));
 
-	// Find contours
-	//edgeCopy.copyTo(edgeCopy2);
-	//addWeighted(edgeOp,0.5,grayscaleImg,0.5,0,out);	
-	
-	//findContours(edgeCopy2,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
-
-	/*Mat drawing = Mat::zeros(edgeOp.size(),CV_8UC3);
-	for(int i=0; i < contours.size();i++)
-	{
-		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255));
-		drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
-	}*/
-
-	//namedWindow("Contours",WINDOW_AUTOSIZE);
-	//imshow("Contours",drawing);
-
-	//namedWindow("Edges",WINDOW_AUTOSIZE);
- 	//imshow("Edges",edgeOp);
-	//namedWindow("Eroded/Dilated",WINDOW_AUTOSIZE);
- 	//imshow("Eroded/Dilated",edgeCopy);
- 	// waitKey(0);
- 	
- //resize(output, output, Size(640,480));
- //image_utils::transform_perspective(output, output);
  	
  	cv_ptr->image=output;
     //cv_ptr->encoding="bgr8";
@@ -190,13 +146,6 @@ int main(int argc, char* argv[]) {
 
     // Debug publisher
     debug_pub = nh.advertise<sensor_msgs::Image>("/image_debug", 1);
-
-    // Car body
-/*    nhp.param(std::string("car_x"), car_body.x, 0);
-    nhp.param(std::string("car_y"), car_body.y, 0);
-    nhp.param(std::string("car_w"), car_body.width, 50);
-    nhp.param(std::string("car_h"), car_body.height, 50);
-*/
 
     ROS_INFO("Hi");
 
