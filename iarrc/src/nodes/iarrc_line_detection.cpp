@@ -9,14 +9,12 @@
 #include "image_utils.hpp"
 
 std::string img_file;
-int low_Threshold = 5;
-int ratio = 4;
 int sigma=0;
 ros::Publisher img_pub;
 ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
 int erosion_size=2;
-int erosion_type=2;
+int erosion_type=2; //Ellipse
 
 
 
@@ -33,44 +31,12 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 }
 
 
-void filterLines(cv::Mat& mat, cv::Mat& output){
-
-	//TODO brightness variability, optomize, correct colors
-	Scalar avg = cv::mean(mat);
-	int average = (avg[0] + avg[1] + avg[2])/3;
-    std::cout<< "Average: " << average <<endl;
-    int low = 135;
-    float high = 1.7;
-
-    for(int r=0; r<mat.rows; r++){
-        const uchar* row = mat.ptr<uchar>(r);
-        for (int c=0; c<mat.cols*3; c+=3){
-            if(row[c] > low*.8 && row[c+1] > low && row[c+2] > low
-                    && abs(row[c+1] - row[c+2])<15 && (row[c+2]-row[c])<-10 && row[c] < high*average && row[c+1] < high*average && row[c+2] < high*average){
-                output.at<unsigned char>(r,c/3) = 255;
-			}
-			else{
-                output.at<unsigned char>(r,c/3) =0;
-			}
-		}
-	}
-
-}
 
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
     cv_bridge::CvImagePtr cv_ptr;
-	Mat edgeOp;	
-	Mat blurImg;
-	Mat out;
-	Mat edgeCopy;
-	Mat edgeCopy2;
-	int thresh = 100;
-	int max_thresh = 255;
-	vector <vector<Point> > contours;
-	vector <Vec4i> hierarchy;
-	RNG rng(10305);
+    int thresh = 245;
 
 	// Convert ROS to OpenCV
 	try {
@@ -81,38 +47,37 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 
 
-
-
-
-
     int width = cv_ptr->image.cols;
 	int height = cv_ptr->image.rows;
 	
-	// Crop image
+    // Crop input image
+    // myRect is bottom one-third
+    // store in tmp
     Rect myRect = Rect(0,height*2/3,width,height*1/3);
-
 	Mat tmp;
 	Mat(cv_ptr->image,myRect).copyTo(tmp);
-    Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size ),Point( erosion_size, 1 ) );
 
-	GaussianBlur(tmp,blurImg,Size(9,9),sigma,sigma);
-	Mat grayscaleImg(blurImg.rows, blurImg.cols, CV_8UC1);
-    cvtColor(blurImg, grayscaleImg, CV_BGR2GRAY);
+
+    // First equalizeHist()
+    // Then threshold to find the lines
+    // Erode and Dilate
+    Mat grayscaleImg;
+    cvtColor(tmp, grayscaleImg, CV_BGR2GRAY);
     equalizeHist(grayscaleImg, grayscaleImg);
-    threshold(grayscaleImg, grayscaleImg, 250, 255,THRESH_BINARY);
-    //filterLines(blurImg, grayscaleImg);
+    threshold(grayscaleImg, grayscaleImg, thresh, 255,THRESH_BINARY);
 
-	grayscaleImg.copyTo(edgeCopy);
-	erode(edgeCopy,edgeCopy,element);
-	dilate(edgeCopy,edgeCopy,element);
+    Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size ),Point( erosion_size, 1 ) );
+    erode(grayscaleImg,grayscaleImg,element);
+    dilate(grayscaleImg,grayscaleImg,element);
 
-	
+    // Create zeros mat
+    // Insert the grayscaleImg
+    //And then we are done!
 	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
-    edgeCopy.copyTo(output(myRect));
+    grayscaleImg.copyTo(output(myRect));
 
  	
  	cv_ptr->image=output;
-    //cv_ptr->encoding="bgr8";
     cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);
