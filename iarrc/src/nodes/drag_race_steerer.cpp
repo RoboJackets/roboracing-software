@@ -58,9 +58,9 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 			chosen_steer_angle = s;
 			collisionsImg.copyTo(chosen_collisionsImg);
 		}
-		cout << cost << "\t";
+		//cout << cost << "\t";
 	}
-	cout << endl;
+	//cout << endl;
 	
 	cv_ptr->image=chosen_collisionsImg;
 	cv_ptr->encoding="mono8";
@@ -68,7 +68,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	img_pub.publish(rosimage);
 	
 	iarrc_msgs::iarrc_steering pmsg;
-	pmsg.angle = chosen_steer_angle;
+	pmsg.angle = -1*chosen_steer_angle;
 	steer_pub.publish(pmsg);
 }
 

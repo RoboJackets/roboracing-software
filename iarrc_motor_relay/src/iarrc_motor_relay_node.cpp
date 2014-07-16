@@ -8,6 +8,8 @@
 iarrc_msgs::iarrc_speed speed_cmd;
 iarrc_msgs::iarrc_steering steering_cmd;
 bool new_cmd = false;
+int prevAngle = 0;
+int prevSpeed = 0;
 
 void SpeedCallback(const iarrc_msgs::iarrc_speed::ConstPtr& msg)
 {
@@ -53,7 +55,10 @@ int main(int argc, char** argv)
 
 		// if(new_cmd) {
 		if(true) {
-			ROS_INFO("Sending command: servo=%d, motor=%d", steering_cmd.angle, speed_cmd.speed);
+			if(steering_cmd.angle != prevAngle || speed_cmd.speed != prevSpeed)
+				ROS_INFO("Sending command: servo=%d, motor=%d", steering_cmd.angle, speed_cmd.speed);
+			prevAngle = steering_cmd.angle;
+			prevSpeed = speed_cmd.speed;
 
 			char m[4];
 			m[0] = 181;

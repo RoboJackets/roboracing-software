@@ -11,7 +11,7 @@
 		<param name="speed_topic" type="str" value="/speed"/>
 		<param name="steering_topic" type="str" value="/steering"/>
 		<param name="angle_max" type="int" value="20"/>
-		<param name="speed_max" type="int" value="10"/>
+		<param name="speed_max" type="int" value="20"/>
 	</node>
 
 </launch>

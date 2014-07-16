@@ -76,6 +76,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
     grayscaleImg.copyTo(output(myRect));
 
+    image_utils::transform_perspective(output, output);
+
  	
  	cv_ptr->image=output;
     cv_ptr->encoding="mono8";

@@ -72,9 +72,7 @@ void printSpeedNHeading()
 
 
 void motor(int val){
-  //Serial.println(val);
   val += 90;
-  Serial.println(val);
   VXL3sMotor.write(val);
 }
 
