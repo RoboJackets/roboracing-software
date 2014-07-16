@@ -10,4 +10,3 @@
     <node pkg="image_proc" type="image_proc" name="ps3eye_proc" output="screen" />
   </group>
 </launch>
-
