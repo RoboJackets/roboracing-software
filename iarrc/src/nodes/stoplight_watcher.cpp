@@ -17,7 +17,7 @@ sensor_msgs::Image rosimage;
 int last_diff = 0;
 
 Mat lastFrame;
-bool red;
+bool red=true;
 
 int lowS = 100;
 int highS = 200;
@@ -30,7 +30,8 @@ int highH = 40;
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
 	cv_bridge::CvImagePtr cv_ptr;
-	Mat circlesImg;
+    Mat circlesImg, circlesImgRed, circlesImgGreen;
+    CvScalar cvs;
 
     int diff;
 
@@ -50,39 +51,48 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     cvtColor(circlesImg, circlesImg, CV_BGR2HSV);
 
-    Mat threshImg(height, width, circlesImg.type());
 
-    inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImg);
+    inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImgRed);
 	
-  //  equalizeHist(circlesImg, circlesImg);
 
-    Mat finalImg = Mat::zeros(height, width, circlesImg.type());
-    circlesImg.copyTo(finalImg(trafficRect));
+    Mat finalImg = Mat::zeros(height, width, circlesImgRed.type());
+    circlesImgRed.copyTo(finalImg(trafficRect));
 
     if (!lastFrame.data){
-        circlesImg.copyTo(lastFrame);
-        red = true;
+        circlesImgRed.copyTo(lastFrame);
     }
     else{
-        CvScalar cvs = sum(abs(lastFrame - circlesImg));
-        diff = cvs.val[0];
+        cvs = sum(lastFrame) - sum(circlesImgRed);
+        lastFrame = circlesImgRed;
+        diff = abs(cvs.val[0]);
+        cout <<(red? "red: ":"green: " )<< diff <<endl;
 
+        if (diff > 50000 && !red){
 
-        if (diff > 300 && !red){
-            ROS_INFO("Stoplight Change Detected");
-            std_msgs::Bool b;
-            b.data = true;
-            bool_pub.publish(b);
             red = true;
+            lowH = 0;
+            highH = 40;
+            lastFrame.data = 0;
         }
 
-        if (diff < 500 && red){
+        else if (diff >50000 && red){
             red = false;
             lowH = 30;
             highH = 120;
+            inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImgGreen);
+            cvs = sum(circlesImgRed) - sum(circlesImgGreen);
+            diff = abs(cvs.val[0]);
+            cout << "green green: " << diff << endl;
+            if (diff >50000){
+                lastFrame = circlesImgGreen;
+                ROS_INFO("Stoplight Change Detected");
+                std_msgs::Bool b;
+                b.data = true;
+                bool_pub.publish(b);
+            }
         }
 
-        lastFrame = circlesImg;
+
     }
 
    // cvtColor(finalImg, finalImg, CV_HSV2GRAY);
