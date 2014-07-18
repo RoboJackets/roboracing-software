@@ -54,7 +54,6 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImgRed);
 	
-
     Mat finalImg = Mat::zeros(height, width, circlesImgRed.type());
     circlesImgRed.copyTo(finalImg(trafficRect));
 

@@ -36,7 +36,7 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
     cv_bridge::CvImagePtr cv_ptr;
-    int thresh = 245;
+    int thresh = 235;
 
 	// Convert ROS to OpenCV
 	try {
