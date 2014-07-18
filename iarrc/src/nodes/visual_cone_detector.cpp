@@ -29,13 +29,14 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
 	cvtColor(frame, output, CV_BGR2HSV);
 	
-	vector<Mat> channels;
-	split(output, channels);
-	
-	threshold(channels[0], channels[0], 20, 255, THRESH_BINARY_INV);
-	threshold(channels[1], channels[1], 150, 255, THRESH_BINARY);
-	
-	multiply(channels[0], channels[1], output);
+	int lowH = 0;
+	int highH = 20;
+	int lowS = 70; //decrease this if shade becomes an issue. 
+	int highS = 200;
+	int lowV = 150;
+	int highV =255;
+
+	inRange(output, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), output);
 	
 	erode(output, output, element);
 	dilate(output, output, element);
