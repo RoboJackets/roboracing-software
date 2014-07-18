@@ -2,9 +2,7 @@
 	<group>
 		<include file="$(find iarrc_launch)/launch/circuit_race_controller.launch" />
 		<include file="$(find iarrc_launch)/launch/ps3eye.launch" />
-		<include file="$(find iarrc_launch)/launch/visual_cone_detector.launch" />
 		<include file="$(find iarrc_launch)/launch/frame_merger.launch" />
-		<include file="$(find iarrc_launch)/launch/lane_detection.launch" />
 		<include file="$(find iarrc_launch)/launch/motor_relay.launch" />
 		<include file="$(find iarrc_launch)/launch/stoplight_watcher.launch" />
 		<include file="$(find iarrc_launch)/launch/circuit_race_steerer.launch" />

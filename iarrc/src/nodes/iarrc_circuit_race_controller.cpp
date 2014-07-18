@@ -57,6 +57,9 @@ void stoplightCB(std_msgs::Bool)
 	ROS_INFO("Drag Race Controller got stoplight.");
 	racecar_set_speed(drive_speed);
 	stoplight_subscriber.shutdown();
+	system("rosnode kill stoplight_watcher &\n");
+	system("roslaunch iarrc_launch lane_detection.launch &\n");
+	system("roslaunch iarrc_launch visual_cone_detector.launch &\n");
 }
 
 void racecar_set_speed(int speed)
