@@ -6,10 +6,10 @@
 namespace constants {
 
 // center-to-center in m
-double wheel_base = 0.26;
+double wheel_base = 0.37;
 
 // axel-to-axel in m
-double chassis_length = 0.325;
+double chassis_length = 0.43;
 
 double steering_degress_per_pwm = 1.5;
 
