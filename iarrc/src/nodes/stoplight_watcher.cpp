@@ -16,16 +16,20 @@ ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
 int last_diff = 0;
 
-Mat lastFrame;
+Mat lastFrameRed, lastFrameGreen;
+
 bool red=true;
 
 int lowS = 100;
 int highS = 200;
 int lowV =150;
 int highV = 255;
-int lowH = 0;
-int highH = 40;
 
+int lowHR = 0;
+int highHR = 40;
+
+int lowHL = 30;
+int highHL = 120;
 
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
@@ -52,45 +56,37 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     cvtColor(circlesImg, circlesImg, CV_BGR2HSV);
 
 
-    inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImgRed);
+    inRange(circlesImg, Scalar(lowHR, lowS, lowV), Scalar(highHR, highS, highV), circlesImgRed);
+    inRange(circlesImg, Scalar(lowHL, lowS, lowV), Scalar(highHL, highS, highV), circlesImgGreen);
 	
     Mat finalImg = Mat::zeros(height, width, circlesImgRed.type());
-    circlesImgRed.copyTo(finalImg(trafficRect));
+    red? circlesImgRed.copyTo(finalImg(trafficRect)): circlesImgGreen.copyTo(finalImg(trafficRect));
 
-    if (!lastFrame.data){
-        circlesImgRed.copyTo(lastFrame);
+    if (!lastFrameRed.data){
+        circlesImgRed.copyTo(lastFrameRed);
+        circlesImgGreen.copyTo(lastFrameGreen);
     }
     else{
-        cvs = sum(lastFrame) - sum(circlesImgRed);
-        lastFrame = circlesImgRed;
-        diff = abs(cvs.val[0]);
-        cout <<(red? "red: ":"green: " )<< diff <<endl;
-
-        if (diff > 50000 && !red){
-
-            red = true;
-            lowH = 0;
-            highH = 40;
-            lastFrame.data = 0;
-        }
-
-        else if (diff >50000 && red){
-            red = false;
-            lowH = 30;
-            highH = 120;
-            inRange(circlesImg, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), circlesImgGreen);
-            cvs = sum(circlesImgRed) - sum(circlesImgGreen);
+        if (red){
+            cvs = sum(lastFrameRed) - sum(circlesImgRed);
+            lastFrameRed = circlesImgRed;
             diff = abs(cvs.val[0]);
-            cout << "green green: " << diff << endl;
+            cout <<"red: " << diff <<endl;
+            if (diff > 50000)
+                red = false;
+        }
+        if (!red){
+            cvs = sum(lastFrameGreen) - sum(circlesImgGreen);
+            diff = abs(cvs.val[0]);
+            cout << "green: " << diff << endl;
             if (diff >50000){
-                lastFrame = circlesImgGreen;
                 ROS_INFO("Stoplight Change Detected");
                 std_msgs::Bool b;
                 b.data = true;
                 bool_pub.publish(b);
             }
         }
-
+        lastFrameGreen = circlesImgGreen;
 
     }
 
