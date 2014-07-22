@@ -1,0 +1,5 @@
+<launch>
+  <node name="visual_cone_detector" pkg="iarrc" type="visual_cone_detector" output="screen">
+        <param name="img_topic" type="string" value="/image_raw" />
+  </node>
+</launch>
