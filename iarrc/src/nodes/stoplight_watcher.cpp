@@ -25,10 +25,12 @@ int lowV =150;
 int highV = 255;
 
 int lowHR = 0;
-int highHR = 40;
+int highHR = 30;
 
-int lowHL = 30;
-int highHL = 120;
+int lowHL = 50;
+int highHL = 90;
+
+int oldBrightness, brightness;
 
 // ROS image callback
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
@@ -54,6 +56,12 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     //convert to HSV and threshold values to find red and green lights.
     cvtColor(circlesImg, circlesImg, CV_BGR2HSV);
+    vector<Mat> channels(3);
+    split(circlesImg, channels);
+
+    Scalar tmp = sum(channels[2]);
+    brightness = tmp[0];
+   // cout << brightness <<endl;
     inRange(circlesImg, Scalar(lowHR, lowS, lowV), Scalar(highHR, highS, highV), circlesImgRed);
     inRange(circlesImg, Scalar(lowHL, lowS, lowV), Scalar(highHL, highS, highV), circlesImgGreen);
 	
@@ -68,33 +76,36 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     if (!lastFrameRed.data){
         circlesImgRed.copyTo(lastFrameRed);
         circlesImgGreen.copyTo(lastFrameGreen);
+        oldBrightness = brightness;
     }
     else{
-        if (red){
-            //find difference in red frame
-            cvs = sum(lastFrameRed) - sum(circlesImgRed);
-            lastFrameRed = circlesImgRed;
-            diff = cvs.val[0];
-            cout <<"red: " << diff <<endl;
-            //if large enough, say that the light is no longer red.
-            if (diff > 50000)
-                red = false;
-        }
-        if (!red){
-            //Check difference in green frames
-            cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
-            diff = cvs.val[0];
-            cout << "green: " << diff << endl;
-            //if large enough, signal the car to go. 
-            if (diff >50000){
-                red = true;
-                ROS_INFO("Stoplight Change Detected");
-                std_msgs::Bool b;
-                b.data = true;
-                bool_pub.publish(b);
+        //cout << abs(oldBrightness - brightness) << endl;
+        if (brightness - oldBrightness < 100000 ||!red){
+            if (red){
+                //find difference in red frame
+                cvs = sum(lastFrameRed) - sum(circlesImgRed);
+                lastFrameRed = circlesImgRed;
+                diff = cvs.val[0];
+                //if large enough, say that the light is no longer red.
+                if (diff > 70000)
+                    red = false;
             }
-        }
+            if (!red){
+                //Check difference in green frames
+                cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
+                diff = cvs.val[0];
+                //if large enough, signal the car to go. 
+                if (diff >60000){
+                    red = true;
+                    ROS_INFO("Stoplight Change Detected");
+                    std_msgs::Bool b;
+                    b.data = true;
+                    bool_pub.publish(b);
+                }
+            }
         lastFrameGreen = circlesImgGreen;
+    }
+        oldBrightness = brightness;
 
     }
 
