@@ -14,7 +14,6 @@ using namespace std;
 ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
-int last_diff = 0;
 
 Mat lastFrameRed, lastFrameGreen;
 
@@ -46,40 +45,49 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
 	}
+
+    //Crop out relevant area.
     int width = cv_ptr->image.cols;
     int height = cv_ptr->image.rows;
-
     Rect trafficRect(0,height*3/8, width, height/4);
     cv_ptr->image(trafficRect).copyTo(circlesImg);
 
-
+    //convert to HSV and threshold values to find red and green lights.
     cvtColor(circlesImg, circlesImg, CV_BGR2HSV);
-
-
     inRange(circlesImg, Scalar(lowHR, lowS, lowV), Scalar(highHR, highS, highV), circlesImgRed);
     inRange(circlesImg, Scalar(lowHL, lowS, lowV), Scalar(highHL, highS, highV), circlesImgGreen);
 	
+    //Put the cropped area back into the correctly sized image.
     Mat finalImg = Mat::zeros(height, width, circlesImgRed.type());
-    red? circlesImgRed.copyTo(finalImg(trafficRect)): circlesImgGreen.copyTo(finalImg(trafficRect));
+    if (red)
+        circlesImgRed.copyTo(finalImg(trafficRect));
+    else
+        circlesImgGreen.copyTo(finalImg(trafficRect));
 
+    //If we don't have any previous data, just copy the new images over
     if (!lastFrameRed.data){
         circlesImgRed.copyTo(lastFrameRed);
         circlesImgGreen.copyTo(lastFrameGreen);
     }
     else{
         if (red){
+            //find difference in red frame
             cvs = sum(lastFrameRed) - sum(circlesImgRed);
             lastFrameRed = circlesImgRed;
-            diff = abs(cvs.val[0]);
+            diff = cvs.val[0];
             cout <<"red: " << diff <<endl;
+            //if large enough, say that the light is no longer red.
             if (diff > 50000)
                 red = false;
         }
         if (!red){
-            cvs = sum(lastFrameGreen) - sum(circlesImgGreen);
-            diff = abs(cvs.val[0]);
+            //Check difference in green frames
+            cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
+            diff = cvs.val[0];
             cout << "green: " << diff << endl;
+            //if large enough, signal the car to go. 
             if (diff >50000){
+                red = true;
                 ROS_INFO("Stoplight Change Detected");
                 std_msgs::Bool b;
                 b.data = true;
