@@ -26,8 +26,15 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	
 	frame = cv_ptr->image;
+
 	
 	cvtColor(frame, output, CV_BGR2HSV);
+
+	int width = cv_ptr->image.cols;
+	int height = cv_ptr->image.rows;
+
+	Rect myRect = Rect(0,height*3/4,width,height/4);
+	Mat(frame, myRect).copyTo(output);
 	
 	int lowH = 0;
 	int highH = 20;

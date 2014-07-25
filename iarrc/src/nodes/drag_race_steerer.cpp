@@ -68,7 +68,9 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	img_pub.publish(rosimage);
 	
 	iarrc_msgs::iarrc_steering pmsg;
-	pmsg.angle = -1*chosen_steer_angle;
+	pmsg.angle = -1*chosen_steer_angle - 3;
+	//pmsg.angle = 1*chosen_steer_angle - 3;
+	//pmsg.angle = -3;
 	steer_pub.publish(pmsg);
 }
 

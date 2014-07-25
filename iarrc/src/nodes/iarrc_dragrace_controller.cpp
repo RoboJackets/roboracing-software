@@ -3,12 +3,7 @@
 #include <ros/publisher.h>
 #include <iarrc_msgs/iarrc_speed.h>
 #include <std_msgs/Bool.h>
-#include <string>
-
-#define STATE_LIGHT_WAITING 1
-#define STATE_DRAGRACE_GO 2
-#define STATE_DRAGRACE_STOP 4
-#define STATE_VALID 7
+#include <string.h>
 
 
 ros::Publisher speed_publisher;
@@ -39,7 +34,7 @@ int main(int argc, char** argv)
 
 	nhp->param(std::string("race_end_topic"), race_end_topic, std::string("/race_end"));
 
-	nhp->param(std::string("drive_speed"), drive_speed, 8);
+	nhp->param(std::string("drive_speed"), drive_speed, 14);
 
 	std::string speed_topic;
     	nhp->param(std::string("speed_topic"), speed_topic, std::string("/speed"));
@@ -59,7 +54,8 @@ int main(int argc, char** argv)
 void stoplightCB(std_msgs::Bool)
 {
 	ROS_INFO("Drag Race Controller got stoplight.");
-	racecar_set_speed(drive_speed);
+	racecar_set_speed(14);
+	//racecar_set_speed(0);
 	stoplight_subscriber.shutdown();
 	system("rosnode kill stoplight_watcher &\n");
 	system("roslaunch iarrc_launch lane_detection.launch &\n");
@@ -81,6 +77,7 @@ void racecar_set_speed(int speed)
 {
 	iarrc_msgs::iarrc_speed sp_cmd;
 	sp_cmd.speed = speed;
+	//sp_cmd.speed = 14;
 	speed_publisher.publish(sp_cmd);
 }
 

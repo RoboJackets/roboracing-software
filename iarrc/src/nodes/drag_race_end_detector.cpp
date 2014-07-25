@@ -27,13 +27,14 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	
 	Mat gray;
-	Rect ROI(0, 2*cv_ptr->image.rows/3, cv_ptr->image.cols, cv_ptr->image.rows/3);
+	//Rect ROI(0, 2*cv_ptr->image.rows/3, cv_ptr->image.cols, cv_ptr->image.rows/3);
+	Rect ROI(0, 3*cv_ptr->image.rows/4, cv_ptr->image.cols, cv_ptr->image.rows/4);
 
 	cvtColor(cv_ptr->image(ROI), gray, CV_BGR2GRAY);
 	
 	equalizeHist(gray, gray);
 
-	threshold(gray, gray, 240, 255, THRESH_BINARY);
+	threshold(gray, gray, 230, 255, THRESH_BINARY);
 	
 	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
 	

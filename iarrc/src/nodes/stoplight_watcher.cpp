@@ -19,8 +19,8 @@ Mat lastFrameRed, lastFrameGreen;
 
 bool red=true;
 
-int lowS = 100;
-int highS = 200;
+int lowS = 175;
+int highS = 255;
 int lowV =150;
 int highV = 255;
 
@@ -28,7 +28,7 @@ int lowHR = 0;
 int highHR = 30;
 
 int lowHL = 50;
-int highHL = 90;
+int highHL = 100;
 
 int oldBrightness, brightness;
 
@@ -39,6 +39,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     CvScalar cvs;
 
     int diff;
+    int diffRed;
+    int diffGreen;
 
 	// Convert ROS to OpenCV
 	try {
@@ -51,7 +53,7 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     //Crop out relevant area.
     int width = cv_ptr->image.cols;
     int height = cv_ptr->image.rows;
-    Rect trafficRect(0,height*3/8, width, height/4);
+    Rect trafficRect(0,0, width, height/2);
     cv_ptr->image(trafficRect).copyTo(circlesImg);
 
     //convert to HSV and threshold values to find red and green lights.
@@ -79,21 +81,38 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
         oldBrightness = brightness;
     }
     else{
+
+        cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
+                diff = cvs.val[0];
+                diffGreen = cvs.val[0];
         //cout << abs(oldBrightness - brightness) << endl;
-        if (brightness - oldBrightness < 100000 ||!red){
+        if (brightness - oldBrightness < 50000 ||!red){
             if (red){
                 //find difference in red frame
                 cvs = sum(lastFrameRed) - sum(circlesImgRed);
                 lastFrameRed = circlesImgRed;
                 diff = cvs.val[0];
+                diffRed = diff;
                 //if large enough, say that the light is no longer red.
-                if (diff > 70000)
-                    red = false;
+                ROS_INFO("Red diff %d\t green diff %d\n", diff, diffGreen);
+                //if (diffRed > 70000)
+
+                // maybe look for drop in red and rise in green here?
+                if (diffGreen > 255) {
+                //if (diffRed > 255) {
+                //if (diffGreen > diffRed) {
+                    ROS_INFO("Stoplight Change Detected");
+                    std_msgs::Bool b;
+                    b.data = true;
+                    bool_pub.publish(b);
+                }
+                    //red = false;
             }
             if (!red){
                 //Check difference in green frames
                 cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
                 diff = cvs.val[0];
+                ROS_INFO("Green diff %d\n", diff);
                 //if large enough, signal the car to go. 
                 if (diff >60000){
                     red = true;

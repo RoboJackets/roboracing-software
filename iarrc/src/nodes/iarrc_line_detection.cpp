@@ -36,7 +36,7 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 	
     cv_bridge::CvImagePtr cv_ptr;
-    int thresh = 235;
+    int thresh = 220;
 
 	// Convert ROS to OpenCV
 	try {
@@ -53,7 +53,10 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Crop input image
     // myRect is bottom one-third
     // store in tmp
-    Rect myRect = Rect(0,height*2/3,width,height*1/3);
+    //Rect myRect = Rect(0,height*2/3,width,height*1/3);
+
+    Rect myRect = Rect(0,height*3/4,width,height/4);
+
 	Mat tmp;
 	Mat(cv_ptr->image,myRect).copyTo(tmp);
 
