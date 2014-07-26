@@ -13,6 +13,13 @@ using namespace cv;
 
 ros::Publisher steer_pub;
 
+double penaltyForAngle(int angle) {
+	int right_adjust;
+	right_adjust = angle < 5 ? angle : angle - 5;
+	double mu = 8;
+ 	return ( 1.0 - ( exp( - (right_adjust * right_adjust) / (2 * mu * mu) ) / ( sqrt( 2 * M_PI ) * mu ) ) ) * 10;
+}
+
 void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
 	// Convert ROS to OpenCV
@@ -31,6 +38,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	Mat chosen_collisionsImg;
 	
 	for(int s = -20; s <= 20; s+=5) {
+		double penalty = penaltyForAngle(s);
 		collisionsImg = Mat::zeros(frame.rows, frame.cols, CV_8UC1);
 		if(s == 0) {
 			line(collisionsImg, Point(frame.cols/2,0), Point(frame.cols/2,frame.rows), Scalar::all(1), constants::wheel_base * 100);
@@ -44,7 +52,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 			ellipse(collisionsImg, center, Size(abs_radius, abs_radius), 0, startAngle, endAngle, Scalar::all(1), constants::wheel_base * 100);
 		}
 		multiply(collisionsImg, frame, collisionsImg);
-		int cost = sum(collisionsImg)[0];
+		int cost = sum(collisionsImg)[0] + penalty;
 		if(cost < cost_of_chosen) { 
 			cost_of_chosen = cost;
 			chosen_steer_angle = s;
@@ -55,7 +63,8 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cout << endl;
 	
 	iarrc_msgs::iarrc_steering pmsg;
-	pmsg.angle = chosen_steer_angle;
+	pmsg.angle = chosen_steer_angle - 3;
+	//pmsg.angle = -1*chosen_steer_angle;
 	steer_pub.publish(pmsg);
 }
 

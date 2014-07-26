@@ -5,12 +5,6 @@
 #include <std_msgs/Bool.h>
 #include <string>
 
-#define STATE_LIGHT_WAITING 1
-#define STATE_DRAGRACE_GO 2
-#define STATE_DRAGRACE_STOP 4
-#define STATE_VALID 7
-
-
 ros::Publisher speed_publisher;
 
 ros::NodeHandle *nh;
@@ -35,7 +29,7 @@ int main(int argc, char** argv)
     	nhp->param(std::string("stoplight_topic"), stoplight_topic, std::string("/light_change"));
     	stoplight_subscriber = nh->subscribe(stoplight_topic, 1, stoplightCB);
 
-	nhp->param(std::string("drive_speed"), drive_speed, 8);
+	nhp->param(std::string("drive_speed"), drive_speed, 14);
 
 	std::string speed_topic;
     	nhp->param(std::string("speed_topic"), speed_topic, std::string("/speed"));
@@ -55,7 +49,7 @@ int main(int argc, char** argv)
 void stoplightCB(std_msgs::Bool)
 {
 	ROS_INFO("Drag Race Controller got stoplight.");
-	racecar_set_speed(drive_speed);
+	racecar_set_speed(14);
 	stoplight_subscriber.shutdown();
 	system("rosnode kill stoplight_watcher &\n");
 	system("roslaunch iarrc_launch lane_detection.launch &\n");
@@ -68,5 +62,3 @@ void racecar_set_speed(int speed)
 	sp_cmd.speed = speed;
 	speed_publisher.publish(sp_cmd);
 }
-
-
