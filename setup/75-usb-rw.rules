@@ -1,2 +1,0 @@
-SUBSYSTEMS=="usb", KERNEL=="ttyACM[0-9]*", MODE="0666"
-SUBSYSTEMS=="usb", KERNEL=="ttyUSB[0-9]*", MODE="0666"

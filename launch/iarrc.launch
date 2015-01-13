@@ -1,0 +1,6 @@
+<launch>
+  
+  <arg name="output" default="screen" />
+  
+</launch>
+
