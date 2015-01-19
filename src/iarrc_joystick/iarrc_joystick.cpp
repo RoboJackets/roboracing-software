@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
-#include <iarrc_msgs/iarrc_speed.h>
-#include <iarrc_msgs/iarrc_steering.h>
+#include <iarrc_software/iarrc_speed.h>
+#include <iarrc_software/iarrc_steering.h>
 #include <sensor_msgs/Joy.h>
 #include <string>
 
@@ -16,8 +16,8 @@ void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
         return;
     }
 
-    iarrc_msgs::iarrc_speed sp_cmd;
-    iarrc_msgs::iarrc_steering st_cmd;
+    iarrc_software::iarrc_speed sp_cmd;
+    iarrc_software::iarrc_steering st_cmd;
     sp_cmd.speed = speed_max * msg->axes[3];
     // -3 for steering offset
     st_cmd.angle = angle_max * msg->axes[0] -3;
@@ -41,10 +41,10 @@ int main(int argc, char** argv)
     // Convert joystick commands into motor commands on these topics
     std::string speed_topic;
     nhp.param(std::string("speed_topic"), speed_topic, std::string("/speed"));
-    speed_publisher = nh.advertise<iarrc_msgs::iarrc_speed>(speed_topic, 1);
+    speed_publisher = nh.advertise<iarrc_software::iarrc_speed>(speed_topic, 1);
     std::string steering_topic;
     nhp.param(std::string("steering_topic"), steering_topic, std::string("/steering"));
-    steering_publisher = nh.advertise<iarrc_msgs::iarrc_steering>(steering_topic, 1);
+    steering_publisher = nh.advertise<iarrc_software::iarrc_steering>(steering_topic, 1);
 
     // Driving limits
     nhp.param(std::string("angle_max"), angle_max, 10);

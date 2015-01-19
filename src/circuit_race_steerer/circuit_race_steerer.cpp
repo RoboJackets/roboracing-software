@@ -5,8 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
-#include "constants.hpp"
-#include <iarrc_msgs/iarrc_steering.h>
+#include <iarrc_software/constants.hpp>
+#include <iarrc_software/iarrc_steering.h>
 
 using namespace std;
 using namespace cv;
@@ -62,7 +62,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	}
 	cout << endl;
 	
-	iarrc_msgs::iarrc_steering pmsg;
+	iarrc_software::iarrc_steering pmsg;
 	pmsg.angle = chosen_steer_angle - 3;
 	//pmsg.angle = -1*chosen_steer_angle;
 	steer_pub.publish(pmsg);
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 	
 	string steer_topic;
 	nhp.param(string("steer_topic"), steer_topic, string("/steering"));
-	steer_pub = nh.advertise<iarrc_msgs::iarrc_steering>(steer_topic,1);
+	steer_pub = nh.advertise<iarrc_software::iarrc_steering>(steer_topic,1);
 	
 	ROS_INFO("IARRC ciruit race steerer node ready.");
 	ros::spin();

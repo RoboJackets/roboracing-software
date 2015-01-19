@@ -1,0 +1,2 @@
+add_executable(iarrc_dragrace_controller iarrc_dragrace_controller.cpp)
+target_link_libraries(iarrc_dragrace_controller ${catkin_LIBRARIES})

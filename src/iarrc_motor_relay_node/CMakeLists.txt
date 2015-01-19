@@ -1,0 +1,2 @@
+add_executable(iarrc_motor_relay_node iarrc_motor_relay_node.cpp)
+target_link_libraries(iarrc_motor_relay_node ${catkin_LIBRARIES})

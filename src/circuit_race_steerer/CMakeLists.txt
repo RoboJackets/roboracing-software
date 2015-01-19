@@ -1,0 +1,2 @@
+add_executable(circuit_race_steerer circuit_race_steerer.cpp)
+target_link_libraries(circuit_race_steerer ${catkin_LIBRARIES})
