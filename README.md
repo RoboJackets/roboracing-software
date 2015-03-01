@@ -12,7 +12,7 @@
 
 `cd src`
 
-`git clone git@github.com:RoboJackets/iarrc-software.git iarrc_software`
+`git clone git@github.com:RoboJackets/iarrc-software.git`
 
 ### Install ROS Dependencies
 ##### ROS Dependencies
