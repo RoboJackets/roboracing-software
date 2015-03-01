@@ -6,7 +6,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <stdlib.h>
-#include <iarrc_software/image_utils.hpp>
+#include <iarrc/image_utils.hpp>
 
 std::string img_file;
 int sigma=0;

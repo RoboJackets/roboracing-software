@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <ros/subscriber.h>
 #include <ros/publisher.h>
-#include <iarrc_software/iarrc_speed.h>
+#include <iarrc_msgs/iarrc_speed.h>
 #include <std_msgs/Bool.h>
 #include <string>
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 	std::string speed_topic;
     	nhp->param(std::string("speed_topic"), speed_topic, std::string("/speed"));
-    	speed_publisher = nh->advertise<iarrc_software::iarrc_speed>(speed_topic, 1);
+    	speed_publisher = nh->advertise<iarrc_msgs::iarrc_speed>(speed_topic, 1);
 	racecar_set_speed(0);
 
 	ROS_INFO("IARRC circuit-race_controller node ready.");
@@ -58,7 +58,7 @@ void stoplightCB(std_msgs::Bool)
 
 void racecar_set_speed(int speed)
 {
-	iarrc_software::iarrc_speed sp_cmd;
+	iarrc_msgs::iarrc_speed sp_cmd;
 	sp_cmd.speed = speed;
 	speed_publisher.publish(sp_cmd);
 }

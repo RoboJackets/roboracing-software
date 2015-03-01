@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package>
+  <name>iarrc</name>
+  <version>0.0.0</version>
+  <description>The iarrc package</description>
+
+  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://wiki.robojackets.org/w/IARRC</url>
+  <url type="website">http://www.github.com/robojackets/iarrc-software</url>
+
+
+  <author email="matthew.barulic@gmail.com">Matthew Barulic</author>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>iarrc_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>iarrc_msgs</run_depend>
+
+</package>

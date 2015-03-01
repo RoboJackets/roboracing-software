@@ -4,7 +4,7 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <iarrc_software/image_utils.hpp>
+#include <iarrc/image_utils.hpp>
 
 using namespace std;
 using namespace cv;

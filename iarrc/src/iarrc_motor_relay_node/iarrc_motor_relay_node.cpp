@@ -1,23 +1,23 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
-#include <iarrc_software/iarrc_speed.h>
-#include <iarrc_software/iarrc_steering.h>
+#include <iarrc_msgs/iarrc_speed.h>
+#include <iarrc_msgs/iarrc_steering.h>
 #include <boost/asio.hpp>
 #include <string>
 
-iarrc_software::iarrc_speed speed_cmd;
-iarrc_software::iarrc_steering steering_cmd;
+iarrc_msgs::iarrc_speed speed_cmd;
+iarrc_msgs::iarrc_steering steering_cmd;
 bool new_cmd = false;
 int prevAngle = 0;
 int prevSpeed = 0;
 
-void SpeedCallback(const iarrc_software::iarrc_speed::ConstPtr& msg)
+void SpeedCallback(const iarrc_msgs::iarrc_speed::ConstPtr& msg)
 {
 	speed_cmd = *msg;
 	new_cmd = true;
 }
 
-void SteeringCallback(const iarrc_software::iarrc_steering::ConstPtr& msg)
+void SteeringCallback(const iarrc_msgs::iarrc_steering::ConstPtr& msg)
 {
 	steering_cmd = *msg;
 	new_cmd = true;

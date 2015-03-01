@@ -1,2 +1,3 @@
 add_executable(circuit_race_steerer circuit_race_steerer.cpp)
 target_link_libraries(circuit_race_steerer ${catkin_LIBRARIES})
+add_dependencies(circuit_race_steerer ${iarrc_msgs_EXPORTED_TARGETS})

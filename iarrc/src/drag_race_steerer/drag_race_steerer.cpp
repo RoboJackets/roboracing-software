@@ -2,22 +2,22 @@
 #include <ros/subscriber.h>
 #include <ros/publisher.h>
 #include <sensor_msgs/Image.h>
+#include <iarrc_msgs/iarrc_steering.h>
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
-#include <iarrc_software/constants.hpp>
-#include <iarrc_software/iarrc_steering.h>
+#include <iarrc/constants.hpp>
 
 using namespace std;
 using namespace cv;
 
 ros::Publisher steer_pub;
+ros::Publisher img_pub;
+sensor_msgs::Image rosimage;
 
 double penaltyForAngle(int angle) {
-	int right_adjust;
-	right_adjust = angle < 5 ? angle : angle - 5;
 	double mu = 8;
- 	return ( 1.0 - ( exp( - (right_adjust * right_adjust) / (2 * mu * mu) ) / ( sqrt( 2 * M_PI ) * mu ) ) ) * 10;
+	return ( 1.0 - ( exp( - (angle * angle) / (2 * mu * mu) ) / ( sqrt( 2 * M_PI ) * mu ) ) ) * 10;
 }
 
 void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
@@ -58,18 +58,24 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 			chosen_steer_angle = s;
 			collisionsImg.copyTo(chosen_collisionsImg);
 		}
-		cout << cost << "\t";
+		//cout << cost << "\t";
 	}
-	cout << endl;
+	//cout << endl;
 	
-	iarrc_software::iarrc_steering pmsg;
-	pmsg.angle = chosen_steer_angle - 3;
-	//pmsg.angle = -1*chosen_steer_angle;
+	cv_ptr->image=chosen_collisionsImg;
+	cv_ptr->encoding="mono8";
+	cv_ptr->toImageMsg(rosimage);
+	img_pub.publish(rosimage);
+	
+	iarrc_msgs::iarrc_steering pmsg;
+	pmsg.angle = -1*chosen_steer_angle - 3;
+	//pmsg.angle = 1*chosen_steer_angle - 3;
+	//pmsg.angle = -3;
 	steer_pub.publish(pmsg);
 }
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "circuit_race_steerer");
+	ros::init(argc, argv, "drag_race_steerer");
 	
 	ros::NodeHandle nh;
 	ros::NodeHandle nhp("~");
@@ -80,10 +86,12 @@ int main(int argc, char** argv) {
 	
 	string steer_topic;
 	nhp.param(string("steer_topic"), steer_topic, string("/steering"));
-	steer_pub = nh.advertise<iarrc_software::iarrc_steering>(steer_topic,1);
+	steer_pub = nh.advertise<iarrc_msgs::iarrc_steering>(steer_topic,1);
 	
-	ROS_INFO("IARRC ciruit race steerer node ready.");
+	img_pub = nh.advertise<sensor_msgs::Image>("/steerer_debug",1);
+	
+	ROS_INFO("IARRC drag race steerer node ready.");
 	ros::spin();
-	ROS_INFO("Shutting down IARRC ciruit race steerer node.");
+	ROS_INFO("Shutting down IARRC drag race steerer node.");
 	return 0;
 }
