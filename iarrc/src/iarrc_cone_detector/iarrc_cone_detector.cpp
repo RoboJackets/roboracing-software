@@ -5,10 +5,15 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
 std::string img_file;
 
 using namespace cv;
 using namespace std;
+using namespace ros;
+using namespace pcl;
+
 
 struct loclength {
   float length; //real life how wide
@@ -39,9 +44,11 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
         } else {
             d = msg->ranges[i]*msg->ranges[i]+msg->ranges[i+1]*msg->ranges[i+1]-2.0*msg->ranges[i]*msg->ranges[i+1]*cos(angle); //finding length squared between point i and i+1 using cosine rule
             d = sqrt(d); //square root to get the length between point i and i+1
+            //
+            //A**2 = B**2 + C**2 - 2 * b * c * cos(a)
+            //d = sqrt(a)
         }
         eps.push_back(d);
-        //cout << "epsilon[" << i << "]: " << d << endl;
 	}
 
     vector<loclength> l;
@@ -56,7 +63,7 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
 
     for (int i=0; i<size; i++){
         l.push_back(current);
-        if (i==(objsize-1)){
+        if (i==(objsize-1)) {
             mid = (i+loc)/2;
             current.length = length;
             if (objsize>1){
@@ -101,10 +108,12 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
 
     int num_clusters = 0;
 
+    PointCloud<PointXYZ>::Ptr pub (new PointCloud<PointXYZ>);
+    pub->header.frame_id = "laser_mount_link";
     for (int i=0; i<size; i++){
         if (l[i].size>0){
 
-	        num_clusters++;
+            num_clusters++;
 
             npoint = (i+1)+(l[i].size)/2;
             myangle = anglemin + npoint*angle;
@@ -112,10 +121,20 @@ void ConeDetectorCB(const sensor_msgs::LaserScan::ConstPtr& msg) {
             mypointloc.x = cos(myangle) * mylength;
             mypointloc.y = sin(myangle) * mylength;
             pointlocs.push_back(mypointloc);
+            PointXYZ p;
+            p.x = mypointloc.x;
+            p.y = mypointloc.y;
+            p.z = 0;
+            if (abs(p.x) > .15 && abs(p.y) > .05) {
+                pub->push_back(p);
+            }
+
 
             ROS_INFO_STREAM("Cluster at (" << mypointloc.x << ", " << mypointloc.y);
+
         }
     }
+    cone_publisher.publish(pub);
 
 }
 
@@ -145,7 +164,7 @@ int main(int argc, char* argv[]) {
 
     // Subscribe to ROS topic with callback
     ros::Subscriber cone_detect_sub = nh.subscribe(laser_topic, 1, ConeDetectorCB);
-    //cone_publisher = nh.advertise<sensor_msgs::LaserScan>("hist_cone_pub", 1); //EDIT LATER
+    cone_publisher = nh.advertise<PointCloud<PointXYZ>>("cones", 1);
 
     ROS_INFO("IARRC cone detection node ready.");
     ros::spin();
