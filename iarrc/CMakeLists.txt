@@ -12,10 +12,14 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   iarrc_msgs
   cv_bridge
+  pcl_ros
+  sick_tim
+  laser_geometry
 )
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen REQUIRED)
+find_package(PCL REQUIRED filters)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
@@ -36,6 +40,7 @@ catkin_package(
 ## Specify additional locations of header files
 include_directories(
   include
+  ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${EIGEN_INCLUDE_DIRS}
@@ -51,6 +56,9 @@ add_subdirectory(src/iarrc_dragrace_controller)
 add_subdirectory(src/iarrc_joystick)
 add_subdirectory(src/iarrc_line_detection)
 add_subdirectory(src/iarrc_motor_relay_node)
+add_subdirectory(src/iarrc_scan_to_cloud)
 add_subdirectory(src/stoplight_watcher)
 add_subdirectory(src/visual_cone_detector)
+add_subdirectory(src/frame_inverted)
+add_subdirectory(src/pointcloud_to_image)
 
