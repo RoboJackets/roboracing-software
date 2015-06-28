@@ -1,0 +1,4 @@
+<launch>
+    <node name="scan_to_cloud" pkg="iarrc_software" type="scan_to_cloud" output="screen" respawn="false">
+    </node>
+</launch>
