@@ -4,9 +4,17 @@
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Bool.h>
 #include <cv_bridge/cv_bridge.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <Eigen/Dense>
+
+#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+
+#define HIST_FRAMES 5     // Number of frames to keep in history
+#define LIGHT_DIST_PIX 60 // Pixels between the center of red and green lights
+#define MAXSUMRESULTSRED2GREEN 36000 // experimental value of the max of the 2d traffic light filter
+#define TRIGGERPERCENTAGE .85 // The percentage an event must be from experimental, accounting for noise, to trigger
+#define LIGHT_SIZE_PIX 50 // The width or height of the observable stoplight light halo
 
 using namespace cv;
 using namespace std;
@@ -15,32 +23,27 @@ ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
 
-Mat lastFrameRed, lastFrameGreen;
-
-bool red=true;
-
-int lowS = 175;
-int highS = 255;
-int lowV =150;
-int highV = 255;
-
-int lowHR = 0;
-int highHR = 30;
-
-int lowHL = 50;
-int highHL = 100;
-
-int oldBrightness, brightness;
-
 // ROS image callback
-void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
-	cv_bridge::CvImagePtr cv_ptr;
-    Mat circlesImg, circlesImgRed, circlesImgGreen;
-    CvScalar cvs;
 
-    int diff;
-    int diffRed;
-    int diffGreen;
+// What happens when the stoplight changes from red to green?
+// The stoplight has a red light on from the start
+// This light is very bright, and can wash out the image
+// It typically looks like a reddish halo around a white circle
+// The stoplight then turns on the green light, and both are on
+// This looks like two white circles one over the other,
+// The top having a red halo, and the bottom a green halo
+// This lasts for a few frames, then the red light turns off
+void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
+    // Intialize variables
+    static bool go = false;
+    if(go) return; // do not to all this computing if the signal has already been seen and go broadcast
+
+    cv_bridge::CvImagePtr cv_ptr;
+    Mat circlesImg, circlesImgRed, circlesImgGreen;
+    Mat frame = cv_ptr->image;
+    static Mat history[HIST_FRAMES];
+    static int counttostart = 1;
+
 
 	// Convert ROS to OpenCV
 	try {
@@ -50,85 +53,51 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-    //Crop out relevant area.
-    int width = cv_ptr->image.cols;
-    int height = cv_ptr->image.rows;
-    Rect trafficRect(0,0, width, height/2);
-    cv_ptr->image(trafficRect).copyTo(circlesImg);
 
-    //convert to HSV and threshold values to find red and green lights.
-    cvtColor(circlesImg, circlesImg, CV_BGR2HSV);
-    vector<Mat> channels(3);
-    split(circlesImg, channels);
-
-    Scalar tmp = sum(channels[2]);
-    brightness = tmp[0];
-   // cout << brightness <<endl;
-    inRange(circlesImg, Scalar(lowHR, lowS, lowV), Scalar(highHR, highS, highV), circlesImgRed);
-    inRange(circlesImg, Scalar(lowHL, lowS, lowV), Scalar(highHL, highS, highV), circlesImgGreen);
-	
-    //Put the cropped area back into the correctly sized image.
-    Mat finalImg = Mat::zeros(height, width, circlesImgRed.type());
-    if (red)
-        circlesImgRed.copyTo(finalImg(trafficRect));
-    else
-        circlesImgGreen.copyTo(finalImg(trafficRect));
-
-    //If we don't have any previous data, just copy the new images over
-    if (!lastFrameRed.data){
-        circlesImgRed.copyTo(lastFrameRed);
-        circlesImgGreen.copyTo(lastFrameGreen);
-        oldBrightness = brightness;
+    for(int i = HIST_FRAMES-1; i > 0; i--) {
+        history[i] = history[i - 1];
     }
-    else{
-
-        cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
-                diff = cvs.val[0];
-                diffGreen = cvs.val[0];
-        //cout << abs(oldBrightness - brightness) << endl;
-        if (brightness - oldBrightness < 50000 ||!red){
-            if (red){
-                //find difference in red frame
-                cvs = sum(lastFrameRed) - sum(circlesImgRed);
-                lastFrameRed = circlesImgRed;
-                diff = cvs.val[0];
-                diffRed = diff;
-                //if large enough, say that the light is no longer red.
-                ROS_INFO("Red diff %d\t green diff %d\n", diff, diffGreen);
-                //if (diffRed > 70000)
-
-                // maybe look for drop in red and rise in green here?
-                if (diffGreen > 255) {
-                //if (diffRed > 255) {
-                //if (diffGreen > diffRed) {
-                    ROS_INFO("Stoplight Change Detected");
-                    std_msgs::Bool b;
-                    b.data = true;
-                    bool_pub.publish(b);
-                }
-                    //red = false;
-            }
-            if (!red){
-                //Check difference in green frames
-                cvs = sum(circlesImgGreen) - sum(lastFrameGreen);
-                diff = cvs.val[0];
-                ROS_INFO("Green diff %d\n", diff);
-                //if large enough, signal the car to go. 
-                if (diff >60000){
-                    red = true;
-                    ROS_INFO("Stoplight Change Detected");
-                    std_msgs::Bool b;
-                    b.data = true;
-                    bool_pub.publish(b);
-                }
-            }
-        lastFrameGreen = circlesImgGreen;
-    }
-        oldBrightness = brightness;
-
+    history[0] = frame;
+    if (!(counttostart == HIST_FRAMES)) {
+        counttostart++;
+        return;
     }
 
-   // cvtColor(finalImg, finalImg, CV_HSV2GRAY);
+    Mat past, cur;
+
+    past = history[HIST_FRAMES - 1]; // oldest frame in buffer
+    cur = history[0]; // newest frame in buffer
+
+    Mat translate = (Mat_<double>(2, 3) << 1 , 0 , 0 , 0 , 1 , LIGHT_DIST_PIX);
+
+    Mat gaining = cur - past;
+    Mat losing = past - cur;
+    warpAffine(losing, losing, translate, past.size()); // put the red loosing light on the green gaining light
+
+    Mat channel[3];
+    split(gaining, channel);
+    Mat gaininggreen = channel[0] - channel[2]; // we use blue because the green light is more blue than green
+    split(losing, channel);
+    Mat losingred = channel[2] - channel[0]/2 - channel[1]/2;
+
+    Mat geometricmean;
+    gaininggreen.convertTo(gaininggreen, CV_16UC1, 1, 0);
+    losingred.convertTo(losingred, CV_16UC1, 1, 0);
+    geometricmean = gaininggreen.mul(losingred);
+    Mat centerLightChangeness(gaining.size(), CV_32FC1);
+    Mat kernal = Mat::ones(LIGHT_SIZE_PIX, LIGHT_SIZE_PIX, CV_32FC1)/(LIGHT_SIZE_PIX*LIGHT_SIZE_PIX);
+    filter2D(geometricmean, centerLightChangeness, CV_32FC1, kernal);
+
+    double minResult, maxResult;
+    minMaxLoc(centerLightChangeness, &minResult, &maxResult);
+
+    if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
+        go = true;
+        cout << "GO GO GO!!!!!!" << endl;
+    } else {
+        cout << "Wait for it...";
+    }
+    cout << "   " << maxResult << endl;
 
     cv_ptr->image=finalImg;
     cv_ptr->encoding="mono8";

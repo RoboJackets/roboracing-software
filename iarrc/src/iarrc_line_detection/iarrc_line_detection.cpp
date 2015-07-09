@@ -1,3 +1,6 @@
+#define LINE_WIDTH_PIXELS 10
+#define THRESHOLD_VALUE 10
+
 #include <stdio.h>
 #include <ros/ros.h>
 #include <ros/subscriber.h>
@@ -9,17 +12,19 @@
 #include <iarrc/image_utils.hpp>
 
 std::string img_file;
-int sigma=0;
 ros::Publisher img_pub;
 ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
-int erosion_size=2;
-int erosion_type=2; //Ellipse
 
-
+static vector<Mat> kernal(8);
+static vector<Mat> kernalcompl(8);
 
 using namespace std;
 using namespace cv;
+
+vector<Mat> getGeometricMean(Mat& image);
+void subtractOrthog(vector<Mat>& images);
+Mat combine(vector<Mat>& images);
 
 sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 	cv_bridge::CvImage cv_img;
@@ -30,13 +35,9 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
     return ros_img;
 }
 
-
-
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
-	
     cv_bridge::CvImagePtr cv_ptr;
-    int thresh = 220;
 
 	// Convert ROS to OpenCV
 	try {
@@ -46,43 +47,33 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-
-    int width = cv_ptr->image.cols;
-	int height = cv_ptr->image.rows;
-	
     // Crop input image
-    // myRect is bottom one-third
-    // store in tmp
-    //Rect myRect = Rect(0,height*2/3,width,height*1/3);
+    // ground is bottom 1/4 of blue channel
+    Mat ground;
+    Mat channel[3];
+    split(cv_ptr->image, channel);
+    Rect myRect = Rect(0,cv_ptr->image.rows*3/4,cv_ptr->image.cols,cv_ptr->image.rows/4);
+	Mat(channel[0], myRect).copyTo(ground);
 
-    Rect myRect = Rect(0,height*3/4,width,height/4);
+    // Make lines 3 pixels wide in image
+    resize(ground, ground, Size(3*ground.cols/LINE_WIDTH_PIXELS, 3*ground.rows/LINE_WIDTH_PIXELS), 0, 0, INTER_LANCZOS4);
 
-	Mat tmp;
-	Mat(cv_ptr->image,myRect).copyTo(tmp);
+    vector<Mat> results = getGeometricMean(ground);
+    cerr << "Subtracting Orthog" << endl;
+    subtractOrthog(results);
 
+    cerr << "Subtracting Orthog done combining results" << endl;
+    Mat finImage = combine(results);
 
-    // First equalizeHist()
-    // Then threshold to find the lines
-    // Erode and Dilate
-    Mat grayscaleImg;
-    cvtColor(tmp, grayscaleImg, CV_BGR2GRAY);
-    equalizeHist(grayscaleImg, grayscaleImg);
-    threshold(grayscaleImg, grayscaleImg, thresh, 255,THRESH_BINARY);
+    cerr << "Combination complete, thresholding finImage" << endl;
+    threshold(finImage, finImage, THRESHOLD_VALUE, 255, CV_THRESH_BINARY);
 
-    Mat element = getStructuringElement( erosion_type,Size( 2*erosion_size + 1, 2*erosion_size ),Point( erosion_size, 1 ) );
-    erode(grayscaleImg,grayscaleImg,element);
-    dilate(grayscaleImg,grayscaleImg,element);
-
-    // Create zeros mat
-    // Insert the grayscaleImg
-    //And then we are done!
-	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
-    grayscaleImg.copyTo(output(myRect));
-
-    image_utils::transform_perspective(output, output);
+    cerr << "Thresholding done, preparing to publish" << endl;
+//    // change perspective to overhead view
+//    image_utils::transform_perspective(finImage, finImage);
 
  	
- 	cv_ptr->image=output;
+ 	cv_ptr->image=finImage;
     cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);
@@ -117,10 +108,97 @@ int main(int argc, char* argv[]) {
     // Debug publisher
     debug_pub = nh.advertise<sensor_msgs::Image>("/image_debug", 1);
 
-    ROS_INFO("Hi");
+	ROS_INFO("IARRC line detection node ready.");
 
-	ROS_INFO("IARRC image saver node ready.");
+// Setting up static variable kernal for callback function
+    float karray[3][9][9] = {
+            {
+                    {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    { 1,  1,  1,  1,  1,  1,  1,  1,  1},
+                    { 1,  1,  1,  1,  1,  1,  1,  1,  1},
+                    { 1,  1,  1,  1,  1,  1,  1,  1,  1},
+                    { 0,  0,  0,  0,  0,  0,  0,  0,  0},
+                    { 0,  0,  0,  0,  0,  0,  0,  0,  0},
+                    { 0,  0,  0,  0,  0,  0,  0,  0,  0}
+            }, {
+                    {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {-1, -1, -1, -1, -1, -1, -1,  0,  1},
+                    {-1, -1, -1, -1, -1,  0,  1,  1,  1},
+                    {-1, -1, -1,  0,  1,  1,  1,  1,  1},
+                    {-1,  0,  1,  1,  1,  1,  1, .5,  0},
+                    { 1,  1,  1,  1,  1, .5,  0,  0,  0},
+                    { 1,  1,  1, .5,  0,  0,  0,  0,  0},
+                    { 1, .5,  0,  0,  0,  0,  0,  0,  0},
+                    { 0,  0,  0,  0,  0,  0,  0,  0,  0}
+            },  {
+                    {-.89,-.89,-.89,-.89,-.89,-.89,-.89,   1,   1},
+                    {-.89,-.89,-.89,-.89,-.89,-.89,   1,   1,   1},
+                    {-.89,-.89,-.89,-.89,-.89,   1,   1,   1,   0},
+                    {-.89,-.89,-.89,-.89,   1,   1,   1,   0,   0},
+                    {-.89,-.89,-.89,   1,   1,   1,   0,   0,   0},
+                    {-.89,-.89,   1,   1,   1,   0,   0,   0,   0},
+                    {-.89,   1,   1,   1,   0,   0,   0,   0,   0},
+                    {   1,   1,   1,   0,   0,   0,   0,   0,   0},
+                    {   1,   1,   0,   0,   0,   0,   0,   0,   0}
+            }
+    };
+
+    kernal[0] = Mat(9, 9, CV_32FC1, karray[0]) / 27;
+    kernal[1] = Mat(9, 9, CV_32FC1, karray[1]) / 25;
+    kernal[2] = Mat(9, 9, CV_32FC1, karray[2]) / 25;
+
+    kernal[3] = kernal[1].t();
+    kernal[4] = kernal[0].t();
+
+    flip(kernal[3], kernal[5], 0);
+    flip(kernal[2], kernal[6], 0);
+    flip(kernal[1], kernal[7], 0);
+
+    // kernalcompl are 180 degree rotations of kernal, looking for the other edge of the line
+    for(int i = 0; i < kernal.size(); i++) {
+        kernalcompl = kernal[i].clone();
+        flip(kernal[i], kernalcompl[i], -1);
+    }
+
 	ros::spin();
-	ROS_INFO("Shutting down IARRC image saver node.");
+	ROS_INFO("Shutting down IARRC line detection node.");
     return 0;
+}
+
+vector<Mat> getGeometricMean(Mat& image) {
+    Mat filtered, filteredcompl;
+    vector<Mat> results;
+
+    for(int i = 0; i < kernal.size(); i++) {
+        filter2D(image, filtered, -1, kernal[i]);
+        filter2D(image, filteredcompl, -1, kernalcompl[i]);
+
+        filtered.convertTo(filtered, CV_16UC1, 1);
+        filteredcompl.convertTo(filteredcompl, CV_16UC1, 1);
+
+        results.push_back(filtered.mul(filteredcompl));
+        results[i].convertTo(results[i], CV_8UC1, 1.0 / 256);
+    }
+
+    return results;
+};
+
+void subtractOrthog(vector<Mat>& images) {
+    vector<Mat> imagesCopy;
+    for(Mat& img : images)
+        imagesCopy.push_back(img.clone());
+    for(int i = 0; i < images.size(); i++) {
+        images[i] -= imagesCopy[(i + images.size()/2) % images.size()];
+    }
+}
+
+Mat combine(vector<Mat>& images) {
+    Mat result = images[0].clone();
+    for(int i = 1; i < images.size(); i++) {
+        result = max(result, images[i]);
+    }
+
+    return result;
 }
