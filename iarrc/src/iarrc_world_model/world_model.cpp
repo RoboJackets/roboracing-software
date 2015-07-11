@@ -16,6 +16,9 @@ boost::shared_ptr<CvImage> cameraImagePtr;
 
 
 void bigCB(){
+    if (!obstacleImgPtr.get() || !cameraImagePtr.get()) {
+        return;
+    }
     cv::Mat cameraCopy;
     cv::copyMakeBorder(cameraImagePtr.get()->image, cameraCopy, 
         constants::camera_laser_offset, 
