@@ -33,7 +33,10 @@ double laser_step_size = .0174532925; // 1 degree in radians
 
 //positive x is forward, y is left, z is up
 
-
+double camera_laser_offset = .33; //meters
+int image_pixel_delta = camera_laser_offset * pixels_per_meter;  //pixels
+int image_size = 800; //pixels
+double radial_steps = 15;
 }
 
 #endif // CONSTANTS_HPP

@@ -8,7 +8,6 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 #include <iarrc/constants.hpp>
-#include <ros/console.h>
 
 
 using namespace cv;
