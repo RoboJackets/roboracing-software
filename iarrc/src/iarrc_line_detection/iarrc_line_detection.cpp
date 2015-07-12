@@ -54,8 +54,9 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
     Mat ground;
     Mat channel[3];
     split(cv_ptr->image, channel);
-    Rect myRect = Rect(0,cv_ptr->image.rows*3/4,cv_ptr->image.cols,cv_ptr->image.rows/4);
-	Mat(channel[0], myRect).copyTo(ground);
+//    Rect myRect = Rect(0,cv_ptr->image.rows*3/4,cv_ptr->image.cols,cv_ptr->image.rows/4);
+//	Mat(channel[0], myRect).copyTo(ground);
+    ground = channel[0];
 
     // Make lines 3 pixels wide in image
     resize(ground, ground, Size(3*ground.cols/LINE_WIDTH_PIXELS, 3*ground.rows/LINE_WIDTH_PIXELS), 0, 0, INTER_LANCZOS4);
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string img_topic;
-    nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_raw"));
+    nhp.param(std::string("img_topic"), img_topic, std::string("/img_projected"));
     nhp.param(std::string("img_file"), img_file, std::string("iarrc_image.png"));
 
     ROS_INFO("Image topic:= %s", img_topic.c_str());
