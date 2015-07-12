@@ -73,6 +73,7 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
     cerr << "Thresholding done, preparing to publish" << endl;
 //    // change perspective to overhead view
 //    image_utils::transform_perspective(finImage, finImage);
+    bitwise_not(finImage, finImage);
 
     cv_ptr->image=finImage;
     cv_ptr->encoding="mono8";
