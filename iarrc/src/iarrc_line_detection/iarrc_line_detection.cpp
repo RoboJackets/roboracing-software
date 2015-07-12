@@ -10,17 +10,19 @@
 #include <opencv/highgui.h>
 #include <stdlib.h>
 #include <iarrc/image_utils.hpp>
+#include <vector>
+
+using namespace std;
+using namespace cv;
 
 std::string img_file;
 ros::Publisher img_pub;
 ros::Publisher debug_pub;
 sensor_msgs::Image rosimage;
 
-static vector<Mat> kernal(8);
-static vector<Mat> kernalcompl(8);
+vector<Mat> kernal(8);
+vector<Mat> kernalcompl(8);
 
-using namespace std;
-using namespace cv;
 
 vector<Mat> getGeometricMean(Mat& image);
 void subtractOrthog(vector<Mat>& images);
@@ -72,8 +74,7 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 //    // change perspective to overhead view
 //    image_utils::transform_perspective(finImage, finImage);
 
- 	
- 	cv_ptr->image=finImage;
+    cv_ptr->image=finImage;
     cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);

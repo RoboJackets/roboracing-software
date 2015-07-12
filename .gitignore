@@ -4,3 +4,4 @@
 *.creator.user
 *.files
 *.includes
+*/CMakeFiles/*

@@ -22,6 +22,7 @@ using namespace std;
 ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image rosimage;
+std_msgs::Bool green;
 
 // ROS image callback
 
@@ -35,8 +36,10 @@ sensor_msgs::Image rosimage;
 // This lasts for a few frames, then the red light turns off
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Intialize variables
-    static bool go = false;
-    if(go) return; // do not to all this computing if the signal has already been seen and go broadcast
+    if(green.data) {
+	bool_pub.publish(green);
+	return; // do not to all this computing if the signal has already been seen and go broadcast
+    }
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat circlesImg, circlesImgRed, circlesImgGreen;
@@ -92,17 +95,20 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     minMaxLoc(centerLightChangeness, &minResult, &maxResult);
 
     if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
-        go = true;
-        cout << "GO GO GO!!!!!!" << endl;
+        green.data = true;
     } else {
         cout << "Wait for it...";
     }
     cout << "   " << maxResult << endl;
 
-    cv_ptr->image=finalImg;
+    bool_pub.publish(green);
+
+    geometricmean.convertTo(geometricmean, CV_8UC1, 1, 0);
+    cv_ptr->image=geometricmean;
     cv_ptr->encoding="mono8";
-	cv_ptr->toImageMsg(rosimage);
-	img_pub.publish(rosimage);
+    cv_ptr->toImageMsg(rosimage);
+    img_pub.publish(rosimage);
+
 }
 
 int main(int argc, char* argv[]) {
@@ -119,6 +125,8 @@ int main(int argc, char* argv[]) {
 	ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 	img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
 	bool_pub = nh.advertise<std_msgs::Bool>("/light_change",1);
+
+	green.data = false;
 
 
 	ROS_INFO("IARRC stoplight watcher node ready.");
