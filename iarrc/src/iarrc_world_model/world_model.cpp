@@ -21,8 +21,8 @@ void bigCB(){
     }
     cv::Mat cameraCopy;
     cv::copyMakeBorder(cameraImagePtr.get()->image, cameraCopy, 
-        constants::camera_laser_offset, 
-        constants::image_size - constants::camera_laser_offset, 
+        constants::image_pixel_delta, 
+        constants::image_size - constants::image_pixel_delta, 
         0, 0, cv::BORDER_CONSTANT, 128);
 
     cv::Mat weighted;
@@ -42,13 +42,15 @@ void cameraCB(const sensor_msgs::Image::ConstPtr& msg) {
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "world_model");
-    std::string obstacle_topic;
+    std::string obstacle_topic, projection_topic;
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
-    nhp.param(std::string("obstacle_topic"), obstacle_topic, std::string("/obstacle_image"));
+
+    nhp.param(std::string("obstacle_topic"), obstacle_topic, std::string("/obstacle_img"));
+    nhp.param(std::string("projection_topic"), projection_topic, std::string("/image_projected"));
 
     ros::Subscriber obstacle_sub = nh.subscribe(obstacle_topic, 1, obstacleCB);
-
+    ros::Subscriber projection_sub = nh.subscribe(projection_topic, 1, cameraCB);
     
     world_pub = nh.advertise<sensor_msgs::Image>("/world_model", 1);
     ros::spin();
