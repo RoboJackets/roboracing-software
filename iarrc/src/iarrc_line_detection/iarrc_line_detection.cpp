@@ -75,6 +75,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 //    image_utils::transform_perspective(finImage, finImage);
     bitwise_not(finImage, finImage);
 
+    resize(finImage, finImage, Size(cv_ptr->image.cols, cv_ptr->image.rows), 0, 0, INTER_LANCZOS4);
+
     cv_ptr->image=finImage;
     cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
@@ -97,7 +99,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string img_topic;
-    nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_color"));
+    nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_raw"));
     nhp.param(std::string("img_file"), img_file, std::string("iarrc_image.png"));
 
     ROS_INFO("Image topic:= %s", img_topic.c_str());
@@ -160,7 +162,7 @@ int main(int argc, char* argv[]) {
 
     // kernalcompl are 180 degree rotations of kernal, looking for the other edge of the line
     for(int i = 0; i < kernal.size(); i++) {
-        kernalcompl = kernal[i].clone();
+        kernalcompl[i] = kernal[i].clone();
         flip(kernal[i], kernalcompl[i], -1);
     }
 
