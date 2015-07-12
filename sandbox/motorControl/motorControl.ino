@@ -16,9 +16,9 @@ int updateSpeed();
 
 //Variables for motors & state variables
 Servo VXL3sMotor;
-int VXL3sMotorPin=10;
+int VXL3sMotorPin=5;
 Servo SteeringMotor;
-int SteeringMotorPin=11;
+int SteeringMotorPin=6;
 
 Message m;
 

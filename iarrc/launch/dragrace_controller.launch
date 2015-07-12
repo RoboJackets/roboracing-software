@@ -1,7 +1,7 @@
 <launch>
 
 	<!-- Dragrace Controller node -->
-	<node name="iarrc_dragrace_controller" pkg="iarrc_software" type="iarrc_dragrace_controller" output="screen" respawn="false">
+	<node name="iarrc_dragrace_controller" pkg="iarrc" type="iarrc_dragrace_controller" output="screen" respawn="false">
 		<param name="stoplight_topic" type="str" value="/light_change"/>
 		<param name="wall_detect_topic" type="str" value="/wall_detect"/>
 		<param name="drive_speed" type="int" value="11"/>

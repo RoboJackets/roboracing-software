@@ -61,4 +61,8 @@ add_subdirectory(src/stoplight_watcher)
 add_subdirectory(src/visual_cone_detector)
 add_subdirectory(src/frame_inverted)
 add_subdirectory(src/pointcloud_to_image)
+add_subdirectory(src/projection)
+add_subdirectory(src/iarrc_world_model)
+add_subdirectory(src/iarrc_planner)
+
 

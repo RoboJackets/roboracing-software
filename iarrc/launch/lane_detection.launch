@@ -1,5 +1,5 @@
 <launch>
-  <node name="iarrc_lane_detection" pkg="iarrc_software" type="iarrc_line_detection" output="screen">
+  <node name="iarrc_lane_detection" pkg="iarrc" type="iarrc_line_detection" output="screen">
     <!-- Truncation -->
     <!-- Car body -->
 	<param name="car_x" type="int" value="102"/>

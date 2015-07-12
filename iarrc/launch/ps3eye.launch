@@ -7,6 +7,6 @@
       <param name="frame" type="string" value="wide_stereo" />
       <param name="device" type="string" value="/dev/video1" />
     </node>
-    <node pkg="image_proc" type="image_proc" name="ps3eye_proc" output="screen" />
+    <!--<node pkg="image_proc" type="image_proc" name="ps3eye_proc" output="screen" />-->
   </group>
 </launch>

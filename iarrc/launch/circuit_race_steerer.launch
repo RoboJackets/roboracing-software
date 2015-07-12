@@ -1,7 +1,7 @@
 <launch>
 
 	<!-- Circuitrace Steerer node -->
-	<node name="circuit_race_steerer" pkg="iarrc_software" type="circuit_race_steerer" output="screen" respawn="false">
+	<node name="circuit_race_steerer" pkg="iarrc" type="circuit_race_steerer" output="screen" respawn="false">
 		<param name="frame_topic" type="str" value="/joint_frame"/>
 		<param name="steer_topic" type="str" value="/steering"/>
 	</node>
