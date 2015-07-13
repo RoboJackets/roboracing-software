@@ -10,6 +10,7 @@
 #include <opencv/highgui.h>
 #include <stdlib.h>
 #include <iarrc/image_utils.hpp>
+#include <iarrc/constants.hpp>
 #include <vector>
 
 using namespace std;
