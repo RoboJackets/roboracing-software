@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "projection");
     ros::NodeHandle n;
 
-    ros::Subscriber sub = n.subscribe<sensor_msgs::Image>("/ps3_eye/image_raw", 1, imageCallback);
+    ros::Subscriber sub = n.subscribe<sensor_msgs::Image>("/image_lines", 1, imageCallback);
     proj_pub = n.advertise<sensor_msgs::Image>("image_projected", 100);
 
     ros::spin();
