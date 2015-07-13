@@ -20,7 +20,7 @@ double delta_r = 1;
 
 
 cv::Point PolarToCartsesian(double r, double theta) {
-    return cv::Point(r * cos(theta), r * sin(theta));
+  return cv::Point(r * cos(theta) + constants::origin_y, constants::origin_x - r * sin(theta));
 }
 
 int toDegrees(double t) {
