@@ -29,6 +29,7 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>iarrc_msgs</build_depend>
   <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>sick_tim</run_depend>
 
@@ -40,5 +41,6 @@
   <run_depend>iarrc_msgs</run_depend>
   <run_depend>sick_tim</run_depend>
   <run_depend>laser_geometry</run_depend>
+  <run_depend>image_transport</run_depend>
 
 </package>
