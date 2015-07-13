@@ -27,6 +27,7 @@ vector<Mat> kernalcompl(8);
 vector<Mat> getGeometricMean(Mat& image);
 void subtractOrthog(vector<Mat>& images);
 Mat combine(vector<Mat>& images);
+void spread(Mat& lines, bool fillright);
 
 sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 	cv_bridge::CvImage cv_img;
@@ -49,31 +50,26 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-    // Crop input image
-    // ground is bottom 1/4 of blue channel
-    Mat ground;
+    Mat image;
+    resize(cv_ptr->image, image, Size(3*cv_ptr->image.cols/LINE_WIDTH_PIXELS, 3*cv_ptr->image.rows/LINE_WIDTH_PIXELS), 0, 0, INTER_LANCZOS4);
     Mat channel[3];
-    split(cv_ptr->image, channel);
-//    Rect myRect = Rect(0,cv_ptr->image.rows*3/4,cv_ptr->image.cols,cv_ptr->image.rows/4);
-//	Mat(channel[0], myRect).copyTo(ground);
-    ground = channel[0];
+    Mat channelLines[3];
 
-    // Make lines 3 pixels wide in image
-    resize(ground, ground, Size(3*ground.cols/LINE_WIDTH_PIXELS, 3*ground.rows/LINE_WIDTH_PIXELS), 0, 0, INTER_LANCZOS4);
+    split(image, channel);
+    for(int i = 0; i < 3; i ++) {
+        vector<Mat> results = getGeometricMean(channel[i]);
+        subtractOrthog(results);
+        Mat finImage = combine(results);
+        threshold(finImage, channelLines[i], THRESHOLD_VALUE, 255, CV_THRESH_BINARY);
+    }
 
-    vector<Mat> results = getGeometricMean(ground);
-    cerr << "Subtracting Orthog" << endl;
-    subtractOrthog(results);
+    Mat yellowLines = ~channelLines[0] & channelLines[1] & channelLines[2];
+    Mat whiteLines = channelLines[0] & ~yellowLines;
 
-    cerr << "Subtracting Orthog done combining results" << endl;
-    Mat finImage = combine(results);
-
-    cerr << "Combination complete, thresholding finImage" << endl;
-    threshold(finImage, finImage, THRESHOLD_VALUE, 255, CV_THRESH_BINARY);
-
-    cerr << "Thresholding done, preparing to publish" << endl;
-//    // change perspective to overhead view
-//    image_utils::transform_perspective(finImage, finImage);
+    Mat finImage;
+    spread(whiteLines, false);
+    spread(yellowLines, true);
+    finImage = whiteLines/2 + yellowLines/2;
     bitwise_not(finImage, finImage);
 
     resize(finImage, finImage, Size(cv_ptr->image.cols, cv_ptr->image.rows), 0, 0, INTER_LANCZOS4);
@@ -82,6 +78,12 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
     cv_ptr->encoding="mono8";
     cv_ptr->toImageMsg(rosimage);
     img_pub.publish(rosimage);
+}
+
+void spread(Mat& lines, bool fillright) {
+    int width = lines.cols*2/3;
+    Mat spreadKernal = Mat::ones(1, width, CV_8UC1);
+    filter2D(lines, lines, -1, spreadKernal, Point(fillright ? width-1 : 0, 0));
 }
 
 void help(std::ostream& ostr) {
@@ -100,7 +102,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string img_topic;
-    nhp.param(std::string("img_topic"), img_topic, std::string("/img_projected"));
+    nhp.param(std::string("img_topic"), img_topic, std::string("/image_projected"));
     nhp.param(std::string("img_file"), img_file, std::string("iarrc_image.png"));
 
     ROS_INFO("Image topic:= %s", img_topic.c_str());
