@@ -62,6 +62,8 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
         subtractOrthog(results);
         Mat finImage = combine(results);
         threshold(finImage, channelLines[i], THRESHOLD_VALUE, 255, CV_THRESH_BINARY);
+        Mat element = getStructuringElement(0, Size(3, 3));
+        erode(finImage, channelLines[i], element);
     }
 
     Mat yellowLines = ~channelLines[0] & channelLines[1] & channelLines[2];
