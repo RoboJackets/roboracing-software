@@ -26,6 +26,8 @@ namespace constants {
   double origin_x = world_height / 2;
   double origin_y = world_width / 2;
 
+  int car_length_pixels = chassis_length * pixels_per_meter;
+
   double max_speed = 5; //meters per second
   double laser_scan_time = 1/15.0; //seconds
   double camera_scan_time = 1/60.0; //seconds

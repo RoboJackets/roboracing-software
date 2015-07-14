@@ -1,4 +1,4 @@
-#define LINE_WIDTH_PIXELS 10
+#define LINE_WIDTH_PIXELS 5
 #define THRESHOLD_VALUE 10
 
 #include <stdio.h>
