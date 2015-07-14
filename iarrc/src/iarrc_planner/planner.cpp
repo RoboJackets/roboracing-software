@@ -15,12 +15,12 @@ using namespace sensor_msgs;
 
 ros::Publisher world_pub;
 
-double delta_theta = M_PI / constants::radial_steps;
+double delta_theta = (M_PI / 3) / constants::radial_steps;
 double delta_r = 1;
 
 
 cv::Point PolarToCartsesian(double r, double theta) {
-  return cv::Point(r * cos(theta) + constants::origin_y, constants::origin_x - r * sin(theta));
+  return cv::Point(r * cos(theta) + constants::origin_y, (constants::origin_x - constants::car_length_pixels) - r * sin(theta));
 }
 
 int toDegrees(double t) {
@@ -31,19 +31,22 @@ void plannerCB(const sensor_msgs::Image::ConstPtr& msg) {
     boost::shared_ptr<CvImage> worldPtr = toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
     double max_t = 0;
     int max_accum = -1010101010;
-    for (double t = 0; t < M_PI; t += delta_theta) {
+    for (double t = M_PI / 3; t < 2*M_PI/3; t += delta_theta) {
         int accum = 0;
         for (int r = 0; r < constants::image_size / 2; r+= delta_r) {
             auto p = PolarToCartsesian(r,t);
             accum += worldPtr.get()->image.at<uchar>(p.y, p.x);
         }
+    	//std::cout << toDegrees(t) << ": " << accum << std::endl;
         if (accum > max_accum) {
             max_t = t;
-        }
+	    max_accum = accum;
+	}	    
     }
 
     iarrc_msgs::iarrc_steering pmsg;
-    pmsg.angle = toDegrees(max_t) + 90;
+    std::cout << "MAX T: " << toDegrees(max_t) - 90 << std::endl;
+    pmsg.angle = toDegrees(max_t) - 90;
     world_pub.publish(pmsg);
 }
 
