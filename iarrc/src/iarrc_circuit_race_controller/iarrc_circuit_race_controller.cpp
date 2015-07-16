@@ -12,10 +12,11 @@ ros::NodeHandle *nhp;
 
 int drive_speed;
 std::string race_end_topic;
+bool stoplightSeen = false;
 
 ros::Subscriber stoplight_subscriber;
 
-void stoplightCB(std_msgs::Bool);
+void stoplightCB(const std_msgs::Bool::ConstPtr& msg);
 void racecar_set_speed(int);
 
 int main(int argc, char** argv)
@@ -46,14 +47,16 @@ int main(int argc, char** argv)
     	return 0;
 }
 
-void stoplightCB(std_msgs::Bool)
+void stoplightCB(const std_msgs::Bool::ConstPtr& msg)
 {
+  
+  if (msg->data && !stoplightSeen) {
 	ROS_INFO("Drag Race Controller got stoplight.");
 	racecar_set_speed(14);
 	stoplight_subscriber.shutdown();
-	system("rosnode kill stoplight_watcher &\n");
-	system("roslaunch iarrc_launch lane_detection.launch &\n");
-	system("roslaunch iarrc_launch visual_cone_detector.launch &\n");
+	stoplightSeen = true;
+	system("rosnode kill stoplight_watcher\n");
+  }
 }
 
 void racecar_set_speed(int speed)

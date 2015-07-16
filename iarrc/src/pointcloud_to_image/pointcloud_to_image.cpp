@@ -36,14 +36,15 @@ double normal_pdf(double x, double m, double s)
 
 
 void convertToImgCB(const sensor_msgs::PointCloud2 cloud_in) {
-    Mat img = Mat::ones(world_height, world_width, CV_8U);
-    img *= 128;
+    Mat img = Mat::ones(world_height, world_width, CV_8U) * 255;
     PointCloud<PointXYZ> cloud;
     fromROSMsg(cloud_in, cloud);
     for (int i=0; i < cloud.size(); i++) {
         float dist = sqrt(pow(cloud[i].y, 2) + pow(cloud[i].x, 2)) * pixels_per_meter;
         circle(img, Point(((cloud[i].y * pixels_per_meter) + origin_y), world_height - ((cloud[i].x * pixels_per_meter) + origin_x)), dist * laser_step_size, 0, -1);
     }
+
+    circle(img, Point(origin_y, origin_x), 0.3 * constants::pixels_per_meter, 255, -1);
     obstacle_img_pub.publish(cv_bridge::CvImage(std_msgs::Header(), "mono8", img).toImageMsg());
 }
 

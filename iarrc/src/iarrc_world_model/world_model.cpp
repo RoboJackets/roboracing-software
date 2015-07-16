@@ -15,7 +15,7 @@ boost::shared_ptr<CvImage> obstacleImgPtr;
 boost::shared_ptr<CvImage> cameraImagePtr;
 
 
-void bigCB(){
+void bigCB() {
     if (!obstacleImgPtr.get() || !cameraImagePtr.get()) {
         return;
     }
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     ros::NodeHandle nhp("~");
 
     nhp.param(std::string("obstacle_topic"), obstacle_topic, std::string("/obstacle_img"));
-    nhp.param(std::string("projection_topic"), projection_topic, std::string("/image_projected"));
+    nhp.param(std::string("projection_topic"), projection_topic, std::string("/image_lines"));
 
     ros::Subscriber obstacle_sub = nh.subscribe(obstacle_topic, 1, obstacleCB);
     ros::Subscriber projection_sub = nh.subscribe(projection_topic, 1, cameraCB);

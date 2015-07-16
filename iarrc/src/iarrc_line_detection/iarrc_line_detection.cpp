@@ -1,5 +1,12 @@
-#define LINE_WIDTH_PIXELS 5
-#define THRESHOLD_VALUE 10
+#define LINE_WIDTH_METERS (0.0254 * 2.5) // Camera needs calibration, use 2-2.7 to pick up big yellow lines
+#define THRESHOLD_VALUE 10 // 5 - 10 works well
+#define SIDECHECK_DIST 2.5 // meters
+#define SIDECHECK_ANGLE (M_PI / 24) // radians
+#define SIDECHECK_WIDTH 0.5 // meters
+#define SIDECHECK_HEIGHT 0.5 // meters
+#define FORWARDCHECK_DIST 3.5 // meters
+#define FORWARDCHECK_WIDTH 0.5 // meters
+#define FORWARDCHECK_HEIGHT 0.5 // meters
 
 #include <stdio.h>
 #include <ros/ros.h>
@@ -12,6 +19,7 @@
 #include <iarrc/image_utils.hpp>
 #include <iarrc/constants.hpp>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace cv;
@@ -24,11 +32,16 @@ sensor_msgs::Image rosimage;
 vector<Mat> kernal(8);
 vector<Mat> kernalcompl(8);
 
-
+enum LINES {LINES_NONE, LINES_WHITE, LINES_YELLOW, LINES_BOTH};
 vector<Mat> getGeometricMean(Mat& image);
 void subtractOrthog(vector<Mat>& images);
 Mat combine(vector<Mat>& images);
 void spread(Mat& lines, bool fillright);
+LINES hasLines(Mat& image); // returns 0 none, +1 white, +2 yellow, +3 both
+void TurnRight(Mat& image);
+void TurnLeft(Mat& image);
+void SharpRight(Mat& image);
+void SharpLeft(Mat& image);
 
 sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 	cv_bridge::CvImage cv_img;
@@ -41,6 +54,7 @@ sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
 
 // ROS image callback
 void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
+//    cerr << "error -1" << endl;
     cv_bridge::CvImagePtr cv_ptr;
 
 	// Convert ROS to OpenCV
@@ -51,8 +65,118 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 
-    Mat image;
-    resize(cv_ptr->image, image, Size(3*cv_ptr->image.cols/LINE_WIDTH_PIXELS, 3*cv_ptr->image.rows/LINE_WIDTH_PIXELS), 0, 0, INTER_LANCZOS4);
+    Mat image = cv_ptr->image.clone();
+    Mat smallimage;
+    const float line_width_pixels = LINE_WIDTH_METERS * constants::pixels_per_meter;
+    const float image_scale = 3/line_width_pixels;
+    resize(image, smallimage, Size(image.cols*image_scale, image.rows*image_scale), 0, 0, INTER_LANCZOS4);
+
+    static const Rect leftRect(
+            image_scale*(image.cols/2 - constants::pixels_per_meter * (SIDECHECK_DIST * sin(SIDECHECK_ANGLE) + SIDECHECK_WIDTH)),
+            image_scale*(image.rows - constants::pixels_per_meter * (SIDECHECK_DIST * cos(SIDECHECK_ANGLE) + SIDECHECK_HEIGHT)),
+            image_scale*(constants::pixels_per_meter * SIDECHECK_WIDTH),
+	    image_scale*(constants::pixels_per_meter * SIDECHECK_HEIGHT)
+    );
+    static const Rect rightRect(
+            image_scale*(image.cols/2 + constants::pixels_per_meter * (SIDECHECK_DIST * sin(SIDECHECK_ANGLE))),
+            image_scale*(image.rows - constants::pixels_per_meter * (SIDECHECK_DIST * cos(SIDECHECK_ANGLE) + SIDECHECK_HEIGHT)),
+            image_scale*(constants::pixels_per_meter * SIDECHECK_WIDTH),
+	    image_scale*(constants::pixels_per_meter * SIDECHECK_HEIGHT)
+    );
+    static const Rect forwardRect(
+            image_scale*(image.cols/2 - constants::pixels_per_meter * FORWARDCHECK_WIDTH/2),
+            image_scale*(image.rows - constants::pixels_per_meter * (FORWARDCHECK_HEIGHT + FORWARDCHECK_DIST)),
+            image_scale*(constants::pixels_per_meter * FORWARDCHECK_WIDTH),
+            image_scale*(constants::pixels_per_meter * FORWARDCHECK_HEIGHT)
+    );
+
+//    Mat debug;
+//    namedWindow("Debug");
+//    smallimage.copyTo(debug);
+//    rectangle(debug, rightRect, Scalar(0, 0, 255));
+//    rectangle(debug, leftRect, Scalar(0, 255, 0));
+//    rectangle(debug, forwardRect, Scalar(255, 0, 255));
+//    imshow("Debug", debug);
+//    waitKey(100);
+
+//    cerr << "leftRect: " << leftRect << endl;
+//    cerr << "rightRect: " << rightRect << endl;
+//    cerr << "forwardrect: " << forwardrect << endl;
+
+//    cerr << "smallimage height" << smallimage.rows << endl;
+//    cerr << "smallimage width" << smallimage.rows << endl;
+
+    Mat leftCheck(smallimage, leftRect);
+    Mat rightCheck(smallimage, rightRect);
+    Mat forwardCheck(smallimage, forwardRect);
+
+//    cerr << "Made ROIs" << endl;
+
+    Mat finImage = 255 * Mat::ones(smallimage.size(), CV_8UC1);
+
+    LINES foundLines;
+//    cerr << "lC.rows" << leftCheck.rows << endl;
+//    cerr << "lC.cols" << leftCheck.cols << endl;
+    foundLines = hasLines(leftCheck);
+    if(foundLines == LINES_WHITE || foundLines == LINES_BOTH)
+	TurnRight(finImage);
+//    cerr << "error 3" << endl;
+    foundLines = hasLines(rightCheck);
+    if(foundLines == LINES_YELLOW || foundLines == LINES_BOTH)
+        TurnLeft(finImage);
+//    cerr << "error 4" << endl;
+    foundLines = hasLines(forwardCheck);
+    if(foundLines == LINES_WHITE || foundLines == LINES_BOTH)
+        SharpRight(finImage);
+//    cerr << "error 5" << endl;
+    if(foundLines == LINES_YELLOW || foundLines == LINES_BOTH)
+        SharpLeft(finImage);
+//    cerr << "error 6" << endl;
+
+//    spread(whiteLines, false);
+//    spread(yellowLines, true);
+//    Mat element = getStructuringElement(0, Size(3, 3));
+//    erode(whiteLines, whiteLines, element, Point(-1, -1), 2);
+//    dilate(whiteLines, whiteLines, element, Point(-1, -1), 6);
+//    dilate(yellowLines, yellowLines, element, Point(-1, -1), 1);
+//    erode(whiteLines, whiteLines, element, Point(-1, -1), 3);
+//    erode(yellowLines, yellowLines, element, Point(-1, -1), 3);
+//    finImage = channelLines[2]; //yellowLines; //whiteLines; // + yellowLines/2;
+//    bitwise_not(finImage, finImage);
+
+    Mat channel[3];
+    split(smallimage, channel);
+    resize(finImage + channel[0], finImage, Size(cv_ptr->image.cols, cv_ptr->image.rows), 0, 0, INTER_LANCZOS4);
+
+    cv_ptr->image=finImage;
+    cv_ptr->encoding="mono8";
+    cv_ptr->toImageMsg(rosimage);
+    img_pub.publish(rosimage);
+}
+
+void TurnRight(Mat& image) {
+    Point start(image.cols*2/3, 0);
+    Point end(0, image.rows);
+    line(image, start, end, 0, 3);
+}
+void TurnLeft(Mat& image) {
+    Point start(image.cols/3, 0);
+    Point end(image.cols, image.rows);
+    line(image, start, end, 0, 3);
+}
+void SharpRight(Mat& image) {
+    Point start(0, image.rows);
+    Point end(image.cols, 0);
+    line(image, start, end, 0, 3);
+}
+void SharpLeft(Mat& image) {
+    Point start(0, 0);
+    Point end(image.rows, image.cols);
+
+}
+
+LINES hasLines(Mat& image) {
+    line(image, Point(0, 0), Point(image.cols, image.rows), 0, 10);
     Mat channel[3];
     Mat channelLines[3];
 
@@ -62,25 +186,23 @@ void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
         subtractOrthog(results);
         Mat finImage = combine(results);
         threshold(finImage, channelLines[i], THRESHOLD_VALUE, 255, CV_THRESH_BINARY);
-        Mat element = getStructuringElement(0, Size(3, 3));
-        erode(finImage, channelLines[i], element);
     }
 
     Mat yellowLines = ~channelLines[0] & channelLines[1] & channelLines[2];
     Mat whiteLines = channelLines[0] & ~yellowLines;
+//    channel[0] = yellowLines + whiteLines;
+//    merge(channel, 3, image);
 
-    Mat finImage;
-    spread(whiteLines, false);
-    spread(yellowLines, true);
-    finImage = whiteLines/2 + yellowLines/2;
-    bitwise_not(finImage, finImage);
+    int sumwhite = sum(whiteLines)[0];
+    int sumyellow = sum(yellowLines)[0];
+    int threshold = yellowLines.rows;
+    LINES retval = LINES_NONE;
+    if(sumwhite > threshold)
+        retval = LINES_WHITE;
+    if(sumyellow > threshold)
+        retval = retval ? LINES_BOTH : LINES_YELLOW;
 
-    resize(finImage, finImage, Size(cv_ptr->image.cols, cv_ptr->image.rows), 0, 0, INTER_LANCZOS4);
-
-    cv_ptr->image=finImage;
-    cv_ptr->encoding="mono8";
-    cv_ptr->toImageMsg(rosimage);
-    img_pub.publish(rosimage);
+    return retval;
 }
 
 void spread(Mat& lines, bool fillright) {
