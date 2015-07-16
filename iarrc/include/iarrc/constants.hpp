@@ -26,6 +26,8 @@ namespace constants {
   double origin_x = world_height / 2;
   double origin_y = world_width / 2;
 
+  int car_length_pixels = chassis_length * pixels_per_meter;
+
   double max_speed = 5; //meters per second
   double laser_scan_time = 1/15.0; //seconds
   double camera_scan_time = 1/60.0; //seconds
@@ -37,7 +39,7 @@ namespace constants {
   double camera_laser_offset = .33; //meters
   int image_pixel_delta = camera_laser_offset * pixels_per_meter;  //pixels
   int image_size = 800; //pixels
-  double radial_steps = 15;
+  double radial_steps = 30;
 
   cv::Mat H = (cv::Mat_<float>(3, 3) << -0.1647217962219974, -2.806346137722293, 489.0541447315693, 0.1692250742207653, -5.618974771914964, 1008.53492831728, 0.0002379068360014772, -0.007005176546200876, 1);
 

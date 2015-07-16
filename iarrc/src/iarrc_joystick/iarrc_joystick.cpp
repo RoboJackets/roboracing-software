@@ -20,7 +20,7 @@ void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
     iarrc_msgs::iarrc_steering st_cmd;
     sp_cmd.speed = speed_max * msg->axes[3];
     // -3 for steering offset
-    st_cmd.angle = -(angle_max * msg->axes[0] - 3);
+    st_cmd.angle = -(angle_max * 2 * msg->axes[0] - 3);
     //st_cmd.angle = 20;//angle_max * msg->axes[0];
 
     speed_publisher.publish(sp_cmd);
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     steering_publisher = nh.advertise<iarrc_msgs::iarrc_steering>(steering_topic, 1);
 
     // Driving limits
-    nhp.param(std::string("angle_max"), angle_max, 10);
+    nhp.param(std::string("angle_max"), angle_max, 20);
     nhp.param(std::string("speed_max"), speed_max, 10);
 
 	ROS_INFO("IARRC joystick node ready.");

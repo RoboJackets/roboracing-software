@@ -12,8 +12,8 @@
 
 #define HIST_FRAMES 5     // Number of frames to keep in history
 #define LIGHT_DIST_PIX 60 // Pixels between the center of red and green lights
-#define MAXSUMRESULTSRED2GREEN 36000 // experimental value of the max of the 2d traffic light filter
-#define TRIGGERPERCENTAGE .85 // The percentage an event must be from experimental, accounting for noise, to trigger
+#define MAXSUMRESULTSRED2GREEN 95 // experimental value of the max of the 2d traffic light filter
+#define TRIGGERPERCENTAGE .80 // The percentage an event must be from experimental, accounting for noise, to trigger
 #define LIGHT_SIZE_PIX 50 // The width or height of the observable stoplight light halo
 
 using namespace cv;
@@ -43,7 +43,6 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat circlesImg, circlesImgRed, circlesImgGreen;
-    Mat frame = cv_ptr->image;
     static Mat history[HIST_FRAMES];
     static int counttostart = 1;
 
@@ -55,6 +54,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
 	}
+
+	Mat frame = cv_ptr.get()->image;
 
 
     for(int i = HIST_FRAMES-1; i > 0; i--) {
@@ -117,7 +118,7 @@ int main(int argc, char* argv[]) {
 	ros::NodeHandle nhp("~");
 
 	std::string img_topic;
-	nhp.param(std::string("img_topic"), img_topic, std::string("/image_raw"));
+	nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_raw"));
 
 	ROS_INFO("Image topic:= %s", img_topic.c_str());
 

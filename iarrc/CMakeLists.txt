@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   sick_tim
   laser_geometry
+  image_transport
 )
 
 find_package(OpenCV REQUIRED)
@@ -64,5 +65,4 @@ add_subdirectory(src/pointcloud_to_image)
 add_subdirectory(src/projection)
 add_subdirectory(src/iarrc_world_model)
 add_subdirectory(src/iarrc_planner)
-
-
+add_subdirectory(src/image_publisher)

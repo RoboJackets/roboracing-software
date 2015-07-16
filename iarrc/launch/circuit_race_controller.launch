@@ -1,10 +1,28 @@
 <launch>
 
+        <!-- Include other launch files -->
+	<include file="$(find iarrc)/launch/ps3eye.launch"/>
+	<include file="$(find sick_tim)/launch/sick_tim551_2050001.launch"/>
+	<include file="$(find iarrc)/launch/motor_relay.launch"/>
+
 	<!-- Circuit Race Controller node -->
-	<node name="iarrc_circuit_race_controller" pkg="iarrc" type="iarrc_circuit_race_controller" output="screen" respawn="false">
-		<param name="stoplight_topic" type="str" value="/light_change"/>
-		<param name="drive_speed" type="int" value="8"/>
-		<param name="speed_topic" type="str" value="/speed"/>
-	</node>
+	<node name="iarrc_circuit_race_controller" pkg="iarrc" type="iarrc_circuit_race_controller" output="screen" respawn="false" />
+	<node name="iarrc_scan_to_cloud" pkg="iarrc" type="scan_to_cloud" output="screen" respawn="false" />
+	<node name="pointcloud_to_image" pkg="iarrc" type="pointcloud_to_image" output="screen" respawn="false" />
+	<node name="frame_inverted" pkg="iarrc" type="frame_inverted" output="screen" respawn="false" />
+	<node name="projection" pkg="iarrc" type="projection" output="screen" respawn="false" />
+	<node name="iarrc_line_detection" pkg="iarrc" type="iarrc_line_detection" output="screen" respawn="false" />
+	<node name="iarrc_planner" pkg="iarrc" type="planner" output="screen" respawn="false" />
+	<node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen" respawn="false" />
+	<node name="world_model" pkg="iarrc" type="world_model" output="screen" respawn="false" />
+	
+
+
+
+	<!-- <node name="iarrc_ -->
+		<!-- <param name="stoplight_topic" type="str" value="/light_change"/> -->
+		<!-- <param name="drive_speed" type="int" value="8"/> -->
+		<!-- <param name="speed_topic" type="str" value="/speed"/> -->
+	<!-- </node> -->
 
 </launch>
