@@ -13,10 +13,3 @@
 `cd src`
 
 `git clone git@github.com:RoboJackets/iarrc-software.git`
-
-### Install ROS Dependencies
-##### ROS Dependencies
-- [joy](http://wiki.ros.org/joy)
-- [uvc_camera](http://wiki.ros.org/uvc_camera)
-
-`sudo apt-get install ros-indigo-joy ros-indigo-uvc-camera`
