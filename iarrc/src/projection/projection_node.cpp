@@ -14,7 +14,7 @@ void imageCallback(const sensor_msgs::Image::ConstPtr& image) {
     cv_ptr = toCvShare(image, "bgr8");
     cv::Mat proj;
 
-    cv::warpPerspective(cv_ptr->image, proj, constants::H, cv::Size(800, 800));
+    cv::warpPerspective(cv_ptr->image, proj, constants::H, cv::Size(3000, 2000));
 
     std_msgs::Header header;
     CvImage projImage(header, "bgr8", proj);

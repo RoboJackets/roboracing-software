@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 
     // Serial port setup
     std::string serial_port_name;
-    nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB0"));
+    nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
 
