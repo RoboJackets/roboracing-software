@@ -98,9 +98,9 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
         green.data = true;
     } else {
-        cout << "Wait for it...";
+        //cout << "Wait for it...";
     }
-    cout << "   " << maxResult << endl;
+    //cout << "   " << maxResult << endl;
 
     bool_pub.publish(green);
 

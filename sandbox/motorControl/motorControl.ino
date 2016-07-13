@@ -3,7 +3,7 @@
 // Testing the traxxas VXL 3s ESC by Seth Bergman. This works on mine from my Traxxas Rustler VXL.
 // Please use with caution. I started with the Servo sketch by  Michal Rinott.
 
-#include <Servo.h>  ;  // create servo object to control a servo 
+#include <Servo.h>  // create servo object to control a servo 
 #include "Message.h"
 
 
@@ -59,7 +59,7 @@ void setup()
   delay(150);
   lcd.begin(16, 2);
   // Print a message to the LCD.
-  lcd.print("hello, world!");
+  lcd.print("Steer    Speed");
 } 
 
 void loop() {
@@ -68,9 +68,11 @@ void loop() {
   //printSpeedNHeading();
   lcd.setCursor(0, 1);
   // print the number of seconds since reset:
-  lcd.print("   ");
+  lcd.print("               ");
   lcd.setCursor(0, 1);
   lcd.print(desiredHeading);
+  lcd.setCursor(9,1);
+  lcd.print(desiredSpeed);
 }
 
 void printSpeedNHeading()
@@ -98,10 +100,17 @@ int update()
 {
   unsigned long startTime = millis();
   //Serial.println(m.getMessage2(desiredSpeed, desiredHeading)); //Check for new command
-  //m.getMessage2(desiredSpeed, desiredHeading);
-  desiredSpeed = 10;
-  desiredHeading = 0;
+  int ret = m.getMessage2(desiredSpeed, desiredHeading);
   limitDesiredValues(desiredSpeed, desiredHeading); //limit values if they are beyond limits
+
+  lcd.setCursor(0,0);
+  lcd.print(ret);
+  /*if(ret == -1) {
+    lcd.print("NO MESSAGE");
+  } else {
+    lcd.print("MESSAGE");
+  }*/
+
   
   updateHeading(desiredHeading);
   updateSpeed();

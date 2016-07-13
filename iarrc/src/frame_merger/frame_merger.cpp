@@ -17,7 +17,7 @@ Mat cones, lines, frame;
 bool mergeFrames() {
 	if(cones.rows != lines.rows || cones.cols != lines.cols)
 	{
-		//ROS_ERROR("Frame merger size mismatch");
+		ROS_ERROR("Frame merger size mismatch");
 		return false;
 	}
 	add(cones, lines, frame);

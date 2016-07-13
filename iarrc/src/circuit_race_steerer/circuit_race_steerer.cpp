@@ -24,7 +24,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
 	// Convert ROS to OpenCV
 	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
+		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
 	} catch (cv_bridge::Exception& e) {
 		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
@@ -34,6 +34,22 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	int cost_of_chosen = INT_MAX;
 	
 	Mat frame = cv_ptr->image;
+
+    for(int r = 0; r < frame.rows; r++) {
+        unsigned char* row = frame.ptr<unsigned char>(r);
+        for(int c = 0; c < frame.cols * frame.channels(); c+= frame.channels()) {
+            auto& blue = row[c];
+            auto& green = row[c+1];
+            auto& red = row[c+2];
+            if(blue == 255 && green == 0 && red == 0) {
+                blue = 0;
+            } else {
+                blue = green = red = 255;
+            }
+        }
+    }
+    cvtColor(frame, frame, CV_BGR2GRAY);
+
 	Mat collisionsImg;
 	Mat chosen_collisionsImg;
 	
@@ -63,7 +79,7 @@ void frameCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cout << endl;
 	
 	iarrc_msgs::iarrc_steering pmsg;
-	pmsg.angle = chosen_steer_angle - 3;
+	pmsg.angle = chosen_steer_angle;
 	//pmsg.angle = -1*chosen_steer_angle;
 	steer_pub.publish(pmsg);
 }
