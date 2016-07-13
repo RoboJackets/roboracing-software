@@ -1,4 +1,6 @@
-# iarrc-software
+# RoboRacing-software
+
+[![Join the chat at https://gitter.im/RoboJackets/iarrc-software](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RoboJackets/iarrc-software?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Installation
 
@@ -13,10 +15,3 @@
 `cd src`
 
 `git clone git@github.com:RoboJackets/iarrc-software.git`
-
-### Install ROS Dependencies
-##### ROS Dependencies
-- [joy](http://wiki.ros.org/joy)
-- [uvc_camera](http://wiki.ros.org/uvc_camera)
-
-`sudo apt-get install ros-indigo-joy ros-indigo-uvc-camera`

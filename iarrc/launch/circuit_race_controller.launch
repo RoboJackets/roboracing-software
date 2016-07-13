@@ -15,8 +15,7 @@
 	<node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen" respawn="false" />
 	<node name="world_model" pkg="iarrc" type="world_model" output="screen" respawn="false" />
 	
-
-
+	<!-- <node name="race_data" pkg="rosbag" type="record" args="-o race_data -a" /> -->
 
 	<!-- <node name="iarrc_ -->
 		<!-- <param name="stoplight_topic" type="str" value="/light_change"/> -->

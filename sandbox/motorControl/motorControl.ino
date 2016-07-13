@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 // Testing the traxxas VXL 3s ESC by Seth Bergman. This works on mine from my Traxxas Rustler VXL.
 // Please use with caution. I started with the Servo sketch by  Michal Rinott.
 
@@ -14,11 +16,13 @@ void limitDesiredValues(int& requestedSpeed, int& requestedHeading);
 int updateHeading(int val);
 int updateSpeed();
 
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
 //Variables for motors & state variables
 Servo VXL3sMotor;
-int VXL3sMotorPin=13;
+int VXL3sMotorPin=9;
 Servo SteeringMotor;
-int SteeringMotorPin=6;
+int SteeringMotorPin=10;
 
 Message m;
 
@@ -53,12 +57,20 @@ void setup()
   SteeringMotor.attach(SteeringMotorPin);
   motor(0);
   delay(150);
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("hello, world!");
 } 
 
 void loop() {
   
   update();
   //printSpeedNHeading();
+  lcd.setCursor(0, 1);
+  // print the number of seconds since reset:
+  lcd.print("   ");
+  lcd.setCursor(0, 1);
+  lcd.print(desiredHeading);
 }
 
 void printSpeedNHeading()

@@ -5,3 +5,7 @@
 *.files
 *.includes
 */CMakeFiles/*
+
+#Clion project files
+*/*.idea
+*.idea
