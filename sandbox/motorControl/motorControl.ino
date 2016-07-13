@@ -98,7 +98,9 @@ int update()
 {
   unsigned long startTime = millis();
   //Serial.println(m.getMessage2(desiredSpeed, desiredHeading)); //Check for new command
-  m.getMessage2(desiredSpeed, desiredHeading);
+  //m.getMessage2(desiredSpeed, desiredHeading);
+  desiredSpeed = 10;
+  desiredHeading = 0;
   limitDesiredValues(desiredSpeed, desiredHeading); //limit values if they are beyond limits
   
   updateHeading(desiredHeading);

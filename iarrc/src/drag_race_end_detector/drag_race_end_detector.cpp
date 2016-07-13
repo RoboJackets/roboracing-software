@@ -1,92 +1,114 @@
+#define DEBUG true
+#define FORWARDCHECK_DIST 1.5 // meters
+#define LINE_WIDTH_METERS (0.0254 * 2.5 * 3) // finish line
+#define FORWARDCHECK_WIDTH 1.0 // meters
+#define FORWARDCHECK_HEIGHT 1.0 // meters
+
 #include <stdio.h>
 #include <ros/ros.h>
 #include <ros/subscriber.h>
 #include <sensor_msgs/Image.h>
-#include <std_msgs/Bool.h>
 #include <cv_bridge/cv_bridge.h>
-#include <opencv/cv.h>
+#include <stdlib.h>
+#include <std_msgs/Bool.h>
+#include <iarrc/image_utils.hpp>
+#include <iarrc/constants.hpp>
+#include <vector>
+#include <cmath>
 
-using namespace cv;
 using namespace std;
+using namespace cv;
+using namespace image_utils;
 
-ros::Publisher img_pub;
-ros::Publisher bool_pub;
+ros::Publisher finishline_pub;
 sensor_msgs::Image rosimage;
-Mat element;
+std_msgs::Bool stop;
+
+sensor_msgs::Image CvMatToRosImage(cv::Mat& img, std::string encoding) {
+	cv_bridge::CvImage cv_img;
+	sensor_msgs::Image ros_img;
+	cv_img.image=img;
+    cv_img.encoding=encoding;
+    cv_img.toImageMsg(ros_img);
+    return ros_img;
+}
 
 // ROS image callback
-void ImageCB(const sensor_msgs::Image::ConstPtr& msg) { 
-	cv_bridge::CvImagePtr cv_ptr;
+void ImageSaverCB(const sensor_msgs::Image::ConstPtr& msg) {
+    cv_bridge::CvImagePtr cv_ptr;
 
 	// Convert ROS to OpenCV
 	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+		cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
 	} catch (cv_bridge::Exception& e) {
-		ROS_ERROR("CV-Bridge error: %s", e.what());
+		ROS_ERROR("cv_bridge exception: %s", e.what());
 		return;
 	}
-	
-	Mat gray;
-	//Rect ROI(0, 2*cv_ptr->image.rows/3, cv_ptr->image.cols, cv_ptr->image.rows/3);
-	Rect ROI(0, 3*cv_ptr->image.rows/4, cv_ptr->image.cols, cv_ptr->image.rows/4);
 
-	cvtColor(cv_ptr->image(ROI), gray, CV_BGR2GRAY);
-	
-	equalizeHist(gray, gray);
+    Mat image = cv_ptr->image.clone();
+    Mat smallimage;
+    const float line_width_pixels = LINE_WIDTH_METERS * constants::pixels_per_meter;
+    const float image_scale = 3/line_width_pixels;
+    resize(image, smallimage, Size(image.cols*image_scale, image.rows*image_scale), 0, 0, INTER_LANCZOS4);
+    static const Rect forwardRect(
+            image_scale*(image.cols/2 - constants::pixels_per_meter * FORWARDCHECK_WIDTH/2),
+            image_scale*(image.rows - constants::pixels_per_meter * (FORWARDCHECK_HEIGHT + FORWARDCHECK_DIST)),
+            image_scale*(constants::pixels_per_meter * FORWARDCHECK_WIDTH),
+            image_scale*(constants::pixels_per_meter * FORWARDCHECK_HEIGHT)
+    );
 
-	threshold(gray, gray, 230, 255, THRESH_BINARY);
-	
-	Mat output = Mat::zeros(cv_ptr->image.rows, cv_ptr->image.cols, CV_8UC1);
-	
-	erode(gray, gray, element);
-	dilate(gray, gray, element);
-	
-	Mat scanline = Mat::zeros(gray.rows, gray.cols, CV_8UC1);
-	
-	line(scanline, Point(0,scanline.rows-100), Point(scanline.cols,scanline.rows-100), Scalar::all(1), 10);
-	
-	multiply(scanline, gray, output);
-	
-	int count = sum(output)[0] / 255;
-	
-	double percent = ((double)count) / 64.;
-	if(percent > 30)
-	{
-		//std::cout << percent << "%" << std::endl;
-		ROS_INFO("Race end detected.");
-		std_msgs::Bool b;
-		b.data = true;
-		bool_pub.publish(b);
-	}
-	
-	//gray.copyTo(output(ROI));
+if(DEBUG) {
+    Mat debug;
+    namedWindow("Debug");
+    smallimage.copyTo(debug);
+    rectangle(debug, forwardRect, Scalar(255, 0, 255));
+    imshow("Debug", debug);
+    waitKey(100);
+}
+//    cerr << "forwardrect: " << forwardrect << endl;
 
-	cv_ptr->image=output;
-	cv_ptr->encoding="mono8";
-	cv_ptr->toImageMsg(rosimage);
-	img_pub.publish(rosimage);
+//    cerr << "smallimage height" << smallimage.rows << endl;
+//    cerr << "smallimage width" << smallimage.rows << endl;
+
+    Mat forwardCheck(smallimage, forwardRect);
+
+//    cerr << "Made ROIs" << endl;
+
+    Mat finImage = 255 * Mat::ones(smallimage.size(), CV_8UC1);
+
+    LINES foundLines;
+    foundLines = hasLines(forwardCheck);
+    if(foundLines == LINES_WHITE || foundLines == LINES_BOTH)
+	stop.data = true;
+
+    finishline_pub.publish(stop);
 }
 
 int main(int argc, char* argv[]) {
-	ros::init(argc, argv, "iarrc_race_end_detector");
+    ros::init(argc, argv, "iarrc_finishline");
 	ros::NodeHandle nh;
-	ros::NodeHandle nhp("~");
+    ros::NodeHandle nhp("~");
 
-	std::string img_topic;
-	nhp.param(std::string("img_topic"), img_topic, std::string("/image_raw"));
+    // FIXME: Not expected behavior
+    if(argc >= 2) {
+	    //cerr << "unexpected arguments" << endl;//help(std::cerr);
+	    exit(1);
+    }
 
-	ROS_INFO("Image topic:= %s", img_topic.c_str());
+    std::string img_topic;
+    nhp.param(std::string("img_topic"), img_topic, std::string("/image_projected"));
 
-	element = getStructuringElement(MORPH_ELLIPSE, Size(3, 3), Point(1,1));
+    ROS_INFO("Image topic:= %s", img_topic.c_str());
 
-	// Subscribe to ROS topic with callback
-	ros::Subscriber img_sub = nh.subscribe(img_topic, 1, ImageCB);
-	img_pub = nh.advertise<sensor_msgs::Image>("/image_end", 1);
-	bool_pub = nh.advertise<std_msgs::Bool>("/race_end",1);
+    // Subscribe to ROS topic with callback
+    ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageSaverCB);
+    finishline_pub = nh.advertise<std_msgs::Bool>("/finishline", 1);
+    stop.data = false;
 
+	ROS_INFO("IARRC finishline detection node ready.");
 
-	ROS_INFO("IARRC race ender node ready.");
 	ros::spin();
-	ROS_INFO("Shutting down IARRC race ender node.");
-	return 0;
+	ROS_INFO("Shutting down IARRC finishline detection node.");
+    return 0;
 }
+

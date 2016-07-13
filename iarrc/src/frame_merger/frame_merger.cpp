@@ -26,7 +26,7 @@ bool mergeFrames() {
 
 void conesCB(const sensor_msgs::Image::ConstPtr& msg) {
 	cv_bridge::CvImagePtr cv_ptr;
-	
+
 	try {
 		cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
 	} catch (cv_bridge::Exception& e) {
@@ -34,7 +34,7 @@ void conesCB(const sensor_msgs::Image::ConstPtr& msg) {
 		return;
 	}
 	cones = cv_ptr->image;
-	
+
 	if(mergeFrames()) {
 		cv_ptr->image = frame;
 		cv_ptr->encoding = "mono8";

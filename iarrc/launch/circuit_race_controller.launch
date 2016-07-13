@@ -2,7 +2,6 @@
 
         <!-- Include other launch files -->
 	<include file="$(find iarrc)/launch/ps3eye.launch"/>
-	<include file="$(find sick_tim)/launch/sick_tim551_2050001.launch"/>
 	<include file="$(find iarrc)/launch/motor_relay.launch"/>
 
 	<!-- Circuit Race Controller node -->

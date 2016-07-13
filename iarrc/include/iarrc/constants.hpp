@@ -39,13 +39,11 @@ namespace constants {
   double camera_laser_offset = .33; //meters
   int image_pixel_delta = camera_laser_offset * pixels_per_meter;  //pixels
   int image_size = 800; //pixels
-  double radial_steps = 30;
+  double radial_steps = 60;
 
   cv::Mat H = (cv::Mat_<float>(3, 3) << -2.083084279737351, -15.21667662881241, 2140.192767483677,
                                          6.439293542825908e-15, -24.26180514046955, 3708.527196653065,
                                          1.517883041479706e-17, -0.01016138673042565, 1);
-
 }
-
 
 #endif // CONSTANTS_HPP
