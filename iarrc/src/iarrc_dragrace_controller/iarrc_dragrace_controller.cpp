@@ -32,8 +32,6 @@ int main(int argc, char** argv)
     	nhp->param(std::string("stoplight_topic"), stoplight_topic, std::string("/light_change"));
     	stoplight_subscriber = nh->subscribe(stoplight_topic, 1, stoplightCB);
 
-	nhp->param(std::string("race_end_topic"), race_end_topic, std::string("/race_end"));
-
 	nhp->param(std::string("drive_speed"), drive_speed, 14);
 
 	std::string speed_topic;

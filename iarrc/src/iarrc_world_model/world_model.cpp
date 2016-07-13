@@ -23,7 +23,7 @@ void bigCB() {
     cv::copyMakeBorder(cameraImagePtr.get()->image, cameraCopy, 
         constants::image_pixel_delta, 
         constants::image_size - constants::image_pixel_delta, 
-        0, 0, cv::BORDER_CONSTANT, 128);
+        0, 0, cv::BORDER_CONSTANT, 255);
 
     cv::Mat weighted;
     cv::addWeighted(obstacleImgPtr.get()->image, .5, cameraCopy, .5, 0, weighted);

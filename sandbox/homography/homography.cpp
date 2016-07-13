@@ -12,25 +12,26 @@ int main(int argc, char** argv) {
 
   Mat frame;
 
-  cap >> frame;
+//  cap >> frame;
  
   std::vector<cv::Point2f> corners;
-  findChessboardCorners(frame, Size(8, 6), corners);
+ // findChessboardCorners(frame, Size(8, 6), corners);
 
-  namedWindow("Frame");
-  imshow("Frame", frame);
-  cvWaitKey();
+//  namedWindow("Frame");
+//  imshow("Frame", frame);
+//  cvWaitKey();
 
+//  imwrite("newdump.jpg", frame);
   std::vector<Point2f> src, dest;
-  src.push_back(corners.at(0));
-  src.push_back(corners.at(7));
-  src.push_back(corners.at(40));
-  src.push_back(corners.at(47));
+  src.push_back(Point2f(177, 91));
+  src.push_back(Point2f(410, 98));
+  src.push_back(Point2f(64, 124));
+  src.push_back(Point2f(516, 138));
 
-  dest.push_back(Point2f(391, 687));
-  dest.push_back(Point2f(409, 687));
-  dest.push_back(Point2f(391, 700));
-  dest.push_back(Point2f(409, 700));
+  dest.push_back(Point2f(278.08, 217.8));
+  dest.push_back(Point2f(278.08+243.84, 217.8));
+  dest.push_back(Point2f(278.08, 217.8+304.8));
+  dest.push_back(Point2f(278.08+243.84, 217.8+304.8));
 
   std::cout << corners.size() << std::endl;
   Mat H = getPerspectiveTransform(src, dest);
@@ -39,7 +40,7 @@ int main(int argc, char** argv) {
   Mat transform;
   warpPerspective(frame, transform, H, Size(800, 800));
 
-  imshow("Frame", transform);
-  cvWaitKey();
+//  imshow("Frame", transform);
+//  cvWaitKey();
 
 }

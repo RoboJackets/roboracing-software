@@ -45,7 +45,10 @@ void convertToImgCB(const sensor_msgs::PointCloud2 cloud_in) {
     }
 
     circle(img, Point(origin_y, origin_x), 0.3 * constants::pixels_per_meter, 255, -1);
+    rectangle(img, Point(origin_y - constants::pixels_per_meter, origin_x), Point(origin_y + constants::pixels_per_meter, origin_x + constants::pixels_per_meter*2), 255, -1); 
     obstacle_img_pub.publish(cv_bridge::CvImage(std_msgs::Header(), "mono8", img).toImageMsg());
+    circle(img, Point(origin_y, origin_x), 1.0 * constants::pixels_per_meter, 255, 20);
+    circle(img, Point(origin_y, origin_x), 1.0 * constants::pixels_per_meter, 0, 10);
 }
 
 int main(int argc, char* argv[]) {
