@@ -113,7 +113,7 @@ Mat findBlueLines(const Mat& image) {
             uchar& S = row[c+1];
             uchar& V = row[c+2];
 
-            if(abs(H - 108) < 5 && S > 90) {
+            if(abs(H - 108) < 5 && S > 50) {
                 out_row[c] = 255;
                 out_row[c+1] = out_row[c+2] = 0;
             } else {

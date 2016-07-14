@@ -71,7 +71,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     switch(min_index) {
     case 0: // left
         rectangle(frame, leftRect, Scalar(255), 3);
-        steering_msg.angle = -90;
+        steering_msg.angle = -50;
         break;
     case 1: // center
         rectangle(frame, centerRect, Scalar(255), 3);
@@ -79,7 +79,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         break;
     case 2: // right
         rectangle(frame, rightRect, Scalar(255), 3);
-        steering_msg.angle = 90;
+        steering_msg.angle = 50;
         break;
     }
 
