@@ -1,0 +1,4 @@
+<launch>
+	<node name="color_detector" pkg="iarrc" type="color_detector" output="screen">
+	</node>
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+	<node name="speed_controller" pkg="iarrc" type="speed_controller" output="screen">
+	</node>
+</launch>
