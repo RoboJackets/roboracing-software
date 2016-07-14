@@ -1,4 +1,5 @@
 <launch>
 	<node name="speed_controller" pkg="iarrc" type="speed_controller" output="screen">
+        <param name="go_speed" value="12"/>
 	</node>
 </launch>

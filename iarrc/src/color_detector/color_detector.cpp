@@ -63,6 +63,11 @@ Mat findYellowLines(const Mat& image) {
         }
     }
 
+    auto kernel_size = 3;
+    Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+
+    erode(output, output, erosion_kernel);
+
     return output;
 }
 
@@ -91,6 +96,11 @@ Mat findOrange(const Mat& image) {
             }
         }
     }
+
+    auto kernel_size = 11;
+    Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+
+    erode(output, output, erosion_kernel);
 
     return output;
 }

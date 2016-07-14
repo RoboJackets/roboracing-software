@@ -117,6 +117,7 @@ int main(int argc, char** argv) {
     init(argc, argv, "speed_controller");
 
     NodeHandle nh;
+    NodeHandle nhp("~");
 
     Subscriber img_saver_sub = nh.subscribe("/colors_img", 1, ImageCB);
     Subscriber stoplight_sub = nh.subscribe("/light_change", 1, StoplightCB);
@@ -125,10 +126,11 @@ int main(int argc, char** argv) {
     speed_pub = nh.advertise<iarrc_msgs::iarrc_speed>("/speed", 1);
 
     int max_crosses;
-    nh.param("max_crosses", max_crosses, int(1));
+    nhp.param("max_crosses", max_crosses, int(1));
     
     int go_speed;
-    nh.param("go_speed", go_speed, int(9));
+    nhp.param("go_speed", go_speed, int(9));
+    ROS_INFO_STREAM("Go Speed is: " << go_speed);
 
     bool prev_stoplight_state = false;
 
