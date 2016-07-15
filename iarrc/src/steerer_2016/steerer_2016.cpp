@@ -7,6 +7,7 @@
 #include <climits>
 #include <iarrc/constants.hpp>
 #include <iarrc_msgs/iarrc_steering.h>
+#include <iarrc_msgs/iarrc_speed.h>
 
 using namespace std;
 using namespace cv;
@@ -15,6 +16,12 @@ using namespace ros;
 Publisher img_pub;
 Publisher steer_pub;
 
+int speed;
+
+void SpeedCallback(const iarrc_msgs::iarrc_speed::ConstPtr& msg)
+{
+	speed = msg->speed;
+}
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
 	Mat frame;
@@ -46,22 +53,28 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     
 
-    auto leftRect = Rect(0,0,213,480);
-    auto centerRect = Rect(213,0,214,480);
-    auto rightRect = Rect(427,0,213,480);
+    auto leftRect = Rect(0,0,128,480);
+    auto leftCenterRect = Rect(128,0,128,480);
+    auto centerRect = Rect(256,0,128,480);
+    auto rightCenterRect = Rect(384,0,128,480);
+    auto rightRect = Rect(512,0,128,480);
 
     auto left = frame(leftRect);
+    auto leftCenter = frame(leftCenterRect);
     auto center = frame(centerRect);
+    auto rightCenter = frame(rightCenterRect);
     auto right = frame(rightRect);
 
     auto leftCount = countNonZero(left);
+    auto leftCenterCount = countNonZero(leftCenter);
     auto centerCount = countNonZero(center);
+    auto rightCenterCount = countNonZero(rightCenter);
     auto rightCount = countNonZero(right);
 
     // Bias towards going straight
     centerCount *= 0.90;
 
-    vector<int> counts = {leftCount, centerCount, rightCount};
+    vector<int> counts = {leftCount, leftCenterCount, centerCount, rightCenterCount, rightCount};
 
     auto min_index = distance(counts.begin(),min_element(counts.begin(),counts.end()));
 
@@ -71,16 +84,28 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     switch(min_index) {
     case 0: // left
         rectangle(frame, leftRect, Scalar(255), 3);
-        steering_msg.angle = -50;
+        steering_msg.angle = -20;
         break;
-    case 1: // center
+    case 1: // left center
+        rectangle(frame, leftCenterRect, Scalar(255), 3);
+        steering_msg.angle = -10;
+        break;
+    case 2: // center
         rectangle(frame, centerRect, Scalar(255), 3);
         steering_msg.angle = 0;
         break;
-    case 2: // right
-        rectangle(frame, rightRect, Scalar(255), 3);
-        steering_msg.angle = 50;
+    case 3: // right center
+        rectangle(frame, rightCenterRect, Scalar(255), 3);
+        steering_msg.angle = 10;
         break;
+    case 4: // right
+        rectangle(frame, rightRect, Scalar(255), 3);
+        steering_msg.angle = 20;
+        break;
+    }
+
+    if (speed == 0) {
+        steering_msg.angle = 0;
     }
 
     steer_pub.publish(steering_msg);

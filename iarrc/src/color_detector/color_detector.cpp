@@ -28,7 +28,7 @@ Mat findWhiteLines(const Mat& image) {
             uchar& green = row[c+1];
             uchar& red = row[c+2];
 
-            if(blue > 230 && green > 230 && red > 230) {
+            if(blue > 220 && green > 220 && red > 220) {
                 blue = green = red = 255;
             } else {
                 blue = green = red = 0;
@@ -54,7 +54,8 @@ Mat findYellowLines(const Mat& image) {
             uchar& S = row[c+1];
             uchar& V = row[c+2];
 
-            if(abs(H - 30) < 5 && S > 50 && V > 50) {
+            //if(abs(H - 30) < 5 && S > 50 && V > 50) {
+            if(abs(H - 30) < 0 && S > 50 && V > 50) {       //dragrace_setting
                 out_row[c] = 0;
                 out_row[c+1] = out_row[c+2] = 255;
             } else {
@@ -87,7 +88,7 @@ Mat findOrange(const Mat& image) {
             uchar& S = row[c+1];
             uchar& V = row[c+2];
 
-            if(abs(H - 15) < 5 && S > 70 && V > 50) {
+            if(abs(H - 15) < 5 && S > 70 && V > 40) {
                 out_row[c] = 0;
                 out_row[c+1] = 127;
                 out_row[c+2] = 255;
