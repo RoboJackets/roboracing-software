@@ -27,6 +27,8 @@ bool stoplight_state = false;
 
 int number_of_crosses = 0;
 
+bool flag = false;
+
 int getWidth(const Mat& image) {
 
     int width = 0;
@@ -79,7 +81,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
 
-    Rect ROI(0,310,640,50);
+    Rect ROI(0,270,640,50);
 
     frame = frame(ROI);
 
@@ -90,7 +92,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     //ROS_INFO_STREAM("Count: " << count);
     //ROS_INFO_STREAM("Width: " << width);
 
-    if(state == LOW && count > 10000 && width > 300) {
+    if(state == LOW && count > 8000 && width > 300) {
         state = HIGH;
     } else if(state == HIGH && count < 1000) {
         // We crossed the line!
@@ -155,6 +157,15 @@ int main(int argc, char** argv) {
         if(should_be_moving) {
             speed_msg.speed = go_speed;
         } else {
+            /*if (number_of_crosses >= max_crosses && !flag) {
+                for (int i = go_speed; i >-15; i--) {
+                    speed_msg.speed = i;
+                    speed_pub.publish(speed_msg);
+                    sleep(.05);
+                    cout << "Desired speed: " << i << endl;
+                }
+                    flag = !flag;
+            }*/
             speed_msg.speed = 0;
         }
         speed_pub.publish(speed_msg);

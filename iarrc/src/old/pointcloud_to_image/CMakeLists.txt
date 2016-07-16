@@ -1,0 +1,2 @@
+add_executable(pointcloud_to_image pointcloud_to_image.cpp)
+target_link_libraries(pointcloud_to_image ${catkin_LIBRARIES})

@@ -1,11 +1,10 @@
 <launch>
 	<group>
-		<!--<include file="$(find iarrc_launch)/launch/dragrace_controller.launch" />-->
 		<include file="$(find iarrc)/launch/ps3eye.launch" />
 		<include file="$(find iarrc)/launch/motor_relay.launch" />
 		<include file="$(find iarrc)/launch/stoplight_watcher.launch" />
-		<include file="$(find iarrc)/launch/color_detector.launch" />
+		<include file="$(find iarrc)/launch/color_detector_dragrace.launch" />
 		<include file="$(find iarrc)/launch/speed_controller.launch" />
-		<include file="$(find iarrc)/launch/steerer.launch" />
+		<include file="$(find iarrc)/launch/steerer_dragrace.launch" />
 	</group>
 </launch>

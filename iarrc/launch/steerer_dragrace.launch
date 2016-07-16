@@ -1,0 +1,4 @@
+<launch>
+	<node name="steerer_dragrace" pkg="iarrc" type="steerer_dragrace" output="screen">
+	</node>
+</launch>

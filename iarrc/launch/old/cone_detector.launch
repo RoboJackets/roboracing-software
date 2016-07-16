@@ -1,0 +1,6 @@
+<launch>
+	<node name="cone_detector" pkg="iarrc" type="iarrc_cone_detector" output="screen" respawn="false">
+		<param name="cone_max" type="double" value="0.08"/>
+		<param name="cone_min" type="double" value="0.02"/>
+	</node>
+</launch>
