@@ -55,7 +55,7 @@ Mat findYellowLines(const Mat& image) {
             uchar& V = row[c+2];
 
             //if(abs(H - 30) < 10 && S > 50 && V > 30) {
-            if(abs(H - 30) < 0 && S > 50 && V > 50) {       //dragrace_setting
+            if(abs(H - 30) < 0 && S > 50 && V > 50) {       //No yellow lines to be detected in drag race (<0 never true)
                 out_row[c] = 0;
                 out_row[c+1] = out_row[c+2] = 255;
             } else {

@@ -51,7 +51,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
    
-    //drag
+    //dragrace steerer uses limited steer directions and angles because track is straight
     auto leftRect = Rect(0,0,213,480);
     auto centerRect = Rect(213,0,214,480);
     auto rightRect = Rect(417,0,213,480);

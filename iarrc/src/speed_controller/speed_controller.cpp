@@ -157,15 +157,6 @@ int main(int argc, char** argv) {
         if(should_be_moving) {
             speed_msg.speed = go_speed;
         } else {
-            /*if (number_of_crosses >= max_crosses && !flag) {
-                for (int i = go_speed; i >-15; i--) {
-                    speed_msg.speed = i;
-                    speed_pub.publish(speed_msg);
-                    sleep(.05);
-                    cout << "Desired speed: " << i << endl;
-                }
-                    flag = !flag;
-            }*/
             speed_msg.speed = 0;
         }
         speed_pub.publish(speed_msg);

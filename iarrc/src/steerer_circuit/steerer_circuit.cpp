@@ -52,7 +52,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cvtColor(frame, frame, CV_BGR2GRAY);
 
     
-    //drag
+    //Circuit race steerer has more rectangles for sharper turns
     auto leftRect = Rect(0,0,128,480);
     auto leftCenterRect = Rect(128,0,128,480);
     auto centerRect = Rect(256,0,128,480);

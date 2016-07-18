@@ -178,6 +178,7 @@ int main(int argc, char** argv) {
 
     NodeHandle nh;
 
+    //Blacks out front bumper from image
     vector<Mat> mask_hsegments = {
         Mat(40,205,CV_8UC3, CV_RGB(1,1,1)),
         Mat::zeros(40,230,CV_8UC3),
