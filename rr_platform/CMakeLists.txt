@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(iarrc)
+project(rr_platform)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
@@ -47,9 +47,5 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/stoplight_watcher)
-add_subdirectory(src/color_detector_dragrace)
-add_subdirectory(src/color_detector_circuit)
-add_subdirectory(src/steerer_dragrace)
-add_subdirectory(src/steerer_circuit)
-add_subdirectory(src/speed_controller)
+add_subdirectory(src/rr_platform_joystick)
+add_subdirectory(src/rr_platform_motor_relay_node)

@@ -2,7 +2,7 @@
 
         <!-- Include other launch files -->
 	<include file="$(find iarrc)/launch/ps3eye.launch"/>
-	<include file="$(find iarrc)/launch/motor_relay.launch"/>
+	<include file="$(find rr_platform)/launch/motor_relay.launch"/>
 
 	<!-- Circuit Race Controller node -->
 	<node name="iarrc_circuit_race_controller" pkg="iarrc" type="iarrc_circuit_race_controller" output="screen" respawn="false" />

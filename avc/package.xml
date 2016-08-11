@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package>
-  <name>iarrc</name>
+  <name>avc</name>
   <version>0.0.0</version>
-  <description>The iarrc package</description>
+  <description>The avc package</description>
 
   <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-  <maintainer email="joshua.morton@gatech.edu">Joshua Morton</maintainer>
+  <maintainer email="justinyzheng@gmail.com">Justin Zheng</maintainer>
 
 
 
@@ -20,7 +20,7 @@
   <url type="website">http://www.github.com/robojackets/roboracing-software</url>
 
 
-  <author email="matthew.barulic@gmail.com">Matthew Barulic</author>
+  <author email="justinyzheng@gmail.com">Justin Zheng</author>
 
 
   <buildtool_depend>catkin</buildtool_depend>

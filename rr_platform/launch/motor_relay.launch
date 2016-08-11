@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="iarrc" type="iarrc_motor_relay_node" name="motor_relay" output="screen" respawn="false">
+  <node pkg="rr_platform" type="rr_platform_motor_relay_node" name="rr_platform_motor_relay_node" output="screen" respawn="false">
     <param name="speed_topic" type="string" value="/speed" />
     <param name="steering_topic" type="string" value="/steering" />
     <param name="serial_port" type="string" value="/dev/ttyACM0" />

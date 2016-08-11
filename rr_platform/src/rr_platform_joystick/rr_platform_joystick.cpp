@@ -29,7 +29,7 @@ void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "iarrc_joystick");
+    ros::init(argc, argv, "rr_platform_joystick");
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
@@ -50,9 +50,9 @@ int main(int argc, char** argv)
     nhp.param(std::string("angle_max"), angle_max, 20);
     nhp.param(std::string("speed_max"), speed_max, 10);
 
-	ROS_INFO("IARRC joystick node ready.");
+	ROS_INFO("joystick node ready.");
 	ros::spin();
-	ROS_INFO("Shutting down IARRC joystick node.");
+	ROS_INFO("Shutting down joystick node.");
 
     return 0;
 }
