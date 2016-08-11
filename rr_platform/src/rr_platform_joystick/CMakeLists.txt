@@ -1,3 +1,0 @@
-add_executable(rr_platform_joystick rr_platform_joystick.cpp)
-target_link_libraries(rr_platform_joystick ${catkin_LIBRARIES})
-add_dependencies(rr_platform_joystick ${iarrc_msgs_EXPORTED_TARGETS})

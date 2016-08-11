@@ -6,7 +6,7 @@
 	</node>
 
     <!-- rr_platform joystick node -->
-	<node name="rr_platform_joystick" pkg="rr_platform" type="rr_platform_joystick" output="screen" respawn="false">
+	<node name="joystick" pkg="rr_platform" type="joystick" output="screen" respawn="false">
 		<param name="joystick_topic" type="str" value="/joy"/>
 		<param name="speed_topic" type="str" value="/speed"/>
 		<param name="steering_topic" type="str" value="/steering"/>

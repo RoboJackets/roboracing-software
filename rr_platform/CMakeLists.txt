@@ -47,5 +47,5 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/rr_platform_joystick)
-add_subdirectory(src/rr_platform_motor_relay_node)
+add_subdirectory(src/joystick)
+add_subdirectory(src/motor_relay_node)

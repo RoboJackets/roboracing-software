@@ -1,0 +1,7 @@
+<launch>
+
+	<node name="planner" pkg="avc" type="planner" output="screen" respawn="false">
+		<param name="timestep" type="double" value = "1.0" />
+	</node>
+
+</launch>

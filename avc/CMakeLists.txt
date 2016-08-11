@@ -47,4 +47,4 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-#add_subdirectory(src/iarrc_joystick)
+add_subdirectory(src/planner)
