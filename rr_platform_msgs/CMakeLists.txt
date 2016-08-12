@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(iarrc_msgs)
+project(rr_platform_msgs)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
@@ -19,8 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  iarrc_speed.msg
-  iarrc_steering.msg
+  speed.msg
+  steering.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
