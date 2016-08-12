@@ -3,9 +3,17 @@
 #include <std_msgs/Header.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
-#include <iarrc_msgs/iarrc_speed.h>
+#include <rr_platform_msgs/speed.h>
+#include <rr_platform_msgs/steering.h>
 #include "path.cpp"
 #include <avc/constants.hpp>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/transforms.h>
 
 
 class planner {
@@ -13,14 +21,26 @@ public:
 	planner();
 	~planner();
 private:
-	ros::Subscriber speed_sub;
+	ros::Subscriber map_sub;
+	ros::Publisher speed_pub;
+	ros::Publisher steer_pub;
 
 	const double PI = 3.1415926535;
 	const double MAX_STEER_ANGLE = 30;
 	const int NUMBER_PATHS = 10;
-	const double timestep = 0.1;
+	const double MIN_SPEED = 0.5;
+	const double MAX_SPEED = 4.0;
+	const double TIMESTEP = 2.0;
 
-	double velocity;
+	double SPEED_INCREMENT;
+	double ANGLE_INCREMENT;
+	double TIME_INCREMENT;
+	double SEARCH_RADIUS;
+
+	double deltaX;
+	double deltaY;
+	double deltaTheta;
+
 	double desired_steer_angle;
 	double desired_velocity;
 
@@ -30,7 +50,9 @@ private:
 		double y;
 		double theta;
 	};
-	pose calculateStep(double x, double y, double theta, double velocity, double steer_angle, double timestep);
-	path calculateCost(const std::vector<path>);
+	pose calculateStep(double x, double y, double theta, double speed, double steer_angle, double timestep);
+	double calculatePathCost(double velocity, double steer_angle, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
+	int costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
+	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
 
 };

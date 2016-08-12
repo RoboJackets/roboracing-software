@@ -1,7 +1,11 @@
 <launch>
 
 	<node name="planner" pkg="avc" type="planner" output="screen" respawn="false">
-		<param name="timestep" type="double" value = "1.0" />
+		<param name="speed_increment" type="double" value ="0.5" />
+		<param name="angle_increment" type="double" value ="3.0" />
+		<param name="time_increment" type="double" value ="1.0" />
+		<param name="search_radius" type="double" value ="0.28" /> 
+
 	</node>
 
 </launch>
