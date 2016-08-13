@@ -5,7 +5,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <rr_platform_msgs/speed.h>
 #include <rr_platform_msgs/steering.h>
-#include "path.cpp"
+#include <vector>
 #include <avc/constants.hpp>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -14,28 +14,30 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
+#include <nav_msgs/Path.h>
+#include <geometry_msgs/PoseStamped.h>
 
 
 class planner {
 public:
 	planner();
-	~planner();
 private:
 	ros::Subscriber map_sub;
 	ros::Publisher speed_pub;
 	ros::Publisher steer_pub;
+	ros::Publisher path_pub;
 
 	const double PI = 3.1415926535;
 	const double MAX_STEER_ANGLE = 30;
-	const int NUMBER_PATHS = 10;
 	const double MIN_SPEED = 0.5;
 	const double MAX_SPEED = 4.0;
-	const double TIMESTEP = 2.0;
+	const double TIMESTEP = 1.5;
 
 	double SPEED_INCREMENT;
 	double ANGLE_INCREMENT;
 	double TIME_INCREMENT;
 	double SEARCH_RADIUS;
+	double DISTANCE_INCREMENT;
 
 	double deltaX;
 	double deltaY;
@@ -50,6 +52,7 @@ private:
 		double y;
 		double theta;
 	};
+
 	pose calculateStep(double x, double y, double theta, double speed, double steer_angle, double timestep);
 	double calculatePathCost(double velocity, double steer_angle, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
 	int costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
