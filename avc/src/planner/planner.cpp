@@ -77,6 +77,14 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 				best_path_speed = speed;
 				best_path_angle = angle;
 				lowest_cost = cost;
+			} else if (cost == lowest_cost) {
+				if (angle < best_path_angle) {
+					best_path_speed = speed;
+					best_path_angle = angle;
+				} else if (speed > best_path_speed) {
+					best_path_speed = speed;
+					best_path_angle = angle;
+				}
 			}
 		}
 	}
