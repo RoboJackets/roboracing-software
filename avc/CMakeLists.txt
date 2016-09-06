@@ -38,6 +38,9 @@ catkin_package(
 ## Build ##
 ###########
 
+add_executable(color_detector_avc src/color_detector_avc.cpp)
+target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 ## Specify additional locations of header files
 include_directories(
   include
