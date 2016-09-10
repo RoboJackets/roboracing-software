@@ -24,6 +24,8 @@ Mat detectGrey(const Mat& image){
 
 	Mat output(image.rows, image.cols, CV_8UC3);
 
+	//To-DO: convert to HSV here
+
 		for(int r = 0; r < frame.rows; r++){
 			uchar* row = frame.ptr<uchar>(r);
 			uchar* out_row = output.ptr<uchar>(r);
@@ -78,25 +80,12 @@ int main(int argc, char** argv){
 
 	NodeHandle nh;
 
-	/* TODO: Make this code not process the top half of the image
-			 using masks and things.
+	//Doesn't proccess the top half of the picture because 
 
-	vector<Mat> mask_hsegments = {
-	    Mat(40,205,CV_8UC3, CV_RGB(1,1,1)),
-	    Mat::zeros(40,230,CV_8UC3),
-	    Mat(40,205,CV_8UC3, CV_RGB(1,1,1))
+	vector<Mat> mask= {
+	    Mat::zeros(240,640,CV_8UC3),
+	    Mat::ones(240,640,CV_8UC3)
 	};
-
-	hconcat(mask_hsegments, mask_horizontal);
-	vector<Mat> mask_segments = {
-	    Mat::zeros(200,640,CV_8UC3),
-	    Mat(200,640,CV_8UC3, CV_RGB(1,1,1)),
-	    mask_horizontal,
-	    Mat::zeros(40,640,CV_8UC3)
-	};
-
-	vconcat(mask_segments, mask);
-	*/
 
 	Subscriber img_saver_sub = nh.subscribe("/ps3_eye/image_raw", 1, ImageCB);
 	
