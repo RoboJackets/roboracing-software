@@ -24,17 +24,18 @@ Mat detectGrey(const Mat& image){
 
 	Mat output(image.rows, image.cols, CV_8UC3);
 
-	//To-DO: convert to HSV here
+	//convert to HSV here and measure S levels
+	cvtColor(frame, frame, CV_BGR2HSV)
 
 		for(int r = 0; r < frame.rows; r++){
 			uchar* row = frame.ptr<uchar>(r);
 			uchar* out_row = output.ptr<uchar>(r);
 			for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()){
-				uchar& B = row[c];
-				uchar& G = row[c + 1];
-				uchar& R = row[c + 2];
+				uchar& H = row[c];
+				uchar& S = row[c + 1];
+				uchar& V = row[c + 2];
 
-				if(B == G && G == R){
+				if(S < 30){
 					out_row[c] = out_row[c + 1] = out_row[c + 2] = 0;
 				} else {
 					out_row[c] = out_row[c + 1] = out_row[c + 2] = 255;
