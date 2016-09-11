@@ -12,12 +12,9 @@ using namespace ros;
 
 using uchar = unsigned char;
 
-//img size: 480 x 640
+//img size: 480 x 640 for camera
 
 Publisher img_pub;
-
-int CBcount = 0;
-
 Mat mask;
 
 Mat detectGrey(const Mat& image){
@@ -25,9 +22,6 @@ Mat detectGrey(const Mat& image){
 	image.copyTo(frame);
 
 	Mat output(image.rows, image.cols, CV_8UC3);
-
-	//convert to HSV here and measure S levels
-	//cvtColor(frame, frame, CV_BGR2HSV);
 
 		for(int r = 0; r < frame.rows; r++){
 			uchar* row = frame.ptr<uchar>(r);
@@ -44,7 +38,6 @@ Mat detectGrey(const Mat& image){
 				}
 			}
 	}
-
 	return output;
 } 
 
@@ -75,7 +68,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	img_pub.publish(outmsg);
 
 	imshow("Image Window", output); //display image in "Image Window"
-	waitKey(10);
+	waitKey(1);
 }
 
 int main(int argc, char** argv){
@@ -87,8 +80,7 @@ int main(int argc, char** argv){
 
 	NodeHandle nh;
 
-	//Doesn't proccess the top half of the picture because 
-
+	//Doesn't proccess the top half of the picture
 	vector<Mat> mask_segments= {
 	    Mat::zeros(360,1280,CV_8UC3),
 	    Mat(360,1280,CV_8UC3, Scalar::all(1))
@@ -103,5 +95,4 @@ int main(int argc, char** argv){
     spin();
 
 	return 0;
-
 }
