@@ -16,6 +16,8 @@ using uchar = unsigned char;
 
 Publisher img_pub;
 
+int CBcount = 0;
+
 Mat mask;
 
 Mat detectGrey(const Mat& image){
@@ -25,17 +27,17 @@ Mat detectGrey(const Mat& image){
 	Mat output(image.rows, image.cols, CV_8UC3);
 
 	//convert to HSV here and measure S levels
-	cvtColor(frame, frame, CV_BGR2HSV)
+	//cvtColor(frame, frame, CV_BGR2HSV);
 
 		for(int r = 0; r < frame.rows; r++){
 			uchar* row = frame.ptr<uchar>(r);
 			uchar* out_row = output.ptr<uchar>(r);
 			for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()){
-				uchar& H = row[c];
-				uchar& S = row[c + 1];
-				uchar& V = row[c + 2];
+				uchar B = row[c];
+				uchar G = row[c + 1];
+				uchar R = row[c + 2];
 
-				if(S < 30){
+				if((B < 190 && B > 80) && (G < 190 && G > 80) && (R < 190 && R > 80)){
 					out_row[c] = out_row[c + 1] = out_row[c + 2] = 0;
 				} else {
 					out_row[c] = out_row[c + 1] = out_row[c + 2] = 255;
@@ -58,7 +60,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 		ROS_ERROR("CV-Bridge error: %s", e.what());
 		return;
 	}
-	
+
 	//applying mask and detectGrey() function to image
 	frame = cv_ptr->image;
     frame = frame.mul(mask);
@@ -73,29 +75,32 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	img_pub.publish(outmsg);
 
 	imshow("Image Window", output); //display image in "Image Window"
-    waitKey(0); //Waits for a keystroke in window so it doesn't immediately exit
+	waitKey(10);
 }
 
 int main(int argc, char** argv){
+
+	//create "Image Window"
+	namedWindow("Image Window", WINDOW_NORMAL);
+
 	init(argc, argv, "color_detector_avc");
 
 	NodeHandle nh;
 
 	//Doesn't proccess the top half of the picture because 
 
-	vector<Mat> mask= {
-	    Mat::zeros(240,640,CV_8UC3),
-	    Mat::ones(240,640,CV_8UC3)
+	vector<Mat> mask_segments= {
+	    Mat::zeros(360,1280,CV_8UC3),
+	    Mat(360,1280,CV_8UC3, Scalar::all(1))
 	};
 
-	Subscriber img_saver_sub = nh.subscribe("/ps3_eye/image_raw", 1, ImageCB);
+	vconcat(mask_segments, mask);
+
+	Subscriber img_saver_sub = nh.subscribe("/camera/image_raw", 1, ImageCB);
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
         
     spin();
-
-    //create "Image Window"
-    namedWindow("Image Window", WINDOW_NORMAL);
 
 	return 0;
 
