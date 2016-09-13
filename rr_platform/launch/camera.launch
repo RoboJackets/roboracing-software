@@ -3,7 +3,7 @@
 
     <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager"/>
  
-    <node pkg="uvc_camera" type="uvc_camera_node" name="uvc_camera" output="screen">
+    <node pkg="nodelet" type="nodelet" name="camera" output="screen" args="load uvc_camera/CameraNodelet standalone_nodelet">
       <param name="width" type="int" value="1920" />
       <param name="height" type="int" value="1080" />
       <param name="frame_id" type="string" value="camera" />
