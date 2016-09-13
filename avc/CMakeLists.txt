@@ -41,6 +41,9 @@ catkin_package(
 add_executable(color_detector_avc src/color_detector_avc.cpp)
 target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(image_transform src/image_transform.cpp)
+target_link_libraries(image_transform ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 ## Specify additional locations of header files
 include_directories(
   include

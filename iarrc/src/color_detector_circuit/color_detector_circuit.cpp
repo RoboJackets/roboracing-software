@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
 
     vconcat(mask_segments, mask);
 
-    ros::Subscriber img_saver_sub = nh.subscribe("/ps3_eye/image_raw", 1, ImageCB);
+    ros::Subscriber img_saver_sub = nh.subscribe("/camera/image_raw", 1, ImageCB);
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
         
