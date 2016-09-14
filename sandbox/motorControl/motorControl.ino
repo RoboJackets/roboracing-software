@@ -6,7 +6,6 @@
 #include <Servo.h>  // create servo object to control a servo 
 #include "Message.h"
 
-
 //Prototypes
 void motor(int val);
 void steer(int val);
