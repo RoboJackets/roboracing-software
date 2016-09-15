@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   sick_tim
   laser_geometry
   image_transport
+  message_generation
 )
 
 find_package(OpenCV REQUIRED)
@@ -24,13 +25,26 @@ find_package(PCL REQUIRED filters)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
+## Generate services in the 'srv' folder
+add_service_files(
+   FILES
+   image_transform.srv
+)
+
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+   DEPENDENCIES
+   std_msgs
+   sensor_msgs
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES iarrc_software
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform_msgs message_runtime
   DEPENDS system_lib
 )
 

@@ -28,7 +28,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ## Generate services in the 'srv' folder
 add_service_files(
    FILES
-   image_transform.srv
+   transform_image.srv
+   calibrate_image.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
