@@ -2,23 +2,23 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
+#include "avc/image_transform.h"
 
 using namespace std;
 using namespace cv;
 using namespace ros;
 
 Publisher img_pub;
+Mat transformedimg;
 
 void ImageTransformCB(const sensor_msgs::ImageConstPtr& msg){
-	ROS_INFO("Enter callback");
-
 	cv_bridge::CvImagePtr cv_ptr;
 	Mat frame;
 	Mat resize_frame;
 	Mat output;
 	vector<Point2f> corners;
 	int radius = 10;
-	
+
 	try {
 		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
 	} catch (cv_bridge::Exception& e) {
@@ -56,25 +56,43 @@ void ImageTransformCB(const sensor_msgs::ImageConstPtr& msg){
 
 	Point2f src[4] = {corners[0], corners[7], corners[40], corners[47]};
 	Point2f dst[4] = {Point(800, 750), Point(1100, 750), Point(800, 950), Point(1100, 950)};
-	Mat transform = getPerspectiveTransform(src, dst);
+	transformedimg = getPerspectiveTransform(src, dst);
 
-	warpPerspective(frame, frame, transform, Size(1920, 1080));
+	warpPerspective(frame, frame, transformedimg, Size(1920, 1080));
 
 	imshow("Image Window", frame); //display image in "Image Window"
 	waitKey(10);
 
 }
 
+bool TransformImage(avc::image_transform::Request &request, avc::image_transform::Response &response){
+	cv_bridge::CvImagePtr cv_ptr;
+	Mat outimage;
+	cv_ptr = cv_bridge::toCvCopy(request.image);
+	const Mat& inimage = cv_ptr->image;
+
+	warpPerspective(inimage, outimage, transformedimg, Size(1920, 1080));
+
+	cv_bridge::CvImage imageconverter;
+	imageconverter.image = outimage;
+	imageconverter.encoding = "bgr8";
+	imageconverter.toImageMsg(response.image);
+
+	return true;
+}
+
 int main(int argc, char** argv){
 
 	namedWindow("Image Window", WINDOW_NORMAL);
-	
+
 	init(argc, argv, "image_transform");
 	NodeHandle nh;
 
 	Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageTransformCB);
-	
+
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
+
+	ServiceServer service = nh.advertiseService("transform_image", TransformImage);
 
 	spin();
 
