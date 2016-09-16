@@ -10,8 +10,8 @@
 #include <vector>
 #include <sstream>
 
-rr_platform_msgs::speed speed_cmd;
-rr_platform_msgs::steering steering_cmd;
+int desiredSpeed = 0;
+int desiredSteer = 0;
 int prevAngle = 0;
 int prevSpeed = 0;
 
@@ -33,17 +33,17 @@ std::vector<std::string> split(const std::string &s, char delim)
 
 void SpeedCallback(const rr_platform_msgs::speed::ConstPtr &msg)
 {
-  speed_cmd = *msg;
+  desiredSpeed = msg->speed;
 }
 
 void SteeringCallback(const rr_platform_msgs::steering::ConstPtr &msg)
 {
-  steering_cmd = *msg;
+  desiredSteer = msg->angle;
 }
 
 void sendCommand(boost::asio::serial_port &port)
 {
-  std::string message = "$" + std::to_string(static_cast<char>(speed_cmd.speed+90)) + std::to_string(static_cast<char>(steering_cmd.angle + 90)) + "\n";
+  std::string message = "$" + std::to_string(static_cast<char>(desiredSpeed+90)) + std::to_string(static_cast<char>(desiredSteer + 90)) + "\n";
 
   try {
     boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
@@ -115,11 +115,11 @@ int main(int argc, char **argv)
     ros::spinOnce();
 
     if (count == countLimit) {
-      if (steering_cmd.angle != prevAngle || speed_cmd.speed != prevSpeed)
-        ROS_INFO("Sending command: servo=%d, motor=%d", steering_cmd.angle, speed_cmd.speed);
+      if (desiredSteer != prevAngle || desiredSpeed != prevSpeed)
+        ROS_INFO("Sending command: servo=%d, motor=%d", desiredSteer, desiredSpeed);
 
-      prevAngle = steering_cmd.angle;
-      prevSpeed = speed_cmd.speed;
+      prevAngle = desiredSteer;
+      prevSpeed = desiredSpeed;
 
       sendCommand(serial);
       count = 0;

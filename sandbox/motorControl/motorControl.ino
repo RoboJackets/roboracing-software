@@ -21,9 +21,9 @@ static int LED = 13;
 
 //Variables for motors & state variables
 Servo VXL3sMotor;
-static int VXL3sMotorPin=9;
+static int VXL3sMotorPin=5;
 Servo SteeringMotor;
-static int SteeringMotorPin=10;
+static int SteeringMotorPin=6;
 
 static int currentSpeed = 0;
 static int desiredSpeed=0;
@@ -242,8 +242,8 @@ bool getMessage()
   {
     if(Serial.read() == '$')
     {
-      desiredSpeed = Serial.parseFloat();
-      desiredHeading = Serial.parseFloat();
+      desiredSpeed = Serial.parseFloat() - 90;
+      desiredHeading = Serial.parseFloat() - 90;
       gotMessage = true;
     }
   }
