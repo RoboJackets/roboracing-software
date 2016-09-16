@@ -128,12 +128,13 @@ int main(int argc, char **argv)
 
     auto lineIn = readLine(serial);
     if (!lineIn.empty()) {
-      ROS_INFO_STREAM("Sensor data: " << lineIn);
+
       auto tokens = split(lineIn.substr(1), ',');
       if (tokens.size() < 14) {
         ROS_WARN("Received invalid response.");
         continue;
       }
+
       sensor_msgs::Imu imuMsg;
       imuMsg.header.seq = sequence++;
       imuMsg.header.stamp = ros::Time::now();
