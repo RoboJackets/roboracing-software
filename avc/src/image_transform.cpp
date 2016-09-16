@@ -9,62 +9,7 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 
-Publisher img_pub;
 Mat transform_matrix;
-vector<Point2f> corners;
-int radius = 10;
-
-void ImageTransformCB(const sensor_msgs::ImageConstPtr& msg){
-	cv_bridge::CvImagePtr cv_ptr;
-	Mat frame;
-	Mat resize_frame;
-	Mat output;
-
-	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-	} catch (cv_bridge::Exception& e) {
-		ROS_ERROR("CV-Bridge error: %s", e.what());
-		return;
-	}
-
-	frame = cv_ptr->image;
-	sensor_msgs::Image outmsg;
-	cv_ptr->encoding = "bgr8";
-	cv_ptr->toImageMsg(outmsg);
-	img_pub.publish(outmsg);
-
-	ROS_INFO("Find board");
-
-	bool patternfound = findChessboardCorners(frame, Size(8, 6), corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
-        + CALIB_CB_FAST_CHECK);
-
-	ROS_INFO("Process corners");
-
-	if(!patternfound){
-		ROS_WARN("Pattern not found!");
-		return;
-	}
-
-	Mat gray;
-	cvtColor(frame, gray, CV_BGR2GRAY);
-	cornerSubPix(gray, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-
-	//drawChessboardCorners(frame, Size(8, 6), Mat(corners), patternfound);
-	circle(frame, corners[0], radius, Scalar(0, 255, 0));
-	circle(frame, corners[7], radius, Scalar(0, 255, 0));
-	circle(frame, corners[40], radius, Scalar(0, 255, 0));
-	circle(frame, corners[47], radius, Scalar(0, 255, 0));
-
-	Point2f src[4] = {corners[0], corners[7], corners[40], corners[47]};
-	Point2f dst[4] = {Point(800, 750), Point(1100, 750), Point(800, 950), Point(1100, 950)};
-	transform_matrix = getPerspectiveTransform(src, dst);
-
-	warpPerspective(frame, frame, transform_matrix, Size(1920, 1080));
-
-	imshow("Image Window", frame); //display image in "Image Window"
-	waitKey(10);
-
-}
 
 bool TransformImage(avc::transform_image::Request &request, avc::transform_image::Response &response){
 	cv_bridge::CvImagePtr cv_ptr;
@@ -88,7 +33,9 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
 	cv_ptr = cv_bridge::toCvCopy(request.image);
 	const Mat& inimage = cv_ptr->image;
 
-	bool patternfound = findChessboardCorners(inimage, Size(8, 6), corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
+	vector<Point2f> corners;
+
+	bool patternfound = findChessboardCorners(inimage, Size(request.chessboardDim[0], request.chessboardDim[1]), corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
         + CALIB_CB_FAST_CHECK);
 
 	ROS_INFO("Process corners");
@@ -97,6 +44,36 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
 		ROS_WARN("Pattern not found!");
 		return false;
 	}
+
+	Mat gray;
+	cvtColor(inimage, gray, CV_BGR2GRAY);
+	cornerSubPix(gray, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+
+	//Real world chessboard dimensions
+	double meterDim[2] = {request.squareWidth * (request.chessboardDim[0]-1),
+		request.squareWidth * (request.chessboardDim[1]-1)};
+
+
+	//Convert from meters to pix
+	double pixDim[2] = {meterDim[0] * request.pixelsPerMeter,
+		meterDim[1] * request.pixelsPerMeter};
+
+	//Calculate center of destBoard
+	int distanceFromBottom = request.distanceToChessboard * request.pixelsPerMeter;
+	int yCenter = request.imgDim[1] - distanceFromBottom;
+	int xCenter = request.imgDim[0]/2;
+	Point2f center (xCenter, yCenter);
+
+	//populate dst array
+	Point2f topLeft = Point2f(-pixDim[0]/2, -pixDim[1]/2) + center;
+	Point2f topRight = Point2f(pixDim[0]/2, -pixDim[1]/2) + center;
+	Point2f bottomLeft = Point2f(-pixDim[0]/2, pixDim[1]/2) +center;
+	Point2f bottomRight = Point2f(pixDim[0]/2, pixDim[1]/2) + center;
+
+
+	Point2f src[4] = {corners[0], corners[7], corners[40], corners[47]};
+	Point2f dst[4] = {topLeft, topRight, bottomLeft, bottomRight};
+	transform_matrix = getPerspectiveTransform(src, dst);
 
 	return true;
 }
@@ -108,10 +85,6 @@ int main(int argc, char** argv){
 
 	init(argc, argv, "image_transform");
 	NodeHandle nh;
-
-	Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageTransformCB);
-
-	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
 
 	ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
 	ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateImage);
