@@ -103,6 +103,36 @@ Mat detectHoop(const Mat& image){
 		return hoop;
 }
 
+Mat detectRamp(const Mat& image){
+	Mat frame;
+	image.copyTo(frame);
+
+	Mat ramp(image.rows, image.cols, CV_8UC3);
+
+		for(int r = 0; r < frame.rows; r++){
+			uchar* row = frame.ptr<uchar>(r);
+			uchar* ramp_row = ramp.ptr<uchar>(r);
+			for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()){
+				uchar B = row[c];
+				uchar G = row[c + 1];
+				uchar R = row[c + 2];
+
+				if((B < 180 && B > 145) && (G < 165 && G > 110) && (R < 150 && R > 85)){
+					ramp_row[c] = ramp_row[c + 1] = ramp_row[c + 2] = 255;
+				} else {
+					ramp_row[c] = ramp_row[c + 1] = ramp_row[c + 2] = 0;
+				}
+			}
+		}
+
+		auto kernel_size = 5;
+    	Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+
+    	erode(ramp, ramp, erosion_kernel);
+
+		return ramp;
+}
+
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     cv_bridge::CvImagePtr cv_ptr;
@@ -121,7 +151,8 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	frame = cv_ptr->image;
     Mat curbs = detectCurb(frame);
     Mat hoop = detectHoop(frame);
-    output = curbs + hoop;
+    Mat ramp = detectRamp(frame);
+    output = curbs + hoop + ramp;
 
     sensor_msgs::Image outmsg;
 
