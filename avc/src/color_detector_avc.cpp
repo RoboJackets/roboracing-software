@@ -58,16 +58,49 @@ Mat detectCurb(const Mat& image){
 				uchar G = row[c + 1];
 				uchar R = row[c + 2];
 
-				if(((B < 100 && B > 90) && (G < 100 && G > 90) && (R < 100 && R > 90))
-					|| ((B < 215 && B > 200) && (G < 215 && G > 200) && (R < 215 && R > 200))){
-					curb_row[c] = curb_row[c + 1] = curb_row[c + 2] = 0;
-				} else {
+				if(((B < 105 && B > 85) && (G < 105 && G > 85) && (R < 105 && R > 85))
+					|| ((B < 235 && B > 215) && (G < 235 && G > 215) && (R < 235 && R > 215))
+					|| ((B < 196 && B > 174) && (G < 196 && G > 174) && (R < 196 && R > 174))){
 					curb_row[c] = curb_row[c + 1] = curb_row[c + 2] = 255;
+				} else {
+					curb_row[c] = curb_row[c + 1] = curb_row[c + 2] = 0;
 				}
 			}
 		}
 
+	auto kernel_size = 7;
+    Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+
+    erode(curb, curb, erosion_kernel);
+
+    curb = curb.mul(mask);
+
 	return curb;
+}
+
+Mat detectHoop(const Mat& image){
+	Mat frame;
+	image.copyTo(frame);
+
+	Mat hoop(image.rows, image.cols, CV_8UC3);
+
+		for(int r = 0; r < frame.rows; r++){
+			uchar* row = frame.ptr<uchar>(r);
+			uchar* hoop_row = hoop.ptr<uchar>(r);
+			for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()){
+				uchar B = row[c];
+				uchar G = row[c + 1];
+				uchar R = row[c + 2];
+
+				if((B < 135 && B > 95) && (G < 140 && G > 100) && (R < 100 && R > 74)){
+					hoop_row[c] = hoop_row[c + 1] = hoop_row[c + 2] = 255;
+				} else {
+					hoop_row[c] = hoop_row[c + 1] = hoop_row[c + 2] = 0;
+				}
+			}
+		}
+
+		return hoop;
 }
 
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
@@ -83,11 +116,12 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 		return;
 	}
 
-	//applying mask and detectGrey() function to image
+
+	//applying detectCurb() function to image
 	frame = cv_ptr->image;
-    frame = frame.mul(mask);
-    Mat grey_img = detectCurb(frame);
-    output = grey_img;
+    Mat curbs = detectCurb(frame);
+    Mat hoop = detectHoop(frame);
+    output = curbs + hoop;
 
     sensor_msgs::Image outmsg;
 
@@ -98,6 +132,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
 	imshow("Image Window", output); //display image in "Image Window"
 	waitKey(1);
+
 }
 
 int main(int argc, char** argv){
@@ -111,13 +146,13 @@ int main(int argc, char** argv){
 
 	//Doesn't proccess the top half of the picture
 	vector<Mat> mask_segments= {
-	    Mat::zeros(360,1280,CV_8UC3),
-	    Mat(360,1280,CV_8UC3, Scalar::all(1))
+		Mat(1080,960,CV_8UC3, Scalar::all(1)),
+	    Mat::zeros(1080,960,CV_8UC3)
 	};
 
-	vconcat(mask_segments, mask);
+	hconcat(mask_segments, mask);
 
-	Subscriber img_saver_sub = nh.subscribe("/camera/image_raw", 1, ImageCB);
+	Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
 
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
 
