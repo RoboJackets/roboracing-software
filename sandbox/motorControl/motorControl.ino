@@ -13,7 +13,7 @@ void updateHeading();
 void updateSpeed();
 bool getMessage();
 
-LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
+//LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
 
 MPU9250 imu;
 
@@ -31,11 +31,13 @@ static int currentHeading = 0;
 static int desiredHeading = 0;
 
 //control limits
-static const int maxFVel = 30; // maximum velocity 
-static const int maxRVel = -15;
+static const int maxSpeed = 30; // maximum velocity 
+static const int minSpeed = -15;
+static const int minSteer = -25;
+static const int maxSteer = 25;
 
 //Returns 1 if num is positive, 0 if num is 0, -1 if num is negative
-int computeSign(int num)
+int sign(int num)
 {
   return ((num>0)-(num<0));
 }
@@ -159,15 +161,15 @@ void sendIMUData()
 void setup() 
 { 
   Wire.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
   setupIMU();
   VXL3sMotor.attach(VXL3sMotorPin);
   SteeringMotor.attach(SteeringMotorPin);
   motor(0);
-  delay(150);
-  lcd.begin(16, 2);
+  steer(0);
+//  lcd.begin(16, 2);
   // Print a message to the LCD.
-  lcd.print("Steer    Speed");
+//  lcd.print("Steer    Speed");
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH);
 } 
@@ -184,55 +186,58 @@ void loop() {
     time = millis();
     digitalWrite(LED, !digitalRead(LED));
   }
-  lcd.setCursor(0, 1);
-  lcd.print("               ");
-  lcd.setCursor(0, 1);
-  lcd.print(desiredHeading);
-  lcd.setCursor(9,1);
-  lcd.print(desiredSpeed);
+//  lcd.setCursor(0, 1);
+//  lcd.print("               ");
+//  lcd.setCursor(0, 1);
+//  lcd.print(desiredHeading);
+//  lcd.setCursor(9,1);
+//  lcd.print(desiredSpeed);
 }
 
 void motor(int val){
-  val += 90;
-  VXL3sMotor.write(val);
+  VXL3sMotor.write(val+90);
 }
 
 void steer(int val)
 {
-  val += 90;
-  SteeringMotor.write(val);
+  SteeringMotor.write(val+90);
 }
 
 void update()
 {
-  getMessage();
-  
-  limitDesiredValues(desiredSpeed, desiredHeading);
-  
+  if(getMessage()) {
+    limitDesiredValues(desiredSpeed, desiredHeading);
+  }
   updateHeading();
   updateSpeed();
 }
 
 //Ensure desired velocity does not exceed limits
-void limitDesiredValues(int& requestedSpeed, int&)
+void limitDesiredValues(int& requestedSpeed, int& requestedSteer)
 {
-  if (requestedSpeed > 0 && requestedSpeed > maxFVel)
-  {requestedSpeed=maxFVel;}
-  else if (requestedSpeed < 0 && abs(requestedSpeed) > abs(maxRVel))
-  {requestedSpeed=maxRVel;}
+  // speed
+//  requestedSpeed = min(maxSpeed, max(requestedSpeed, minSpeed));
+
+  // steer
+//  requestedSteer = min(maxSteer, max(requestedSteer, minSteer));
+      
 }
 
 void updateHeading()
 {
-  currentHeading = desiredHeading; //set heading to desired heading
-  steer(currentHeading); //update rotation to reflect changed value
+  if(currentHeading != desiredHeading) {
+    currentHeading = desiredHeading; //set heading to desired heading
+    steer(currentHeading); //update rotation to reflect changed value
+  }
 }
 
 //Make an incremental change to speed in the desired direction
 void updateSpeed()
 {
-  currentSpeed+=computeSign(desiredSpeed-currentSpeed);
-  motor(currentSpeed);
+  if(currentSpeed != desiredSpeed) {
+    currentSpeed += sign(desiredSpeed-currentSpeed);
+    motor(currentSpeed);
+  }
 }
 
 bool getMessage()
@@ -242,8 +247,8 @@ bool getMessage()
   {
     if(Serial.read() == '$')
     {
-      desiredSpeed = Serial.parseFloat() - 90;
-      desiredHeading = Serial.parseFloat() - 90;
+      desiredSpeed = Serial.parseFloat();
+      desiredHeading = Serial.parseFloat();
       gotMessage = true;
     }
   }
