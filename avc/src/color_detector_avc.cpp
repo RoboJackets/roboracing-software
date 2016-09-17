@@ -1,9 +1,13 @@
 #include <ros/ros.h>
-#include <std_msgs/Header.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
+#include <pcl/point_cloud.h>
+#include <pcl/conversions.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <sensor_msgs/PointCloud2.h>
+#include "avc/transform_image.h"
 
 using namespace std;
 using namespace cv;
@@ -14,7 +18,10 @@ using uchar = unsigned char;
 //img size: 480 x 640 for camera
 
 Publisher img_pub;
+Publisher cloud_pub;
 Mat mask;
+
+ServiceClient transformClient;
 
 /* DETECTS ROAD
 
@@ -159,11 +166,46 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr->image = output;
 	cv_ptr->encoding = "bgr8";
 	cv_ptr->toImageMsg(outmsg);
-	img_pub.publish(outmsg);
 
-	imshow("Image Window", output); //display image in "Image Window"
-	waitKey(1);
+    avc::transform_image srv;
+    srv.request.image = outmsg;
+    if(transformClient.call(srv)) {
+        outmsg = srv.response.image;
+        img_pub.publish(outmsg);
+        // TODO convert to pointcloud
+        double pxPerMeter = 100.0;
+        try {
+            cv_ptr = cv_bridge::toCvCopy(outmsg, "bgr8");
+        } catch(cv_bridge::Exception& e) {
+            ROS_ERROR("CV_Bridge error: %s", e.what());
+            return;
+        }
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        Mat transformed = cv_ptr->image;
+        cvtColor(transformed, transformed, CV_BGR2GRAY);
+        for(int r = 0; r < transformed.rows; r++) {
+            uchar* row = transformed.ptr<uchar>(r);
+            for(int c = 0; c < transformed.cols; c++) {
+                if(row[c]) {
+                    pcl::PointXYZ point;
+                    point.x = (c - transformed.cols / 2.0) / pxPerMeter;
+                    point.y = (transformed.rows - r) / pxPerMeter;
+                    point.z = 0.0;
+                    cloud->push_back(point);
+                }
+            }
+        }
 
+        pcl::PCLPointCloud2 cloud_pc2;
+        pcl::toPCLPointCloud2(*cloud, cloud_pc2);
+        sensor_msgs::PointCloud2 cloud_msg;
+        pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
+        cloud_msg.header.frame_id = "camera";
+        cloud_msg.header.stamp = ros::Time::now();
+        cloud_pub.publish(cloud_msg);
+    } else {
+        ROS_ERROR("Failed to call service transform_image");
+    }
 }
 
 int main(int argc, char** argv){
@@ -173,19 +215,23 @@ int main(int argc, char** argv){
 
 	init(argc, argv, "color_detector_avc");
 
+    //Doesn't proccess the top half of the picture
+    vector<Mat> mask_segments= {
+            Mat(1080,960,CV_8UC3, Scalar::all(1)),
+            Mat::zeros(1080,960,CV_8UC3)
+    };
+
+    hconcat(mask_segments, mask);
+
 	NodeHandle nh;
 
-	//Doesn't proccess the top half of the picture
-	vector<Mat> mask_segments= {
-		Mat(1080,960,CV_8UC3, Scalar::all(1)),
-	    Mat::zeros(1080,960,CV_8UC3)
-	};
-
-	hconcat(mask_segments, mask);
-
-	Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
+    transformClient = nh.serviceClient<avc::transform_image>("transform_image");
 
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
+
+    cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/colors_img/cloud", 1);
+
+    Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
 
     spin();
 
