@@ -1,14 +1,10 @@
 #include <ros/ros.h>
-#include <ros/publisher.h>
 #include <rr_platform_msgs/speed.h>
 #include <rr_platform_msgs/steering.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/Temperature.h>
 #include <boost/asio.hpp>
-#include <string>
-#include <vector>
-#include <sstream>
 
 int desiredSpeed = 0;
 int desiredSteer = 0;
@@ -30,12 +26,22 @@ std::vector <std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
+int PWMFromSpeed(double metersPerSecond) {
+    // TODO calibrate this
+    return static_cast<int>(metersPerSecond * 20);
+}
+
+int PWMFromAngle(double degrees) {
+    // TODO calibrate this
+    return static_cast<int>(degrees);
+}
+
 void SpeedCallback(const rr_platform_msgs::speed::ConstPtr &msg) {
-    desiredSpeed = msg->speed;
+    desiredSpeed = PWMFromSpeed(msg->speed);
 }
 
 void SteeringCallback(const rr_platform_msgs::steering::ConstPtr &msg) {
-    desiredSteer = msg->angle;
+    desiredSteer = PWMFromAngle(msg->angle);
 }
 
 void sendCommand(boost::asio::serial_port &port) {
