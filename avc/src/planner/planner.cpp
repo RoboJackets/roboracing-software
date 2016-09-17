@@ -1,4 +1,5 @@
 #include "planner.h"
+#include <cmath>
 
 planner::planner() {
 	ros::NodeHandle nh;
@@ -71,20 +72,29 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 	double best_path_angle = 0;
 	double cost = 0;
 	for (double speed = MIN_SPEED; speed <= MAX_SPEED; speed += SPEED_INCREMENT) {
-		for (double angle = -MAX_STEER_ANGLE; angle <= MAX_STEER_ANGLE; angle += ANGLE_INCREMENT) {
+		for (double angle = MAX_STEER_ANGLE; angle >= -MAX_STEER_ANGLE; angle -= ANGLE_INCREMENT) {
 			cost = calculatePathCost(speed, angle, cloud);
 			if(cost < lowest_cost) {
 				best_path_speed = speed;
 				best_path_angle = angle;
 				lowest_cost = cost;
 			} else if (cost == lowest_cost) {
-				if (angle < best_path_angle) {
+
+                if(speed > best_path_speed) {
+                    best_path_speed = speed;
+                    best_path_angle = angle;
+                } else if(speed == best_path_speed && std::abs(angle) < std::abs(best_path_angle)) {
+                    best_path_speed = speed;
+                    best_path_angle = angle;
+                }
+
+				/*if (std::abs(angle) < std::abs(best_path_angle)) {
 					best_path_speed = speed;
 					best_path_angle = angle;
 				} else if (speed > best_path_speed) {
 					best_path_speed = speed;
 					best_path_angle = angle;
-				}
+				}*/
 			}
 		}
 	}
@@ -102,7 +112,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 		p.pose.position.y = step.y;
 		path.poses.push_back(p);
 	}
-	path.header.frame_id = "laser";
+	path.header.frame_id = "map";
 	//ROS_INFO_STREAM(path.poses.size());
 	path_pub.publish(path);
 }
