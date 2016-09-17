@@ -1,2 +1,3 @@
 add_executable(steerer_dragrace steerer_dragrace.cpp)
 target_link_libraries(steerer_dragrace ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(steerer_dragrace rr_platform_msgs_generate_messages_cpp)

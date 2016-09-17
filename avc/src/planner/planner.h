@@ -29,9 +29,9 @@ private:
 
 	const double PI = 3.1415926535;
 	const double MAX_STEER_ANGLE = 30;
-	const double MIN_SPEED = 0.5;
-	const double MAX_SPEED = 4.0;
-	const double TIMESTEP = 1.5;
+	const double MIN_SPEED = 0.33;
+	const double MAX_SPEED = 1.0;
+	const double TIMESTEP = 5.0;
 
 	double SPEED_INCREMENT;
 	double ANGLE_INCREMENT;

@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="rosbag" type="record" name="record" output="screen"
+        args="-a -x '(.*)theora(.*)|(.*)compressed(.*)|(.*)image_raw(.*)' -o /home/robojackets/logs/" />
+</launch>
