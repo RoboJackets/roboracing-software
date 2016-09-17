@@ -172,8 +172,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     if(transformClient.call(srv)) {
         outmsg = srv.response.image;
         img_pub.publish(outmsg);
-        // TODO convert to pointcloud
-        double pxPerMeter = 100.0;
+        float pxPerMeter = 100.0;
         try {
             cv_ptr = cv_bridge::toCvCopy(outmsg, "bgr8");
         } catch(cv_bridge::Exception& e) {
@@ -188,7 +187,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             for(int c = 0; c < transformed.cols; c++) {
                 if(row[c]) {
                     pcl::PointXYZ point;
-                    point.x = (c - transformed.cols / 2.0) / pxPerMeter;
+                    point.x = (c - transformed.cols / 2.0f) / pxPerMeter;
                     point.y = (transformed.rows - r) / pxPerMeter;
                     point.z = 0.0;
                     cloud->push_back(point);
