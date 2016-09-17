@@ -1,2 +1,3 @@
 add_executable(steerer_circuit steerer_circuit.cpp)
 target_link_libraries(steerer_circuit ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(steerer_circuit rr_platform_msgs_generate_messages_cpp)
