@@ -27,17 +27,36 @@ void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topi
     needsUpdating = true;
 }
 
+/**
+ * @note http://stackoverflow.com/a/27511119
+ */
+std::vector <std::string> split(const std::string &s, char delim) {
+    std::stringstream ss(s);
+    std::string item;
+    std::vector <std::string> elems;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(std::move(item));
+    }
+    return elems;
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "mapper");
 
     ros::NodeHandle nh;
+    ros::NodeHandle nh_private("~");
 
-    std::string topics[] = {"/scan/pointcloud"};
+    map.reset(new pcl::PointCloud<pcl::PointXYZ>);
+
+    std::string sourceList = nh_private.param("sources", std::string());
+
+    auto topics = split(sourceList, ',');
 
     std::vector<ros::Subscriber> partial_Subscribers;
 
     for(const auto& topic : topics) {
         partial_Subscribers.emplace_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
+        ROS_INFO_STREAM("Subscribed to " << topic);
     }
 
     auto map_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);
@@ -65,7 +84,7 @@ int main(int argc, char** argv) {
             map_pub.publish(msg);
 
             needsUpdating = false;
-            
+
             rate.sleep();
         }
 
