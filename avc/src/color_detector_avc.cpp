@@ -187,8 +187,8 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             for(int c = 0; c < transformed.cols; c++) {
                 if(row[c]) {
                     pcl::PointXYZ point;
-                    point.x = (c - transformed.cols / 2.0f) / pxPerMeter;
-                    point.y = (transformed.rows - r) / pxPerMeter;
+                    point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
+                    point.x = (transformed.rows - r) / pxPerMeter;
                     point.z = 0.0;
                     cloud->push_back(point);
                 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(avc)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -20,9 +20,11 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(OpenCV REQUIRED)
-find_package(PCL REQUIRED filters)
+find_package(PCL REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRs})
+add_definitions(${PCL_DEFINITIONS})
 
 ## Generate services in the 'srv' folder
 add_service_files(
@@ -57,6 +59,9 @@ target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}
 
 add_executable(image_transform src/image_transform.cpp)
 target_link_libraries(image_transform ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+add_executable(trigger_calibration src/trigger_calibration.cpp)
+target_link_libraries(trigger_calibration ${catkin_LIBRARIES})
 
 ## Specify additional locations of header files
 include_directories(

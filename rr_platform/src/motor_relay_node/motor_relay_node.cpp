@@ -27,13 +27,17 @@ std::vector <std::string> split(const std::string &s, char delim) {
 }
 
 int PWMFromSpeed(double metersPerSecond) {
-    // TODO calibrate this
-    return static_cast<int>(metersPerSecond * 20);
+    return static_cast<int>(metersPerSecond / 0.18333333);
 }
 
 int PWMFromAngle(double degrees) {
-    // TODO calibrate this
-    return static_cast<int>(degrees);
+    if(degrees < 0) {
+        return static_cast<int>(degrees *2.5);
+    }
+    if(degrees > 0) {
+        return static_cast<int>(degrees * -1.25);
+    }
+    return 0;
 }
 
 void SpeedCallback(const rr_platform_msgs::speed::ConstPtr &msg) {

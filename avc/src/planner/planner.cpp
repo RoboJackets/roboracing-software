@@ -53,9 +53,10 @@ double planner::calculatePathCost(double velocity, double steer_angle, pcl::Poin
 }
 
 int planner::costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map) {
+    if(Map->empty())
+        return 0;
 	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    if(!Map->empty())
-    	kdtree.setInputCloud(Map);
+    kdtree.setInputCloud(Map);
     pcl::PointXYZ searchPoint(step.x , step.y ,0);
     std::vector<int> pointIdxRadiusSearch;
   	std::vector<float> pointRadiusSquaredDistance;
