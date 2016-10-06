@@ -6,6 +6,9 @@
 *.includes
 */CMakeFiles/*
 
-#Clion project files
+# Clion project files
 */*.idea
 *.idea
+
+# BitTorrent Sync files
+.sync/*
