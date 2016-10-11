@@ -94,10 +94,9 @@ int main(int argc, char** argv) {
             map_pub.publish(msg);
 
             needsUpdating = false;
-
-            rate.sleep();
         }
 
+        rate.sleep();
     }
 
     return 0;
