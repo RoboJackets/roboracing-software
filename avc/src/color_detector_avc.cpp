@@ -164,8 +164,8 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             for(int c = 0; c < transformed.cols; c++) {
                 if(row[c]) {
                     pcl::PointXYZ point;
-
                     point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
+                    point.x = (transformed.rows - r) / pxPerMeter;
                     point.x = (transformed.rows - r) / pxPerMeter;
                     point.z = 0.0;
 

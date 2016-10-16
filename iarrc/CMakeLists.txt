@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  rr_platform_msgs
+  rr_platform
   cv_bridge
   pcl_ros
   sick_tim
@@ -28,8 +28,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ###################################
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES iarrc_software
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform
   DEPENDS system_lib
 )
 

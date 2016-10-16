@@ -5,7 +5,6 @@
   <description>The RoboRacing platform package</description>
 
   <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-  <maintainer email="justinyzheng@gmail.com">Justin Zheng</maintainer>
 
 
 
@@ -20,16 +19,14 @@
   <url type="website">http://www.github.com/robojackets/roboracing-software</url>
 
 
-  <author email="justinyzheng@gmail.com">Justin Zheng</author>
-
-
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>rr_platform_msgs</build_depend>
   <build_depend>cv_bridge</build_depend>
   <build_depend>image_transport</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
 
   <run_depend>laser_geometry</run_depend>
   <run_depend>sick_tim</run_depend>
@@ -38,11 +35,12 @@
   <run_depend>std_msgs</run_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>message_runtime</run_depend>
-  <run_depend>rr_platform_msgs</run_depend>
   <run_depend>sick_tim</run_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>uvc_camera</run_depend>
   <run_depend>joy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
 
 </package>

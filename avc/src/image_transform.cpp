@@ -38,10 +38,8 @@ bool TransformImage(avc::transform_image::Request &request, avc::transform_image
 
     warpPerspective(inimage, outimage, transform_matrix, Size(1920, 1080));
 
-    cv_bridge::CvImage imageconverter;
-    imageconverter.image = outimage;
-    imageconverter.encoding = "bgr8";
-    imageconverter.toImageMsg(response.image);
+    cv_ptr->image = outimage;
+    cv_ptr->toImageMsg(response.image);
 
     return true;
 }
@@ -80,8 +78,8 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
 
     //Calculate center of destBoard
     int distanceFromBottom = request.distanceToChessboard * request.pixelsPerMeter;
-    int yCenter = request.imgDim[1] - distanceFromBottom;
-    int xCenter = request.imgDim[0] / 2;
+    int yCenter = request.imgDim[0] - distanceFromBottom;
+    int xCenter = request.imgDim[1] / 2;
     Point2f center(xCenter, yCenter);
 
     //populate dst array
@@ -91,7 +89,7 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
     Point2f bottomRight = Point2f(pixDim[0] / 2, pixDim[1] / 2) + center;
 
 
-    Point2f src[4] = {corners[0], corners[7], corners[40], corners[47]};
+    Point2f src[4] = {corners[0], corners[8], corners[54], corners[62]};
     Point2f dst[4] = {topLeft, topRight, bottomLeft, bottomRight};
     transform_matrix = getPerspectiveTransform(src, dst);
 

@@ -3,8 +3,8 @@
 #include <std_msgs/Header.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
-#include <rr_platform_msgs/speed.h>
-#include <rr_platform_msgs/steering.h>
+#include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
 #include <vector>
 #include <avc/constants.hpp>
 #include <sensor_msgs/PointCloud2.h>

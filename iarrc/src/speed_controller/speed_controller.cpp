@@ -6,7 +6,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
 #include <iarrc/constants.hpp>
-#include <rr_platform_msgs/speed.h>
+#include <rr_platform/speed.h>
 #include <std_msgs/Bool.h>
 
 using namespace std;
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
     Subscriber stoplight_sub = nh.subscribe("/light_change", 1, StoplightCB);
 	
 	debug_pub = nh.advertise<sensor_msgs::Image>("/speed_debug_img", 1);
-    speed_pub = nh.advertise<rr_platform_msgs::speed>("/speed", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
 
     int max_crosses;
     nhp.param("max_crosses", max_crosses, int(1));
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 
         //ROS_INFO_STREAM("Crosses: " << number_of_crosses);
 
-        rr_platform_msgs::speed speed_msg;
+        rr_platform::speed speed_msg;
         speed_msg.header.stamp = Time::now();
 
         if(should_be_moving) {
