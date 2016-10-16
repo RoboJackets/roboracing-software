@@ -11,8 +11,8 @@ planner::planner() {
 	pnh.getParam("search_radius", SEARCH_RADIUS);
 	pnh.getParam("distance_increment", DISTANCE_INCREMENT);
 	map_sub = nh.subscribe("map", 1, &planner::mapCb, this);
-	speed_pub = nh.advertise<rr_platform_msgs::speed>("speed", 1);
-	steer_pub = nh.advertise<rr_platform_msgs::steering>("steering", 1);
+	speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
+	steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
 	path_pub = nh.advertise<nav_msgs::Path>("path", 1);
 }
 
@@ -99,8 +99,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 			}
 		}
 	}
-	rr_platform_msgs::speedPtr speedMSG(new rr_platform_msgs::speed);
-	rr_platform_msgs::steeringPtr steerMSG(new rr_platform_msgs::steering);
+	rr_platform::speedPtr speedMSG(new rr_platform::speed);
+	rr_platform::steeringPtr steerMSG(new rr_platform::steering);
 	speedMSG->speed = best_path_speed;
 	steerMSG->angle = best_path_angle;
 	speed_pub.publish(speedMSG);

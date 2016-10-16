@@ -1,6 +1,6 @@
 #include <ros/ros.h>
-#include <rr_platform_msgs/speed.h>
-#include <rr_platform_msgs/steering.h>
+#include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/Temperature.h>
@@ -40,11 +40,11 @@ int PWMFromAngle(double degrees) {
     return 0;
 }
 
-void SpeedCallback(const rr_platform_msgs::speed::ConstPtr &msg) {
+void SpeedCallback(const rr_platform::speed::ConstPtr &msg) {
     desiredSpeed = PWMFromSpeed(msg->speed);
 }
 
-void SteeringCallback(const rr_platform_msgs::steering::ConstPtr &msg) {
+void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
     desiredSteer = PWMFromAngle(msg->angle);
 }
 

@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  rr_platform_msgs
+  rr_platform
   cv_bridge
   pcl_ros
   sick_tim
@@ -45,8 +45,7 @@ generate_messages(
 ###################################
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES iarrc_software
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform_msgs message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
   DEPENDS system_lib
 )
 

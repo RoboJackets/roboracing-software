@@ -6,8 +6,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
 #include <iarrc/constants.hpp>
-#include <rr_platform_msgs/steering.h>
-#include <rr_platform_msgs/speed.h>
+#include <rr_platform/steering.h>
+#include <rr_platform/speed.h>
 
 using namespace std;
 using namespace cv;
@@ -18,7 +18,7 @@ Publisher steer_pub;
 
 int speed;
 
-void SpeedCallback(const rr_platform_msgs::speed::ConstPtr& msg)
+void SpeedCallback(const rr_platform::speed::ConstPtr& msg)
 {
 	speed = msg->speed;
 }
@@ -78,7 +78,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     auto min_index = distance(counts.begin(),min_element(counts.begin(),counts.end()));
 
-    rr_platform_msgs::steering steering_msg;
+    rr_platform::steering steering_msg;
     steering_msg.header.stamp = Time::now();
 
 //circuit
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/steerer_debug_img"), 1);
 
-    steer_pub = nh.advertise<rr_platform_msgs::steering>(string("/steering"), 1);
+    steer_pub = nh.advertise<rr_platform::steering>(string("/steering"), 1);
         
     spin();
 
