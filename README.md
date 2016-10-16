@@ -1,17 +1,31 @@
-# RoboRacing-software
+# RoboRacing Software
 
-[![Join the chat at https://gitter.im/RoboJackets/iarrc-software](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RoboJackets/iarrc-software?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/RaceCar.JPG "Picture of first RoboRacing car.")
+
+This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
+
+## Organization
+
+Each folder in this repository is a ROS package.
+
+**avc**: This package contains intelligence code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
+
+**iarrc**: This package contains intelligence code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
+
+**rr_platform**: This package contains code for interfacing with the various cars built and maintained by the team.
+
+**sandbox**: This package contains utilities and non-ROS code. This includes tools for working with log files and the Arduino code for the car.
 
 ## Installation
 
-### Setup Workspace
+1. Make sure you have the appropriate ROS version installed for your version of Ubuntu.
 
-`mkdir catkin_ws`
+2. Clone this repo into the _src_ directory of your catkin workspace.
 
-`cd catkin_ws`
+3. Install the dependencies with the following command in your catkin workspace folder:
 
-`mkdir src`
+   ```
+   rosdep install --from-path src --ignore-src -y
+   ```
 
-`cd src`
-
-`git clone git@github.com:RoboJackets/iarrc-software.git`
+4. You should now be able to build the project with `catkin_make`.
