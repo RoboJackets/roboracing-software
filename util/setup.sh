@@ -9,7 +9,7 @@ cd "$DIR/../.."
 
 catkin_make || true
 sudo apt-get update
-rosdep install --from-path src --ignore-src -y
+
+sudo rosdep init
 rosdep update
-# rosdep -y install igvc
-# sudo apt-get -y install qt5-default
+rosdep install --from-path src --ignore-src -y
