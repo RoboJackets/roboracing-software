@@ -12,6 +12,7 @@ void limitDesiredValues(int& requestedSpeed, int& requestedHeading);
 void updateHeading();
 void updateSpeed();
 bool getMessage();
+void encoderTick();
 
 //LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
 
@@ -25,13 +26,31 @@ static int VXL3sMotorPin=5;
 Servo SteeringMotor;
 static int SteeringMotorPin=6;
 
-static int currentSpeed = 0;
-static int desiredSpeed=0;
+// set up vars for PD speed control
+const static int encoderPin1 = 2;
+const static int encoderPin2 = 3;
+const static int pid_p = 0.1;
+const static int pid_d = 0.1;
+const static int ticks_per_rotation = 1000;
+const static float meters_per_rotation = 0.1;
+// max interrupt rate is m/s / m/rot * ticks/rot
+
+static volatile int currentTicks = 0; //volatile data for manipulation in interrupt routines
+static int lastTicks = 0;
+
+static int currentMotorPwm = 0;
+static int targetMotorPwm = 0;
+static float desiredSpeed = 0;
+static float currentSpeed = 0;
+static float currentError = 0;
+static float lastError = 0;
+static unsigned long lastSpeedUpdateMicros = 0;
+
 static int currentHeading = 0;
 static int desiredHeading = 0;
 
 //control limits
-static const int maxSpeed = 30; // maximum velocity 
+static const int maxSpeed = 30; // maximum velocity
 static const int minSpeed = -15;
 static const int minSteer = -25;
 static const int maxSteer = 25;
@@ -154,12 +173,12 @@ void sendIMUData()
   Serial.print(","); Serial.print( imu.mz, 6);
 
   Serial.print(","); Serial.print( imu.temperature, 6);
-  
+
   Serial.println();
 }
 
-void setup() 
-{ 
+void setup()
+{
   Wire.begin();
   Serial.begin(115200);
   setupIMU();
@@ -167,17 +186,18 @@ void setup()
   SteeringMotor.attach(SteeringMotorPin);
   motor(0);
   steer(0);
+  attachInterrupt(digitalPinToInterrupt(encoderPin1), encoderTick, CHANGE);
 //  lcd.begin(16, 2);
   // Print a message to the LCD.
 //  lcd.print("Steer    Speed");
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH);
-} 
+}
 
 unsigned long time = 0;
 
 void loop() {
-  
+
   update();
   updateIMU();
   //limit publishing rate of imu data
@@ -185,7 +205,7 @@ void loop() {
     sendIMUData();
     time = millis();
     digitalWrite(LED, !digitalRead(LED));
-  }
+
 //  lcd.setCursor(0, 1);
 //  lcd.print("               ");
 //  lcd.setCursor(0, 1);
@@ -220,7 +240,7 @@ void limitDesiredValues(int& requestedSpeed, int& requestedSteer)
 
   // steer
 //  requestedSteer = min(maxSteer, max(requestedSteer, minSteer));
-      
+
 }
 
 void updateHeading()
@@ -234,9 +254,23 @@ void updateHeading()
 //Make an incremental change to speed in the desired direction
 void updateSpeed()
 {
-  if(currentSpeed != desiredSpeed) {
-    currentSpeed += sign(desiredSpeed-currentSpeed);
-    motor(currentSpeed);
+  // update speed reading
+  float deltaMeters = (float)(currentTicks - lastTicks) / ticks_per_rotation * meters_per_rotation;
+  float deltaSeconds = (float)(micros() - lastSpeedUpdateMicros) / 1000000.0;
+  currentSpeed = deltaMeters / deltaSeconds;
+  lastSpeedUpdateMicros = micros();
+  lastTicks = currentTicks;
+
+  // update target PWM value
+  currentError = desiredSpeed - currentSpeed;
+  deltaError = (float)(currentError - lastError) / (micros() - lastSpeedUpdateMicros);
+  targetMotorPwm = pid_p * currentError + pid_d * deltaError;
+  lastError = currentError;
+
+  // update acutal PWM value. Slows down change rate to ESC to avoid errors
+  if(currentMotorPwm != targetMotorPwm) {
+    currentMotorPwm += sign(targetMotorPwm - currentMotorPwm);
+    motor(currentMotorPwm);
   }
 }
 
@@ -255,3 +289,12 @@ bool getMessage()
   return gotMessage;
 }
 
+// run when encoder value changes
+void encoderTick()
+{
+    if (digitalRead(encoderPin1) == digitalRead(encoderPin2)) {
+        currentTicks++;
+    } else {
+        currentTicks--;
+    }
+}
