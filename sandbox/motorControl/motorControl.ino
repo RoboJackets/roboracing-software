@@ -8,11 +8,12 @@
 void motor(int val);
 void steer(int val);
 void update();
-void limitDesiredValues(int& requestedSpeed, int& requestedHeading);
 void updateHeading();
 void updateSpeed();
 bool getMessage();
 void encoderTick();
+int limitESCSpeed(int requestedSpeed);
+int limitDesiredHeading(int requestedHeading);
 
 //LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
 
@@ -27,30 +28,31 @@ Servo SteeringMotor;
 static int SteeringMotorPin=6;
 
 // set up vars for PD speed control
-const static int encoderPin1 = 2;
-const static int encoderPin2 = 3;
-const static int pid_p = 0.1;
-const static int pid_d = 0.1;
-const static int ticks_per_rotation = 1000;
+const static int   encoderPin1 = 2;
+const static int   encoderPin2 = 3;
+const static int   pid_p = 0.1;
+const static int   pid_i = 0.1;
+const static int   pid_d = 0.1;
+const static int   ticks_per_rotation = 1000;
 const static float meters_per_rotation = 0.1;
-// max interrupt rate is m/s / m/rot * ticks/rot
+// max interrupt rate is (car m/s) / (m/rot) * (ticks/rot)
 
 static volatile int currentTicks = 0; //volatile data for manipulation in interrupt routines
-static int lastTicks = 0;
+static          int lastTicks = 0;
 
-static int currentMotorPwm = 0;
-static int targetMotorPwm = 0;
-static float desiredSpeed = 0;
-static float currentSpeed = 0;
-static float currentError = 0;
-static float lastError = 0;
+using HISTORY_SIZE = 100;
+static int           currentMotorPwm = 0;
+static float         desiredSpeed = 0;
+static float         errorSum = 0;
+static float         errorHistory[HISTORY_SIZE] = {0};
 static unsigned long lastSpeedUpdateMicros = 0;
+static int           historyIndex = 0;
 
 static int currentHeading = 0;
 static int desiredHeading = 0;
 
 //control limits
-static const int maxSpeed = 30; // maximum velocity
+static const int maxSpeed = 30; // maximum input to ESC
 static const int minSpeed = -15;
 static const int minSteer = -25;
 static const int maxSteer = 25;
@@ -226,21 +228,20 @@ void steer(int val)
 void update()
 {
   if(getMessage()) {
-    limitDesiredValues(desiredSpeed, desiredHeading);
+    limitDesiredHeading(desiredHeading);
   }
   updateHeading();
   updateSpeed();
 }
 
-//Ensure desired velocity does not exceed limits
-void limitDesiredValues(int& requestedSpeed, int& requestedSteer)
+//Ensure desired ESC input does not exceed limits
+int limitESCSpeed(int requestedSpeed)
 {
-  // speed
-//  requestedSpeed = min(maxSpeed, max(requestedSpeed, minSpeed));
-
-  // steer
-//  requestedSteer = min(maxSteer, max(requestedSteer, minSteer));
-
+  return min(maxSpeed, max(requestedSpeed, minSpeed));
+}
+int limitDesiredHeading(int requestedHeading)
+{
+  return min(maxSteer, max(requestedSteer, minSteer));
 }
 
 void updateHeading()
@@ -254,24 +255,38 @@ void updateHeading()
 //Make an incremental change to speed in the desired direction
 void updateSpeed()
 {
-  // update speed reading
+  // update the speed
   float deltaMeters = (float)(currentTicks - lastTicks) / ticks_per_rotation * meters_per_rotation;
-  float deltaSeconds = (float)(micros() - lastSpeedUpdateMicros) / 1000000.0;
-  currentSpeed = deltaMeters / deltaSeconds;
-  lastSpeedUpdateMicros = micros();
-  lastTicks = currentTicks;
+  float deltaSeconds = (float)(micros() - lastSpeedUpdateMicros) / 1000000;
+  float currentError = desiredSpeed - (deltaMeters / deltaSeconds);
+  
 
-  // update target PWM value
-  currentError = desiredSpeed - currentSpeed;
-  deltaError = (float)(currentError - lastError) / (micros() - lastSpeedUpdateMicros);
-  targetMotorPwm = pid_p * currentError + pid_d * deltaError;
-  lastError = currentError;
+  // find derivative of error
+  float derivError = (float)(currentError - errorHistory[historyIndex]) 
+                            / (micros() - lastSpeedUpdateMicros);
+
+  // update integral error
+  // TODO test assumption of even-enough spacing of the measurements thru time
+  // TODO test assumption that floating point inaccuracies won't add up too badly
+  historyIndex = (historyIndex+1) % HISTORY_SIZE;
+  errorSum -= errorHistory[historyIndex];
+  errorSum += currentError;
+  float integralError = errorSum / HISTORY_SIZE;
+  
+  // combine PID terms
+  float targetMotorPwm = pid_p * currentError + pid_i * integralError + pid_d * derivError;
+  targetMotorPwm = limitESCSpeed(targetMotorPwm);
+  
+  limitDesiredValues
+  // store previous state info
+  lastSpeedUpdateMicros = micros();
+  errorHistory[historyIndex] = currentError;
+  lastTicks = currentTicks;
+  
 
   // update acutal PWM value. Slows down change rate to ESC to avoid errors
-  if(currentMotorPwm != targetMotorPwm) {
-    currentMotorPwm += sign(targetMotorPwm - currentMotorPwm);
-    motor(currentMotorPwm);
-  }
+  currentMotorPwm += sign(targetMotorPwm - currentMotorPwm);
+  motor(currentMotorPwm);
 }
 
 bool getMessage()
@@ -292,9 +307,9 @@ bool getMessage()
 // run when encoder value changes
 void encoderTick()
 {
-    if (digitalRead(encoderPin1) == digitalRead(encoderPin2)) {
-        currentTicks++;
-    } else {
-        currentTicks--;
-    }
+  if (digitalRead(encoderPin1) == digitalRead(encoderPin2)) {
+    currentTicks++;
+  } else {
+    currentTicks--;
+  }
 }
