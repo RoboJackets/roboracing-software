@@ -84,6 +84,8 @@ SETUP_SHA_FILES+=("./.gitmodules")
 SETUP_SHA_FILES+=("./config.docif")
 SETUP_SHA_FILES+=("./util/setup.sh")
 SETUP_SHA_FILES+=("./iarrc/package.xml")
+SETUP_SHA_FILES+=("./rr_platform/package.xml")
+SETUP_SHA_FILES+=("./sandbox/package.xml")
 
 
 # @REQUIRED
