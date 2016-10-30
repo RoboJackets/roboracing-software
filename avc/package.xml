@@ -34,18 +34,14 @@
 
 
   <run_depend>laser_geometry</run_depend>
-  <run_depend>sick_tim</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>rr_platform</run_depend>
-  <run_depend>sick_tim</run_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>image_transport</run_depend>
-  <run_depend>uvc_camera</run_depend>
-  <run_depend>joy</run_depend>
   <run_depend>message_generation</run_depend>
   <run_depend>message_runtime</run_depend>
 
