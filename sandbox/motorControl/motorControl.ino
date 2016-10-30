@@ -20,8 +20,8 @@ MPU9250 imu;
 static int LED = 13;
 
 //Variables for motors & state variables
-Servo VXL3sMotor;
-static int VXL3sMotorPin=5;
+Servo EscMotor;
+static int escPin = 5;
 Servo SteeringMotor;
 static int SteeringMotorPin=6;
 
@@ -35,12 +35,6 @@ static const int maxSpeed = 30; // maximum velocity
 static const int minSpeed = -15;
 static const int minSteer = -25;
 static const int maxSteer = 25;
-
-//Returns 1 if num is positive, 0 if num is 0, -1 if num is negative
-int sign(int num)
-{
-  return ((num>0)-(num<0));
-}
 
 void setupIMU()
 {
@@ -163,7 +157,7 @@ void setup()
   Wire.begin();
   Serial.begin(115200);
   setupIMU();
-  VXL3sMotor.attach(VXL3sMotorPin);
+  EscMotor.attach(escPin);
   SteeringMotor.attach(SteeringMotorPin);
   motor(0);
   steer(0);
@@ -195,7 +189,7 @@ void loop() {
 }
 
 void motor(int val){
-  VXL3sMotor.write(val+90);
+  EscMotor.write(val+90);
 }
 
 void steer(int val)
@@ -235,7 +229,7 @@ void updateHeading()
 void updateSpeed()
 {
   if(currentSpeed != desiredSpeed) {
-    currentSpeed += sign(desiredSpeed-currentSpeed);
+    currentSpeed = desiredSpeed;
     motor(currentSpeed);
   }
 }
