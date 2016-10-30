@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package>
+  <name>rr_gazebo</name>
+  <version>0.0.0</version>
+  <description>Gazebo simulation files for RoboRacing</description>
+
+
+  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+  <url type="website">http://www.github.com/robojackets/roboracing-software</url>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>gazebo_ros</build_depend>
+
+  <run_depend>gazebo_ros</run_depend>
+
+  <export>
+
+  </export>
+</package>
