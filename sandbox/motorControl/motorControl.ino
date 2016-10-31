@@ -12,7 +12,7 @@ void updateHeading();
 void updateSpeed();
 bool getMessage();
 void encoderTick();
-int limitESCSpeed(int requestedSpeed);
+int limitDesiredSpeed(int requestedSpeed);
 int limitDesiredHeading(int requestedHeading);
 
 //LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
@@ -40,7 +40,7 @@ const static float meters_per_rotation = 0.1;
 static volatile int currentTicks = 0; //volatile data for manipulation in interrupt routines
 static          int lastTicks = 0;
 
-using HISTORY_SIZE = 100;
+#define HISTORY_SIZE 100
 static int           currentMotorPwm = 0;
 static float         desiredSpeed = 0;
 static float         errorSum = 0;
@@ -52,16 +52,10 @@ static int currentHeading = 0;
 static int desiredHeading = 0;
 
 //control limits
-static const int maxSpeed = 30; // maximum input to ESC
-static const int minSpeed = -15;
-static const int minSteer = -25;
+static const int maxSpeed = 10; // maximum target speed in m/s
+static const int minSpeed = -5;
+static const int minSteer = -25; // leftmost target servo location (zero center)
 static const int maxSteer = 25;
-
-//Returns 1 if num is positive, 0 if num is 0, -1 if num is negative
-int sign(int num)
-{
-  return ((num>0)-(num<0));
-}
 
 void setupIMU()
 {
@@ -207,6 +201,7 @@ void loop() {
     sendIMUData();
     time = millis();
     digitalWrite(LED, !digitalRead(LED));
+  }
 
 //  lcd.setCursor(0, 1);
 //  lcd.print("               ");
@@ -228,18 +223,20 @@ void steer(int val)
 void update()
 {
   if(getMessage()) {
-    limitDesiredHeading(desiredHeading);
+    // limit the input values
+    desiredSpeed = limitDesiredSpeed(desiredSpeed);
+    desiredHeading = limitDesiredHeading(desiredHeading);
   }
   updateHeading();
   updateSpeed();
 }
 
 //Ensure desired ESC input does not exceed limits
-int limitESCSpeed(int requestedSpeed)
+int limitDesiredSpeed(int requestedSpeed)
 {
   return min(maxSpeed, max(requestedSpeed, minSpeed));
 }
-int limitDesiredHeading(int requestedHeading)
+int limitDesiredHeading(int requestedSteer)
 {
   return min(maxSteer, max(requestedSteer, minSteer));
 }
@@ -252,7 +249,7 @@ void updateHeading()
   }
 }
 
-//Make an incremental change to speed in the desired direction
+// Set the speed based on a PID algorithm
 void updateSpeed()
 {
   // update the speed
@@ -275,9 +272,7 @@ void updateSpeed()
   
   // combine PID terms
   float targetMotorPwm = pid_p * currentError + pid_i * integralError + pid_d * derivError;
-  targetMotorPwm = limitESCSpeed(targetMotorPwm);
   
-  limitDesiredValues
   // store previous state info
   lastSpeedUpdateMicros = micros();
   errorHistory[historyIndex] = currentError;
@@ -285,7 +280,6 @@ void updateSpeed()
   
 
   // update acutal PWM value. Slows down change rate to ESC to avoid errors
-  currentMotorPwm += sign(targetMotorPwm - currentMotorPwm);
   motor(currentMotorPwm);
 }
 
