@@ -1,0 +1,8 @@
+prefix=/home/brian/catkin_ws/devel
+
+Name: iarrc
+Description: Description of iarrc
+Version: 0.0.0
+Cflags: -I/home/brian/catkin_ws/src/roboracing-software/iarrc/include
+Libs: -L/home/brian/catkin_ws/devel/lib 
+Requires: roscpp rospy std_msgs rr_platform
