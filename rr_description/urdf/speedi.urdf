@@ -1,26 +1,26 @@
 <robot name="speedi">
     
-    <link name="base_link"/>
-    <link name="lidar" />
-    <link name="usb_cam_center"/>
+    <link name="chassis"/>
+    <link name="camera"/>
+    <link name="lidar"/>
     <link name="imu"/>
     
-    <joint name="usb_cam_center" type="fixed">
-        <parent link="base_link"/>
-        <child link="usb_cam_center"/>
+    <joint name="camera_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera"/>
         <origin xyz="0 0 0.3175" rpy="0 0 0"/>
         <axis xyz="0 0 0"/>
     </joint>
 
-    <joint name="lidar" type="fixed">
-        <parent link="base_link"/>
+    <joint name="lidar_joint" type="fixed">
+        <parent link="chassis"/>
         <child link="lidar"/>
         <origin xyz="0 0.28575 0" rpy="0 0 0"/>
         <axis xyz="0 0 0"/>
     </joint>
 
     <joint name="imu" type="fixed">
-        <parent link="base_link"/>
+        <parent link="chassis"/>
         <child link="imu"/>
         <origin xyz="0 0 0.1778" rpy="0 0 0"/>
         <axis xyz="0 0 0"/>
