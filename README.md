@@ -6,7 +6,7 @@ This repository contains [ROS](http://ros.org) packages for the [RoboJackets](ht
 
 ## Organization
 
-Each folder in this repository is a ROS package.
+Most folders in this repository are ROS packages.
 
 **avc**: This package contains intelligence code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
 
@@ -15,6 +15,13 @@ Each folder in this repository is a ROS package.
 **rr_platform**: This package contains code for interfacing with the various cars built and maintained by the team.
 
 **sandbox**: This package contains utilities and non-ROS code. This includes tools for working with log files and the Arduino code for the car.
+
+The following files and folders enable our continuous integration system.
+
+* external
+* util
+* circle.yml
+* config.docif
 
 ## Installation
 
