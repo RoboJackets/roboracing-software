@@ -12,3 +12,6 @@
 
 # BitTorrent Sync files
 .sync/*
+
+# gedit autosave files
+*~
