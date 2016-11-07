@@ -1,5 +1,5 @@
 <launch>
-    <node name="joystick" pkg="rr_platform" type="joystick" output="screen" respawn="false">
+    <node name="joystick_driver" pkg="rr_platform" type="joystick_driver" output="screen" respawn="false">
         <param name="joystick_topic" type="str" value="/joy"/>
         <param name="speed_topic" type="str" value="/speed"/>
         <param name="steering_topic" type="str" value="/steering"/>
