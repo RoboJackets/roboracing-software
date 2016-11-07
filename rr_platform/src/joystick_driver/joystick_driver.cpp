@@ -11,11 +11,6 @@ int angle_max;
 int speed_max;
 
 void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
-    if(!msg) {
-        ROS_ERROR("Received void input pointer in JoystickCB.");
-        return;
-    }
-
     rr_platform::speed sp_cmd;
     rr_platform::steering st_cmd;
     sp_cmd.speed = speed_max * msg->axes[3];
@@ -33,12 +28,12 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    // Subscribe to joystick topic
+    // Subscribe to joystick_driver topic
     std::string joystick_topic;
     nhp.param(std::string("joystick_topic"), joystick_topic, std::string("/joy"));
     ros::Subscriber float_command_sub = nh.subscribe(joystick_topic, 1, JoystickCB);
 
-    // Convert joystick commands into motor commands on these topics
+    // Convert joystick_driver commands into motor commands on these topics
     std::string speed_topic;
     nhp.param(std::string("speed_topic"), speed_topic, std::string("/speed"));
     speed_publisher = nh.advertise<rr_platform::speed>(speed_topic, 1);
@@ -50,9 +45,9 @@ int main(int argc, char** argv)
     nhp.param(std::string("angle_max"), angle_max, 20);
     nhp.param(std::string("speed_max"), speed_max, 10);
 
-	ROS_INFO("joystick node ready.");
+	ROS_INFO("joystick_driver node ready.");
 	ros::spin();
-	ROS_INFO("Shutting down joystick node.");
+	ROS_INFO("Shutting down joystick_driver node.");
 
     return 0;
 }
