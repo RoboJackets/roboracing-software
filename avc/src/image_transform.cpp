@@ -100,7 +100,7 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
 
 int main(int argc, char **argv) {
 
-    namedWindow("Image Window", WINDOW_NORMAL);
+    //namedWindow("Image Window", WINDOW_NORMAL);
 
     init(argc, argv, "image_transform");
     NodeHandle nh;
