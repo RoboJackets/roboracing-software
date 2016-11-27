@@ -4,10 +4,19 @@
 #include <opencv2/opencv.hpp>
 #include "avc/transform_image.h"
 #include "avc/calibrate_image.h"
+#include <urdf_model/model.h>
+#include <cmath>
 
 using namespace std;
 using namespace cv;
 using namespace ros;
+
+#define PI 3.141592653589793
+
+const int input_width = 1920;
+const int input_height = 1080;
+const int map_width = 500;
+const int map_height = 500;
 
 Mat transform_matrix;
 string transform_file;
@@ -36,7 +45,7 @@ bool TransformImage(avc::transform_image::Request &request, avc::transform_image
     cv_ptr = cv_bridge::toCvCopy(request.image);
     const Mat &inimage = cv_ptr->image;
 
-    warpPerspective(inimage, outimage, transform_matrix, Size(1920, 1080));
+    warpPerspective(inimage, outimage, transform_matrix, Size(map_width, map_height));
 
     cv_ptr->image = outimage;
     cv_ptr->toImageMsg(response.image);
@@ -98,6 +107,45 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
     return true;
 }
 
+
+void setTfCalibration() {
+    double fov_h = 0.5932; //angle from center of image to left or right edge
+    double fov_v = 0.3337; //angle from center of iamge to rop or bottom edge
+    double height = 0.3; //camera height in meters
+    double dist_min = 0.75; //minimum distance forward from cam to show in map
+    double dist_max = 5.0; //maximum distance (both meters)
+    double cam_mount_angle = 0.155; //TODO establish actual value
+
+    double min_hyp = sqrt(dist_min*dist_min + height*height);
+    double max_hyp = sqrt(dist_max*dist_max + height*height);
+    double theta1 = atan((min_hyp/max_hyp)*tan(fov_h));
+    double x_top_spread = 0.5*input_width*(theta1/fov_h + 1) - input_width/2;
+    cout<<"x spread is "<<x_top_spread<<endl;
+
+    double partial_btm = atan(height/dist_min);
+    double partial_top = atan(height/dist_max);
+    double y_bottom = input_height*(partial_btm-cam_mount_angle+fov_v)/(2*fov_v);
+    double y_top    = input_height*(partial_top-cam_mount_angle+fov_v)/(2*fov_v);
+    cout<<"y top and bottom are "<<y_top<<", "<<y_bottom<<endl;
+
+    Point2f src[4] = {
+        Point2f(input_width/2 - x_top_spread, y_top), //top left
+        Point2f(input_width/2 + x_top_spread, y_top), //top right
+        Point2f(0, y_bottom), //bottom left
+        Point2f(input_width, y_bottom) //bottom right
+    };
+
+    Point2f dst[4] = {
+        Point2f(0,0), //top left
+        Point2f(map_width,0), //top right
+        Point2f(0,map_height), //bottom left
+        Point2f(map_width, map_height) //bottom right
+    };
+
+    transform_matrix = getPerspectiveTransform(src, dst);
+}
+
+
 int main(int argc, char **argv) {
 
     //namedWindow("Image Window", WINDOW_NORMAL);
@@ -108,8 +156,10 @@ int main(int argc, char **argv) {
 
     transform_matrix = (Mat)(Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
 
-    transform_file = nh_private.param("transform_file", string("transform.yaml"));
-    loadTransformFromFile(transform_file);
+    //transform_file = nh_private.param("transform_file", string("transform.yaml"));
+    //loadTransformFromFile(transform_file);
+
+    setTfCalibration();
 
     ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
     ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateImage);
