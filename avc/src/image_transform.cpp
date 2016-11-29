@@ -18,12 +18,10 @@ const double fov_v = 0.3337; //angle from center of iamge to rop or bottom edge
 const double cam_height = 0.3; //camera height in meters
 const double dist_min = 0.75; //minimum distance forward from cam to show in map
 const double dist_max = 5.0; //maximum distance (both meters)
-const double cam_mount_angle = 0.155; //TODO establish actual value
-//set map width and height with 1cm = 1px
-const int map_width = sqrt(dist_min*dist_min + cam_height*cam_height) * tan(fov_h)*200;
-const int map_height = (dist_max - dist_min) * 100;
-const int out_img_width = input_width;
-const int out_img_height = input_height;
+const double cam_mount_angle = 0.145; //angle of camera from horizontal
+//output image size can be redefined, as in the geometry transform function
+int out_img_width = input_width;
+int out_img_height = input_height;
 
 Mat transform_matrix;
 string transform_file;
@@ -109,22 +107,38 @@ bool CalibrateImage(avc::calibrate_image::Request &request, avc::calibrate_image
     Point2f dst[4] = {topLeft, topRight, bottomLeft, bottomRight};
     transform_matrix = getPerspectiveTransform(src, dst);
 
+    out_img_width = input_width;
+    out_img_height = input_height;
+
     saveTransformToFile(transform_file);
 
     return true;
 }
 
 
-void setGeometryCalibration() {
+void setGeometryTransform() {
+    //set width and height of the rectangle in front of the robot with 1cm = 1px
+    // the actual output image will show more than this rectangle
+    int rectangle_w = sqrt(dist_min*dist_min + cam_height*cam_height) * tan(fov_h)*200;
+    int rectangle_h = (dist_max - dist_min) * 100;
+
+    //calculate half the width of the top of the transform box, in input image pixels
+    // min_hyp, max_hyp, and theta1 are just temporary variables
+    // see https://www.desmos.com/calculator/jsofcq1bi5
     double min_hyp = sqrt(dist_min*dist_min + cam_height*cam_height);
     double max_hyp = sqrt(dist_max*dist_max + cam_height*cam_height);
     double theta1 = atan((min_hyp/max_hyp)*tan(fov_h));
-    double x_top_spread = 0.5*input_width*(theta1/fov_h + 1) - input_width/2;
+    double x_top_spread = 0.5*input_width*(theta1/fov_h);
 
+    //calculate the top and bottom y coords from the specified distances
+    // see https://www.desmos.com/calculator/pwjwlnnx77
     double partial_btm = atan(cam_height/dist_min);
     double partial_top = atan(cam_height/dist_max);
     double y_bottom = input_height*(partial_btm-cam_mount_angle+fov_v)/(2*fov_v);
     double y_top    = input_height*(partial_top-cam_mount_angle+fov_v)/(2*fov_v);
+
+    out_img_width = rectangle_w * (input_width/x_top_spread) / 2;
+    out_img_height = rectangle_h;
 
     Point2f src[4] = {
         Point2f(input_width/2 - x_top_spread, y_top), //top left
@@ -134,10 +148,10 @@ void setGeometryCalibration() {
     };
 
     Point2f dst[4] = {
-        Point2f(out_img_width/2-map_width/2, out_img_height/2-map_height/2), //top left
-        Point2f(out_img_width/2+map_width/2, out_img_height/2-map_height/2), //top right
-        Point2f(out_img_width/2-map_width/2, out_img_height/2+map_height/2), //bottom left
-        Point2f(out_img_width/2+map_width/2, out_img_height/2+map_height/2) //bottom right
+        Point2f(out_img_width/2 - rectangle_w/2, 0), //top left
+        Point2f(out_img_width/2 + rectangle_w/2, 0), //top right
+        Point2f(out_img_width/2 - rectangle_w/2, out_img_height), //bottom left
+        Point2f(out_img_width/2 + rectangle_w/2, out_img_height) //bottom right
     };
 
     transform_matrix = getPerspectiveTransform(src, dst);
@@ -157,7 +171,7 @@ int main(int argc, char **argv) {
     //transform_file = nh_private.param("transform_file", string("transform.yaml"));
     //loadTransformFromFile(transform_file);
 
-    setGeometryCalibration();
+    setGeometryTransform();
 
     ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
     ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateImage);
