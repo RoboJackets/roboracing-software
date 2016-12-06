@@ -92,18 +92,38 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request, avc::cal
 
 
 
+    //                  top left    top right   bottom left  bottom right
     //Point2f src[4] = {corners[0], corners[8], corners[54], corners[62]};
     return true;
 }
 
 /*
- * 
- * refactor dist2px algorithms and their inverses to here
- *
- *
+ * Start with a horizontal line on the groud at dist_min horizonally in front of the 
+ * camera. It fills half the camera's FOV, from the center to the right edge. Then 
+ * back up the car so that the line is dist_max away horizontally from the camera. The
+ * apparent length of this hypothetical line (in pixels) is the output of this 
+ * function. 
+ * See https://www.desmos.com/calculator/jsofcq1bi5
+ * See https://drive.google.com/file/d/0Bw7-7Y3CUDw1Z0ZqdmdRZ3dUTE0/view?usp=sharing
+ * params: dmax - maximum distance to consider
  */
+double pxFromDist_X(double dmin, double dmax) {
+    // min_hyp, max_hyp, and theta1 are just temporary variables
+    double min_hyp = sqrt(dmin*dmin + cam_height*cam_height);
+    double max_hyp = sqrt(dmax*dmax + cam_height*cam_height);
+    double theta1 = atan((min_hyp/max_hyp)*tan(fov_h));
+    double x_top_spread = 0.5*input_width*(theta1/fov_h);
+    return x_top_spread;
+}
 
-//https://drive.google.com/file/d/0Bw7-7Y3CUDw1Z0ZqdmdRZ3dUTE0/view?usp=sharing
+//calculate the y coord of the input image from the specified distance
+// see https://www.desmos.com/calculator/pwjwlnnx77
+// see https://drive.google.com/file/d/0Bw7-7Y3CUDw1Z0ZqdmdRZ3dUTE0/view?usp=sharing
+double pxFromDist_Y(double dist) {
+    double foo = atan(cam_height/dist) - cam_mount_angle + fov_v;
+    return input_height * foo / (2*fov_v);
+}
+
 void setTransformFromGeometry() {
     //set width and height of the rectangle in front of the robot with 1cm = 1px
     // the actual output image will show more than this rectangle
@@ -111,20 +131,10 @@ void setTransformFromGeometry() {
                       * tan(fov_h) * map_pixels_per_meter * 2;
     int rectangle_h = (dist_max - dist_min) * map_pixels_per_meter;
 
-    //calculate half the width of the top of the transform box, in input image pixels
-    // min_hyp, max_hyp, and theta1 are just temporary variables
-    // see https://www.desmos.com/calculator/jsofcq1bi5
-    double min_hyp = sqrt(dist_min*dist_min + cam_height*cam_height);
-    double max_hyp = sqrt(dist_max*dist_max + cam_height*cam_height);
-    double theta1 = atan((min_hyp/max_hyp)*tan(fov_h));
-    double x_top_spread = 0.5*input_width*(theta1/fov_h);
-
-    //calculate the top and bottom y coords from the specified distances
-    // see https://www.desmos.com/calculator/pwjwlnnx77
-    double partial_btm = atan(cam_height/dist_min);
-    double partial_top = atan(cam_height/dist_max);
-    double y_bottom = input_height*(partial_btm-cam_mount_angle+fov_v)/(2*fov_v);
-    double y_top    = input_height*(partial_top-cam_mount_angle+fov_v)/(2*fov_v);
+    //find coordinates for corners above rectangle in input image
+    double x_top_spread = pxFromDist_X(dist_max);
+    double y_bottom = pxFromDist_Y(dist_min);
+    double y_top    = pxFromDist_Y(dist_max);
 
     //set the ouput image size to include the whole transformed image,
     // not just the target rectangle
