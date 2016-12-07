@@ -77,3 +77,6 @@ include_directories(
 add_subdirectory(src/planner)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mapper)
+add_subdirectory(src/tutorial)
+add_subdirectory(src/histogram)
+add_subdirectory(src/road_detector)
