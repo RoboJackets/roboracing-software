@@ -64,7 +64,12 @@ bool TransformImage(avc::transform_image::Request &request,
     return true;
 }
 
-Point2f getCalibBoardCorners(const Mat &inimage, Size dims) {
+/*
+ * precondition: outPoints is array of length 4 and type Point2f
+ * postcondition: outPoints contains pixel coords in topLeft, topRight, bottomLeft,
+ *  bottomRight order.
+ */
+bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     vector<Point2f> corners;
     int prefs = CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK;
     bool patternfound = findChessboardCorners(inimage, dims, corners, prefs);
@@ -73,7 +78,7 @@ Point2f getCalibBoardCorners(const Mat &inimage, Size dims) {
 
     if (!patternfound) {
         ROS_WARN("Pattern not found!");
-        return Point2f(-1,-1);
+        return false;
     }
 
     Mat gray;
@@ -83,13 +88,10 @@ Point2f getCalibBoardCorners(const Mat &inimage, Size dims) {
     cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), 
                  TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
-    Point2f boardCorners[4] = {
-        corners[0],
-        corners[dims.width - 1],
-        corners[dims.width * (dims.height-1)],
-        corners[dims.width * dims.height - 1]
-    };
-    return boardCorners;
+    outPoints[0] = corners[0];
+    outPoints[1] = corners[dims.width - 1];
+    outPoints[2] = corners[dims.width * (dims.height-1)];
+    outPoints[3] = corners[dims.width * dims.height - 1];
 }
 
 //inputSize is in pixels
@@ -134,9 +136,10 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
     //size in pointsPerRow, pointsPerColumn
     Size chessboardDims = Size(request.chessboardCols+1, request.chessboardRows+1);
     
-    auto corners[4] = getCalibBoardCorners(inimage, chessboardDims);
+    Point2f corners[4];
+    bool foundBoard = getCalibBoardCorners(inimage, chessboardDims, corners);
 
-    if(corners[0].x < 0) return false; // failed to find corners
+    if(!foundBoard) return false; // failed to find corners
 
     //Real world chessboard dimensions. width, height
     Size chessboardMeters = Size(request.squareWidth * request.chessboardCols,
