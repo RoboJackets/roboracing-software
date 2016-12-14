@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     avc::calibrate_image srv;
     srv.request.image = image;
     srv.request.mapPixelsPerMeter = 100;
-    srv.request.chessboardRows = 6;
-    srv.request.chessboardCols = 8;
+    srv.request.chessboardRows = 7;
+    srv.request.chessboardCols = 9;
     srv.request.squareWidth = 0.033;
 
     if(client.call(srv)) {

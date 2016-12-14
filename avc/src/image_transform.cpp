@@ -134,21 +134,21 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
     const Mat &inimage = cv_ptr->image;
 
     //size in pointsPerRow, pointsPerColumn
-    Size chessboardDims = Size(request.chessboardCols+1, request.chessboardRows+1);
+    Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRow-+1);
     
     Point2f corners[4];
-    bool foundBoard = getCalibBoardCorners(inimage, chessboardDims, corners);
+    bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
 
     if(!foundBoard) return false; // failed to find corners
 
     //Real world chessboard dimensions. width, height
-    Size chessboardMeters = Size(request.squareWidth * request.chessboardCols,
-                                 request.squareWidth * request.chessboardRows);
+    Size chessboardMeters(request.squareWidth * request.chessboardCols,
+                          request.squareWidth * request.chessboardRows);
 
     //store input image size
     input_width = inimage.cols;
     input_height = inimage.rows;
-    Size imgDims = Size(input_width, input_height);
+    Size imgDims(input_width, input_height);
 
     setGeometry(chessboardMeters, imgDims, corners);
 
@@ -173,8 +173,7 @@ double pxFromDist_X(double dmin, double dmax) {
     double min_hyp = sqrt(dmin*dmin + cam_height*cam_height);
     double max_hyp = sqrt(dmax*dmax + cam_height*cam_height);
     double theta1 = atan((min_hyp/max_hyp)*tan(fov_h));
-    double x_top_spread = 0.5*input_width*(theta1/fov_h);
-    return x_top_spread;
+    return 0.5*input_width*(theta1/fov_h);
 }
 
 //calculate the y coord of the input image from the specified distance

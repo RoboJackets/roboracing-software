@@ -3,7 +3,8 @@ sensor_msgs/Image image
 
 float64 mapPixelsPerMeter
 
-#number of rows on the board
+#number of rows of squares on the board
+#conversion to interior vertices done automatically
 int64 chessboardRows
 
 #number of columns
