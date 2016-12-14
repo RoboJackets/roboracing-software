@@ -1,19 +1,13 @@
 #request
 sensor_msgs/Image image
 
-#pixels
-int64 imgDimX 
-
-#pixels
-int64 imgDimY
-
 float64 mapPixelsPerMeter
 
-#number of horizontal edges (squares+1)
-int64 chessboardEdgesH
+#number of rows on the board
+int64 chessboardRows
 
-#number of vertical edges (squares+1)
-int64 chessboardEdgesV
+#number of columns
+int64 chessboardCols
 
 #meters
 float64 squareWidth

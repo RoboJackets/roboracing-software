@@ -11,18 +11,21 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 
-//temporary constants
-const int input_width = 1920;
-const int input_height = 1080;
+#define PI 3.14159265359
+
+//constants
 const double fov_h = 0.5932; //angle from center of image to left or right edge
 const double fov_v = 0.3337; //angle from center of iamge to rop or bottom edge
-const double cam_height = 0.3; //camera height in meters
 const double dist_min = 0.75; //minimum distance forward from cam to show in map
 const double dist_max = 5.0; //maximum distance (both meters)
-const double cam_mount_angle = 0.145; //angle of camera from horizontal
-//output image size can be redefined, as in the geometry transform function
 
-int map_pixels_per_meter = 100;
+double cam_mount_angle;//angle of camera from horizontal
+int map_width; //pixels = cm
+int map_height;
+double map_pixels_per_meter;
+int input_width;
+int input_height;
+double cam_height;//camera height in meters
 
 Mat transform_matrix;
 string transform_file;
@@ -39,19 +42,21 @@ void loadTransformFromFile(std::string file) {
         fs["transform"] >> transform_matrix;
         fs.release();
     } else {
-        ROS_INFO_STREAM("Could not find transform at " << file << ". Will generate new transform.");
+        ROS_INFO_STREAM("Could not find transform at " << file 
+                        << ". Will generate new transform.");
         fs.release();
         saveTransformToFile(file);
     }
 }
 
-bool TransformImage(avc::transform_image::Request &request, avc::transform_image::Response &response) {
+bool TransformImage(avc::transform_image::Request &request, 
+                    avc::transform_image::Response &response) {
     cv_bridge::CvImagePtr cv_ptr;
     Mat outimage;
     cv_ptr = cv_bridge::toCvCopy(request.image);
     const Mat &inimage = cv_ptr->image;
 
-    warpPerspective(inimage, outimage, transform_matrix, Size(out_img_width, out_img_height));
+    warpPerspective(inimage, outimage, transform_matrix, Size(map_width, map_height));
 
     cv_ptr->image = outimage;
     cv_ptr->toImageMsg(response.image);
@@ -59,41 +64,94 @@ bool TransformImage(avc::transform_image::Request &request, avc::transform_image
     return true;
 }
 
-bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request, avc::calibrate_image::Response &response) {
-    cv_bridge::CvImagePtr cv_ptr;
-    Mat outimage;
-    cv_ptr = cv_bridge::toCvCopy(request.image);
-    const Mat &inimage = cv_ptr->image;
-
+Point2f getCalibBoardCorners(const Mat &inimage, Size dims) {
     vector<Point2f> corners;
-
-    bool patternfound = findChessboardCorners(inimage, 
-            Size(request.chessboardDim[0], request.chessboardDim[1]),
-            corners, 
-            CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK);
+    int prefs = CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK;
+    bool patternfound = findChessboardCorners(inimage, dims, corners, prefs);
 
     ROS_INFO("Process corners");
 
     if (!patternfound) {
         ROS_WARN("Pattern not found!");
-        return false;
+        return Point2f(-1,-1);
     }
 
     Mat gray;
     cvtColor(inimage, gray, CV_BGR2GRAY);
 
-    //hone in on the precise corners by identifying edge lines in sourrounding +-11 pixel box
+    //home in on the precise corners using edge lines in sourrounding +-11 pixel box
     cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), 
                  TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
-    //Real world chessboard dimensions
-    double chessboardMetersH = request.squareWidth * (request.chessboardEdgesH - 1);
-    double chessboardMetersV = request.squareWidth * (request.chessboardEdgesV - 1);
+    Point2f boardCorners[4] = {
+        corners[0],
+        corners[dims.width - 1],
+        corners[dims.width * (dims.height-1)],
+        corners[dims.width * dims.height - 1]
+    };
+    return boardCorners;
+}
 
+//inputSize is in pixels
+//corners is topLeft, topRight, bottomLeft, bottomRight
+void setGeometry(Size boardMeters, Size inputSize, Point2f * corners) {
+    Point2f topLeft = corners[0];
+    Point2f topRight = corners[1];
+    Point2f bottomLeft = corners[2];
+    Point2f bottomRight = corners[3];
 
+    // image angle: angle between center of image and bottom (closest) edge of board
+    double yBottom = (bottomLeft.y + bottomRight.y) / 2.0;
+    double imageAngle = ((2. * yBottom / inputSize.height) - 1) * fov_h;
 
-    //                  top left    top right   bottom left  bottom right
-    //Point2f src[4] = {corners[0], corners[8], corners[54], corners[62]};
+    // dist0: 3D distance from camera to front edge of board
+    double bottomAngleH = (bottomRight.x - bottomLeft.x) * fov_h / 2;
+    double dist0 = boardMeters.width / (2. * tan(bottomAngleH));
+
+    // phi1: camera view angle between bottom/front and top/back of board
+    double yTop = (topLeft.y + topRight.y) / 2.0;
+    double phi1 = (yBottom - yTop) * fov_v;
+
+    // phi2: angle between ground plane, back edge of board, and camera
+    double phi2 = asin(dist0 / boardMeters.height * sin(phi1));
+
+    double bottomAngleV = (PI/2) - phi1 - phi2;
+    cam_mount_angle = (PI/2) - bottomAngleV - imageAngle; //*****
+    cam_height = dist0 * sin(bottomAngleV); //*****
+}
+
+/*
+ * Tune the angle and height of the camera using a pattern board
+ */
+bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request, 
+                                avc::calibrate_image::Response &response) 
+{
+    cv_bridge::CvImagePtr cv_ptr;
+    Mat outimage;
+    cv_ptr = cv_bridge::toCvCopy(request.image);
+    const Mat &inimage = cv_ptr->image;
+
+    //size in pointsPerRow, pointsPerColumn
+    Size chessboardDims = Size(request.chessboardCols+1, request.chessboardRows+1);
+    
+    auto corners[4] = getCalibBoardCorners(inimage, chessboardDims);
+
+    if(corners[0].x < 0) return false; // failed to find corners
+
+    //Real world chessboard dimensions. width, height
+    Size chessboardMeters = Size(request.squareWidth * request.chessboardCols,
+                                 request.squareWidth * request.chessboardRows);
+
+    //store input image size
+    input_width = inimage.cols;
+    input_height = inimage.rows;
+    Size imgDims = Size(input_width, input_height);
+
+    setGeometry(chessboardMeters, imgDims, corners);
+
+    //store requested pixels per meter
+    map_pixels_per_meter = request.mapPixelsPerMeter;
+
     return true;
 }
 
@@ -132,14 +190,14 @@ void setTransformFromGeometry() {
     int rectangle_h = (dist_max - dist_min) * map_pixels_per_meter;
 
     //find coordinates for corners above rectangle in input image
-    double x_top_spread = pxFromDist_X(dist_max);
+    double x_top_spread = pxFromDist_X(dist_min, dist_max);
     double y_bottom = pxFromDist_Y(dist_min);
     double y_top    = pxFromDist_Y(dist_max);
 
     //set the ouput image size to include the whole transformed image,
     // not just the target rectangle
-    out_img_width = rectangle_w * (input_width/x_top_spread) / 2;
-    out_img_height = rectangle_h;
+    map_width = rectangle_w * (input_width/x_top_spread) / 2;
+    map_height = rectangle_h;
 
     Point2f src[4] = {
         Point2f(input_width/2 - x_top_spread, y_top), //top left
@@ -149,10 +207,10 @@ void setTransformFromGeometry() {
     };
 
     Point2f dst[4] = {
-        Point2f(out_img_width/2 - rectangle_w/2, 0),              //top left
-        Point2f(out_img_width/2 + rectangle_w/2, 0),              //top right
-        Point2f(out_img_width/2 - rectangle_w/2, out_img_height), //bottom left
-        Point2f(out_img_width/2 + rectangle_w/2, out_img_height)  //bottom right
+        Point2f(map_width/2 - rectangle_w/2, 0),              //top left
+        Point2f(map_width/2 + rectangle_w/2, 0),              //top right
+        Point2f(map_width/2 - rectangle_w/2, map_height), //bottom left
+        Point2f(map_width/2 + rectangle_w/2, map_height)  //bottom right
     };
 
     transform_matrix = getPerspectiveTransform(src, dst);
