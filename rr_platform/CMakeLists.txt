@@ -67,3 +67,5 @@ include_directories(
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
+add_subdirectory(src/camera)
+
