@@ -4,20 +4,19 @@
 #include <opencv2/opencv.hpp>
 #include "avc/transform_image.h"
 #include "avc/calibrate_image.h"
-#include <urdf_model/model.h>
 #include <cmath>
+#include <tf/transform_broadcaster.h>
+#include <avc/constants.hpp>
 
 using namespace std;
 using namespace cv;
 using namespace ros;
 
-#define PI 3.14159265359
-
 //constants
-const double fov_h = 0.5932; //angle from center of image to left or right edge
-const double fov_v = 0.3337; //angle from center of iamge to rop or bottom edge
-const double dist_min = 0.75; //minimum distance forward from cam to show in map
-const double dist_max = 5.0; //maximum distance (both meters)
+const double fov_h = constants::camera_fov_horizontal; //angle from center of image to left or right edge
+const double fov_v = constants::camera_fov_vertical; //angle from center of image to rop or bottom edge
+const double dist_min = constants::camera_distance_min; //minimum distance forward from cam to show in map
+const double dist_max = constants::camera_distance_max; //maximum distance (both meters)
 
 double cam_mount_angle;//angle of camera from horizontal
 int map_width; //pixels = cm
@@ -94,6 +93,22 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     outPoints[3] = corners[dims.width * dims.height - 1];
 }
 
+//update the tf system with the current info
+void broadcastCameraTf() {
+    static tf::TransformBroadcaster br;
+    tf::Transform transform;
+
+    tf::Vector3 cameraLocation(0, 0, cam_height);
+    transform.setOrigin(cameraLocation);
+
+    tf::Quaternion cameraRotation;
+    cameraRotation.setRPY(0, cam_mount_angle * -1, 0); //angle down from horizontal
+    transform.setRotation(cameraRotation);
+
+    tf::StampedTransform st(transform, ros::Time::now(), "chassis", "camera");
+    br.sendTransform(st);
+}
+
 //inputSize is in pixels
 //corners is topLeft, topRight, bottomLeft, bottomRight
 void setGeometry(Size boardMeters, Size inputSize, Point2f * corners) {
@@ -113,12 +128,11 @@ void setGeometry(Size boardMeters, Size inputSize, Point2f * corners) {
     // phi1: camera view angle between bottom/front and top/back of board
     double yTop = (topLeft.y + topRight.y) / 2.0;
     double phi1 = (yBottom - yTop) * fov_v;
-
     // phi2: angle between ground plane, back edge of board, and camera
     double phi2 = asin(dist0 / boardMeters.height * sin(phi1));
-
-    double bottomAngleV = (PI/2) - phi1 - phi2;
-    cam_mount_angle = (PI/2) - bottomAngleV - imageAngle; //*****
+    double bottomAngleV = (M_PI/2) - phi1 - phi2;
+    
+    cam_mount_angle = (M_PI/2) - bottomAngleV - imageAngle; //*****
     cam_height = dist0 * sin(bottomAngleV); //*****
 }
 
@@ -134,7 +148,7 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
     const Mat &inimage = cv_ptr->image;
 
     //size in pointsPerRow, pointsPerColumn
-    Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRow-+1);
+    Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
     
     Point2f corners[4];
     bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
@@ -152,8 +166,7 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
 
     setGeometry(chessboardMeters, imgDims, corners);
 
-    //store requested pixels per meter
-    map_pixels_per_meter = request.mapPixelsPerMeter;
+    broadcastCameraTf();
 
     return true;
 }
@@ -188,8 +201,8 @@ void setTransformFromGeometry() {
     //set width and height of the rectangle in front of the robot with 1cm = 1px
     // the actual output image will show more than this rectangle
     int rectangle_w = sqrt(dist_min*dist_min + cam_height*cam_height) 
-                      * tan(fov_h) * map_pixels_per_meter * 2;
-    int rectangle_h = (dist_max - dist_min) * map_pixels_per_meter;
+                      * tan(fov_h) * constants::pixels_per_meter * 2;
+    int rectangle_h = (dist_max - dist_min) * constants::pixels_per_meter;
 
     //find coordinates for corners above rectangle in input image
     double x_top_spread = pxFromDist_X(dist_min, dist_max);
@@ -225,15 +238,6 @@ int main(int argc, char **argv) {
 
     init(argc, argv, "image_transform");
     NodeHandle nh;
-    //NodeHandle nh_private("~");
-
-    //transform_matrix = (Mat)(Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
-
-    //transform_file = nh_private.param("transform_file", string("transform.yaml"));
-    //loadTransformFromFile(transform_file);
-
-
-    /*TODO load geometry from tf system*/
 
     setTransformFromGeometry();
 

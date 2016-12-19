@@ -1,8 +1,6 @@
 #request
 sensor_msgs/Image image
 
-float64 mapPixelsPerMeter
-
 #number of rows of squares on the board
 #conversion to interior vertices done automatically
 int64 chessboardRows
@@ -15,5 +13,5 @@ float64 squareWidth
 
 ---
 
-#response: indication of whether the chessboard was identified
-bool x
+#this response is just a placeholder
+bool foo
