@@ -49,9 +49,12 @@ catkin_package(
         DEPENDS system_lib
 )
 
-###########
-## Build ##
-###########
+if(CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    add_rostest_gtest(test_joystick_driver test/joystick_driver/test_joystick_driver.test test/joystick_driver/test_joystick_driver.cpp)
+    target_link_libraries(test_joystick_driver ${catkin_LIBRARIES})
+    add_dependencies(test_joystick_driver rr_platform_generate_messages_cpp)
+endif()
 
 ## Specify additional locations of header files
 include_directories(
@@ -62,5 +65,5 @@ include_directories(
         ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/joystick)
+add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
