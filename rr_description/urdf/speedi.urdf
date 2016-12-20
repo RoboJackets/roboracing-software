@@ -5,7 +5,7 @@
     <link name="lidar"/>
     <link name="imu"/>
     
-    <joint name="camera_joint" type="fixed">
+    <joint name="camera_joint" type="floating">
         <parent link="chassis"/>
         <child link="camera"/>
         <origin xyz="0 0 0.3175" rpy="0 0 0"/>

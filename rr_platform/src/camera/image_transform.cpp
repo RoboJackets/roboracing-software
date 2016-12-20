@@ -73,8 +73,7 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     int prefs = CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK;
     bool patternfound = findChessboardCorners(inimage, dims, corners, prefs);
 
-    ROS_INFO("Process corners");
-
+    //ROS_INFO("Process corners");
     if (!patternfound) {
         ROS_WARN("Pattern not found!");
         return false;
@@ -91,6 +90,8 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     outPoints[1] = corners[dims.width - 1];
     outPoints[2] = corners[dims.width * (dims.height-1)];
     outPoints[3] = corners[dims.width * dims.height - 1];
+
+    return true;
 }
 
 //update the tf system with the current info
@@ -107,27 +108,29 @@ void broadcastCameraTf() {
 
     tf::StampedTransform st(transform, ros::Time::now(), "chassis", "camera");
     br.sendTransform(st);
+
+    cout << "sent tf message" << endl;
 }
 
 //inputSize is in pixels
 //corners is topLeft, topRight, bottomLeft, bottomRight
-void setGeometry(Size boardMeters, Size inputSize, Point2f * corners) {
+void setGeometry(Size_<double> boardMeters, Size inputSize, Point2f * corners) {
     Point2f topLeft = corners[0];
     Point2f topRight = corners[1];
     Point2f bottomLeft = corners[2];
     Point2f bottomRight = corners[3];
 
     // image angle: angle between center of image and bottom (closest) edge of board
-    double yBottom = (bottomLeft.y + bottomRight.y) / 2.0;
+    double yBottom = double(bottomLeft.y + bottomRight.y) / 2;
     double imageAngle = ((2. * yBottom / inputSize.height) - 1) * fov_h;
 
     // dist0: 3D distance from camera to front edge of board
-    double bottomAngleH = (bottomRight.x - bottomLeft.x) * fov_h / 2;
+    double bottomAngleH = (bottomRight.x - bottomLeft.x) / input_width * fov_h*2;
     double dist0 = boardMeters.width / (2. * tan(bottomAngleH));
 
     // phi1: camera view angle between bottom/front and top/back of board
-    double yTop = (topLeft.y + topRight.y) / 2.0;
-    double phi1 = (yBottom - yTop) * fov_v;
+    double yTop = double(topLeft.y + topRight.y) / 2;
+    double phi1 = (yBottom - yTop) / input_height * fov_v*2;
     // phi2: angle between ground plane, back edge of board, and camera
     double phi2 = asin(dist0 / boardMeters.height * sin(phi1));
     double bottomAngleV = (M_PI/2) - phi1 - phi2;
@@ -149,6 +152,7 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
 
     //size in pointsPerRow, pointsPerColumn
     Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
+    cout << "chessboardVertexDims: " << chessboardVertexDims << endl;
     
     Point2f corners[4];
     bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
@@ -156,8 +160,9 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
     if(!foundBoard) return false; // failed to find corners
 
     //Real world chessboard dimensions. width, height
-    Size chessboardMeters(request.squareWidth * request.chessboardCols,
-                          request.squareWidth * request.chessboardRows);
+    double w = double(request.squareWidth) * double(request.chessboardCols);
+    double h = double(request.squareWidth) * double(request.chessboardRows);
+    Size_<double> chessboardMeters(w, h);
 
     //store input image size
     input_width = inimage.cols;
@@ -165,6 +170,9 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
     Size imgDims(input_width, input_height);
 
     setGeometry(chessboardMeters, imgDims, corners);
+
+    cout << "found height " << cam_height << endl;
+    cout << "found angle " << cam_mount_angle << endl;
 
     broadcastCameraTf();
 

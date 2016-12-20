@@ -36,11 +36,19 @@ add_message_files(
         steering.msg
 )
 
+## Generate services in the 'srv' folder
+add_service_files(
+   FILES
+   transform_image.srv
+   calibrate_image.srv
+)
+
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
         DEPENDENCIES
         std_msgs
         geometry_msgs
+        sensor_msgs
 )
 
 catkin_package(

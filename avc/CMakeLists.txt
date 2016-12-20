@@ -26,13 +26,6 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-## Generate services in the 'srv' folder
-add_service_files(
-   FILES
-   transform_image.srv
-   calibrate_image.srv
-)
-
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
    DEPENDENCIES
