@@ -1,25 +1,40 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include "avc/calibrate_image.h"
+#include "rr_platform/calibrate_image.h"
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <tf/transform_listener.h>
+#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <avc/constants.hpp>
 
 using namespace std;
 
-void printNextCamHeight(tf::TransformListener& listener) {
-    tf::StampedTransform transform;
-    listener.waitForTransform("chassis", "camera", ros::Time(0), ros::Duration(10.0));
-    listener.lookupTransform("chassis", "camera", ros::Time(0), transform);
-    cout << transform.getOrigin().z() << endl;
+tf::TransformListener * listener;
+
+geometry_msgs::Pose testCameraTf() {
+    tf::Quaternion q_tf;
+    q_tf.setRPY(0,0,0);
+    geometry_msgs::Quaternion q_msg;
+    tf::quaternionTFToMsg(q_tf, q_msg);
+
+    geometry_msgs::PoseStamped psSrc, psDst;
+    psSrc.header.frame_id = "camera";
+    psSrc.pose.position.x = 0;
+    psSrc.pose.position.y = 0;
+    psSrc.pose.position.z = 0;
+    psSrc.pose.orientation = q_msg;
+    
+    listener->waitForTransform("ground", "camera", ros::Time(0), ros::Duration(1.0));
+    listener->transformPose("ground", psSrc, psDst);
+    return psDst.pose;
 }
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "calibration_tester");
 
     ros::NodeHandle nh;
-    ros::Publisher image_pub;
-    ros::ServiceClient client = nh.serviceClient<avc::calibrate_image>("/calibrate_image");
+    auto client = nh.serviceClient<rr_platform::calibrate_image>("/calibrate_image");
 
     //load image
     //http://answers.ros.org/question/11550/publishing-an-image-from-disk/
@@ -30,26 +45,25 @@ int main(int argc, char** argv) {
     sensor_msgs::Image rosImage;
     cvImage.toImageMsg(rosImage);
     
-    avc::calibrate_image srv;
+    rr_platform::calibrate_image srv;
     srv.request.image = rosImage;
     srv.request.chessboardRows = 7;
     srv.request.chessboardCols = 9;
     srv.request.squareWidth = 0.02745;
 
-    tf::TransformListener listener;
+    tf::TransformListener listener_tmp;
+    listener = &listener_tmp;
 
-    ros::Duration(1.0).sleep();
-
-    printNextCamHeight(listener);
+    cout << "camera from ground before: " << endl << testCameraTf() << endl;
 
     if(client.call(srv))
         cout << "calibration service call success" << endl;
     else
         cout << "calibration service call failure" << endl;
 
-    ros::Duration(3.0).sleep();
+    ros::Duration(0.1).sleep(); //allow tf to update
 
-    printNextCamHeight(listener);
+    cout << "camera from ground tf after: " << endl << testCameraTf() << endl;
 
     return 0;
 }

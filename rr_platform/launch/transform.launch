@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="avc" type="image_transform" name="image_transform" output="screen">
-        <param name="transform_file" value="$(find avc)/launch/transform.yaml"/>
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_file" value="./transform.yaml"/>
     </node>
 </launch>

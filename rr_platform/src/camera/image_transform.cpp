@@ -2,10 +2,11 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include "avc/transform_image.h"
-#include "avc/calibrate_image.h"
+#include <rr_platform/transform_image.h>
+#include <rr_platform/calibrate_image.h>
+#include <rr_platform/camera_geometry.h>
 #include <cmath>
-#include <tf/transform_broadcaster.h>
+#include <sensor_msgs/JointState.h>
 #include <avc/constants.hpp>
 
 using namespace std;
@@ -13,21 +14,22 @@ using namespace cv;
 using namespace ros;
 
 //constants
-const double fov_h = constants::camera_fov_horizontal; //angle from center of image to left or right edge
-const double fov_v = constants::camera_fov_vertical; //angle from center of image to rop or bottom edge
-const double dist_min = constants::camera_distance_min; //minimum distance forward from cam to show in map
-const double dist_max = constants::camera_distance_max; //maximum distance (both meters)
+#define fov_h constants::camera_fov_horizontal //angle from center of image to left or right edge
+#define fov_v constants::camera_fov_vertical //angle from center of image to rop or bottom edge
+#define dist_min constants::camera_distance_min //minimum distance forward from cam to show in map
+#define dist_max constants::camera_distance_max //maximum distance (both meters)
 
 double cam_mount_angle;//angle of camera from horizontal
 int map_width; //pixels = cm
 int map_height;
-double map_pixels_per_meter;
 int input_width;
 int input_height;
 double cam_height;//camera height in meters
 
 Mat transform_matrix;
 string transform_file;
+
+ros::Publisher camera_geo_pub;
 
 void saveTransformToFile(std::string file) {
     FileStorage fs(file, FileStorage::WRITE);
@@ -48,8 +50,8 @@ void loadTransformFromFile(std::string file) {
     }
 }
 
-bool TransformImage(avc::transform_image::Request &request, 
-                    avc::transform_image::Response &response) {
+bool TransformImage(rr_platform::transform_image::Request &request, 
+                    rr_platform::transform_image::Response &response) {
     cv_bridge::CvImagePtr cv_ptr;
     Mat outimage;
     cv_ptr = cv_bridge::toCvCopy(request.image);
@@ -94,22 +96,12 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     return true;
 }
 
-//update the tf system with the current info
-void broadcastCameraTf() {
-    static tf::TransformBroadcaster br;
-    tf::Transform transform;
-
-    tf::Vector3 cameraLocation(0, 0, cam_height);
-    transform.setOrigin(cameraLocation);
-
-    tf::Quaternion cameraRotation;
-    cameraRotation.setRPY(0, cam_mount_angle * -1, 0); //angle down from horizontal
-    transform.setRotation(cameraRotation);
-
-    tf::StampedTransform st(transform, ros::Time::now(), "chassis", "camera");
-    br.sendTransform(st);
-
-    cout << "sent tf message" << endl;
+// let another (platform-specific) module update the tf system with the current info
+void updateJointState() {
+    rr_platform::camera_geometry msg;
+    msg.height = cam_height;
+    msg.angle = cam_mount_angle;
+    camera_geo_pub.publish(msg);
 }
 
 //inputSize is in pixels
@@ -142,8 +134,8 @@ void setGeometry(Size_<double> boardMeters, Size inputSize, Point2f * corners) {
 /*
  * Tune the angle and height of the camera using a pattern board
  */
-bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request, 
-                                avc::calibrate_image::Response &response) 
+bool CalibrateGeometryFromImage(rr_platform::calibrate_image::Request &request, 
+                                rr_platform::calibrate_image::Response &response) 
 {
     cv_bridge::CvImagePtr cv_ptr;
     Mat outimage;
@@ -152,7 +144,6 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
 
     //size in pointsPerRow, pointsPerColumn
     Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
-    cout << "chessboardVertexDims: " << chessboardVertexDims << endl;
     
     Point2f corners[4];
     bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
@@ -171,10 +162,10 @@ bool CalibrateGeometryFromImage(avc::calibrate_image::Request &request,
 
     setGeometry(chessboardMeters, imgDims, corners);
 
-    cout << "found height " << cam_height << endl;
-    cout << "found angle " << cam_mount_angle << endl;
+    ROS_INFO_STREAM("found height " << cam_height);
+    ROS_INFO_STREAM("found angle " << cam_mount_angle);
 
-    broadcastCameraTf();
+    updateJointState();
 
     return true;
 }
@@ -246,6 +237,9 @@ int main(int argc, char **argv) {
 
     init(argc, argv, "image_transform");
     NodeHandle nh;
+
+    //publish camera info for a description module to update its model
+    camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
 
     setTransformFromGeometry();
 

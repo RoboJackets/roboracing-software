@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
 #include <sensor_msgs/Image.h>
-#include "avc/transform_image.h"
+#include <rr_platform/transform_image.h>
 
 using namespace std;
 
@@ -10,7 +10,7 @@ ros::ServiceClient client;
 ros::Publisher pub;
 
 void imageCB(const sensor_msgs::ImageConstPtr& msg) {
-    avc::transform_image srv;
+    rr_platform::transform_image srv;
     srv.request.image = *msg;
     auto success = client.call(srv);
     if(success) {
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nh;
     ros::Subscriber img_sub = nh.subscribe("/camera/image_rect", 1, imageCB);
-    client = nh.serviceClient<avc::transform_image>("transform_image");
+    client = nh.serviceClient<rr_platform::transform_image>("transform_image");
     pub = nh.advertise<sensor_msgs::Image>(string("/transformed_image"), 1);
 
     ros::spin();

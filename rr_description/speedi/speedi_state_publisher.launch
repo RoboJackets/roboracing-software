@@ -1,0 +1,6 @@
+<launch>
+    <param name="robot_description" command="cat $(find rr_description)/speedi/speedi.urdf"/>
+    <node name="speedi_state_publisher" pkg ="robot_state_publisher" type="state_publisher"/>
+
+    <node name="speedi_joint_updater" pkg="rr_description" type="speedi_joint_updater"/>
+</launch>

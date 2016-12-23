@@ -7,7 +7,7 @@
 #include <pcl/conversions.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
-#include "avc/transform_image.h"
+#include <rr_platform/transform_image.h>
 
 using namespace std;
 using namespace cv;
@@ -140,7 +140,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr->encoding = "bgr8";
     cv_ptr->toImageMsg(outmsg);
 
-    avc::transform_image srv;
+    rr_platform::transform_image srv;
     srv.request.image = outmsg;
 
     if(transformClient.call(srv)) {
@@ -201,7 +201,7 @@ int main(int argc, char** argv) {
 
     NodeHandle nh;
 
-    transformClient = nh.serviceClient<avc::transform_image>("transform_image");
+    transformClient = nh.serviceClient<rr_platform::transform_image>("transform_image");
     img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
     cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/colors_img/cloud", 1);
     Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);

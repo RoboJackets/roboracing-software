@@ -1,0 +1,44 @@
+<robot name="speedi">
+    
+    <link name="chassis"/>
+    <link name="camera"/>
+    <link name="camera_base"/>
+    <link name="lidar"/>
+    <link name="imu"/>
+    <link name="ground"/>
+    
+    <joint name="cam_ground_height" type="prismatic">
+        <parent link="ground"/>
+        <child link="camera_base"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000.0" lower="0" upper="1.0" velocity="1000.0"/>
+    </joint>
+
+    <joint name="camera_tilt" type="continuous">
+        <parent link="camera_base"/>
+        <child link="camera"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="1000.0" velocity="1000.0"/>
+    </joint>
+
+    <joint name="cam_chassis_height" type="fixed">
+        <child link="chassis"/>
+        <parent link="camera_base"/>
+        <origin xyz="0 0 0.3175" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="lidar_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="lidar"/>
+        <origin xyz="0 0.28575 0" rpy="0 0 0"/>
+        <axis xyz="0 0 0"/>
+    </joint>
+
+    <joint name="imu" type="fixed">
+        <parent link="chassis"/>
+        <child link="imu"/>
+        <origin xyz="0 0 0.1778" rpy="0 0 0"/>
+        <axis xyz="0 0 0"/>
+    </joint>
+</robot>
