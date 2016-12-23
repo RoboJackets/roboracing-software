@@ -8,6 +8,8 @@
 #include <cmath>
 #include <sensor_msgs/JointState.h>
 #include <avc/constants.hpp>
+#include <tf/transform_listener.h>
+//#include <LinearMath/btMatrix3x3.h>
 
 using namespace std;
 using namespace cv;
@@ -31,23 +33,49 @@ string transform_file;
 
 ros::Publisher camera_geo_pub;
 
-void saveTransformToFile(std::string file) {
-    FileStorage fs(file, FileStorage::WRITE);
-    fs << "transform" << transform_matrix;
-    fs.release();
-}
+// void saveTransformToFile(std::string file) {
+//     FileStorage fs(file, FileStorage::WRITE);
+//     fs << "transform" << transform_matrix;
+//     fs.release();
+// }
 
-void loadTransformFromFile(std::string file) {
-    FileStorage fs(file, FileStorage::READ);
-    if (fs.isOpened()) {
-        fs["transform"] >> transform_matrix;
-        fs.release();
-    } else {
-        ROS_INFO_STREAM("Could not find transform at " << file 
-                        << ". Will generate new transform.");
-        fs.release();
-        saveTransformToFile(file);
-    }
+// void loadTransformFromFile(std::string file) {
+//     FileStorage fs(file, FileStorage::READ);
+//     if (fs.isOpened()) {
+//         fs["transform"] >> transform_matrix;
+//         fs.release();
+//     } else {
+//         ROS_INFO_STREAM("Could not find transform at " << file 
+//                         << ". Will generate new transform.");
+//         fs.release();
+//         saveTransformToFile(file);
+//     }
+// }
+
+void loadGeometryFromTf() {
+    tf::TransformListener listener;
+
+    tf::Quaternion q_tf;
+    q_tf.setRPY(0,0,0);
+    geometry_msgs::Quaternion q_msg;
+    tf::quaternionTFToMsg(q_tf, q_msg);
+
+    geometry_msgs::PoseStamped psSrc, psDst;
+    psSrc.header.frame_id = "camera";
+    psSrc.pose.position.x = 0;
+    psSrc.pose.position.y = 0;
+    psSrc.pose.position.z = 0;
+    psSrc.pose.orientation = q_msg;
+    
+    listener.waitForTransform("ground", "camera", ros::Time(0), ros::Duration(60.0));
+    listener.transformPose("ground", psSrc, psDst);
+
+    tf::quaternionMsgToTF(psDst.pose.orientation, q_tf);
+    double roll, pitch, yaw;
+    tf::Matrix3x3(q_tf).getRPY(roll, pitch, yaw);
+
+    cam_mount_angle = pitch * -1;
+    cam_height = psDst.pose.position.z;
 }
 
 bool TransformImage(rr_platform::transform_image::Request &request, 
@@ -132,45 +160,6 @@ void setGeometry(Size_<double> boardMeters, Size inputSize, Point2f * corners) {
 }
 
 /*
- * Tune the angle and height of the camera using a pattern board
- */
-bool CalibrateGeometryFromImage(rr_platform::calibrate_image::Request &request, 
-                                rr_platform::calibrate_image::Response &response) 
-{
-    cv_bridge::CvImagePtr cv_ptr;
-    Mat outimage;
-    cv_ptr = cv_bridge::toCvCopy(request.image);
-    const Mat &inimage = cv_ptr->image;
-
-    //size in pointsPerRow, pointsPerColumn
-    Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
-    
-    Point2f corners[4];
-    bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
-
-    if(!foundBoard) return false; // failed to find corners
-
-    //Real world chessboard dimensions. width, height
-    double w = double(request.squareWidth) * double(request.chessboardCols);
-    double h = double(request.squareWidth) * double(request.chessboardRows);
-    Size_<double> chessboardMeters(w, h);
-
-    //store input image size
-    input_width = inimage.cols;
-    input_height = inimage.rows;
-    Size imgDims(input_width, input_height);
-
-    setGeometry(chessboardMeters, imgDims, corners);
-
-    ROS_INFO_STREAM("found height " << cam_height);
-    ROS_INFO_STREAM("found angle " << cam_mount_angle);
-
-    updateJointState();
-
-    return true;
-}
-
-/*
  * Start with a horizontal line on the groud at dist_min horizonally in front of the 
  * camera. It fills half the camera's FOV, from the center to the right edge. Then 
  * back up the car so that the line is dist_max away horizontally from the camera. The
@@ -230,6 +219,49 @@ void setTransformFromGeometry() {
     transform_matrix = getPerspectiveTransform(src, dst);
 }
 
+/*
+ * Tune the angle and height of the camera using a pattern board
+ */
+bool CalibrateCallback(rr_platform::calibrate_image::Request &request, 
+                       rr_platform::calibrate_image::Response &response) 
+{
+    cv_bridge::CvImagePtr cv_ptr;
+    Mat outimage;
+    cv_ptr = cv_bridge::toCvCopy(request.image);
+    const Mat &inimage = cv_ptr->image;
+
+    //size in pointsPerRow, pointsPerColumn
+    Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
+    
+    Point2f corners[4];
+    bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
+
+    if(!foundBoard) return false; // failed to find corners
+
+    //Real world chessboard dimensions. width, height
+    double w = double(request.squareWidth) * double(request.chessboardCols);
+    double h = double(request.squareWidth) * double(request.chessboardRows);
+    Size_<double> chessboardMeters(w, h);
+
+    //store input image size
+    input_width = inimage.cols;
+    input_height = inimage.rows;
+    Size imgDims(input_width, input_height);
+
+    setGeometry(chessboardMeters, imgDims, corners);
+
+    ROS_INFO_STREAM("found height " << cam_height);
+    ROS_INFO_STREAM("found angle " << cam_mount_angle);
+
+    updateJointState();
+
+    setTransformFromGeometry();
+
+    //saveTransformToFile(transform_file);
+
+    return true;
+}
+
 
 int main(int argc, char **argv) {
 
@@ -237,14 +269,22 @@ int main(int argc, char **argv) {
 
     init(argc, argv, "image_transform");
     NodeHandle nh;
+    NodeHandle nh_private("~");
 
     //publish camera info for a description module to update its model
     camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
 
+    ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
+    ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateCallback);
+
+    //set fallback transform (identity)
+    transform_matrix = (Mat)(Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
+
+    ros::Duration(1.0).sleep(); //let tf get situated
+    loadGeometryFromTf();
     setTransformFromGeometry();
 
-    ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
-    ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateGeometryFromImage);
+    ROS_INFO("Ready. Used height %f and angle %f", cam_height, cam_mount_angle);
 
     spin();
 
