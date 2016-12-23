@@ -24,8 +24,8 @@ using namespace ros;
 double cam_mount_angle;//angle of camera from horizontal
 int map_width; //pixels = cm
 int map_height;
-int input_width;
-int input_height;
+int input_width = constants::camera_resolution_x; //fallback image size values
+int input_height = constants::camera_resolution_y;;
 double cam_height;//camera height in meters
 
 Mat transform_matrix;
@@ -248,6 +248,14 @@ bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
     input_height = inimage.rows;
     Size imgDims(input_width, input_height);
 
+    if(input_width != constants::camera_resolution_x 
+            || input_height != constants::camera_resolution_y) {
+        ROS_WARN("image input resolution [%d, %d] does not match constant [%d, %d]. \
+                 Change value in constants or reconfigure camera.", 
+                 imgDims.width, imgDims.height, constants::camera_resolution_x, 
+                 constants::camera_resolution_y);
+    }
+
     setGeometry(chessboardMeters, imgDims, corners);
 
     ROS_INFO_STREAM("found height " << cam_height);
@@ -269,7 +277,6 @@ int main(int argc, char **argv) {
 
     init(argc, argv, "image_transform");
     NodeHandle nh;
-    NodeHandle nh_private("~");
 
     //publish camera info for a description module to update its model
     camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
@@ -280,7 +287,6 @@ int main(int argc, char **argv) {
     //set fallback transform (identity)
     transform_matrix = (Mat)(Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
 
-    ros::Duration(1.0).sleep(); //let tf get situated
     loadGeometryFromTf();
     setTransformFromGeometry();
 

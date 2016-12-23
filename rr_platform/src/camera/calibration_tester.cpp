@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     //load image
     //http://answers.ros.org/question/11550/publishing-an-image-from-disk/
     cv_bridge::CvImage cvImage;
-    string imagePath("/home/evan/rosbag/calibration_image.jpg");
+    string imagePath("~/rosbag/calibration_image.jpg");
     cvImage.image = cv::imread(imagePath, CV_LOAD_IMAGE_COLOR);
     cvImage.encoding = "bgr8";
     sensor_msgs::Image rosImage;

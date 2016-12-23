@@ -29,6 +29,9 @@ namespace constants {
   double camera_fov_horizontal = 0.5932; //angle from center of image to left or right edge
   double camera_fov_vertical = 0.3337; //angle from center of image to top or bottom edge
 
+  int camera_resolution_x = 1920;
+  int camera_resolution_y = 1080;
+
   double origin_x = world_height / 2;
   double origin_y = world_width / 2;
 
