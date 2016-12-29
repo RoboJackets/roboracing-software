@@ -27,14 +27,14 @@ private:
 	std::normal_distribution<double> * steering_gaussian_ptr;
 	std::default_random_engine * rand_gen_ptr;
 
-	double STEER_STDDEV; //degrees
+	double STEER_STDDEV; //standard dev of steering randomizer (degrees)
 	double MAX_STEER_ANGLE; //degrees
-	int PATH_ITERATIONS;
+	int PATH_ITERATIONS; //number of random paths to generate
 	double MAX_SPEED; //meters per second
-	double PATH_TIME;
-	double TIME_INCREMENT;
-	double ACTION_TIME; //use desired path up to here to determine next movement
-	double COLLISION_RADIUS;
+	double PATH_STAGE_TIME; //simulate this much time per control value
+	double TIME_INCREMENT; //timestep between points on the path
+	int PATH_STAGES; //number of control values per path
+	double COLLISION_RADIUS; //minimum acceptable distance to obstacle
 
 	double deltaX;
 	double deltaY;

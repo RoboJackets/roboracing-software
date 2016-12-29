@@ -11,11 +11,11 @@ planner::planner() {
     pnh.getParam("steer_stddev", STEER_STDDEV);
     pnh.getParam("max_steer_angle", MAX_STEER_ANGLE);
     pnh.getParam("max_speed", MAX_SPEED);
-    pnh.getParam("path_time", PATH_TIME);
-    pnh.getParam("time_increment", TIME_INCREMENT);
+    pnh.getParam("path_stage_time", PATH_STAGE_TIME);
+    pnh.getParam("path_stages", PATH_STAGES);
     pnh.getParam("collision_radius", COLLISION_RADIUS);
     pnh.getParam("path_iterations", PATH_ITERATIONS);
-    pnh.getParam("action_time", ACTION_TIME);
+    pnh.getParam("time_increment", TIME_INCREMENT);
     map_sub = nh.subscribe("map", 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
     steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
@@ -60,7 +60,7 @@ double planner::calculatePathCost(planner::sim_path path,
                                   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
     double cost = 0.0;
     for(int i = 0; i < path.poses.size(); i++) {
-        cost += costAtPose(path.poses[i], kdtree) / pow(path.speeds[i], 2);
+        cost += costAtPose(path.poses[i], kdtree) / pow(path.speeds[i], 3);
     }
     return cost;
 }
@@ -80,7 +80,7 @@ planner::sim_path planner::calculatePath(vector<double> angles) {
     return out;
 }
 
-// eyeballed it. see https://www.desmos.com/calculator/hhxmjjanw1
+// eyeballed it. see https://www.desmos.com/calculator/qv1jpaeyuz
 double planner::steeringToSpeed(double angle) {
     return MAX_SPEED * cos(angle * M_PI * 0.4681 / MAX_STEER_ANGLE);
 }
@@ -96,8 +96,8 @@ double planner::costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
     double dist = sqrt(distSqr);
 
     if(nResults == 0) return 0; //is blind
-    if(dist < COLLISION_RADIUS) return 100.0; //collision
-    return (1.0 / distSqr);
+    if(dist < COLLISION_RADIUS) return 1000.0; //collision
+    return (1.0 / dist);
 }
 
 double planner::steeringSample() {
@@ -128,26 +128,41 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     //vector<sim_path> simPaths(PATH_ITERATIONS);
 
     //build paths and evaluate their weights
-    double weightTotal, weightedAngleRaw, cost, firstN;
-    weightTotal = weightedAngleRaw = 0;
-    int N;
-    // double bestCost = numeric_limits<double>::max();
-    // sim_path bestPath;
+    double weightTotal, /*weightedAngleRaw,*/ cost, angle;
+    int nPathPoses;
+    weightTotal /*= weightedAngleRaw*/ = nPathPoses = 0;
+    //int N;
+    //double bestCost = numeric_limits<double>::max();
+    //double cost, angle;
+    vector<double> weightedSteeringRaw;
     for(int i = 0; i < PATH_ITERATIONS; i++) {
         vector<double> steerPath;
-        for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
-            steerPath.push_back(steeringSample());
+        for(int s = 0; s < PATH_STAGES; s++) {
+            angle = steeringSample();
+            for(double t = 0; t <= PATH_STAGE_TIME; t += TIME_INCREMENT) {
+                steerPath.push_back(angle);
+            }
         }
+
         //sim_path sp = simPaths[i] = calculatePath(steerPath);
         sim_path sp = calculatePath(steerPath);
         cost = calculatePathCost(sp, kdtree);
+
         weightTotal += 1.0 / cost;
-        firstN = N = 0;
-        for(double t = 0; t < ACTION_TIME; t += TIME_INCREMENT) {
-            firstN += sp.angles[N];
-            N++;
+        nPathPoses++;
+        // firstN = N = 0;
+        // for(double t = 0; t < ACTION_TIME; t += TIME_INCREMENT) {
+        //     firstN += sp.angles[N];
+        //     N++;
+        // }
+        for(int j = 0; j < sp.angles.size(); j++) {
+            if(j < weightedSteeringRaw.size()) {
+                weightedSteeringRaw[j] += sp.angles[j] / cost;
+            } else {
+                weightedSteeringRaw.push_back(sp.angles[j] / cost);
+            }
         }
-        weightedAngleRaw += firstN / (cost * N);
+        // weightedAngleRaw += firstN / (cost * N);
         
         // if(cost < bestCost) {
         //     bestCost = cost;
@@ -158,31 +173,39 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     //ROS_INFO("%d", PATH_ITERATIONS);
 
-    double best_path_angle = weightedAngleRaw / weightTotal;
-    double best_path_speed = steeringToSpeed(best_path_angle);
+    vector<double> bestSteering;
+    for(int i = 0; i < weightedSteeringRaw.size(); i++) {
+        bestSteering.push_back(weightedSteeringRaw[i] / weightTotal);
+    }
+
+    sim_path bestPath = calculatePath(bestSteering);
+
+    // double best_path_angle = weightedAngleRaw / weightTotal;
+    desired_steer_angle = bestPath.angles[0];
+    desired_velocity = steeringToSpeed(desired_steer_angle);
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-    speedMSG->speed = best_path_speed;
-    steerMSG->angle = best_path_angle;
+    speedMSG->speed = desired_velocity;
+    steerMSG->angle = desired_steer_angle;
     speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 
     nav_msgs::Path pathMsg;
     //ROS_INFO("best speed: %f", best_path_speed);
-    for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
-        pose step = calculateStep(best_path_speed, best_path_angle, t);
-        geometry_msgs::PoseStamped p;
-        p.pose.position.x = step.x;
-        p.pose.position.y = step.y;
-        pathMsg.poses.push_back(p);
-    }
-    // for(int i = 0; i < bestPath.poses.size(); i++) {
+    // for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
+    //     pose step = calculateStep(best_path_speed, best_path_angle, t);
     //     geometry_msgs::PoseStamped p;
-    //     p.pose.position.x = bestPath.poses[i].x;
-    //     p.pose.position.y = bestPath.poses[i].y;
+    //     p.pose.position.x = step.x;
+    //     p.pose.position.y = step.y;
     //     pathMsg.poses.push_back(p);
     // }
+    for(int i = 0; i < bestPath.poses.size(); i++) {
+        geometry_msgs::PoseStamped p;
+        p.pose.position.x = bestPath.poses[i].x;
+        p.pose.position.y = bestPath.poses[i].y;
+        pathMsg.poses.push_back(p);
+    }
     pathMsg.header.frame_id = "ground";
     //ROS_INFO_STREAM("path size " << path.poses.size());
     path_pub.publish(pathMsg);
