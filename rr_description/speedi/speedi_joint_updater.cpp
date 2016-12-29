@@ -26,13 +26,17 @@ void loadJointState(string &prevState) {
     if(strs.size() < 2) return;
     cam_height = atof(strs[0].c_str());
     cam_tilt = atof(strs[1].c_str());
+
+    ROS_INFO("SJU set camera tilt to %f", cam_tilt);
 }
 
 void camInfoCB(const rr_platform::camera_geometry::ConstPtr &msg) {
     cam_height = msg->height;
-    cam_tilt = msg->angle * -1;
+    cam_tilt = msg->angle;
 
     saveJointState();
+
+    ROS_INFO("SJU set camera tilt to %f", cam_tilt);
 }
 
 void publishJoints() {

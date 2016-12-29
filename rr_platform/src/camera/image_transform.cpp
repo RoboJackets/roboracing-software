@@ -66,15 +66,25 @@ void loadGeometryFromTf() {
     psSrc.pose.position.y = 0;
     psSrc.pose.position.z = 0;
     psSrc.pose.orientation = q_msg;
-    
-    listener.waitForTransform("ground", "camera", ros::Time(0), ros::Duration(60.0));
-    listener.transformPose("ground", psSrc, psDst);
+
+    bool success = false;
+    while(!success) {
+        try {
+            listener.waitForTransform("ground", "camera", ros::Time(0), ros::Duration(60.0));
+            listener.transformPose("ground", psSrc, psDst);
+            success = true;
+        } catch(tf2::LookupException e) {
+            ROS_ERROR("tf LookupException: %s", e.what());
+        }
+    }
 
     tf::quaternionMsgToTF(psDst.pose.orientation, q_tf);
     double roll, pitch, yaw;
     tf::Matrix3x3(q_tf).getRPY(roll, pitch, yaw);
 
-    cam_mount_angle = pitch * -1;
+    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
+
+    cam_mount_angle = pitch;
     cam_height = psDst.pose.position.z;
 }
 

@@ -3,7 +3,7 @@
     <link name="chassis"/>
     <link name="camera"/>
     <link name="camera_base"/>
-    <link name="lidar"/>
+    <link name="laser"/>
     <link name="imu"/>
     <link name="ground"/>
     
@@ -18,6 +18,9 @@
     <joint name="camera_tilt" type="continuous">
         <parent link="camera_base"/>
         <child link="camera"/>
+        <!-- x is forward, y is left, z is up. Traditional RPY notation has 
+             y right and z down. If the camera is an airplane, it is flying
+             upside-down. So positive pitch angles the camera down -->
         <axis xyz="0 1 0"/>
         <limit effort="1000.0" velocity="1000.0"/>
     </joint>
@@ -30,15 +33,13 @@
 
     <joint name="lidar_joint" type="fixed">
         <parent link="chassis"/>
-        <child link="lidar"/>
+        <child link="laser"/>
         <origin xyz="0 0.28575 0" rpy="0 0 0"/>
-        <axis xyz="0 0 0"/>
     </joint>
 
     <joint name="imu" type="fixed">
         <parent link="chassis"/>
         <child link="imu"/>
         <origin xyz="0 0 0.1778" rpy="0 0 0"/>
-        <axis xyz="0 0 0"/>
     </joint>
 </robot>
