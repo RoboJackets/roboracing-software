@@ -29,7 +29,7 @@ private:
 
 	const double PI = 3.1415926535;
 	const double MAX_STEER_ANGLE = 30;
-	const double MIN_SPEED = 0.33;
+	const double MIN_SPEED = 1.0; // m/s
 	const double MAX_SPEED = 1.0;
 	const double TIMESTEP = 5.0;
 
@@ -54,8 +54,8 @@ private:
 	};
 
 	pose calculateStep(double x, double y, double theta, double speed, double steer_angle, double timestep);
-	double calculatePathCost(double velocity, double steer_angle, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
-	int costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
+	double calculatePathCost(double velocity, double steer_angle, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
+	double costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
 
 };

@@ -1,6 +1,8 @@
 #include "planner.h"
 #include <cmath>
 
+using namespace std;
+
 planner::planner() {
 	ros::NodeHandle nh;
 	ros::NodeHandle pnh("~");
@@ -17,12 +19,12 @@ planner::planner() {
 }
 
 planner::pose planner::calculateStep(double x, double y, double theta, double velocity, double steer_angle, double timestep) {
-	if (std::abs(steer_angle) < 1e-6) {
-	    deltaX = velocity * timestep;
-	    deltaY = 0;
-	    deltaTheta = 0;
+	if (abs(steer_angle) < 1e-6) {
+		deltaX = velocity * timestep;
+		deltaY = 0;
+		deltaTheta = 0;
 	} else {
-		double turn_radius = constants::wheel_base / sin(std::abs(steer_angle) * PI / 180.0);
+		double turn_radius = constants::wheel_base / sin(abs(steer_angle) * PI / 180.0);
 		double temp_theta = velocity * timestep / turn_radius;
 		deltaX = turn_radius * cos(PI / 2 - temp_theta);
 		deltaY;
@@ -40,54 +42,68 @@ planner::pose planner::calculateStep(double x, double y, double theta, double ve
 	return p;
 }
 
-double planner::calculatePathCost(double velocity, double steer_angle, pcl::PointCloud<pcl::PointXYZ>::Ptr Map) {
+double planner::calculatePathCost(double velocity, double steer_angle, 
+								  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
 	double cost = 0.0;
-	nav_msgs::Path path;
 	double length = velocity * TIMESTEP;
+	//int nSteps = 0;
 	for(double t = 0; t < length; t += DISTANCE_INCREMENT) {
 		pose step = calculateStep(0, 0, 0, velocity, steer_angle, t / velocity);
 
-		cost += costAtPose(step, Map);
+		cost += costAtPose(step, kdtree);
+		//nSteps += 1;
 	}
-	return cost;
+	// ROS_INFO("path used %d steps", nSteps);
+	return cost * max(1.0, log(abs(steer_angle)));
 }
 
-int planner::costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map) {
-    if(Map->empty())
-        return 0;
-	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    kdtree.setInputCloud(Map);
-    pcl::PointXYZ searchPoint(step.x , step.y ,0);
-    std::vector<int> pointIdxRadiusSearch;
-  	std::vector<float> pointRadiusSquaredDistance;
-	return kdtree.radiusSearch(searchPoint, SEARCH_RADIUS, pointIdxRadiusSearch, pointRadiusSquaredDistance);
+double planner::costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
+	pcl::PointXYZ searchPoint(step.x , step.y ,0);
+	vector<int> pointIdxRadiusSearch(1);
+	vector<float> pointRadiusSquaredDistance(1);
+	int nResults = kdtree.nearestKSearch(searchPoint, 1, pointIdxRadiusSearch, 
+										 pointRadiusSquaredDistance);
+
+	double distSqr = pointRadiusSquaredDistance[0];
+	double dist = sqrt(distSqr);
+
+	if(nResults == 0) return 0; //is blind
+	if(dist < SEARCH_RADIUS) return 100.0; //collision
+	return (1.0 / distSqr);
 }
 
 void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 	pcl::PCLPointCloud2 pcl_pc2;
 	pcl_conversions::toPCL(*map, pcl_pc2);
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::fromPCLPointCloud2(pcl_pc2,*cloud);
-	double lowest_cost = std::numeric_limits<double>::max();
+	pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+
+	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+	kdtree.setInputCloud(cloud);
+
+	double lowest_cost = numeric_limits<double>::max();
 	double best_path_speed = 0;
 	double best_path_angle = 0;
 	double cost = 0;
+	//int nTraj = 0;
 	for (double speed = MIN_SPEED; speed <= MAX_SPEED; speed += SPEED_INCREMENT) {
 		for (double angle = MAX_STEER_ANGLE; angle >= -MAX_STEER_ANGLE; angle -= ANGLE_INCREMENT) {
-			cost = calculatePathCost(speed, angle, cloud);
+			if(cloud->empty()) cost = 0;
+			else cost = calculatePathCost(speed, angle, kdtree);
+
 			if(cost < lowest_cost) {
 				best_path_speed = speed;
 				best_path_angle = angle;
 				lowest_cost = cost;
 			} else if (cost == lowest_cost) {
 
-                if(speed > best_path_speed) {
-                    best_path_speed = speed;
-                    best_path_angle = angle;
-                } else if(speed == best_path_speed && std::abs(angle) < std::abs(best_path_angle)) {
-                    best_path_speed = speed;
-                    best_path_angle = angle;
-                }
+				if(speed > best_path_speed) {
+					best_path_speed = speed;
+					best_path_angle = angle;
+				} else if(speed == best_path_speed && abs(angle) < abs(best_path_angle)) {
+					best_path_speed = speed;
+					best_path_angle = angle;
+				}
 
 				/*if (std::abs(angle) < std::abs(best_path_angle)) {
 					best_path_speed = speed;
@@ -97,6 +113,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 					best_path_angle = angle;
 				}*/
 			}
+			//nTraj += 1;
 		}
 	}
 	rr_platform::speedPtr speedMSG(new rr_platform::speed);
@@ -113,9 +130,11 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 		p.pose.position.y = step.y;
 		path.poses.push_back(p);
 	}
-	path.header.frame_id = "map";
+	path.header.frame_id = "ground";
 	//ROS_INFO_STREAM(path.poses.size());
 	path_pub.publish(path);
+
+	//ROS_INFO("tried %d trajectories", nTraj);
 }
 
 
