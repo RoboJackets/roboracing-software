@@ -1,11 +1,6 @@
 #include <ros/ros.h>
-#include <ros/publisher.h>
-#include <std_msgs/Header.h>
-#include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <vector>
 #include <avc/constants.hpp>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -27,17 +22,12 @@ private:
 	ros::Publisher steer_pub;
 	ros::Publisher path_pub;
 
-	const double PI = 3.1415926535;
-	const double MAX_STEER_ANGLE = 30;
-	const double MIN_SPEED = 1.0; // m/s
-	const double MAX_SPEED = 1.0;
-	const double TIMESTEP = 5.0;
-
-	double SPEED_INCREMENT;
-	double ANGLE_INCREMENT;
+	double STEER_STDDEV; //degrees
+	double MAX_STEER_ANGLE; //degrees
+	double MAX_SPEED; //meters per second
+	double PATH_TIME;
 	double TIME_INCREMENT;
-	double SEARCH_RADIUS;
-	double DISTANCE_INCREMENT;
+	double COLLISION_RADIUS;
 
 	double deltaX;
 	double deltaY;
@@ -53,8 +43,10 @@ private:
 		double theta;
 	};
 
-	pose calculateStep(double x, double y, double theta, double speed, double steer_angle, double timestep);
-	double calculatePathCost(double velocity, double steer_angle, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
+	pose calculateStep(double speed, double steer_angle, double timestep);
+	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart);
+	double steeringToSpeed(double angle);
+	double calculatePathCost(double steer_angle, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	double costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
 

@@ -1,12 +1,12 @@
 <launch>
 
-	<node name="planner" pkg="avc" type="planner" output="screen" respawn="false">
-		<param name="speed_increment" type="double" value ="0.5" />
-		<param name="angle_increment" type="double" value ="1.0" />
-		<param name="time_increment" type="double" value ="0.1" />
-		<param name="search_radius" type="double" value ="0.28" />
-		<param name="distance_increment" type="double" value ="0.1" />
-
-	</node>
+    <node name="planner" pkg="avc" type="planner" output="screen" respawn="false">
+        <param name="steer_stddev"     type="double" value ="15" />
+        <param name="max_steer_angle"  type="double" value ="30" />
+        <param name="max_speed"        type="double" value ="1.5" />
+        <param name="path_time"        type="double" value ="4.0" />
+        <param name="time_increment"   type="double" value ="0.1" />
+        <param name="collision_radius" type="double" value ="0.2" />
+    </node>
 
 </launch>
