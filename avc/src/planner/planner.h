@@ -33,6 +33,7 @@ private:
 	double MAX_SPEED; //meters per second
 	double PATH_TIME;
 	double TIME_INCREMENT;
+	double ACTION_TIME; //use desired path up to here to determine next movement
 	double COLLISION_RADIUS;
 
 	double deltaX;
@@ -51,7 +52,7 @@ private:
 
 	struct sim_path
 	{
-		double initAngle;
+		std::vector<double> angles;
 		std::vector<pose> poses;
 		std::vector<double> speeds;
 	};

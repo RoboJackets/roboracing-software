@@ -15,6 +15,7 @@ planner::planner() {
     pnh.getParam("time_increment", TIME_INCREMENT);
     pnh.getParam("collision_radius", COLLISION_RADIUS);
     pnh.getParam("path_iterations", PATH_ITERATIONS);
+    pnh.getParam("action_time", ACTION_TIME);
     map_sub = nh.subscribe("map", 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
     steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
@@ -66,7 +67,7 @@ double planner::calculatePathCost(planner::sim_path path,
 
 planner::sim_path planner::calculatePath(vector<double> angles) {
     sim_path out;
-    out.initAngle = angles[0];
+    out.angles = angles;
     out.poses.resize(angles.size());
     out.speeds.resize(angles.size());
     out.speeds[0] = steeringToSpeed(angles[0]);
@@ -127,8 +128,11 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     //vector<sim_path> simPaths(PATH_ITERATIONS);
 
     //build paths and evaluate their weights
-    double weightTotal, weightedAngleRaw, weight;
+    double weightTotal, weightedAngleRaw, cost, firstN;
     weightTotal = weightedAngleRaw = 0;
+    int N;
+    // double bestCost = numeric_limits<double>::max();
+    // sim_path bestPath;
     for(int i = 0; i < PATH_ITERATIONS; i++) {
         vector<double> steerPath;
         for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
@@ -136,12 +140,23 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
         //sim_path sp = simPaths[i] = calculatePath(steerPath);
         sim_path sp = calculatePath(steerPath);
-        weight = 1.0 / calculatePathCost(sp, kdtree);
-        weightTotal += weight;
-        weightedAngleRaw += weight * sp.initAngle;
+        cost = calculatePathCost(sp, kdtree);
+        weightTotal += 1.0 / cost;
+        firstN = N = 0;
+        for(double t = 0; t < ACTION_TIME; t += TIME_INCREMENT) {
+            firstN += sp.angles[N];
+            N++;
+        }
+        weightedAngleRaw += firstN / (cost * N);
+        
+        // if(cost < bestCost) {
+        //     bestCost = cost;
+        //     bestPath = sp;
+        // }
+        //ROS_INFO("cost: %.2f", cost);
     }
 
-    ROS_INFO("%d", PATH_ITERATIONS);
+    //ROS_INFO("%d", PATH_ITERATIONS);
 
     double best_path_angle = weightedAngleRaw / weightTotal;
     double best_path_speed = steeringToSpeed(best_path_angle);
@@ -153,18 +168,24 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 
-    nav_msgs::Path path;
+    nav_msgs::Path pathMsg;
     //ROS_INFO("best speed: %f", best_path_speed);
     for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
         pose step = calculateStep(best_path_speed, best_path_angle, t);
         geometry_msgs::PoseStamped p;
         p.pose.position.x = step.x;
         p.pose.position.y = step.y;
-        path.poses.push_back(p);
+        pathMsg.poses.push_back(p);
     }
-    path.header.frame_id = "ground";
+    // for(int i = 0; i < bestPath.poses.size(); i++) {
+    //     geometry_msgs::PoseStamped p;
+    //     p.pose.position.x = bestPath.poses[i].x;
+    //     p.pose.position.y = bestPath.poses[i].y;
+    //     pathMsg.poses.push_back(p);
+    // }
+    pathMsg.header.frame_id = "ground";
     //ROS_INFO_STREAM("path size " << path.poses.size());
-    path_pub.publish(path);
+    path_pub.publish(pathMsg);
 
     //ROS_INFO("tried %d trajectories", nTraj);
 }
