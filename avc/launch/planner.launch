@@ -4,11 +4,11 @@
     <node name="planner" pkg="avc" type="planner" output="screen" >
         <param name="steer_stddev"     type="double" value="15" />
         <param name="max_steer_angle"  type="double" value="30" />
-        <param name="path_iterations"  type="int"    value="200" />
+        <param name="path_iterations"  type="int"    value="150" />
         <param name="max_speed"        type="double" value="1.5" />
-        <param name="path_stage_time"  type="double" value="2.5" />
+        <param name="path_stage_time"  type="double" value="2.0" />
         <param name="path_stages"      type="int"    value="2" />
-        <param name="time_increment"   type="double" value="0.1" />
+        <param name="time_increment"   type="double" value="0.14" />
         <param name="collision_radius" type="double" value="0.4" />
     </node>
 
