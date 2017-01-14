@@ -26,12 +26,6 @@ namespace constants {
   double camera_distance_max = 5.0; //distance to look ahead of the car
   double camera_distance_min = 0.5; //avoid the front bumper
 
-  double camera_fov_horizontal = 0.5932; //angle from center of image to left or right edge
-  double camera_fov_vertical = 0.3337; //angle from center of image to top or bottom edge
-
-  int camera_resolution_x = 1920;
-  int camera_resolution_y = 1080;
-
   double origin_x = world_height / 2;
   double origin_y = world_width / 2;
 
