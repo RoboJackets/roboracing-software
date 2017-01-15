@@ -208,24 +208,9 @@ void setTransformFromGeometry() {
 }
 
 void TransformImage(const sensor_msgs::ImageConstPtr msg, string topic) {
-    //if the publisher is not defined, then make it
-    if(transform_pubs.find(topic) == transform_pubs.end()) {
-        string newTopic(topic + "_transformed");
-        ROS_INFO_STREAM("Creating new topic " << newTopic);
-        transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
-    }
-
-    //if no one is listening, don't bother
-    if(transform_pubs[topic].getNumSubscribers() == 0) {
+    //if no one is listening or the transform is undefined, give up
+    if(transform_pubs[topic].getNumSubscribers() == 0 || transform_matrix.empty()) {
         return;
-    }
-
-    //if transform matrix is not yet defined, then define it
-    if(transform_matrix.empty()) {
-        loadCameraFOV();
-        loadGeometryFromTf();
-        setTransformFromGeometry();
-        ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);
     }
 
     cv_bridge::CvImagePtr cv_ptr;
@@ -247,6 +232,11 @@ void TransformImage(const sensor_msgs::ImageConstPtr msg, string topic) {
 bool CalibrateCallback(rr_platform::calibrate_image::Request &request, 
                        rr_platform::calibrate_image::Response &response) 
 {
+    if(camera_fov_horizontal <= 0 || camera_fov_vertical <= 0) {
+        ROS_ERROR("Calling calibration callback without a FOV defined");
+        return false;
+    }
+
     cv_bridge::CvImagePtr cv_ptr;
     Mat outimage;
     cv_ptr = cv_bridge::toCvCopy(request.image);
@@ -281,6 +271,11 @@ int main(int argc, char **argv) {
     NodeHandle nh_temp;
     nh = &nh_temp;
 
+    loadCameraFOV(); //spins ROS event loop for a bit
+    loadGeometryFromTf();
+    setTransformFromGeometry();
+    ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);
+
     //publish camera info for a description module to update its model
     camera_geo_pub = nh->advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
 
@@ -294,6 +289,9 @@ int main(int argc, char **argv) {
         transform_subs.push_back(nh->subscribe<sensor_msgs::Image>(topic, 1, 
                                  boost::bind(TransformImage, _1, topic)));
         ROS_INFO_STREAM("Image_transform subscribed to " << topic);
+        string newTopic(topic + "_transformed");
+        ROS_INFO_STREAM("Creating new topic " << newTopic);
+        transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
     }
 
     ServiceServer calibrate_service = nh->advertiseService("/calibrate_image", CalibrateCallback);
