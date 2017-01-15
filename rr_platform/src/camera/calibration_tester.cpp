@@ -25,8 +25,8 @@ geometry_msgs::Pose testCameraTf() {
     psSrc.pose.position.z = 0;
     psSrc.pose.orientation = q_msg;
     
-    listener->waitForTransform("ground", "camera", ros::Time(0), ros::Duration(1.0));
-    listener->transformPose("ground", psSrc, psDst);
+    listener->waitForTransform("map", "camera", ros::Time(0), ros::Duration(1.0));
+    listener->transformPose("map", psSrc, psDst);
     return psDst.pose;
 }
 
@@ -39,8 +39,13 @@ int main(int argc, char** argv) {
     //load image
     //http://answers.ros.org/question/11550/publishing-an-image-from-disk/
     cv_bridge::CvImage cvImage;
-    string imagePath("~/rosbag/calibration_image.jpg");
-    cvImage.image = cv::imread(imagePath, CV_LOAD_IMAGE_COLOR);
+    string imagePath("/etc/roboracing/calibration_image.png");
+    cv::Mat img = cv::imread(imagePath, CV_LOAD_IMAGE_COLOR);
+    if(img.empty()) {
+        ROS_ERROR("Could not find file %s", imagePath.c_str());
+        return 1;
+    }
+    cvImage.image = img;
     cvImage.encoding = "bgr8";
     sensor_msgs::Image rosImage;
     cvImage.toImageMsg(rosImage);

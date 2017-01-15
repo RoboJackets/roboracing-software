@@ -21,8 +21,6 @@ Publisher img_pub;
 Publisher cloud_pub;
 Mat mask;
 
-ServiceClient transformClient;
-
 //DETECTS CURBS
 Mat detectCurb(const Mat& image) {
     Mat frame;
@@ -113,7 +111,7 @@ Mat detectRamp(const Mat& image) {
     return ramp;
 }
 
-void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
+void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat frame;
@@ -123,9 +121,8 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     } catch (cv_bridge::Exception& e) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
-    return;
+        return;
     }
-
 
     //applying detectCurb() function to image
     frame = cv_ptr->image;
@@ -135,56 +132,47 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     output = curbs + hoop + ramp;
 
     sensor_msgs::Image outmsg;
-
     cv_ptr->image = output;
     cv_ptr->encoding = "bgr8";
     cv_ptr->toImageMsg(outmsg);
+    img_pub.publish(outmsg);
+}
 
-    rr_platform::transform_image srv;
-    srv.request.image = outmsg;
+void ColorsTransformedCB(const sensor_msgs::ImageConstPtr& msg) {
+    float pxPerMeter = 100.0;
+    cv_bridge::CvImagePtr cv_ptr;
+    try {
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+    } catch(cv_bridge::Exception& e) {
+        ROS_ERROR("CV_Bridge error: %s", e.what());
+        return;
+    }
 
-    if(transformClient.call(srv)) {
-        outmsg = srv.response.image;
-        img_pub.publish(outmsg);
-        float pxPerMeter = 100.0;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    Mat transformed = cv_ptr->image;
+    cvtColor(transformed, transformed, CV_BGR2GRAY);
 
-        try {
-            cv_ptr = cv_bridge::toCvCopy(outmsg, "bgr8");
-        } catch(cv_bridge::Exception& e) {
-            ROS_ERROR("CV_Bridge error: %s", e.what());
-            return;
-        }
+    for(int r = 0; r < transformed.rows; r++) {
+        uchar* row = transformed.ptr<uchar>(r);
+        for(int c = 0; c < transformed.cols; c++) {
+            if(row[c]) {
+                pcl::PointXYZ point;
+                point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
+                point.x = (transformed.rows - r) / pxPerMeter;
+                point.z = 0.0;
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-        Mat transformed = cv_ptr->image;
-        cvtColor(transformed, transformed, CV_BGR2GRAY);
-
-        for(int r = 0; r < transformed.rows; r++) {
-            uchar* row = transformed.ptr<uchar>(r);
-            for(int c = 0; c < transformed.cols; c++) {
-                if(row[c]) {
-                    pcl::PointXYZ point;
-                    point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
-                    point.x = (transformed.rows - r) / pxPerMeter;
-                    point.x = (transformed.rows - r) / pxPerMeter;
-                    point.z = 0.0;
-
-                    cloud->push_back(point);
-                }
+                cloud->push_back(point);
             }
         }
-
-        pcl::PCLPointCloud2 cloud_pc2;
-        pcl::toPCLPointCloud2(*cloud, cloud_pc2);
-        sensor_msgs::PointCloud2 cloud_msg;
-        pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
-        cloud_msg.header.frame_id = "camera";
-        cloud_msg.header.stamp = ros::Time::now();
-        cloud_pub.publish(cloud_msg);
-
-    } else {
-        ROS_ERROR("Failed to call service transform_image");
     }
+
+    pcl::PCLPointCloud2 cloud_pc2;
+    pcl::toPCLPointCloud2(*cloud, cloud_pc2);
+    sensor_msgs::PointCloud2 cloud_msg;
+    pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
+    cloud_msg.header.frame_id = "map";
+    cloud_msg.header.stamp = ros::Time::now();
+    cloud_pub.publish(cloud_msg);
 }
 
 int main(int argc, char** argv) {
@@ -201,10 +189,10 @@ int main(int argc, char** argv) {
 
     NodeHandle nh;
 
-    transformClient = nh.serviceClient<rr_platform::transform_image>("transform_image");
-    img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
     cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/colors_img/cloud", 1);
-    Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
+    img_pub = nh.advertise<sensor_msgs::Image>("/colors_img", 1);
+    auto img_sub = nh.subscribe("/camera/image_rect", 1, ImageRectCB);
+    auto transformed_sub = nh.subscribe("/colors_img_transformed", 1, ColorsTransformedCB);
 
     spin();
 

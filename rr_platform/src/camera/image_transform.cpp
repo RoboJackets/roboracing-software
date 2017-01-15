@@ -2,7 +2,6 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <rr_platform/transform_image.h>
 #include <rr_platform/calibrate_image.h>
 #include <rr_platform/camera_geometry.h>
 #include <cmath>
@@ -10,6 +9,7 @@
 #include <avc/constants.hpp>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace cv;
@@ -17,16 +17,16 @@ using namespace ros;
 
 double camera_fov_horizontal;
 double camera_fov_vertical;
-
-double cam_mount_angle; //angle of camera from horizontal
-double cam_height; //camera height in meters
+volatile double cam_mount_angle; //angle of camera from horizontal
+volatile double cam_height; //camera height in meters
 
 Size mapSize; //pixels = cm
 Size imageSize;
-
 Mat transform_matrix;
 
-ros::Publisher camera_geo_pub;
+NodeHandle* nh;
+Publisher camera_geo_pub;
+map<string, Publisher> transform_pubs;
 
 void loadGeometryFromTf() {
     tf::TransformListener listener;
@@ -46,8 +46,8 @@ void loadGeometryFromTf() {
     bool success = false;
     while(!success) {
         try {
-            listener.waitForTransform("ground", "camera", ros::Time(0), ros::Duration(60.0));
-            listener.transformPose("ground", psSrc, psDst);
+            listener.waitForTransform("map", "camera", ros::Time(0), ros::Duration(60.0));
+            listener.transformPose("map", psSrc, psDst);
             success = true;
         } catch(tf2::LookupException e) {
             ROS_ERROR("tf LookupException: %s", e.what());
@@ -207,8 +207,13 @@ void setTransformFromGeometry() {
     transform_matrix = getPerspectiveTransform(src, dst);
 }
 
-bool TransformImage(rr_platform::transform_image::Request &request, 
-                    rr_platform::transform_image::Response &response) {
+void TransformImage(const sensor_msgs::ImageConstPtr msg, string topic) {
+    //if the publisher is not defined, then make it
+    if(transform_pubs.find(topic) == transform_pubs.end()) {
+        string newTopic(topic + "_transformed");
+        transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
+    }
+
     //if transform matrix is not yet defined, then define it
     if(transform_matrix.empty()) {
         loadCameraFOV();
@@ -218,16 +223,16 @@ bool TransformImage(rr_platform::transform_image::Request &request,
     }
 
     cv_bridge::CvImagePtr cv_ptr;
-    Mat outimage;
-    cv_ptr = cv_bridge::toCvCopy(request.image);
+    cv_ptr = cv_bridge::toCvCopy(msg);
     const Mat &inimage = cv_ptr->image;
 
-    warpPerspective(inimage, outimage, transform_matrix, Size(mapSize.width, mapSize.height));
+    Mat outimage;
+    warpPerspective(inimage, outimage, transform_matrix, mapSize);
 
+    sensor_msgs::Image outmsg;
     cv_ptr->image = outimage;
-    cv_ptr->toImageMsg(response.image);
-
-    return true;
+    cv_ptr->toImageMsg(outmsg);
+    transform_pubs[topic].publish(outmsg);
 }
 
 /*
@@ -266,17 +271,26 @@ bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
 
 
 int main(int argc, char **argv) {
-
-    //namedWindow("Image Window", WINDOW_NORMAL);
-
     init(argc, argv, "image_transform");
-    NodeHandle nh;
+    NodeHandle nh_temp;
+    nh = &nh_temp;
 
     //publish camera info for a description module to update its model
-    camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
+    camera_geo_pub = nh->advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
 
-    ServiceServer transform_service = nh.advertiseService("transform_image", TransformImage);
-    ServiceServer calibrate_service = nh.advertiseService("calibrate_image", CalibrateCallback);
+    string topicsConcat;
+    nh->getParam("/image_transform/transform_topics", topicsConcat);
+    vector<string> topics;
+    boost::split(topics, topicsConcat, boost::is_any_of(" ,"));
+    vector<Subscriber> transform_subs;
+    for(const string& topic : topics) {
+        if(topic.size() == 0) continue;
+        transform_subs.push_back(nh->subscribe<sensor_msgs::Image>(topic, 1, 
+                                 boost::bind(TransformImage, _1, topic)));
+        ROS_INFO_STREAM("Image_transform subscribed to " << topic);
+    }
+
+    ServiceServer calibrate_service = nh->advertiseService("/calibrate_image", CalibrateCallback);
 
     spin();
 
