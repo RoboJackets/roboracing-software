@@ -17,8 +17,8 @@ using namespace ros;
 
 double camera_fov_horizontal;
 double camera_fov_vertical;
-volatile double cam_mount_angle; //angle of camera from horizontal
-volatile double cam_height; //camera height in meters
+double cam_mount_angle; //angle of camera from horizontal
+double cam_height; //camera height in meters
 
 Size mapSize; //pixels = cm
 Size imageSize;
@@ -211,7 +211,13 @@ void TransformImage(const sensor_msgs::ImageConstPtr msg, string topic) {
     //if the publisher is not defined, then make it
     if(transform_pubs.find(topic) == transform_pubs.end()) {
         string newTopic(topic + "_transformed");
+        ROS_INFO_STREAM("Creating new topic " << newTopic);
         transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
+    }
+
+    //if no one is listening, don't bother
+    if(transform_pubs[topic].getNumSubscribers() == 0) {
+        return;
     }
 
     //if transform matrix is not yet defined, then define it
