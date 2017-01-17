@@ -1,0 +1,17 @@
+#request
+sensor_msgs/Image image
+
+#number of rows of squares on the board
+#conversion to interior vertices done automatically
+int64 chessboardRows
+
+#number of columns
+int64 chessboardCols
+
+#meters
+float64 squareWidth
+
+---
+
+#this response is just a placeholder
+bool foo

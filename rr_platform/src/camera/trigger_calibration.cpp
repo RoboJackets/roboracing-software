@@ -4,7 +4,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include "avc/calibrate_image.h"
+#include "rr_platform/calibrate_image.h"
 
 using namespace ros;
 
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
     NodeHandle nh;
 
-    ServiceClient client = nh.serviceClient<avc::calibrate_image>("/calibrate_image");
+    ServiceClient client = nh.serviceClient<rr_platform::calibrate_image>("/calibrate_image");
 
     ros::Subscriber subscriber = nh.subscribe("/camera/image_rect", 1, imageCallback);
 
@@ -29,14 +29,10 @@ int main(int argc, char** argv) {
         ros::spinOnce();
     }
 
-    avc::calibrate_image srv;
+    rr_platform::calibrate_image srv;
     srv.request.image = image;
-    srv.request.imgDim[0] = 1080;
-    srv.request.imgDim[1] = 1920;
-    srv.request.pixelsPerMeter = 500;
-    srv.request.distanceToChessboard = 0.70;
-    srv.request.chessboardDim[0] = 9;
-    srv.request.chessboardDim[1] = 7;
+    srv.request.chessboardRows = 7;
+    srv.request.chessboardCols = 9;
     srv.request.squareWidth = 0.033;
 
     if(client.call(srv)) {

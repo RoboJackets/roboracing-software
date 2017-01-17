@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
     for(const auto& topic : topics) {
         partial_Subscribers.push_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
-        ROS_INFO_STREAM("Subscribed to " << topic);
+        ROS_INFO_STREAM("Mapper subscribed to " << topic);
     }
 
     auto map_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);

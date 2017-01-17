@@ -1,8 +1,0 @@
-sensor_msgs/Image image
-int64[2] imgDim
-float64 pixelsPerMeter
-float64 distanceToChessboard
-int64[2] chessboardDim
-float64 squareWidth
----
-bool x

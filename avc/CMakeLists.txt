@@ -7,16 +7,16 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  rr_platform
-  cv_bridge
-  pcl_ros
-  sick_tim
-  laser_geometry
-  image_transport
-  message_generation
+    roscpp
+    rospy
+    std_msgs
+    rr_platform
+    cv_bridge
+    pcl_ros
+    sick_tim
+    laser_geometry
+    image_transport
+    message_generation
 )
 
 find_package(OpenCV REQUIRED)
@@ -25,13 +25,6 @@ find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
-
-## Generate services in the 'srv' folder
-add_service_files(
-   FILES
-   transform_image.srv
-   calibrate_image.srv
-)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -45,7 +38,7 @@ generate_messages(
 ###################################
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
   DEPENDS system_lib
 )
 
@@ -55,15 +48,7 @@ catkin_package(
 
 add_executable(color_detector_avc src/color_detector_avc.cpp)
 target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(color_detector_avc avc_generate_messages_cpp)
-
-add_executable(image_transform src/image_transform.cpp)
-target_link_libraries(image_transform ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(image_transform avc_generate_messages_cpp)
-
-add_executable(trigger_calibration src/trigger_calibration.cpp)
-target_link_libraries(trigger_calibration ${catkin_LIBRARIES})
-add_dependencies(trigger_calibration avc_generate_messages_cpp)
+add_dependencies(color_detector_avc rr_platform_generate_messages_cpp)
 
 ## Specify additional locations of header files
 include_directories(
