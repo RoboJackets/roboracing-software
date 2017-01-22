@@ -2,6 +2,7 @@
 #include <rr_platform/camera_geometry.h>
 #include <sensor_msgs/JointState.h>
 #include <boost/algorithm/string.hpp>
+#include <fstream>
 
 using namespace std;
 
@@ -14,9 +15,8 @@ double cam_tilt = 0;
 
 //TODO make this function not janky
 void saveJointState() {
-    string state = to_string(cam_height) + "|" + to_string(cam_tilt);
-    string syscmd = "echo '"+state+"' > "+joint_state_path;
-    system(syscmd.c_str());
+    ofstream out(joint_state_path);
+    out << cam_height << "|" << cam_tilt;
 }
 
 void loadJointState(string &prevState) {
@@ -42,7 +42,7 @@ void camInfoCB(const rr_platform::camera_geometry::ConstPtr &msg) {
 void publishJoints() {
     sensor_msgs::JointState joint_state;
     joint_state.header.stamp = ros::Time::now();
-    joint_state.header.frame_id = "ground";
+    joint_state.header.frame_id = "map";
     joint_state.name.resize(2);
     joint_state.position.resize(2);
     joint_state.velocity.resize(2);

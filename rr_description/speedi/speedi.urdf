@@ -5,10 +5,10 @@
     <link name="camera_base"/>
     <link name="laser"/>
     <link name="imu"/>
-    <link name="ground"/>
+    <link name="map"/>
     
     <joint name="cam_ground_height" type="prismatic">
-        <parent link="ground"/>
+        <parent link="map"/>
         <child link="camera_base"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
