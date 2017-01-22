@@ -1,6 +1,28 @@
 <launch>
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find rr_gazebo)/worlds/roboracing.world"/>
-    </include>
-    <!--<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find rr_description)/urdf/roboracing.urdf -urdf -z 1 -model roboracing" />-->
+
+    <env name="GAZEBO_MODEL_PATH" value="$(find rr_description)"/>
+
+    <group ns="roboracing">
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="world_name" value="$(find rr_gazebo)/worlds/roboracing.world"/>
+            <arg name="paused" value="true"/>
+            <arg name="use_sim_time" value="true"/>
+            <arg name="gui" value="true"/>
+            <arg name="headless" value="false"/>
+            <arg name="debug" value="false"/>
+        </include>
+
+        <param name="robot_description" command="cat $(find rr_description)/speedi/speedi.urdf" />
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+        <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+
+        <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
+              args="-file $(find rr_description)/speedi/speedi.urdf
+                -gazebo_namespace /roboracing/gazebo
+                -urdf -model speedi
+                -x 0 -y 0 -z 0
+                -R 0 -P 0 -Y 0"/>
+    </group>
+
 </launch>
