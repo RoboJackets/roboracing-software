@@ -3,13 +3,14 @@
 #include <rr_platform/steering.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
-#include <algorithm>
 
 double speed_set_point = 0.0;
 double speed_measured = 0.0;
 double speed_last_error = 0.0;
 double speed_P = 1.0;
 double speed_D = 0.05;
+
+double steer_set_point = 0.0;
 
 constexpr double wheel_circumference = 2.0 * M_PI * 0.036;
 
@@ -18,7 +19,7 @@ void speedCallback(const rr_platform::speedConstPtr &msg) {
 }
 
 void steeringCallback(const rr_platform::steeringConstPtr &msg) {
-
+    steer_set_point = msg->angle;
 }
 
 void jointStateCallback(const sensor_msgs::JointStateConstPtr &msg) {
@@ -30,8 +31,6 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr &msg) {
 
         speed_measured = (-msg->velocity[index]) * ( wheel_circumference / ( 2 * M_PI ) );
     }
-
-    ROS_INFO_STREAM("Back Axle Speed: " << speed_measured);
 }
 
 int main(int argc, char **argv) {
@@ -41,6 +40,10 @@ int main(int argc, char **argv) {
     ros::NodeHandle handle;
 
     ros::Publisher backAxleEffortPublisher = handle.advertise<std_msgs::Float64>("/roboracing/axle_effort_controller/command", 1);
+
+    ros::Publisher leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/roboracing/left_steer_position_controller/command", 1);
+
+    ros::Publisher rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/roboracing/right_steer_position_controller/command", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
 
@@ -57,11 +60,17 @@ int main(int argc, char **argv) {
 
         auto effort = speed_P * error - speed_D * dError;
 
-        ROS_INFO_STREAM("Publishing effort: " << effort);
-
         std_msgs::Float64 axleMsg;
         axleMsg.data = effort;
         backAxleEffortPublisher.publish(axleMsg);
+
+        std_msgs::Float64 leftSteerMsg;
+        leftSteerMsg.data = steer_set_point;
+        leftSteeringPublisher.publish(leftSteerMsg);
+
+        std_msgs::Float64 rightSteerMsg;
+        rightSteerMsg.data = steer_set_point;
+        rightSteeringPublisher.publish(rightSteerMsg);
 
         rate.sleep();
     }
