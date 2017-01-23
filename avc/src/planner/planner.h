@@ -28,7 +28,7 @@ private:
 	ros::Publisher path_pub;
 
 	const double PI = 3.1415926535;
-	const double MAX_STEER_ANGLE = 30;
+	const double MAX_STEER_ANGLE = 0.523599;
 	const double MIN_SPEED = 0.33;
 	const double MAX_SPEED = 1.0;
 	const double TIMESTEP = 5.0;

@@ -2,7 +2,7 @@
 
 	<node name="planner" pkg="avc" type="planner" output="screen" respawn="false">
 		<param name="speed_increment" type="double" value ="0.5" />
-		<param name="angle_increment" type="double" value ="3.0" />
+		<param name="angle_increment" type="double" value ="0.0523599" />
 		<param name="time_increment" type="double" value ="0.1" />
 		<param name="search_radius" type="double" value ="0.28" /> 
 		<param name="distance_increment" type="double" value ="0.1" />

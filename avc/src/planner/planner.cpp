@@ -22,7 +22,7 @@ planner::pose planner::calculateStep(double x, double y, double theta, double ve
 	    deltaY = 0;
 	    deltaTheta = 0;
 	} else {
-		double turn_radius = constants::wheel_base / sin(std::abs(steer_angle) * PI / 180.0);
+		double turn_radius = constants::wheel_base / sin(std::abs(steer_angle));
 		double temp_theta = velocity * timestep / turn_radius;
 		deltaX = turn_radius * cos(PI / 2 - temp_theta);
 		deltaY;
@@ -31,11 +31,11 @@ planner::pose planner::calculateStep(double x, double y, double theta, double ve
 		} else {
 			deltaY = -(turn_radius - turn_radius * sin(PI / 2 - temp_theta));
 		}
-		deltaTheta = velocity / constants::wheel_base * sin(-steer_angle * PI / 180.0) * 180 / PI * timestep;
+		deltaTheta = velocity / constants::wheel_base * sin(-steer_angle) * timestep;
 	}
 	pose p;
-	p.x = x + (deltaX * cos(theta * PI / 180.0) - deltaY * sin(theta * PI / 180.0));
-	p.y = y + (deltaX * sin(theta * PI / 180.0) + deltaY * cos(theta * PI / 180.0));
+	p.x = x + (deltaX * cos(theta) - deltaY * sin(theta));
+	p.y = y + (deltaX * sin(theta) + deltaY * cos(theta));
 	p.theta = theta + deltaTheta;
 	return p;
 }

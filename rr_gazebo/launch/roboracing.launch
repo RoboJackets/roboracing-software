@@ -25,6 +25,13 @@
                 -R 0 -P 0 -Y 0"/>
     </group>
 
-    <include file="$(find rr_gazebo)/launch/speedi_control.launch"/>
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find rr_gazebo)/config/speedi_control.yaml" command="load"/>
+
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/roboracing" args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller left_steer_position_controller right_steer_position_controller"/>
+
+    <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
 
 </launch>
