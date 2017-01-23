@@ -1,0 +1,19 @@
+roboracing:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  axle_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: chassis_to_back_axle
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  left_steer_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: chassis_to_left_steering
+    pid: {p: 5.0, i: 0.0, d: 0.3}
+
+  right_steer_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: chassis_to_right_steering
+    pid: {p: 5.0, i: 0.0, d: 0.3}

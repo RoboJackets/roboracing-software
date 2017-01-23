@@ -20,16 +20,8 @@ find_package(
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
-
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-)
-
 catkin_package(
     CATKIN_DEPENDS roscpp rospy message_runtime
-    DEPENDS system_lib
 )
 
 include_directories(${catkin_INCLUDE_DIRS})
