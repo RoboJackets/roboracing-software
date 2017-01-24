@@ -2,17 +2,19 @@
 
     <env name="GAZEBO_MODEL_PATH" value="$(find rr_description)"/>
 
+    <remap from="/roboracing/imu" to="/imu" />
+
     <group ns="roboracing">
-        <include file="$(find gazebo_ros)/launch/empty_world.launch">
-            <arg name="world_name" value="$(find rr_gazebo)/worlds/roboracing.world"/>
-            <arg name="paused" value="false"/>
-            <arg name="use_sim_time" value="true"/>
-            <arg name="gui" value="true"/>
-            <arg name="headless" value="false"/>
-            <arg name="debug" value="false"/>
-        </include>
+
+        <param name="/use_sim_time" value="true" />
+
+        <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
+              args="-e ode $(find rr_gazebo)/worlds/roboracing.world" />
+
+        <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
         <param name="robot_description" command="cat $(find rr_description)/speedi/speedi.urdf" />
+
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
         <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
@@ -30,7 +32,10 @@
 
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-          output="screen" ns="/roboracing" args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller left_steer_position_controller right_steer_position_controller"/>
+          output="screen" ns="/roboracing"
+          args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
+                left_steer_position_controller right_steer_position_controller camera_height_position_controller
+                camera_tilt_position_controller"/>
 
     <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
 

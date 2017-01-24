@@ -43,7 +43,7 @@ constexpr double chassis_width_2 = chassis_width / 2.0;
 constexpr double wheel_circumference = 2.0 * M_PI * 0.036;
 
 void speedCallback(const rr_platform::speedConstPtr &msg) {
-    speed_set_point = msg->speed;
+    speed_set_point = -msg->speed;
 }
 
 void steeringCallback(const rr_platform::steeringConstPtr &msg) {

@@ -13,7 +13,6 @@
             <geometry>
                 <mesh filename="package://rr_description/meshes/car.dae"/>
             </geometry>
-            <material name="chassis_mat"/>
         </visual>
         <collision>
             <geometry>
@@ -64,7 +63,7 @@
             <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
         </inertial>
         <visual>
-            <origin rpy="0 3.14 0" xyz="0 0 0"/>
+            <origin rpy="0 0 3.14" xyz="0 0 0"/>
             <geometry>
                 <mesh filename="package://rr_description/meshes/wheel.dae"/>
             </geometry>
@@ -125,7 +124,7 @@
             <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
         </inertial>
         <visual>
-            <origin rpy="0 3.14 0" xyz="0 0 0"/>
+            <origin rpy="0 0 3.14" xyz="0 0 0"/>
             <geometry>
                 <mesh filename="package://rr_description/meshes/wheel.dae"/>
             </geometry>
@@ -166,7 +165,7 @@
                 </range>
             </ray>
             <plugin name="lidar_plugin" filename="libgazebo_ros_laser.so">
-                <robotNamespace>/</robotNamespace>
+                <robotNamespace>/roboracing</robotNamespace>
                 <topicName>/scan</topicName>
                 <frameName>/laser</frameName>
             </plugin>
@@ -183,7 +182,7 @@
     </link>
     <gazebo>
         <plugin filename="libhector_gazebo_ros_imu.so" name="imu_sensor">
-            <robotNamespace>/</robotNamespace>
+            <robotNamespace>/roboracing</robotNamespace>
             <serviceName>/imu/calibrate</serviceName>
             <updateRate>200.0</updateRate>
             <bodyName>imu</bodyName>
@@ -205,27 +204,40 @@
     </gazebo>
 
 
-    <link name="camera">
+    <link name="camera_base">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+
+    <link name="camera_link">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
         <visual>
             <geometry>
                 <box size="0.1 0.1 0.1"/>
             </geometry>
         </visual>
     </link>
-    <gazebo reference="camera">
+    <gazebo reference="camera_link">
         <sensor name="camera_sensor" type="camera">
             <camera>
                 <horizontal_fov>1.2290609</horizontal_fov>
                 <image>
                     <width>640</width>
                     <height>480</height>
+                    <format>R8G8B8</format>
                 </image>
                 <clip>
                     <near>0.1</near>
                     <far>100</far>
                 </clip>
             </camera>
-            <always_on>1</always_on>
+            <always_on>true</always_on>
             <update_rate>30</update_rate>
             <visualize>true</visualize>
             <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
@@ -247,15 +259,7 @@
     </gazebo>
 
 
-    <link name="camera_base">
-        <inertial> <!--Null inertia-->
-            <mass value="0.001"/>
-            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
-        </inertial>
-    </link>
-
-
-    <link name="map">
+    <link name="base_footprint">
         <inertial> <!--Null inertia-->
             <mass value="0.001"/>
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
@@ -266,6 +270,12 @@
 
     <!--Joints-->
 
+    <joint name="base_footprint_to_chassis" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="chassis"/>
+        <origin xyz="0 0 0.036" rpy="0 0 0"/>
+    </joint>
+
     <joint name="chassis_to_back_axle" type="fixed">
         <parent link="chassis"/>
         <child link="back_axle"/>
@@ -275,20 +285,20 @@
     <joint name="axle_to_left_wheel" type="continuous">
         <parent link="back_axle"/>
         <child link="wheel_back_left"/>
-        <origin xyz="-0.14439 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
+        <origin xyz="0 0.14439 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
     </joint>
     <joint name="axle_to_right_wheel" type="continuous">
         <parent link="back_axle"/>
         <child link="wheel_back_right"/>
-        <origin xyz="0.14439 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
+        <origin xyz="0 -0.14439 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
     </joint>
 
     <joint name="chassis_to_left_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_left"/>
-        <origin xyz="-0.14366 0.33246 0" rpy="0 0 0"/>
+        <origin xyz="0.33246 0.14366 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="-0.366519" upper="0.366519" effort="100000.0" velocity="1000000.0"/>
     </joint>
@@ -296,52 +306,43 @@
         <parent link="steering_front_left"/>
         <child link="wheel_front_left"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
+        <axis xyz="0 1 0"/>
     </joint>
 
     <joint name="chassis_to_right_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_right"/>
-        <origin xyz="0.14366 0.33246 0" rpy="0 0 0"/>
+        <origin xyz="0.33246 -0.14366 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit lower="-0.366519" upper="0.366519" effort="100000.0" velocity="1000000.0"/>
+        <limit lower="-0.366519" upper="0.366519" effort="1000.0" velocity="1000.0"/>
     </joint>
     <joint name="right_steering_to_wheel" type="continuous">
         <parent link="steering_front_right"/>
         <child link="wheel_front_right"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
+        <axis xyz="0 1 0"/>
     </joint>
 
-
-    <joint name="cam_ground_height" type="prismatic">
-        <parent link="map"/>
+    <joint name="cam_chassis_height" type="prismatic">
+        <parent link="chassis"/>
         <child link="camera_base"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="0" upper="1.0" velocity="1000.0"/>
+        <limit lower="0.274" upper="0.374" effort="1000.0" velocity="1000.0"/>
     </joint>
 
-    <joint name="camera_tilt" type="continuous">
+    <joint name="camera_tilt" type="revolute">
         <parent link="camera_base"/>
-        <child link="camera"/>
-        <!-- x is forward, y is left, z is up. Traditional RPY notation has
-             y right and z down. If the camera is an airplane, it is flying
-             upside-down. So positive pitch angles the camera down -->
+        <child link="camera_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
-        <limit effort="1000.0" velocity="1000.0"/>
-    </joint>
-
-    <joint name="cam_chassis_height" type="fixed">
-        <child link="chassis"/>
-        <parent link="camera_base"/>
-        <origin xyz="0 0 0.3175" rpy="0 0 0"/>
+        <limit lower="0" upper="3.14" effort="1000.0" velocity="1000.0"/>
     </joint>
 
     <joint name="lidar_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser"/>
-        <origin xyz="0 0.255 0.110" rpy="0 0 1.5708"/>
+        <origin xyz="0.255 0 0.110" rpy="0 0 0"/>
     </joint>
 
     <joint name="imu" type="fixed">
@@ -397,6 +398,28 @@
             <hardwareInterface>EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="right_steer_motor">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="cam_height_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="cam_chassis_height">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="cam_height_motor">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="cam_tilt_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="camera_tilt">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="cam_tilt_motor">
             <hardwareInterface>EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>

@@ -22,3 +22,13 @@ roboracing:
     type: effort_controllers/JointPositionController
     joint: chassis_to_right_steering
     pid: {p: 5.0, i: 0.0, d: 0.3}
+
+  camera_height_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: cam_chassis_height
+    pid: {p: 10.0, i: 0.0, d: 0.3}
+
+  camera_tilt_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: camera_tilt
+      pid: {p: 100.0, i: 0.1, d: 0.3}
