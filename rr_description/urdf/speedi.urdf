@@ -147,7 +147,7 @@
     <link name="laser"/>
     <gazebo reference="laser">
         <sensor type="ray" name="lidar">
-            <visualize>true</visualize>
+            <visualize>false</visualize>
             <update_rate>15</update_rate>
             <ray>
                 <scan>
@@ -212,7 +212,7 @@
     </link>
 
 
-    <link name="camera_link">
+    <link name="camera">
         <inertial> <!--Null inertia-->
             <mass value="0.001"/>
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
@@ -223,7 +223,7 @@
             </geometry>
         </visual>
     </link>
-    <gazebo reference="camera_link">
+    <gazebo reference="camera">
         <sensor name="camera_sensor" type="camera">
             <camera>
                 <horizontal_fov>1.2290609</horizontal_fov>
@@ -239,15 +239,15 @@
             </camera>
             <always_on>true</always_on>
             <update_rate>30</update_rate>
-            <visualize>true</visualize>
+            <visualize>false</visualize>
             <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <robotNamespace>/roboracing</robotNamespace>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>30.0</updateRate>
-                <cameraName>usb_cam</cameraName>
+                <cameraName>camera</cameraName>
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>camera</frameName>
+                <frameName>camera_optical</frameName>
                 <hackBaseline>0.07</hackBaseline>
                 <distortionK1>0.0</distortionK1>
                 <distortionK2>0.0</distortionK2>
@@ -257,6 +257,8 @@
             </plugin>
         </sensor>
     </gazebo>
+
+    <link name="camera_optical"/>
 
 
     <link name="base_footprint">
@@ -333,10 +335,16 @@
 
     <joint name="camera_tilt" type="revolute">
         <parent link="camera_base"/>
-        <child link="camera_link"/>
+        <child link="camera"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
         <limit lower="0" upper="3.14" effort="1000.0" velocity="1000.0"/>
+    </joint>
+
+    <joint name="camera_optical_joint" type="fixed">
+        <parent link="camera"/>
+        <child link="camera_optical"/>
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
     </joint>
 
     <joint name="lidar_joint" type="fixed">
