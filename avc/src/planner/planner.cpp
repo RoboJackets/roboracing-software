@@ -1,6 +1,4 @@
 #include "planner.h"
-#define _USE_MATH_DEFINES //for cmath
-#include <cmath>
 
 using namespace std;
 
@@ -115,7 +113,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         ROS_WARN("Point cloud is empty");
         rr_platform::speedPtr speedMSG(new rr_platform::speed);
         rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-        speedMSG->speed = 0.5; //cautious
+        speedMSG->speed = 0.5; //proceed with caution; E-Kill if necessary
         steerMSG->angle = 0;
         speed_pub.publish(speedMSG);
         steer_pub.publish(steerMSG);
@@ -125,15 +123,10 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
     kdtree.setInputCloud(cloud);
 
-    //vector<sim_path> simPaths(PATH_ITERATIONS);
-
     //build paths and evaluate their weights
-    double weightTotal, /*weightedAngleRaw,*/ cost, angle;
+    double weightTotal, cost, angle;
     int nPathPoses;
-    weightTotal /*= weightedAngleRaw*/ = nPathPoses = 0;
-    //int N;
-    //double bestCost = numeric_limits<double>::max();
-    //double cost, angle;
+    weightTotal = nPathPoses = 0;
     vector<double> weightedSteeringRaw;
     for(int i = 0; i < PATH_ITERATIONS; i++) {
         vector<double> steerPath;
@@ -144,17 +137,12 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
             }
         }
 
-        //sim_path sp = simPaths[i] = calculatePath(steerPath);
         sim_path sp = calculatePath(steerPath);
         cost = calculatePathCost(sp, kdtree);
 
         weightTotal += 1.0 / cost;
         nPathPoses++;
-        // firstN = N = 0;
-        // for(double t = 0; t < ACTION_TIME; t += TIME_INCREMENT) {
-        //     firstN += sp.angles[N];
-        //     N++;
-        // }
+
         for(int j = 0; j < sp.angles.size(); j++) {
             if(j < weightedSteeringRaw.size()) {
                 weightedSteeringRaw[j] += sp.angles[j] / cost;
@@ -162,16 +150,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
                 weightedSteeringRaw.push_back(sp.angles[j] / cost);
             }
         }
-        // weightedAngleRaw += firstN / (cost * N);
-        
-        // if(cost < bestCost) {
-        //     bestCost = cost;
-        //     bestPath = sp;
-        // }
-        //ROS_INFO("cost: %.2f", cost);
     }
-
-    //ROS_INFO("%d", PATH_ITERATIONS);
 
     vector<double> bestSteering;
     for(int i = 0; i < weightedSteeringRaw.size(); i++) {
@@ -180,7 +159,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     sim_path bestPath = calculatePath(bestSteering);
 
-    // double best_path_angle = weightedAngleRaw / weightTotal;
     desired_steer_angle = bestPath.angles[0];
     desired_velocity = steeringToSpeed(desired_steer_angle);
 
@@ -192,25 +170,14 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     steer_pub.publish(steerMSG);
 
     nav_msgs::Path pathMsg;
-    //ROS_INFO("best speed: %f", best_path_speed);
-    // for(double t = 0; t < PATH_TIME; t += TIME_INCREMENT) {
-    //     pose step = calculateStep(best_path_speed, best_path_angle, t);
-    //     geometry_msgs::PoseStamped p;
-    //     p.pose.position.x = step.x;
-    //     p.pose.position.y = step.y;
-    //     pathMsg.poses.push_back(p);
-    // }
     for(int i = 0; i < bestPath.poses.size(); i++) {
         geometry_msgs::PoseStamped p;
         p.pose.position.x = bestPath.poses[i].x;
         p.pose.position.y = bestPath.poses[i].y;
         pathMsg.poses.push_back(p);
     }
-    pathMsg.header.frame_id = "ground";
-    //ROS_INFO_STREAM("path size " << path.poses.size());
+    pathMsg.header.frame_id = "map";
     path_pub.publish(pathMsg);
-
-    //ROS_INFO("tried %d trajectories", nTraj);
 }
 
 //a convenient scope
@@ -226,9 +193,7 @@ void planner::spin() {
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
-    //ROS_INFO("hi");
     planner plan;
-    //ROS_INFO("bye");
     plan.spin();
     return 0;
 }

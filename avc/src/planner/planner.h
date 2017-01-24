@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES //for cmath
+#include <cmath>
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>

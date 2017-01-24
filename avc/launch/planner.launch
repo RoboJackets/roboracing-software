@@ -1,6 +1,5 @@
 <launch>
 
-    <!-- <node name="planner" pkg="avc" type="planner" output="screen" respawn="false"> -->
     <node name="planner" pkg="avc" type="planner" output="screen" >
         <param name="steer_stddev"     type="double" value="15" />
         <param name="max_steer_angle"  type="double" value="30" />

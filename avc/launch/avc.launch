@@ -1,8 +1,5 @@
 <launch>
-    <!-- <param name="/use_sim_time" value="true"/> -->
-
     <include file="$(find rr_platform)/launch/transform.launch"/>
-    <!-- <node pkg="avc" type="color_detector_avc" name="color_detector" output="screen"/> -->
     <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner.launch"/>
     <include file="$(find rr_description)/speedi/speedi_state_publisher.launch"/>
