@@ -59,6 +59,8 @@ private:
 		std::vector<double> speeds;
 	};
 
+	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose p);
+
 	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
 	double steeringToSpeed(double angle);
 	double steeringSample();

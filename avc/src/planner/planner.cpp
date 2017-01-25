@@ -103,6 +103,13 @@ double planner::steeringSample() {
     else return steeringSample();
 }
 
+geometry_msgs::PoseStamped planner::plannerPoseToPoseStamped(planner::pose pp) {
+    geometry_msgs::PoseStamped ps;
+    ps.pose.position.x = pp.x;
+    ps.pose.position.y = pp.y;
+    return ps;
+}
+
 void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*map, pcl_pc2);
@@ -165,12 +172,9 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     steer_pub.publish(steerMSG);
 
     nav_msgs::Path pathMsg;
-    for(int i = 0; i < bestPath.poses.size(); i++) {
-        geometry_msgs::PoseStamped p;
-        p.pose.position.x = bestPath.poses[i].x;
-        p.pose.position.y = bestPath.poses[i].y;
-        pathMsg.poses.push_back(p);
-    }
+    std::transform(bestPath.poses.begin(), bestPath.poses.end(),
+                   back_inserter(pathMsg.poses), plannerPoseToPoseStamped);
+
     pathMsg.header.frame_id = "map";
     path_pub.publish(pathMsg);
 }
