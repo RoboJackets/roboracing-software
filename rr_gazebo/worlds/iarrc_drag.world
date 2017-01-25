@@ -16,7 +16,7 @@
         </include>
 
         <include>
-            <uri>model://IARRCTrack</uri>
+            <uri>model://IARRCDragTrack</uri>
             <pose>34 0 0 0 0 0</pose>
         </include>
 
