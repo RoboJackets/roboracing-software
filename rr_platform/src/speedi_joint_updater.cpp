@@ -9,11 +9,10 @@ using namespace std;
 ros::Publisher joint_pub;
 string joint_state_path;
 
-double cam_height = 0;
+double cam_height = 0; //height of camera from chassis
 double cam_tilt = 0;
 
 
-//TODO make this function not janky
 void saveJointState() {
     ofstream out(joint_state_path);
     out << cam_height << "|" << cam_tilt;
@@ -42,12 +41,12 @@ void camInfoCB(const rr_platform::camera_geometry::ConstPtr &msg) {
 void publishJoints() {
     sensor_msgs::JointState joint_state;
     joint_state.header.stamp = ros::Time::now();
-    joint_state.header.frame_id = "map";
+    joint_state.header.frame_id = "base_footprint";
     joint_state.name.resize(2);
     joint_state.position.resize(2);
     joint_state.velocity.resize(2);
     joint_state.effort.resize(2);
-    joint_state.name[0] = "cam_ground_height";
+    joint_state.name[0] = "cam_chassis_height";
     joint_state.position[0] = cam_height;
     joint_state.velocity[0] = 0.0;
     joint_state.effort[0] = 0.0;

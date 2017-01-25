@@ -25,8 +25,8 @@ geometry_msgs::Pose testCameraTf() {
     psSrc.pose.position.z = 0;
     psSrc.pose.orientation = q_msg;
     
-    listener->waitForTransform("map", "camera", ros::Time(0), ros::Duration(1.0));
-    listener->transformPose("map", psSrc, psDst);
+    listener->waitForTransform("chassis", "camera", ros::Time(0), ros::Duration(1.0));
+    listener->transformPose("chassis", psSrc, psDst);
     return psDst.pose;
 }
 

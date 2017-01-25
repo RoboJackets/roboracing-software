@@ -43,9 +43,9 @@ planner::pose planner::calculateStep(double velocity, double steer_angle, double
         deltaTheta = velocity / constants::wheel_base * sin(-steer_angle * M_PI / 180.0) * 180 / M_PI * timestep;
     }
     pose p;
-    p.x = pStart.x + (deltaX * cos(pStart.theta * M_PI / 180.0) 
+    p.x = pStart.x + (deltaX * cos(pStart.theta * M_PI / 180.0)
                     - deltaY * sin(pStart.theta * M_PI / 180.0));
-    p.y = pStart.y + (deltaX * sin(pStart.theta * M_PI / 180.0) 
+    p.y = pStart.y + (deltaX * sin(pStart.theta * M_PI / 180.0)
                     + deltaY * cos(pStart.theta * M_PI / 180.0));
     p.theta = pStart.theta + deltaTheta;
     return p;
@@ -84,7 +84,7 @@ double planner::costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
     pcl::PointXYZ searchPoint(step.x, step.y, 0);
     vector<int> pointIdxRadiusSearch(1);
     vector<float> pointRadiusSquaredDistance(1);
-    int nResults = kdtree.nearestKSearch(searchPoint, 1, pointIdxRadiusSearch, 
+    int nResults = kdtree.nearestKSearch(searchPoint, 1, pointIdxRadiusSearch,
                                          pointRadiusSquaredDistance);
 
     double distSqr = pointRadiusSquaredDistance[0];
