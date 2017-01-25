@@ -19,15 +19,15 @@
 class planner {
 public:
 	planner();
-	void spin();
+
 private:
 	ros::Subscriber map_sub;
 	ros::Publisher speed_pub;
 	ros::Publisher steer_pub;
 	ros::Publisher path_pub;
 
-	std::normal_distribution<double> * steering_gaussian_ptr;
-	std::default_random_engine * rand_gen_ptr;
+	std::normal_distribution<double> steering_gaussian;
+	std::mt19937 rand_gen;
 
 	double STEER_STDDEV; //standard dev of steering randomizer (degrees)
 	double MAX_STEER_ANGLE; //degrees
@@ -59,8 +59,7 @@ private:
 		std::vector<double> speeds;
 	};
 
-	pose calculateStep(double speed, double steer_angle, double timestep);
-	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart);
+	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
 	double steeringToSpeed(double angle);
 	double steeringSample();
 	sim_path calculatePath(std::vector<double> angles);

@@ -3,5 +3,5 @@
     <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner.launch"/>
     <include file="$(find rr_description)/speedi/speedi_state_publisher.launch"/>
-    <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
 </launch>

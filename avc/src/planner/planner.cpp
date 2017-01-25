@@ -14,10 +14,16 @@ planner::planner() {
     pnh.getParam("collision_radius", COLLISION_RADIUS);
     pnh.getParam("path_iterations", PATH_ITERATIONS);
     pnh.getParam("time_increment", TIME_INCREMENT);
+
     map_sub = nh.subscribe("map", 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
     steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
     path_pub = nh.advertise<nav_msgs::Path>("path", 1);
+
+    normal_distribution<double> nd(0, STEER_STDDEV);
+    steering_gaussian = nd;
+    mt19937 rand_engine(std::random_device{}());
+    rand_gen = rand_engine;
 }
 
 planner::pose planner::calculateStep(double velocity, double steer_angle, double timestep,
@@ -45,13 +51,6 @@ planner::pose planner::calculateStep(double velocity, double steer_angle, double
                     + deltaY * cos(pStart.theta * M_PI / 180.0));
     p.theta = pStart.theta + deltaTheta;
     return p;
-}
-planner::pose planner::calculateStep(double velocity, double steer_angle, double timestep) {
-    pose p;
-    p.x = 0;
-    p.y = 0;
-    p.theta = 0;
-    return calculateStep(velocity, steer_angle, timestep, p);
 }
 
 double planner::calculatePathCost(planner::sim_path path,
@@ -99,7 +98,7 @@ double planner::costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
 }
 
 double planner::steeringSample() {
-    double raw = (*steering_gaussian_ptr)(*rand_gen_ptr);
+    double raw = steering_gaussian(rand_gen);
     if(raw >= -MAX_STEER_ANGLE && raw <= MAX_STEER_ANGLE) return raw;
     else return steeringSample();
 }
@@ -124,24 +123,20 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     kdtree.setInputCloud(cloud);
 
     //build paths and evaluate their weights
-    double weightTotal, cost, angle;
-    int nPathPoses;
-    weightTotal = nPathPoses = 0;
     vector<double> weightedSteeringRaw;
+    double weightTotal = 0, cost, angle;
+    int increments = PATH_STAGE_TIME / TIME_INCREMENT;
+
     for(int i = 0; i < PATH_ITERATIONS; i++) {
-        vector<double> steerPath;
+        vector<double> steerPath(increments * PATH_STAGES, 0);
         for(int s = 0; s < PATH_STAGES; s++) {
             angle = steeringSample();
-            for(double t = 0; t <= PATH_STAGE_TIME; t += TIME_INCREMENT) {
-                steerPath.push_back(angle);
-            }
+            fill_n(steerPath.begin() + s*increments, increments, angle);
         }
 
         sim_path sp = calculatePath(steerPath);
         cost = calculatePathCost(sp, kdtree);
-
         weightTotal += 1.0 / cost;
-        nPathPoses++;
 
         for(int j = 0; j < sp.angles.size(); j++) {
             if(j < weightedSteeringRaw.size()) {
@@ -160,7 +155,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     sim_path bestPath = calculatePath(bestSteering);
 
     desired_steer_angle = bestPath.angles[0];
-    desired_velocity = steeringToSpeed(desired_steer_angle);
+    desired_velocity = bestPath.speeds[0];
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -180,20 +175,10 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     path_pub.publish(pathMsg);
 }
 
-//a convenient scope
-void planner::spin() {
-    normal_distribution<double> nd(0, STEER_STDDEV);
-    steering_gaussian_ptr = &nd;
-    default_random_engine dre;
-    rand_gen_ptr = &dre;
-
-    ros::spin();
-}
-
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
     planner plan;
-    plan.spin();
+    ros::spin();
     return 0;
 }

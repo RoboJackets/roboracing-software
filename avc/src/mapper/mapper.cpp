@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.2f, 0.2f, 0.2f);
 
-    ros::Rate rate(60);
+    ros::Rate rate(20);
     while(ros::ok()) {
         ros::spinOnce();
 
