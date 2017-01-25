@@ -113,7 +113,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 		p.pose.position.y = step.y;
 		path.poses.push_back(p);
 	}
-	path.header.frame_id = "map";
+	path.header.frame_id = "base_footprint";
 	//ROS_INFO_STREAM(path.poses.size());
 	path_pub.publish(path);
 }

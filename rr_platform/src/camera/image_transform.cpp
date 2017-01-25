@@ -18,7 +18,8 @@ using namespace ros;
 double camera_fov_horizontal;
 double camera_fov_vertical;
 double cam_mount_angle; //angle of camera from horizontal
-double cam_height; //camera height in meters
+double cam_height; //camera height from ground in meters
+double chassis_height; //amount to subtract for calculated height for joint state
 
 Size mapSize; //pixels = cm
 Size imageSize;
@@ -29,39 +30,44 @@ Publisher camera_geo_pub;
 map<string, Publisher> transform_pubs;
 
 void loadGeometryFromTf() {
+    ROS_INFO("image_transform is loading geometry from tf...");
     tf::TransformListener listener;
 
-    tf::Quaternion q_tf;
-    q_tf.setRPY(0,0,0);
-    geometry_msgs::Quaternion q_msg;
-    tf::quaternionTFToMsg(q_tf, q_msg);
+    tf::Quaternion qTFCamBase, qTFBaseChassis;
+    qTFCamBase.setRPY(0,0,0);
+    qTFBaseChassis.setRPY(0,0,0);
+    geometry_msgs::Quaternion qMsgCamBase, qMsgBaseChassis;
+    tf::quaternionTFToMsg(qTFCamBase, qMsgCamBase);
+    tf::quaternionTFToMsg(qTFBaseChassis, qMsgBaseChassis);
 
-    geometry_msgs::PoseStamped psSrc, psDst;
-    psSrc.header.frame_id = "camera";
-    psSrc.pose.position.x = 0;
-    psSrc.pose.position.y = 0;
-    psSrc.pose.position.z = 0;
-    psSrc.pose.orientation = q_msg;
+    geometry_msgs::PoseStamped psSrcCam, psDstBase, psSrcBase, psDstChassis;
+    psSrcCam.header.frame_id = "camera";
+    psSrcCam.pose.orientation = qMsgCamBase;
+    psSrcBase.header.frame_id = "base_footprint";
+    psSrcBase.pose.orientation = qMsgBaseChassis;
 
     bool success = false;
     while(!success) {
         try {
-            listener.waitForTransform("map", "camera", ros::Time(0), ros::Duration(60.0));
-            listener.transformPose("map", psSrc, psDst);
+            listener.waitForTransform("base_footprint", "camera", ros::Time(0), ros::Duration(5.0));
+            listener.transformPose("base_footprint", psSrcCam, psDstBase);
+            listener.waitForTransform("chassis", "base_footprint", ros::Time(0), ros::Duration(5.0));
+            listener.transformPose("chassis", psSrcBase, psDstChassis);
             success = true;
         } catch(tf2::LookupException e) {
             ROS_ERROR("tf LookupException: %s", e.what());
         }
     }
 
-    tf::quaternionMsgToTF(psDst.pose.orientation, q_tf);
-    double roll, pitch, yaw;
-    tf::Matrix3x3(q_tf).getRPY(roll, pitch, yaw);
+    tf::quaternionMsgToTF(psDstBase.pose.orientation, qTFCamBase);
 
+    double roll, pitch, yaw;
+    tf::Matrix3x3(qTFCamBase).getRPY(roll, pitch, yaw);
     ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
 
     cam_mount_angle = pitch;
-    cam_height = psDst.pose.position.z;
+    cam_height = psDstBase.pose.position.z;
+    chassis_height = psDstChassis.pose.position.z;
 }
 
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
@@ -117,7 +123,7 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
 // let another (platform-specific) module update the tf system with the current info
 void updateJointState() {
     rr_platform::camera_geometry msg;
-    msg.height = cam_height;
+    msg.height = cam_height - chassis_height;
     msg.angle = cam_mount_angle;
     camera_geo_pub.publish(msg);
 }
