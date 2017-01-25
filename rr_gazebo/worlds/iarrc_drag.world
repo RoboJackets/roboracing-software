@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+        <scene>
+            <sky>
+                <clouds>
+                    <speed>12</speed>
+                </clouds>
+            </sky>
+            <ambient>1.0 1.0 1.0 1.0</ambient>
+            <shadows>true</shadows>
+        </scene>
+
+        <include>
+            <uri>model://sun</uri>
+        </include>
+
+        <include>
+            <uri>model://IARRCTrack</uri>
+            <pose>34 0 0 0 0 0</pose>
+        </include>
+
+        <population name="left_cones">
+            <model name="coneL">
+                <include>
+                    <uri>model://Cone</uri>
+                </include>
+            </model>
+            <pose>31 1.7 0 0 0 0</pose>
+            <box>
+                <size>60 0.01 0.01</size>
+            </box>
+            <model_count>60</model_count>
+            <distribution>
+                <type>linear-x</type>
+            </distribution>
+        </population>
+
+        <population name="right_cones">
+            <model name="coneR">
+                <include>
+                    <uri>model://Cone</uri>
+                </include>
+            </model>
+            <pose>31 -1.7 0 0 0 0</pose>
+            <box>
+                <size>60 0.01 0.01</size>
+            </box>
+            <model_count>60</model_count>
+            <distribution>
+                <type>linear-x</type>
+            </distribution>
+        </population>
+    </world>
+</sdf>
