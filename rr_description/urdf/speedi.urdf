@@ -53,6 +53,7 @@
     <gazebo reference="wheel_back_left">
         <mu1>0.7</mu1>
         <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
     </gazebo>
 
 
@@ -77,6 +78,7 @@
     <gazebo reference="wheel_back_right">
         <mu1>0.7</mu1>
         <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
     </gazebo>
 
 
@@ -108,6 +110,7 @@
     <gazebo reference="wheel_front_left">
         <mu1>0.7</mu1>
         <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
     </gazebo>
 
     <link name="steering_front_right">
@@ -138,6 +141,7 @@
     <gazebo reference="wheel_front_right">
         <mu1>0.7</mu1>
         <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
     </gazebo>
 
 
@@ -173,13 +177,7 @@
     </gazebo>
 
 
-    <link name="imu">
-        <visual>
-            <geometry>
-                <box size="0.1 0.1 0.1"/>
-            </geometry>
-        </visual>
-    </link>
+    <link name="imu"/>
     <gazebo>
         <plugin filename="libhector_gazebo_ros_imu.so" name="imu_sensor">
             <robotNamespace>/roboracing</robotNamespace>
@@ -217,11 +215,6 @@
             <mass value="0.001"/>
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
         </inertial>
-        <visual>
-            <geometry>
-                <box size="0.1 0.1 0.1"/>
-            </geometry>
-        </visual>
     </link>
     <gazebo reference="camera">
         <sensor name="camera_sensor" type="camera">

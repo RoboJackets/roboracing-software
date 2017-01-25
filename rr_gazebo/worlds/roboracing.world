@@ -1,9 +1,25 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
     <world name="default">
+        <scene>
+            <sky>
+                <clouds>
+                    <speed>12</speed>
+                </clouds>
+            </sky>
+            <ambient>1.0 1.0 1.0 1.0</ambient>
+            <shadows>true</shadows>
+        </scene>
+
         <include>
             <uri>model://ground_plane</uri>
         </include>
+
+        <include>
+            <uri>model://Cone</uri>
+            <pose>2 2 0 0 0 0</pose>
+        </include>
+
         <include>
             <uri>model://sun</uri>
         </include>

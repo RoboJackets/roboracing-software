@@ -1,7 +1,5 @@
 <launch>
 
-    <env name="GAZEBO_MODEL_PATH" value="$(find rr_description)"/>
-
     <remap from="/roboracing/imu" to="/imu" />
 
     <remap from="/roboracing/camera" to="/camera" />
