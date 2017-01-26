@@ -1,11 +1,8 @@
+#define _USE_MATH_DEFINES //for cmath
+#include <cmath>
 #include <ros/ros.h>
-#include <ros/publisher.h>
-#include <std_msgs/Header.h>
-#include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <vector>
 #include <avc/constants.hpp>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -16,28 +13,30 @@
 #include <pcl_ros/transforms.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <random>
 
 
 class planner {
 public:
 	planner();
+
 private:
 	ros::Subscriber map_sub;
 	ros::Publisher speed_pub;
 	ros::Publisher steer_pub;
 	ros::Publisher path_pub;
 
-	const double PI = 3.1415926535;
-	const double MAX_STEER_ANGLE = 0.523599;
-	const double MIN_SPEED = 0.33;
-	const double MAX_SPEED = 1.0;
-	const double TIMESTEP = 5.0;
+	std::normal_distribution<double> steering_gaussian;
+	std::mt19937 rand_gen;
 
-	double SPEED_INCREMENT;
-	double ANGLE_INCREMENT;
-	double TIME_INCREMENT;
-	double SEARCH_RADIUS;
-	double DISTANCE_INCREMENT;
+	double STEER_STDDEV; //standard dev of steering randomizer (degrees)
+	double MAX_STEER_ANGLE; //degrees
+	int PATH_ITERATIONS; //number of random paths to generate
+	double MAX_SPEED; //meters per second
+	double PATH_STAGE_TIME; //simulate this much time per control value
+	double TIME_INCREMENT; //timestep between points on the path
+	int PATH_STAGES; //number of control values per path
+	double COLLISION_RADIUS; //minimum acceptable distance to obstacle
 
 	double deltaX;
 	double deltaY;
@@ -53,9 +52,21 @@ private:
 		double theta;
 	};
 
-	pose calculateStep(double x, double y, double theta, double speed, double steer_angle, double timestep);
-	double calculatePathCost(double velocity, double steer_angle, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
-	int costAtPose(pose step, pcl::PointCloud<pcl::PointXYZ>::Ptr Map);
+	struct sim_path
+	{
+		std::vector<double> angles;
+		std::vector<pose> poses;
+		std::vector<double> speeds;
+	};
+
+	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose p);
+
+	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
+	double steeringToSpeed(double angle);
+	double steeringSample();
+	sim_path calculatePath(std::vector<double> angles);
+	double calculatePathCost(sim_path path, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
+	double costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
 
 };

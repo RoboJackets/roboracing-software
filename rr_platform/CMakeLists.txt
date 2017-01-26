@@ -76,6 +76,7 @@ include_directories(
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
+add_subdirectory(src/scanToPointCloud)
 
 add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
 target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
