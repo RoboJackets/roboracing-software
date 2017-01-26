@@ -55,7 +55,6 @@ generate_messages(
 catkin_package(
     INCLUDE_DIRS include
     CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
-    DEPENDS system_lib
 )
 
 if(CATKIN_ENABLE_TESTING)
@@ -78,3 +77,7 @@ add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
+
+add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
+target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
+add_dependencies(speedi_joint_updater rr_platform_generate_messages_cpp)

@@ -22,8 +22,12 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>gazebo_ros</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rr_platform</build_depend>
 
   <run_depend>gazebo_ros</run_depend>
+  <run_depend>rr_platform</run_depend>
+  <run_depend>roscpp</run_depend>
 
   <export>
 

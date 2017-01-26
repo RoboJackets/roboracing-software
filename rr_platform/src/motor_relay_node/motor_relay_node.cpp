@@ -30,12 +30,12 @@ int PWMFromSpeed(double metersPerSecond) {
     return static_cast<int>(metersPerSecond / 0.18333333);
 }
 
-int PWMFromAngle(double degrees) {
-    if(degrees < 0) {
-        return static_cast<int>(degrees *2.5);
+int PWMFromAngle(double radians) {
+    if(radians < 0) {
+        return static_cast<int>(radians * 0.0436332);
     }
-    if(degrees > 0) {
-        return static_cast<int>(degrees * -1.25);
+    if(radians > 0) {
+        return static_cast<int>(radians * -0.0218166);
     }
     return 0;
 }

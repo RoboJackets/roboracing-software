@@ -1,5 +1,4 @@
 <launch>
-
     <node name="planner" pkg="avc" type="planner" output="screen" >
         <param name="steer_stddev"     type="double" value="15" />
         <param name="max_steer_angle"  type="double" value="30" />
@@ -10,5 +9,4 @@
         <param name="time_increment"   type="double" value="0.14" />
         <param name="collision_radius" type="double" value="0.4" />
     </node>
-
 </launch>
