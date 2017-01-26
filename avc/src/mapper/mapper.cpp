@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
             sensor_msgs::PointCloud2 msg;
             pcl_conversions::fromPCL(map_pc2,msg);
 
-            msg.header.frame_id = "map";
+            msg.header.frame_id = "base_footprint";
             msg.header.stamp = ros::Time::now();
 
             map_pub.publish(msg);

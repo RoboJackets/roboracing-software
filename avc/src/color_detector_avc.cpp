@@ -170,7 +170,7 @@ void ColorsTransformedCB(const sensor_msgs::ImageConstPtr& msg) {
     pcl::toPCLPointCloud2(*cloud, cloud_pc2);
     sensor_msgs::PointCloud2 cloud_msg;
     pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
-    cloud_msg.header.frame_id = "map";
+    cloud_msg.header.frame_id = "base_footprint";
     cloud_msg.header.stamp = ros::Time::now();
     cloud_pub.publish(cloud_msg);
 }
