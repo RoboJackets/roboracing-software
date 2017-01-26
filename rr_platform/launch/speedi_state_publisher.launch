@@ -1,11 +1,11 @@
 <launch>
 	<!-- <param name="use_sim_time" value="true"/> -->
-    <param name="robot_description" command="cat $(find rr_description)/speedi/speedi.urdf"/>
+    <param name="robot_description" command="cat $(find rr_description)/urdf/speedi.urdf"/>
 
     <node name="speedi_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
 
-    <node name="speedi_joint_updater" pkg="rr_description" type="speedi_joint_updater" output="screen">
-    	<param name="joint_state_uri" value="$(find rr_description)/speedi/persistent_joint_state.dat"/>
-    	<param name="loaded_joint_state" command="cat $(find rr_description)/speedi/persistent_joint_state.dat"/>
+    <node name="speedi_joint_updater" pkg="rr_platform" type="speedi_joint_updater" output="screen">
+    	<param name="joint_state_uri" value="$(find rr_platform)/speedi/persistent_joint_state.dat"/>
+    	<param name="loaded_joint_state" command="cat $(find rr_platform)/launch/persistent_joint_state.dat"/>
     </node>
 </launch>
