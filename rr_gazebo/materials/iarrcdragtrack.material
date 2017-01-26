@@ -12,7 +12,7 @@ material Gazebo/iarrctrack
 
       texture_unit
       {
-        texture iarrctrack.png
+        texture iarrcdragtrack.png
         filtering trilinear
 	    scale 1 1
       }
