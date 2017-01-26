@@ -20,10 +20,8 @@ planner::planner() {
     steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
     path_pub = nh.advertise<nav_msgs::Path>("path", 1);
 
-    normal_distribution<double> nd(0, STEER_STDDEV);
-    steering_gaussian = nd;
-    mt19937 rand_engine(std::random_device{}());
-    rand_gen = rand_engine;
+    steering_gaussian = normal_distribution<double>(0, STEER_STDDEV);
+    rand_gen = mt19937(std::random_device{}());
 }
 
 planner::pose planner::calculateStep(double velocity, double steer_angle, double timestep,
