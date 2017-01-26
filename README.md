@@ -12,6 +12,10 @@ Most folders in this repository are ROS packages.
 
 **iarrc**: This package contains intelligence code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
 
+**rr_description**: This package contains URDFs and meshes that describe the platform's layout.
+
+**rr_gazebo**: This package contains resources for running the car in the [Gazebo](http://gazebosim.org) simulator.
+
 **rr_platform**: This package contains code for interfacing with the various cars built and maintained by the team.
 
 **sandbox**: This package contains utilities and non-ROS code. This includes tools for working with log files and the Arduino code for the car.

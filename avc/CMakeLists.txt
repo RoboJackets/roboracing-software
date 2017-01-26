@@ -52,5 +52,4 @@ include_directories(
 )
 
 add_subdirectory(src/planner)
-add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mapper)
