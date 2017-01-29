@@ -1,8 +1,12 @@
 <launch>
 
     <remap from="/roboracing/imu" to="/imu" />
-
     <remap from="/roboracing/camera" to="/camera" />
+    <remap from="/roboracing/scan" to="/scan" />
+
+    <remap from="/joint_states" to="/roboracing/joint_states" />
+    <remap from="/steering" to="/roboracing/steering" />
+    <remap from="/speed" to="/roboracing/speed" />
 
     <group ns="roboracing">
 
@@ -13,11 +17,9 @@
 
         <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
-        <param name="robot_description" command="cat $(find rr_description)/urdf/speedi.urdf" />
-
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-
-        <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+        <!--<param name="robot_description" command="cat $(find rr_description)/urdf/speedi.urdf" />-->
+        <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />-->
+        <include file="$(find rr_platform)/launch/speedi_state_publisher.launch" />
 
         <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
               args="-file $(find rr_description)/urdf/speedi.urdf
@@ -26,6 +28,8 @@
                 -x 0 -y 0 -z 0
                 -R 0 -P 0 -Y 0"/>
     </group>
+
+    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find rr_gazebo)/config/speedi_control.yaml" command="load"/>
