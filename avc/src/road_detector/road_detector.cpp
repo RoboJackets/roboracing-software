@@ -7,126 +7,190 @@
 
 using namespace std;
 
-const int rectangle_x = 670;
-const int rectangle_y = 760;
-const int rectangle_width = 580;
-const int rectangle_height = 300;
-
 ros::Publisher pub;
+
+//VAR Declaration
+cv::Mat road_histogram_hue;
+cv::Mat nonRoad_histogram_hue;
+cv::Mat road_mask;
+
+const int hist_bins_hue = 361; //0-360 +1 exclusive
+const int hist_bins_saturation = 101; //0-100 +1 exclusive
+
+
+//###########################################################
+cv::Mat calculateHistogram(cv::Mat image, cv::Mat histogram, int bins){
+	bool uniform = true; bool accumulate = true;//false;
+	int histSize = bins; //bins; //Establish number of BINS
+
+	float range[] = { 0, bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note.(and below) check...
+	const float* histRange = { range };
+	int channels [] = {0};
+
+	cv::calcHist(&image,1,channels,cv::Mat(),histogram, 1 ,&histSize,&histRange,uniform,accumulate);
+	return histogram;
+}
+
+cv::Mat calculateHistogramMask(cv::Mat image, cv::Mat histogram, cv::Mat mask, int bins){
+	bool uniform = true; bool accumulate = true;//false;
+	int histSize = bins; //Establish number of BINS
+
+	float range[] = { 0, bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note. (and above) check...
+	const float* histRange = { range };
+	int channels [] = {0};
+
+	cv::calcHist(&image,1,channels,mask,histogram, 1, &histSize,&histRange,uniform,accumulate);
+	return histogram;
+}
+
+
+
+cv::Mat bootstrap(cv::Mat image_hue){
+	float threshold = 0.08; //TODO: Play with this number 0-1
+
+	const int rectangle_x = 670; //TODO: set rectangle more in the middle? or find a better calibration point.
+	const int rectangle_y = 760;
+	const int rectangle_width = 580;
+	const int rectangle_height = 300;
+
+	cv::Mat mask(image_hue.rows, image_hue.cols, CV_8UC1); //mask. Same width/height of input image. Greyscale.
+	cv::Mat histogram_hue;
+	cv::Mat image_rectangle_hue = image_hue(cv::Rect(rectangle_x,rectangle_y,rectangle_width, rectangle_height));
+
+	histogram_hue = calculateHistogram(image_rectangle_hue,road_histogram_hue,hist_bins_hue);
+
+	//Normalize (sums to 1). Basically gives percentage of pixels of that color (0-1).
+	int rectangle_pixels = (rectangle_width * rectangle_height);
+	for (int ubin = 0; ubin < hist_bins_hue; ubin++) {
+		if(histogram_hue.at<float>(ubin) > 0){
+			histogram_hue.at<float>(ubin) /= rectangle_pixels;
+		}else{
+			histogram_hue.at<float>(ubin) = 0;
+		}
+	}
+
+	//Mask making
+	for(auto i = 0; i < image_hue.rows; i++){
+		const unsigned char* row_hue = image_hue.ptr<unsigned char>(i); // HUE
+		unsigned char* out_row = mask.ptr<unsigned char>(i); //output
+
+		for(auto j = 0; j < image_hue.cols; j++){
+			auto hue = row_hue[j]; //HUE of pixel
+			auto histogram_hue_value = histogram_hue.at<float>(hue);
+
+			if(histogram_hue_value >= threshold){
+				out_row[j] = 255; //Road. White.
+			}else{
+				out_row[j] = 0; //nonRoad. Black.
+			}
+
+		}
+
+	}
+
+	return mask;
+}
+
+
+void train(cv::Mat hist_hue_road,cv::Mat hist_hue_nonRoad, cv::Mat mask){
+	//Normalize (sums to 1). Basically gives percentage of pixels of that color (0-1).
+	int road_pixels = cv::countNonZero(mask); int nonRoad_pixels = cv::countNonZero(~mask);
+	for (int ubin = 0; ubin < hist_bins_hue; ubin++) {
+		if(hist_hue_road.at<float>(ubin) > 0){
+			hist_hue_road.at<float>(ubin) /= road_pixels;
+		}
+		if(hist_hue_nonRoad.at<float>(ubin) > 0){
+			hist_hue_nonRoad.at<float>(ubin) /= nonRoad_pixels;
+		}
+	}
+}
+
+
+void predict(cv::Mat img_hue, cv::Mat hist_hue_road, cv::Mat hist_hue_nonRoad, cv::Mat mask){
+	float threshold = 0.1; //TODO: Play with this value
+
+	//Mask making based on threshold of road/nonRoad
+	for(auto i = 0; i < img_hue.rows; i++){
+		const unsigned char* row_hue = img_hue.ptr<unsigned char>(i); // HUE
+		unsigned char* out_row = mask.ptr<unsigned char>(i); //output
+
+		for(auto j = 0; j < img_hue.cols; j++){
+			auto hue = row_hue[j]; //HUE of pixel
+			auto hist_hue_road_val = hist_hue_road.at<float>(hue);
+			auto hist_hue_nonRoad_val = hist_hue_nonRoad.at<float>(hue);
+
+			if(hist_hue_nonRoad_val > 0){
+				if((hist_hue_road_val / hist_hue_nonRoad_val) >= threshold){
+					out_row[j] = 255; //Road. White.
+				}else{
+					out_row[j] = 0; //nonRoad. Black.
+				}
+			}else{
+				out_row[j] = 0; //nonRoad. Black. //TODO:!!!! WHY THIS? why not check hist_hue_road_val??
+			}
+
+		}
+	}
+
+}
 
 
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
+		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+		cv::Mat frame = cv_ptr->image;
 
-	cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-    cv::Mat frame = cv_ptr->image;
+		//frame to HSV colorspace
+		cv::Mat frame_hsv;
+		cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV );
+		vector<cv::Mat> frame_hsv_planes;
+		cv::split(frame_hsv, frame_hsv_planes);
 
-    cv::Mat hsv_image; //create hsv_image matrix
-    cvtColor( frame, hsv_image, cv::COLOR_BGR2HSV ); //convert to hsv
+		road_mask = bootstrap(frame_hsv_planes[0]);//Guess of road
 
-    //get rectangle of road for comparison
-    cv::Mat compare_image = hsv_image( cv::Rect(rectangle_x,rectangle_y,rectangle_width, rectangle_height));
-    
-    //Split into H S V channel planes.
-    vector<cv::Mat> hsv_planes;
-    cv::split( hsv_image, hsv_planes );
-    vector<cv::Mat> compare_image_planes;
-    cv::split(compare_image, compare_image_planes );
+		road_histogram_hue = calculateHistogramMask(frame_hsv_planes[0],road_histogram_hue,road_mask,hist_bins_hue); //road
+		nonRoad_histogram_hue = calculateHistogramMask(frame_hsv_planes[0],nonRoad_histogram_hue,~road_mask,hist_bins_hue); //nonRoad
+		train(road_histogram_hue,nonRoad_histogram_hue,road_mask);
+		predict(frame_hsv_planes[0],road_histogram_hue,nonRoad_histogram_hue,road_mask);
 
+		/*TODO: RIGHT AWAY NEXT NOW LIKE NOW
+			predict is having some problem. Not sure why but only kinda works if the input mask is inverted with ~.
+			make bootstrap happen only once and accumulate needs to be turned on, so frames affect each other.
+		*/
 
-    //args for HUE calcHist()
-    bool uniform = true; bool accumulate = false;
+		/* THE PLAN:
+		bootstrap mask (guess from rectangle)
 
-    cv::Mat hue_histogram; //Mat of stored histogram for HUE
-    int hue_histSize = 361; //Hue from 0 - 360. Establish number of BINS
+		->
+		calculate Histograms for road and non road;
+		train those histograms (make them each add to 1)
+		predict(create a new mask based on threshold compare of road and nonRoad)
+		(repeat at -> x times)
 
-    float hue_range[] = { 0, 361 } ; //the upper boundary is exclusive. HUE from 0 - 361
-    const float* hue_histRange = { hue_range };
-    int hue_channels [] = {0};
-
-    //CALCULATE HISTOGRAM of HUE Channel
-    calcHist( &compare_image_planes[0], 1, hue_channels, cv::Mat(), hue_histogram, 1, &hue_histSize, &hue_histRange, uniform, accumulate );
-
-
-    //args for SATURATION calcHist()
-    cv::Mat saturation_histogram; //Mat of stored histogram for SATURATION
-    int saturation_histSize = 101; //Hue from 0 - 100. Establish number of BINS
-
-    float saturation_range[] = { 0, 101 } ; //the upper boundary is exclusive. SATURATION from 0 - 100
-    const float* saturation_histRange = { saturation_range };
-    int saturation_channels [] = {0};
-
-    //CALCULATE HISTOGRAM of SATURATION Channel
-    calcHist( &compare_image_planes[1], 1, saturation_channels, cv::Mat(), saturation_histogram, 1, &saturation_histSize, &saturation_histRange, uniform, accumulate );
-
-
-
-    //Compare each pixel to its respective HUE and SATURATION channel bins.
-    cv::Mat road_mask(hsv_image.rows, hsv_image.cols, CV_8UC1);
-
-    float hue_threshold = 1900; //threshold to decide if there are enough in histogram to say it is probably road pixel
-    float saturation_threshold = 2200;
-
-    auto img_channels = hsv_image.channels();
-    for(auto i = 0; i < hsv_image.rows; i++) {
-        const unsigned char* row_hue =  hsv_planes[0].ptr<unsigned char>(i); //HUE
-        const unsigned char* row_saturation = hsv_planes[1].ptr<unsigned char>(i); //SATURATION
-        unsigned char* out_row   = road_mask.ptr<unsigned char>(i);
-
-        for(auto j = 0; j < hsv_image.cols; j++) {
-        	auto image_hue = row_hue[j]; //get HUE channel of pixel
-        	auto image_saturation = row_saturation[j]; //get SATURATION channel of pixel
-        	auto histogram_hue = hue_histogram.at<float>(image_hue);
-        	auto histogram_saturation = saturation_histogram.at<float>(image_saturation);
-
-        	/* //guestimation of hues that finds road ok
-        	if(row[j] > 0 && row[j] < 18){
-        		out_row[j] = 255;
-        	} else{
-        		out_row[j] = 0;
-        	}
-			*/
-
-        	//#TODO:Should the hue and saturation masks be seperately blurred (filtered before mixing?
-        	//make road_mask by combining masks of HUE and SATURATION (only where both have white road spots)
-        	if (histogram_hue >= hue_threshold && histogram_saturation >= saturation_threshold) {
-        		out_row[j] = 255; //PAINT IT WHITE! WE GOT ROAD
-
-        	} else{
-        		out_row[j] = 0; //no road
-        	}
-
-        }
-
-
-    }
-
-    //some form of blur (filtering) to get rid of small holes/delete extraneous #TODO
-    //cv::medianBlur(road_mask,road_mask,1);
-    //cv::blur(road_mask,road_mask,cv::Size(4,4),cv::Point(-1,-1));
-
-
-
+		filter blur (something that checks if pixels around it are white, then makes it white or black based on that)
+		large hole detection and filling
+		*/
 
 
     //publish image
     sensor_msgs::Image outmsg;
-    cv_ptr->image = road_mask;//hsv_planes[2];//DEBUG CUTOUT base_compare_image
+    cv_ptr->image = road_mask;
     cv_ptr->encoding = "mono8";
     cv_ptr->toImageMsg(outmsg);
 
     pub.publish(outmsg);
-    
-
 }
 
+
+
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "histogram");
+	ros::init(argc, argv, "road_detector");
 
 	ros::NodeHandle nh;
-    pub = nh.advertise<sensor_msgs::Image>("/histogram", 1); //test publish of image
+  pub = nh.advertise<sensor_msgs::Image>("/road_detector", 1); //test publish of image
 	auto img_sub = nh.subscribe("/camera/image_rect", 1, img_callback);
 
 	ros::spin();
 	return 0;
+
 }
