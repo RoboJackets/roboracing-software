@@ -169,7 +169,7 @@
                 </range>
             </ray>
             <plugin name="lidar_plugin" filename="libgazebo_ros_laser.so">
-                <robotNamespace>/roboracing</robotNamespace>
+                <robotNamespace>/</robotNamespace>
                 <topicName>/scan</topicName>
                 <frameName>/laser</frameName>
             </plugin>
@@ -180,7 +180,7 @@
     <link name="imu"/>
     <gazebo>
         <plugin filename="libhector_gazebo_ros_imu.so" name="imu_sensor">
-            <robotNamespace>/roboracing</robotNamespace>
+            <robotNamespace>/</robotNamespace>
             <serviceName>/imu/calibrate</serviceName>
             <updateRate>200.0</updateRate>
             <bodyName>imu</bodyName>
@@ -234,7 +234,7 @@
             <update_rate>30</update_rate>
             <visualize>false</visualize>
             <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-                <robotNamespace>/roboracing</robotNamespace>
+                <robotNamespace>/</robotNamespace>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>30.0</updateRate>
                 <cameraName>camera</cameraName>
@@ -356,7 +356,7 @@
 
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/roboracing</robotNamespace>
+            <robotNamespace>/</robotNamespace>
         </plugin>
     </gazebo>
 
