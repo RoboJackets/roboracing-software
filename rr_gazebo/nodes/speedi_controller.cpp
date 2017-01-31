@@ -98,13 +98,13 @@ int main(int argc, char **argv) {
 
     ros::NodeHandle handle;
 
-    ros::Publisher leftDrivePublisher = handle.advertise<std_msgs::Float64>("/roboracing/left_wheel_effort_controller/command", 1);
+    ros::Publisher leftDrivePublisher = handle.advertise<std_msgs::Float64>("/left_wheel_effort_controller/command", 1);
 
-    ros::Publisher rightDrivePublisher = handle.advertise<std_msgs::Float64>("/roboracing/right_wheel_effort_controller/command", 1);
+    ros::Publisher rightDrivePublisher = handle.advertise<std_msgs::Float64>("/right_wheel_effort_controller/command", 1);
 
-    ros::Publisher leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/roboracing/left_steer_position_controller/command", 1);
+    ros::Publisher leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/left_steer_position_controller/command", 1);
 
-    ros::Publisher rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/roboracing/right_steer_position_controller/command", 1);
+    ros::Publisher rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
 

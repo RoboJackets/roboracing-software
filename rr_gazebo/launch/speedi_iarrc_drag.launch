@@ -11,22 +11,15 @@
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
+    <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
             left_steer_position_controller right_steer_position_controller camera_height_position_controller
             camera_tilt_position_controller --shutdown-timeout 1"/>
 
-    <node pkg="avc" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
-
     <rosparam file="$(find rr_gazebo)/config/speedi_control.yaml" command="load"/>
 
     <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
-
-    <!--<node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/speedi.urdf
-            -gazebo_namespace /gazebo
-            -urdf -model speedi
-            -x 0 -y 0 -z 0
-            -R 0 -P 0 -Y 0"/>-->
 
 </launch>
