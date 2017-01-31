@@ -23,3 +23,5 @@ catkin_package(
 add_executable(speedi_controller nodes/speedi_controller.cpp)
 target_link_libraries(speedi_controller ${catkin_LIBRARIES})
 add_dependencies(speedi_controller rr_platform_generate_messages_cpp)
+
+install(PROGRAMS scripts/spawn_speedi_platform.sh DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

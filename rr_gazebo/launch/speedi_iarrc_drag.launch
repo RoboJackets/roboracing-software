@@ -22,4 +22,6 @@
 
     <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
 
+    <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_speedi_platform.sh" />
+
 </launch>
