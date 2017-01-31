@@ -39,6 +39,7 @@ constexpr double chassis_length = 0.33246;
 constexpr double chassis_width = 0.28732;
 constexpr double inv_chassis_length = 1.0 / chassis_length;
 constexpr double chassis_width_2 = chassis_width / 2.0;
+constexpr double max_torque = 0.1;
 
 constexpr double wheel_circumference = 2.0 * M_PI * 0.036;
 
@@ -123,11 +124,13 @@ int main(int argc, char **argv) {
         right_controller.setDesired(right_speed);
 
         std_msgs::Float64 leftDriveMsg;
-        leftDriveMsg.data = left_controller(speed_measured_left);
+        auto set_torque = left_controller(speed_measured_left);
+        leftDriveMsg.data = std::max(-max_torque, std::min(set_torque, max_torque));
         leftDrivePublisher.publish(leftDriveMsg);
 
         std_msgs::Float64 rightDriveMsg;
-        rightDriveMsg.data = right_controller(speed_measured_right);
+        set_torque = right_controller(speed_measured_right);
+        rightDriveMsg.data = std::max(-max_torque, std::min(set_torque, max_torque));
         rightDrivePublisher.publish(rightDriveMsg);
 
         std_msgs::Float64 leftSteerMsg;

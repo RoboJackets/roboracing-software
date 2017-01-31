@@ -3,10 +3,15 @@
 #include <sensor_msgs/JointState.h>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <std_msgs/Float64.h>
 
 using namespace std;
 
-ros::Publisher joint_pub;
+bool USING_GAZEBO;
+
+ros::Publisher joint_state_pub;
+ros::Publisher height_command_pub;
+ros::Publisher tilt_command_pub;
 string joint_state_path;
 
 double cam_height = 0; //height of camera from chassis
@@ -38,7 +43,7 @@ void camInfoCB(const rr_platform::camera_geometry::ConstPtr &msg) {
     ROS_INFO("SJU set camera tilt to %f", cam_tilt);
 }
 
-void publishJoints() {
+void publishJointState() {
     sensor_msgs::JointState joint_state;
     joint_state.header.stamp = ros::Time::now();
     joint_state.header.frame_id = "base_footprint";
@@ -54,7 +59,17 @@ void publishJoints() {
     joint_state.position[1] = cam_tilt;
     joint_state.velocity[1] = 0.0;
     joint_state.effort[1] = 0.0;
-    joint_pub.publish(joint_state);
+    joint_state_pub.publish(joint_state);
+}
+
+void publishJointCommands() {
+    std_msgs::Float64 tilt_msg;
+    tilt_msg.data = cam_tilt;
+    tilt_command_pub.publish(tilt_msg);
+
+    std_msgs::Float64 height_msg;
+    height_msg.data = cam_height;
+    height_command_pub.publish(height_msg);
 }
 
 int main(int argc, char** argv) {
@@ -63,19 +78,33 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
 
-    ros::Subscriber geo_sub = nh.subscribe("/camera_geometry", 1, camInfoCB);
-    joint_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 1);
-
     nh_private.getParam("joint_state_uri", joint_state_path);
 
     string prevStateStr;
     nh_private.getParam("loaded_joint_state", prevStateStr);
     loadJointState(prevStateStr);
 
+    nh_private.getParam("use_simulator_control", USING_GAZEBO);
+
+    ros::Subscriber geo_sub = nh.subscribe("/camera_geometry", 1, camInfoCB);
+    joint_state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 1);
+
+    height_command_pub = nh.advertise<std_msgs::Float64>(
+            "/roboracing/camera_height_position_controller/command", 1, true);
+
+    tilt_command_pub = nh.advertise<std_msgs::Float64>(
+            "/roboracing/camera_tilt_position_controller/command", 1, true);
+
     ros::Rate rate(30);
     while(ros::ok()) {
         ros::spinOnce();
-        publishJoints();
+
+        if(USING_GAZEBO) {
+            publishJointCommands();
+        } else {
+            publishJointState();
+        }
+
         rate.sleep();
     }
 
