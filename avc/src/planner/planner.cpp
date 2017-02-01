@@ -173,7 +173,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     std::transform(bestPath.poses.begin(), bestPath.poses.end(),
                    back_inserter(pathMsg.poses), plannerPoseToPoseStamped);
 
-    pathMsg.header.frame_id = "map";
+    pathMsg.header.frame_id = "base_footprint";
     path_pub.publish(pathMsg);
 }
 
