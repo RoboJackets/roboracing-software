@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 find_package( catkin REQUIRED COMPONENTS
         roscpp
+        rospy
         gazebo_ros
         rr_platform
 )
@@ -24,4 +25,13 @@ add_executable(speedi_controller nodes/speedi_controller.cpp)
 target_link_libraries(speedi_controller ${catkin_LIBRARIES})
 add_dependencies(speedi_controller rr_platform_generate_messages_cpp)
 
-install(PROGRAMS scripts/spawn_speedi_platform.sh DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+catkin_install_python(
+        PROGRAMS
+        scripts/controller_spawner.py
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(PROGRAMS
+        scripts/spawn_speedi_platform.sh
+        scripts/controller_spawner.py
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
