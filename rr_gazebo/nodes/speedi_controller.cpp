@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
 
-    auto stateSub = handle.subscribe("/roboracing/joint_states", 1, jointStateCallback);
+    auto stateSub = handle.subscribe("/joint_states", 1, jointStateCallback);
 
     ros::Rate rate{30};
     while(ros::ok()) {
