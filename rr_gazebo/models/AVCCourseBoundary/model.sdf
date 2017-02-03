@@ -1,0 +1,34 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='AVCCourseBoundary'>
+    <link name='link_0'>
+      <pose frame=''>0 0 0 0 0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://AVCCourseBoundary/AVCCourseBoundary.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>model://../materials/strawSeamless.material</uri>
+            <name>Gazebo/strawSeamless</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='collision'>
+        <geometry>
+          <mesh>
+            <uri>model://AVCCourseBoundary/AVCCourseBoundary.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <static>true</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>

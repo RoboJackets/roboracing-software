@@ -16,6 +16,7 @@
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
             left_steer_position_controller right_steer_position_controller camera_height_position_controller
             camera_tilt_position_controller --shutdown-timeout 1"/>
+
     <rosparam file="$(find rr_gazebo)/config/speedi_control.yaml" command="load"/>
 
     <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
