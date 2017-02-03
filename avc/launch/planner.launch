@@ -1,7 +1,9 @@
 <launch>
     <node name="planner" pkg="avc" type="planner" output="screen" >
-        <param name="steer_stddev"     type="double" value="15" />
-        <param name="max_steer_angle"  type="double" value="30" />
+        <!-- 15 deg and 30 deg, respectively -->
+        <param name="steer_stddev"     type="double" value="0.261799" />
+        <param name="max_steer_angle"  type="double" value="0.523599" />
+
         <param name="path_iterations"  type="int"    value="150" />
         <param name="max_speed"        type="double" value="1.5" />
         <param name="path_stage_time"  type="double" value="2.0" />

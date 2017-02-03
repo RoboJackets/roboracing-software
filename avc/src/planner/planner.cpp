@@ -31,7 +31,7 @@ planner::pose planner::calculateStep(double velocity, double steer_angle, double
         deltaY = 0;
         deltaTheta = 0;
     } else {
-        double turn_radius = constants::wheel_base / sin(abs(steer_angle) * M_PI / 180.0);
+        double turn_radius = constants::wheel_base / sin(abs(steer_angle));
         double temp_theta = velocity * timestep / turn_radius;
         deltaX = turn_radius * cos(M_PI / 2 - temp_theta);
         deltaY;
@@ -40,13 +40,13 @@ planner::pose planner::calculateStep(double velocity, double steer_angle, double
         } else {
             deltaY = -(turn_radius - turn_radius * sin(M_PI / 2 - temp_theta));
         }
-        deltaTheta = velocity / constants::wheel_base * sin(-steer_angle * M_PI / 180.0) * 180 / M_PI * timestep;
+        deltaTheta = velocity / constants::wheel_base * sin(-steer_angle) * timestep;
     }
     pose p;
-    p.x = pStart.x + (deltaX * cos(pStart.theta * M_PI / 180.0)
-                    - deltaY * sin(pStart.theta * M_PI / 180.0));
-    p.y = pStart.y + (deltaX * sin(pStart.theta * M_PI / 180.0)
-                    + deltaY * cos(pStart.theta * M_PI / 180.0));
+    p.x = pStart.x + (deltaX * cos(pStart.theta)
+                    - deltaY * sin(pStart.theta));
+    p.y = pStart.y + (deltaX * sin(pStart.theta)
+                    + deltaY * cos(pStart.theta));
     p.theta = pStart.theta + deltaTheta;
     return p;
 }
@@ -71,13 +71,12 @@ planner::sim_path planner::calculatePath(vector<double> angles) {
         out.speeds[i] = steeringToSpeed(angles[i]);
         out.poses[i] = calculateStep(out.speeds[i], angles[i], TIME_INCREMENT, out.poses[i-1]);
     }
-    // ROS_INFO("path used %d steps", nSteps);
     return out;
 }
 
-// eyeballed it. see https://www.desmos.com/calculator/qv1jpaeyuz
+// eyeballed it. see https://www.desmos.com/calculator/suy8y1ylf0
 double planner::steeringToSpeed(double angle) {
-    return MAX_SPEED * cos(angle * M_PI * 0.4681 / MAX_STEER_ANGLE);
+    return MAX_SPEED * cos(angle * 1.4706 / MAX_STEER_ANGLE);
 }
 
 double planner::costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
