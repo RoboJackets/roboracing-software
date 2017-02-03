@@ -6,24 +6,14 @@
       <visual name='visual'>
         <geometry>
           <mesh>
-            <uri>model://AVCCourseBoundary/AVCCourseBoundary.dae</uri>
-            <scale>1 1 1</scale>
+            <uri>model://AVCCourseBoundary/AVCHayBales.dae</uri>
           </mesh>
         </geometry>
-        <material>
-          <lighting>1</lighting>
-          <script>
-            <uri>model://../materials/strawSeamless.material</uri>
-            <name>Gazebo/strawSeamless</name>
-          </script>
-        </material>
-        <cast_shadows>1</cast_shadows>
-        <transparency>0</transparency>
       </visual>
       <collision name='collision'>
         <geometry>
           <mesh>
-            <uri>model://AVCCourseBoundary/AVCCourseBoundary.dae</uri>
+            <uri>model://AVCCourseBoundary/AVCHayBales.dae</uri>
           </mesh>
         </geometry>
       </collision>

@@ -6,15 +6,14 @@ material Gazebo/strawSeamless
   {
     pass
     {
-      ambient 0.1 0.1 0.1 1.0
+      ambient 0.5 0.5 0.5 1.0
       diffuse 1.0 1.0 1.0 1.0
-      specular 0.01 0.01 0.01 1.0 2.0
+      specular 0.01 0.01 0.01 1.0 1.0
+      emissive 0 0 0 1
 
       texture_unit
       {
-        texture straw_seamless_texture.jpg
-        filtering trilinear
-	    scale 1 1
+        texture strawSeamlessTexture.jpg
       }
     }
   }
