@@ -1,0 +1,4 @@
+
+
+# UVC cameras
+SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0458", ATTRS{idProduct}=="708c", MODE="0666"
