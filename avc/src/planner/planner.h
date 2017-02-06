@@ -13,6 +13,7 @@
 #include <pcl_ros/transforms.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Point.h>
 #include <random>
 
 
@@ -25,6 +26,7 @@ private:
 	ros::Publisher speed_pub;
 	ros::Publisher steer_pub;
 	ros::Publisher path_pub;
+    ros::Publisher steer_instructions_pub;
 
 	std::normal_distribution<double> steering_gaussian;
 	std::mt19937 rand_gen;

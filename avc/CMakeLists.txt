@@ -53,3 +53,9 @@ include_directories(
 
 add_subdirectory(src/planner)
 add_subdirectory(src/mapper)
+
+catkin_install_python(
+        PROGRAMS
+        src/planner_plotter.py
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

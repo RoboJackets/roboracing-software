@@ -19,6 +19,7 @@ planner::planner() {
     speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
     steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
     path_pub = nh.advertise<nav_msgs::Path>("path", 1);
+    steer_instructions_pub = nh.advertise<geometry_msgs::Point>("plan_cost", 1);
 
     steering_gaussian = normal_distribution<double>(0, STEER_STDDEV);
     rand_gen = mt19937(std::random_device{}());
@@ -149,6 +150,13 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
                 weightedSteeringRaw.push_back(sp.angles[j] / cost);
             }
         }
+
+        // plotter additions
+        geometry_msgs::Point p;
+        p.x = steerPath[0];
+        p.y = steerPath[steerPath.size() / 2 + 1];
+        p.z = 1.0 / cost;
+        steer_instructions_pub.publish(p);
     }
 
     vector<double> bestSteering;
