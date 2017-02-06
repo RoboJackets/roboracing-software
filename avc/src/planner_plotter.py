@@ -35,3 +35,6 @@ if __name__ == '__main__':
     ax.set_ylabel("Steering 2")
     ax.set_zlabel("Weight (1/cost)")
     plt.show()
+
+    # plt.plot(xs, zs, 'bo')
+    # plt.show()
