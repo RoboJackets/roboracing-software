@@ -56,7 +56,7 @@ double planner::calculatePathCost(planner::sim_path path,
                                   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
     double cost = 0.0;
     for(int i = 0; i < path.poses.size(); i++) {
-        cost += costAtPose(path.poses[i], kdtree) / pow(path.speeds[i], 3);
+        cost += costAtPose(path.poses[i], kdtree) / pow(path.speeds[i], 2);
     }
     return cost;
 }
