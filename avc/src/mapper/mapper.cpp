@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
     for(const auto& topic : topics) {
         partial_Subscribers.push_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
-        ROS_INFO_STREAM("Subscribed to " << topic);
+        ROS_INFO_STREAM("Mapper subscribed to " << topic);
     }
 
     auto map_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
             sensor_msgs::PointCloud2 msg;
             pcl_conversions::fromPCL(map_pc2,msg);
 
-            msg.header.frame_id = "map";
+            msg.header.frame_id = "base_footprint";
             msg.header.stamp = ros::Time::now();
 
             map_pub.publish(msg);

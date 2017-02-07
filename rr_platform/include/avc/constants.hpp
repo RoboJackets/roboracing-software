@@ -19,9 +19,12 @@ namespace constants {
   double pixels_per_meter = 100;
 
   double world_width_meters = 8;
-  double world_height_meters = 16;
+  double world_height_meters = 16; //half in front, half behind
   int world_width = pixels_per_meter * world_width_meters;
   int world_height = pixels_per_meter * world_height_meters;
+
+  double camera_distance_max = 5.0; //distance to look ahead of the car
+  double camera_distance_min = 0.5; //avoid the front bumper
 
   double origin_x = world_height / 2;
   double origin_y = world_width / 2;
