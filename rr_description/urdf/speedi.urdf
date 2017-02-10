@@ -219,7 +219,7 @@
     <gazebo reference="camera">
         <sensor name="camera_sensor" type="camera">
             <camera>
-                <horizontal_fov>1.2290609</horizontal_fov>
+                <horizontal_fov>2.0944<!-- 120 deg in rad --></horizontal_fov>
                 <image>
                     <width>640</width>
                     <height>480</height>
@@ -242,11 +242,6 @@
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
                 <frameName>camera_optical</frameName>
                 <hackBaseline>0.07</hackBaseline>
-                <distortionK1>0.0</distortionK1>
-                <distortionK2>0.0</distortionK2>
-                <distortionK3>0.0</distortionK3>
-                <distortionT1>0.0</distortionT1>
-                <distortionT2>0.0</distortionT2>
             </plugin>
         </sensor>
     </gazebo>
