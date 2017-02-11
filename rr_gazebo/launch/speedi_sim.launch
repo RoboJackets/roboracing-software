@@ -4,7 +4,9 @@
     <param name="/use_sim_time" value="true" />
 
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
-          args="-e ode $(arg world)" required="false"/>
+          args="-e ode $(arg world)" required="false">
+        <remap from="/camera/image_raw" to="/camera/image_rect"/>
+    </node>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
@@ -20,12 +22,6 @@
     <rosparam file="$(find rr_gazebo)/config/speedi_control.yaml" command="load"/>
 
     <node name="sim_controller" pkg="rr_gazebo" type="speedi_controller" respawn="false" output="screen" />
-
-    <group ns="camera">
-        <node pkg="nodelet" type="nodelet" name="rectify" output="screen" args="standalone image_proc/rectify">
-            <remap from="image_mono" to="image_raw" />
-        </node>
-    </group>
 
     <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_speedi_platform.sh" />
 </launch>
