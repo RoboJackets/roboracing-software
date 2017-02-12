@@ -37,6 +37,8 @@ private:
 	double TIME_INCREMENT; //timestep between points on the path
 	int PATH_STAGES; //number of control values per path
 	double COLLISION_RADIUS; //minimum acceptable distance to obstacle
+	double ALT_PATH_THRESHOLD; //proportion of the max weight needed to use a path
+	double CONNECTED_PATH_DIST; //euclidean distance between two "similar enough" paths
 
 	double deltaX;
 	double deltaY;
@@ -54,12 +56,32 @@ private:
 
 	struct sim_path
 	{
-		std::vector<double> angles;
 		std::vector<pose> poses;
 		std::vector<double> speeds;
 	};
 
+	struct SteeringGroup;
+	struct WeightedSteeringVec
+	{
+		std::vector<double> steers;
+		double weight;
+		SteeringGroup *group;
+	};
+
+	struct SteeringGroup
+	{
+		std::vector<WeightedSteeringVec> weightedSteers;
+		double weightTotal;
+
+		void add(WeightedSteeringVec *wsv);
+		void addAll(SteeringGroup *sg);
+		std::vector<double> weightedCenter();
+		double averageWeight();
+        bool operator==(SteeringGroup other);
+	};
+
 	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose p);
+    static bool steeringVecCompare(WeightedSteeringVec wsv1, WeightedSteeringVec wsv2);
 
 	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
 	double steeringToSpeed(double angle);
