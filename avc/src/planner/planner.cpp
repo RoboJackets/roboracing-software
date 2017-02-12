@@ -170,7 +170,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     kdtree.setInputCloud(cloud);
 
     //build paths and evaluate their weights
-    ROS_INFO("a");
     vector<WeightedSteeringVec> weightedSteerVecs(PATH_ITERATIONS);
     double angle;
     double bestWeight = 0;
@@ -193,7 +192,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     //ROS_INFO("best weight %f", bestWeight);
 
     // filter paths by weight and sort them by first steering value
-    ROS_INFO("b");
     vector<WeightedSteeringVec> weightedSteerVecsFiltered;
     for(int i = 0; i < weightedSteerVecs.size(); i++) {
         if(weightedSteerVecs[i].weight > bestWeight * ALT_PATH_THRESHOLD) {
@@ -203,33 +201,25 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     //sort(weightedSteerVecsFiltered.begin(), weightedSteerVecsFiltered.end(), steeringVecCompare);
 
     // connect components based on distance
-    ROS_INFO("c");
     vector<SteeringGroup> groups;
     for(int i = 0; i < weightedSteerVecsFiltered.size(); i++) {
-        ROS_INFO("i = %d", i);
         WeightedSteeringVec *thisSteerVec = &weightedSteerVecsFiltered[i];
         SteeringGroup *thisGroup;
         bool foundMatch = false;
         // search backwards along axis 0 for groups to connect to.
         // stops searching when j==0 or element j is more than connection radius away on axis 0
         for(int groupIndex = 0; groupIndex < groups.size(); groupIndex++) {
-            ROS_INFO("groupIndex = %d", groupIndex);
             SteeringGroup *thatGroup = &groups[groupIndex];
             vector<WeightedSteeringVec> *thoseSteers = &thatGroup->weightedSteers;
             for(int j = 0; j < thoseSteers->size(); j++) {
-                ROS_INFO_STREAM("j = " << j);
                 WeightedSteeringVec *thatSteerVec = &(*thoseSteers)[j];
                 if (distance(thisSteerVec->steers, thatSteerVec->steers) < CONNECTED_PATH_DIST) {
                     if (foundMatch) {
                         //has already found a match for thisSteerVec. Merge groups
-                        ROS_INFO("found another match");
                         thisGroup->addAll(thatGroup);
-                        ROS_INFO("added all");
                         groups.erase(groups.begin() + groupIndex);
-                        ROS_INFO("erased");
                         groupIndex--; //to iterate properly
                     } else {
-                        ROS_INFO("found first match");
                         thatGroup->add(thisSteerVec);
                         thisGroup = thatGroup;
                     }
@@ -240,13 +230,11 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
 
         if(!foundMatch) {
-            ROS_INFO("no match found");
             SteeringGroup sg;
             sg.add(thisSteerVec);
             groups.push_back(sg);
         }
     }
-    ROS_INFO("d");
 
     // find the group with highest average weight and use its steering angles
     SteeringGroup *bestGroup;
