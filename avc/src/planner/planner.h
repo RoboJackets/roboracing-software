@@ -65,7 +65,6 @@ private:
 	{
 		std::vector<double> steers;
 		double weight;
-		SteeringGroup *group;
 	};
 
 	struct SteeringGroup

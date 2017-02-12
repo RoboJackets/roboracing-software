@@ -123,16 +123,12 @@ double distance(vector<double> vec1, vector<double> vec2) {
 }
 
 void planner::SteeringGroup::add(WeightedSteeringVec *wsv) {
-    wsv->group = this;
     weightTotal += wsv->weight;
     weightedSteers.push_back(*wsv);
 }
 void planner::SteeringGroup::addAll(SteeringGroup *sg) {
     weightedSteers.insert(weightedSteers.end(), sg->weightedSteers.begin(),
                           sg->weightedSteers.end());
-    for(int i = 0; i < sg->weightedSteers.size(); i++) {
-        sg->weightedSteers[i].group = this;
-    }
     weightTotal += sg->weightTotal;
 }
 bool planner::SteeringGroup::operator==(SteeringGroup other) {
@@ -174,6 +170,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     kdtree.setInputCloud(cloud);
 
     //build paths and evaluate their weights
+    ROS_INFO("a");
     vector<WeightedSteeringVec> weightedSteerVecs(PATH_ITERATIONS);
     double angle;
     double bestWeight = 0;
@@ -181,7 +178,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     for(int i = 0; i < PATH_ITERATIONS; i++) {
         vector<double> steerPath(increments * PATH_STAGES, 0);
         WeightedSteeringVec wsv;
-        wsv.group = nullptr;
         for(int s = 0; s < PATH_STAGES; s++) {
             angle = steeringSample();
             wsv.steers.push_back(angle);
@@ -197,60 +193,70 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     //ROS_INFO("best weight %f", bestWeight);
 
     // filter paths by weight and sort them by first steering value
+    ROS_INFO("b");
     vector<WeightedSteeringVec> weightedSteerVecsFiltered;
     for(int i = 0; i < weightedSteerVecs.size(); i++) {
         if(weightedSteerVecs[i].weight > bestWeight * ALT_PATH_THRESHOLD) {
             weightedSteerVecsFiltered.push_back(weightedSteerVecs[i]);
         }
     }
-    sort(weightedSteerVecsFiltered.begin(), weightedSteerVecsFiltered.end(), steeringVecCompare);
+    //sort(weightedSteerVecsFiltered.begin(), weightedSteerVecsFiltered.end(), steeringVecCompare);
 
     // connect components based on distance
+    ROS_INFO("c");
+    vector<SteeringGroup> groups;
     for(int i = 0; i < weightedSteerVecsFiltered.size(); i++) {
+        ROS_INFO("i = %d", i);
         WeightedSteeringVec *thisSteerVec = &weightedSteerVecsFiltered[i];
-        int j = i - 1;
+        SteeringGroup *thisGroup;
         bool foundMatch = false;
         // search backwards along axis 0 for groups to connect to.
         // stops searching when j==0 or element j is more than connection radius away on axis 0
-        while(j >= 0
-           && (thisSteerVec->steers[0] - weightedSteerVecsFiltered[j].steers[0]) < CONNECTED_PATH_DIST)
-        {
-            WeightedSteeringVec *thatSteerVec = &weightedSteerVecsFiltered[j];
-            if((thisSteerVec->group != thatSteerVec->group)
-               && (distance(thisSteerVec->steers, thatSteerVec->steers) < CONNECTED_PATH_DIST))
-            {
-                if(foundMatch) {
-                    //has already found a match for thisSteerVec. Merge groups
-                    thisSteerVec->group->addAll(thatSteerVec->group);
-                } else {
-                    thatSteerVec->group->add(thisSteerVec);
+        for(int groupIndex = 0; groupIndex < groups.size(); groupIndex++) {
+            ROS_INFO("groupIndex = %d", groupIndex);
+            SteeringGroup *thatGroup = &groups[groupIndex];
+            vector<WeightedSteeringVec> *thoseSteers = &thatGroup->weightedSteers;
+            for(int j = 0; j < thoseSteers->size(); j++) {
+                ROS_INFO_STREAM("j = " << j);
+                WeightedSteeringVec *thatSteerVec = &(*thoseSteers)[j];
+                if (distance(thisSteerVec->steers, thatSteerVec->steers) < CONNECTED_PATH_DIST) {
+                    if (foundMatch) {
+                        //has already found a match for thisSteerVec. Merge groups
+                        ROS_INFO("found another match");
+                        thisGroup->addAll(thatGroup);
+                        ROS_INFO("added all");
+                        groups.erase(groups.begin() + groupIndex);
+                        ROS_INFO("erased");
+                        groupIndex--; //to iterate properly
+                    } else {
+                        ROS_INFO("found first match");
+                        thatGroup->add(thisSteerVec);
+                        thisGroup = thatGroup;
+                    }
                     foundMatch = true;
+                    break; //end looking at this group
                 }
             }
-            j--;
         }
 
         if(!foundMatch) {
-            SteeringGroup *sg = new SteeringGroup;
-            sg->add(thisSteerVec);
-            thisSteerVec->group = sg;
+            ROS_INFO("no match found");
+            SteeringGroup sg;
+            sg.add(thisSteerVec);
+            groups.push_back(sg);
         }
     }
+    ROS_INFO("d");
 
     // find the group with highest average weight and use its steering angles
-    vector<SteeringGroup *> groups;
     SteeringGroup *bestGroup;
     double bestGroupAverageWeight = -1.0;
-    for(int i = 0; i < weightedSteerVecsFiltered.size(); i++) {
-        SteeringGroup* thisGroup = weightedSteerVecsFiltered[i].group;
-        if(find(groups.begin(), groups.end(), thisGroup) == groups.end()) {
-            //group has not been tested
-            groups.push_back(thisGroup);
-            double thisGroupAverageWeight = thisGroup->averageWeight();
-            if(thisGroupAverageWeight > bestGroupAverageWeight) {
-                bestGroupAverageWeight = thisGroupAverageWeight;
-                bestGroup = thisGroup;
-            }
+    for(int i = 0; i < groups.size(); i++) {
+        SteeringGroup *thisGroup = &groups[i];
+        double thisGroupAverageWeight = thisGroup->averageWeight();
+        if(thisGroupAverageWeight > bestGroupAverageWeight) {
+            bestGroupAverageWeight = thisGroupAverageWeight;
+            bestGroup = thisGroup;
         }
     }
     ROS_INFO("Planner found %d path categories", (int)groups.size());
