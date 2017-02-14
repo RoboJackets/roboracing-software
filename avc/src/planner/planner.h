@@ -72,15 +72,15 @@ private:
 		std::vector<WeightedSteeringVec> weightedSteers;
 		double weightTotal;
 
-		void add(WeightedSteeringVec *wsv);
-		void addAll(SteeringGroup *sg);
+		void add(const WeightedSteeringVec &wsv);
+		void addAll(const SteeringGroup &sg);
 		std::vector<double> weightedCenter();
 		double averageWeight();
         bool operator==(SteeringGroup other);
 	};
 
-	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose p);
-    static bool steeringVecCompare(WeightedSteeringVec wsv1, WeightedSteeringVec wsv2);
+	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose &p);
+    static bool steeringVecCompare(const WeightedSteeringVec &wsv1, const WeightedSteeringVec &wsv2);
 
 	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
 	double steeringToSpeed(double angle);
