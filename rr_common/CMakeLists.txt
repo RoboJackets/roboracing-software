@@ -1,5 +1,7 @@
+# a carbon copy of avc's CMakeLists
+
 cmake_minimum_required(VERSION 2.8.3)
-project(avc)
+project(rr_common)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
@@ -30,17 +32,13 @@ add_definitions(${PCL_DEFINITIONS})
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  INCLUDE_DIRS include
+  #INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
 ###########
 ## Build ##
 ###########
-
-add_executable(color_detector_avc src/color_detector_avc.cpp)
-target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(color_detector_avc rr_platform_generate_messages_cpp)
 
 ## Specify additional locations of header files
 include_directories(
@@ -51,4 +49,4 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/mapper)
+add_subdirectory(src/planner)
