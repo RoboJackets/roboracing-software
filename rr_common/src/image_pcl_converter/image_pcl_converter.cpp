@@ -1,6 +1,8 @@
 /*
  * Borrows from old color_detector_avc and from image_transform.
- * N.B. pass in a binary image in 1-channel "mono8" format
+ * N.B. pass in a binary image in 1-channel "mono8" format.
+ * Any non-zero element in the input image becomes a point in a
+ * cloud.
  */
 
 #include <ros/ros.h>
