@@ -206,12 +206,11 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
      * Store the results in weightedSteerVecsFiltered.
      */
     vector<WeightedSteeringVec> weightedSteerVecsFiltered;
-    for(int i = 0; i < weightedSteerVecs.size(); i++) {
-        if(weightedSteerVecs[i].weight > bestWeight * ALT_PATH_THRESHOLD) {
-            weightedSteerVecsFiltered.push_back(weightedSteerVecs[i]);
+    for(const WeightedSteeringVec &steerVec : weightedSteerVecs) {
+        if(steerVec.weight > bestWeight * ALT_PATH_THRESHOLD) {
+            weightedSteerVecsFiltered.push_back(steerVec);
         }
     }
-    //sort(weightedSteerVecsFiltered.begin(), weightedSteerVecsFiltered.end(), steeringVecCompare);
 
     /* connect components based on distance. I refer to any random
      * path sample as a steerVec here. The variable groups holds the
@@ -219,29 +218,28 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
      */
     vector<SteeringGroup> groups;
     // outer loop: iterate through good enough paths (around 10% of paths,
-    // depending on circumstances)
-    for(int i = 0; i < weightedSteerVecsFiltered.size(); i++) {
-        const WeightedSteeringVec &thisSteerVec = weightedSteerVecsFiltered[i];
+    //  depending on circumstances)
+    for(const WeightedSteeringVec &newSteerVec : weightedSteerVecsFiltered) {
         bool foundMatch = false;
-        int thisGroupIndex;
+        int newGroupIndex;
         // inner loop 1: iterate through existing groups
-        for(int thatGroupIndex = 0; thatGroupIndex < groups.size(); thatGroupIndex++) {
-            SteeringGroup &thatGroup = groups[thatGroupIndex];
-            const vector<WeightedSteeringVec> &thoseSteers = thatGroup.weightedSteers;
-            for(int j = 0; j < thoseSteers.size(); j++) {
+        for(int comparisonGroupIndex = 0; comparisonGroupIndex < groups.size(); comparisonGroupIndex++) {
+            SteeringGroup &comparisonGroup = groups[comparisonGroupIndex];
+            const vector<WeightedSteeringVec> &comparisonSteers = comparisonGroup.weightedSteers;
+            for(int j = 0; j < comparisonSteers.size(); j++) {
                 // thatSteerVec belongs to thatGroup
-                const WeightedSteeringVec &thatSteerVec = thoseSteers[j];
-                if (distance(thisSteerVec.steers, thatSteerVec.steers) < CONNECTED_PATH_DIST) {
+                const WeightedSteeringVec &comparisonSteerVec = comparisonSteers[j];
+                if (distance(newSteerVec.steers, comparisonSteerVec.steers) < CONNECTED_PATH_DIST) {
                     if (foundMatch) {
                         // has already found a match for thisSteerVec. Merge groups
-                        groups[thisGroupIndex].addAll(thatGroup);
+                        groups[newGroupIndex].addAll(comparisonGroup);
                         // delete the group at the current "other" group index
-                        groups.erase(groups.begin() + thatGroupIndex);
-                        thatGroupIndex--;
+                        groups.erase(groups.begin() + comparisonGroupIndex);
+                        comparisonGroupIndex--;
                     } else {
                         // no match has previously been found for this steering sample
-                        thatGroup.add(thisSteerVec);
-                        thisGroupIndex = thatGroupIndex;
+                        comparisonGroup.add(newSteerVec);
+                        newGroupIndex = comparisonGroupIndex;
                     }
                     foundMatch = true;
                     break; //end looking at this group
@@ -252,7 +250,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         if(!foundMatch) {
             // no existing groups are close enough to the path sample
             SteeringGroup sg;
-            sg.add(thisSteerVec);
+            sg.add(newSteerVec);
             groups.push_back(sg);
         }
     }

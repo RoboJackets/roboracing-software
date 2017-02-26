@@ -60,7 +60,6 @@ private:
 		std::vector<double> speeds;
 	};
 
-	struct SteeringGroup;
 	struct WeightedSteeringVec
 	{
 		std::vector<double> steers;
