@@ -42,9 +42,11 @@ The following files and folders enable our continuous integration system.
    
       From your home directory, or wherever you feel like keeping the libuvc source   
       ```
-      git clone git@github.com:ktossell/libuvc.git
+      git clone https://github.com/ktossell/libuvc
       cd libuvc
-      mkdir build && cd build
+      mkdir build
+      cd build
+      cmake ..
       make && sudo make install
       ```
    2. libuvc_ros - ROS API for libuvc
