@@ -27,6 +27,8 @@ find_package(
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED filters)
 
+pkg_check_modules(mraa REQUIRED)
+
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 ## Generate messages in the 'msg' folder
@@ -77,6 +79,7 @@ add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
+add_subdirectory(src/mpu9250_for_joule)
 
 add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
 target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
