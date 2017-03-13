@@ -1,0 +1,25 @@
+<launch>
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/camera/image_rect,/obstacles_img"/>
+    </node>
+
+    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
+        <param name="image_topics" value="/obstacles_img_transformed"/>
+        <param name="px_per_meter" value="100.0"/>
+    </node>
+
+    <include file="$(find iarrc)/launch/color_detector_circuit.launch"/>
+
+    <node name="planner_iarrc" pkg="rr_common" type="planner" output="screen" >
+        <param name="obstacle_cloud_topic" value="/obstacles_img_transformed_cloud"/>
+
+        <param name="steer_stddev"     type="double" value="0.261799" />
+        <param name="max_steer_angle"  type="double" value="0.523599" />
+        <param name="path_iterations"  type="int"    value="150" />
+        <param name="max_speed"        type="double" value="0.5" />
+        <param name="path_stage_time"  type="double" value="2.0" />
+        <param name="path_stages"      type="int"    value="2" />
+        <param name="time_increment"   type="double" value="0.14" />
+        <param name="collision_radius" type="double" value="0.4" />
+    </node>
+</launch>

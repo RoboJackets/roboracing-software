@@ -117,9 +117,14 @@ int main(int argc, char** argv) {
     NodeHandle nh;
     NodeHandle nhp("~");
 
-    Subscriber img_saver_sub = nh.subscribe("colors_img", 1, ImageCB);
+    string img_topic;
+    nhp.getParam("img_topic", img_topic);
+    ROS_INFO("Finish line watching %s", img_topic.c_str());
+
+    Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
+    debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
 
     Rate rate(30);
     while(ros::ok()) {

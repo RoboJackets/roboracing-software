@@ -64,26 +64,29 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "iarrc_navigation_controller");
 
     ros::NodeHandle nh;
-
-    nh.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
-
-    auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
-    auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
-    auto startLightSub = nh.subscribe("green_light", 1, startLightCB);
-    auto finishLineSub = nh.subscribe("finish_line_crosses", 1, finishLineCB);
-
-    speedPub = nh.advertise<rr_platform::speed>("speed", 1);
-    steerPub = nh.advertise<rr_platform::steering>("steering", 1);
+    ros::NodeHandle nhp("~");
 
     state = WAITING_FOR_START;
     planSpeed = 0.0;
     planSteering = 0.0;
     finishLineCrosses = 0;
 
+    nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
+    ROS_INFO("req finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
+
+    auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
+    auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
+    auto startLightSub = nh.subscribe("/green_light", 1, startLightCB);
+    auto finishLineSub = nh.subscribe("/finish_line_crosses", 1, finishLineCB);
+
+    speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
+    steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
+
     ros::Rate rate(30.0);
     while(ros::ok()) {
         ros::spinOnce();
         updateState();
+        ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
 
         rr_platform::speed speedMsg;
         speedMsg.speed = speed;
