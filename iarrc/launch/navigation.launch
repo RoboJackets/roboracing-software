@@ -2,7 +2,7 @@
 <launch>
     <include file="$(find iarrc)/launch/planner_iarrc.launch"/>
     <!--<include file="$(find iarrc)/launch/stoplight_watcher.launch"/>-->
-    <!--<include file="$(find iarrc)/launch/race_end_detector.launch"/>-->
+    <include file="$(find iarrc)/launch/race_end_detector.launch"/>
 
     <node name="navigation_controller" pkg="iarrc" type="navigation_controller" output="screen">
         <param name="req_finish_line_crosses" type="int" value="3"/>
