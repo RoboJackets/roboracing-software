@@ -1,11 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <launch>
+    <include file="$(find iarrc)/launch/color_detector_drag.launch"/>
+    <include file="$(find iarrc)/launch/obstacles_to_pcl.launch"/>
+    <!--<include file="$(find iarrc)/launch/stoplight_watcher.launch"/>-->
+    <include file="$(find iarrc)/launch/race_end_detector.launch"/>
 
-	<!-- Dragrace Controller node -->
-	<node name="iarrc_dragrace_controller" pkg="iarrc" type="iarrc_dragrace_controller" output="screen" respawn="false">
-		<param name="stoplight_topic" type="str" value="/light_change"/>
-		<param name="wall_detect_topic" type="str" value="/wall_detect"/>
-		<param name="drive_speed" type="int" value="6"/>
-		<param name="speed_topic" type="str" value="/speed"/>
-	</node>
+    <include file="$(find iarrc)/launch/planner_drag.launch"/>
 
+    <node name="navigation_controller" pkg="iarrc" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="1"/>
+    </node>
 </launch>

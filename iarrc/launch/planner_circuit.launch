@@ -1,15 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
-        <param name="transform_topics" value="/camera/image_rect,/obstacles_img"/>
-    </node>
-
-    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
-        <param name="image_topics" value="/obstacles_img_transformed"/>
-        <param name="px_per_meter" value="100.0"/>
-    </node>
-
-    <include file="$(find iarrc)/launch/color_detector_circuit.launch"/>
-
     <node name="planner_iarrc" pkg="rr_common" type="planner" output="screen" >
         <param name="obstacle_cloud_topic" value="/obstacles_img_transformed_cloud"/>
 
