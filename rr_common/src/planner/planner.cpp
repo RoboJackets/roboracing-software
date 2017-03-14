@@ -17,6 +17,8 @@ planner::planner() {
     pnh.getParam("path_iterations", PATH_ITERATIONS);
     pnh.getParam("time_increment", TIME_INCREMENT);
     pnh.getParam("obstacle_cloud_topic", obstacle_cloud_topic);
+    pnh.getParam("alternate_path_threshold", ALT_PATH_THRESHOLD);
+    pnh.getParam("connected_path_distance", CONNECTED_PATH_DIST);
 
     map_sub = nh.subscribe(obstacle_cloud_topic, 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
@@ -65,7 +67,6 @@ double planner::calculatePathCost(planner::sim_path path,
 
 planner::sim_path planner::calculatePath(vector<double> angles) {
     sim_path out;
-    out.angles = angles;
     out.poses.resize(angles.size());
     out.speeds.resize(angles.size());
     out.speeds[0] = steeringToSpeed(angles[0]);
@@ -103,11 +104,61 @@ double planner::steeringSample() {
     else return steeringSample();
 }
 
-geometry_msgs::PoseStamped planner::plannerPoseToPoseStamped(planner::pose pp) {
+geometry_msgs::PoseStamped planner::plannerPoseToPoseStamped(planner::pose &pp) {
     geometry_msgs::PoseStamped ps;
     ps.pose.position.x = pp.x;
     ps.pose.position.y = pp.y;
     return ps;
+}
+
+//use this to sort WeightedSteeringVecs by first steer value in increasing order
+bool planner::steeringVecCompare(const WeightedSteeringVec &wsv1, const WeightedSteeringVec &wsv2) {
+    return wsv1.steers[0] < wsv2.steers[0];
+}
+
+//return n-dimensional euclidean distance. Used for connecting steering set vectors
+double distance(vector<double> vec1, vector<double> vec2) {
+    double sum = 0;
+    for(int i = 0; i < vec1.size(); i++) {
+        sum += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
+    }
+    return sqrt(sum);
+}
+
+// add a set of path instructions to a locally connected group
+void planner::SteeringGroup::add(const WeightedSteeringVec &wsv) {
+    weightTotal += wsv.weight;
+    weightedSteers.push_back(wsv);
+}
+
+// merge two connected-component groups of path instructions
+void planner::SteeringGroup::addAll(const SteeringGroup &sg) {
+    weightedSteers.insert(weightedSteers.end(), sg.weightedSteers.begin(),
+                          sg.weightedSteers.end());
+    weightTotal += sg.weightTotal;
+}
+
+// makes sure two connected components are compared by reference equality
+bool planner::SteeringGroup::operator==(SteeringGroup other) {
+    // shallow equality
+    return this == &other;
+}
+
+// find the weighted average steering values in a locally connected set
+vector<double> planner::SteeringGroup::weightedCenter() {
+    vector<double> sums;
+    for(int j = 0; j < weightedSteers[0].steers.size(); j++) sums.push_back(0);
+
+    for(int i = 0; i < weightedSteers.size(); i++) {
+        for(int j = 0; j < weightedSteers[i].steers.size(); j++) {
+            sums[j] += weightedSteers[i].steers[j] * weightedSteers[i].weight / weightTotal;
+        }
+    }
+    return sums;
+}
+
+double planner::SteeringGroup::averageWeight() {
+    return (double)weightTotal / weightedSteers.size();
 }
 
 void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
@@ -129,39 +180,105 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
     kdtree.setInputCloud(cloud);
 
-    //build paths and evaluate their weights
-    vector<double> weightedSteeringRaw;
-    double weightTotal = 0, cost, angle;
+    /* Build paths and evaluate their weights. Tracks the best weight.
+     * weightedSteerVecs holds all of the random steering samples and their
+     * path weights.
+     */
+    vector<WeightedSteeringVec> weightedSteerVecs(PATH_ITERATIONS);
+    double angle;
+    double bestWeight = 0;
     int increments = PATH_STAGE_TIME / TIME_INCREMENT;
-
     for(int i = 0; i < PATH_ITERATIONS; i++) {
         vector<double> steerPath(increments * PATH_STAGES, 0);
+        WeightedSteeringVec wsv;
         for(int s = 0; s < PATH_STAGES; s++) {
             angle = steeringSample();
+            wsv.steers.push_back(angle);
             fill_n(steerPath.begin() + s*increments, increments, angle);
         }
 
         sim_path sp = calculatePath(steerPath);
-        cost = calculatePathCost(sp, kdtree);
-        weightTotal += 1.0 / cost;
+        wsv.weight = 1.0 / calculatePathCost(sp, kdtree);
+        weightedSteerVecs.push_back(wsv);
 
-        for(int j = 0; j < sp.angles.size(); j++) {
-            if(j < weightedSteeringRaw.size()) {
-                weightedSteeringRaw[j] += sp.angles[j] / cost;
-            } else {
-                weightedSteeringRaw.push_back(sp.angles[j] / cost);
-            }
+        if(wsv.weight > bestWeight) bestWeight = wsv.weight;
+    }
+    //ROS_INFO("best weight %f", bestWeight);
+
+    /* Filter paths by weight and sort them by first steering value.
+     * Store the results in weightedSteerVecsFiltered.
+     */
+    vector<WeightedSteeringVec> weightedSteerVecsFiltered;
+    for(const WeightedSteeringVec &steerVec : weightedSteerVecs) {
+        if(steerVec.weight > bestWeight * ALT_PATH_THRESHOLD) {
+            weightedSteerVecsFiltered.push_back(steerVec);
         }
     }
 
-    vector<double> bestSteering;
-    for(int i = 0; i < weightedSteeringRaw.size(); i++) {
-        bestSteering.push_back(weightedSteeringRaw[i] / weightTotal);
+    /* connect components based on distance. I refer to any random
+     * path sample as a steerVec here. The variable groups holds the
+     * sets of connected (connected = "close enough") paths
+     */
+    vector<SteeringGroup> groups;
+    // outer loop: iterate through good enough paths (around 10% of paths,
+    //  depending on circumstances)
+    for(const WeightedSteeringVec &newSteerVec : weightedSteerVecsFiltered) {
+        bool foundMatch = false;
+        int newGroupIndex;
+        // inner loop 1: iterate through existing groups
+        for(int comparisonGroupIndex = 0; comparisonGroupIndex < groups.size(); comparisonGroupIndex++) {
+            SteeringGroup &comparisonGroup = groups[comparisonGroupIndex];
+            const vector<WeightedSteeringVec> &comparisonSteers = comparisonGroup.weightedSteers;
+            for(int j = 0; j < comparisonSteers.size(); j++) {
+                // thatSteerVec belongs to thatGroup
+                const WeightedSteeringVec &comparisonSteerVec = comparisonSteers[j];
+                if (distance(newSteerVec.steers, comparisonSteerVec.steers) < CONNECTED_PATH_DIST) {
+                    if (foundMatch) {
+                        // has already found a match for thisSteerVec. Merge groups
+                        groups[newGroupIndex].addAll(comparisonGroup);
+                        // delete the group at the current "other" group index
+                        groups.erase(groups.begin() + comparisonGroupIndex);
+                        comparisonGroupIndex--;
+                    } else {
+                        // no match has previously been found for this steering sample
+                        comparisonGroup.add(newSteerVec);
+                        newGroupIndex = comparisonGroupIndex;
+                    }
+                    foundMatch = true;
+                    break; //end looking at this group
+                }
+            }
+        }
+
+        if(!foundMatch) {
+            // no existing groups are close enough to the path sample
+            SteeringGroup sg;
+            sg.add(newSteerVec);
+            groups.push_back(sg);
+        }
     }
 
+    // find the group with highest average weight and use its steering angles
+    int bestGroupIndex = -1;
+    double bestGroupAverageWeight = -1.0;
+    for(int i = 0; i < groups.size(); i++) {
+        double thisGroupAverageWeight = groups[i].averageWeight();
+        if(thisGroupAverageWeight > bestGroupAverageWeight) {
+            bestGroupAverageWeight = thisGroupAverageWeight;
+            bestGroupIndex = i;
+        }
+    }
+    ROS_INFO("Planner found %d path categories", (int)groups.size());
+
+    //construct a best path
+    vector<double> bestGroupCenter = groups[bestGroupIndex].weightedCenter();
+    vector<double> bestSteering(increments * PATH_STAGES, 0);
+    for(int s = 0; s < PATH_STAGES; s++) {
+        fill_n(bestSteering.begin() + s*increments, increments, bestGroupCenter[s]);
+    }
     sim_path bestPath = calculatePath(bestSteering);
 
-    desired_steer_angle = bestPath.angles[0];
+    desired_steer_angle = bestSteering[0];
     desired_velocity = bestPath.speeds[0];
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);

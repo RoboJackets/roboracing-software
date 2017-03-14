@@ -6,7 +6,7 @@ This repository contains [ROS](http://ros.org) packages for the [RoboJackets](ht
 
 [![Software Lead | Maintainer](https://img.shields.io/badge/Software%20Lead%20%7C%20Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
 
-[![Project Manager](https://img.shields.io/badge/Project%20Manager-Ransommed%20Adebayo-blue.svg)](https://github.com/radebayo)
+[![Project Manager](https://img.shields.io/badge/Project%20Manager-Ransomed%20Adebayo-blue.svg)](https://github.com/radebayo)
 
 ## Organization
 
@@ -42,9 +42,11 @@ The following files and folders enable our continuous integration system.
    
       From your home directory, or wherever you feel like keeping the libuvc source   
       ```
-      git clone git@github.com:ktossell/libuvc.git
+      git clone https://github.com/ktossell/libuvc
       cd libuvc
-      mkdir build && cd build
+      mkdir build
+      cd build
+      cmake ..
       make && sudo make install
       ```
    2. libuvc_ros - ROS API for libuvc
