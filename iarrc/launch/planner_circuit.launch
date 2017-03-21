@@ -1,14 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <node name="planner" pkg="avc" type="planner" output="screen" >
-        <!-- 15 deg and 30 deg, respectively -->
+    <node name="planner_iarrc" pkg="rr_common" type="planner" output="screen" >
+        <param name="obstacle_cloud_topic" value="/obstacles_img_transformed_cloud"/>
+
         <param name="steer_stddev"     type="double" value="0.261799" />
         <param name="max_steer_angle"  type="double" value="0.523599" />
-
-        <param name="path_iterations"  type="int"    value="700" />
-        <param name="max_speed"        type="double" value="1.5" />
+        <param name="path_iterations"  type="int"    value="300" />
+        <param name="max_speed"        type="double" value="0.5" />
         <param name="path_stage_time"  type="double" value="2.0" />
         <param name="path_stages"      type="int"    value="2" />
-        <param name="time_increment"   type="double" value="0.15" />
+        <param name="time_increment"   type="double" value="0.14" />
         <param name="collision_radius" type="double" value="0.4" />
 
         <param name="alternate_path_threshold"       value="0.5"/>

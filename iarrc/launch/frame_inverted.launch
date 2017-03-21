@@ -1,4 +1,0 @@
-<launch>
-    <node name="frame_inverted" pkg="iarrc" type="frame_inverted" output="screen" respawn="false">
-    </node>
-</launch>

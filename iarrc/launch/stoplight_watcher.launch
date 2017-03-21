@@ -1,5 +1,6 @@
 <launch>
   <node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen">
-        <param name="stoplight_topic" type="string" value="/light_change" />
+      <param name="stoplight_topic" type="string" value="/green_light" />
+      <param name="img_topic" type="string" value="/camera/image_rect" />
   </node>
 </launch>

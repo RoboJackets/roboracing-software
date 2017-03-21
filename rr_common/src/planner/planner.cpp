@@ -6,6 +6,8 @@ planner::planner() {
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
 
+    string obstacle_cloud_topic;
+
     pnh.getParam("steer_stddev", STEER_STDDEV);
     pnh.getParam("max_steer_angle", MAX_STEER_ANGLE);
     pnh.getParam("max_speed", MAX_SPEED);
@@ -14,13 +16,14 @@ planner::planner() {
     pnh.getParam("collision_radius", COLLISION_RADIUS);
     pnh.getParam("path_iterations", PATH_ITERATIONS);
     pnh.getParam("time_increment", TIME_INCREMENT);
+    pnh.getParam("obstacle_cloud_topic", obstacle_cloud_topic);
     pnh.getParam("alternate_path_threshold", ALT_PATH_THRESHOLD);
     pnh.getParam("connected_path_distance", CONNECTED_PATH_DIST);
 
-    map_sub = nh.subscribe("map", 1, &planner::mapCb, this);
-    speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
-    path_pub = nh.advertise<nav_msgs::Path>("path", 1);
+    map_sub = nh.subscribe(obstacle_cloud_topic, 1, &planner::mapCb, this);
+    speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
+    path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
     steering_gaussian = normal_distribution<double>(0, STEER_STDDEV);
     rand_gen = mt19937(std::random_device{}());

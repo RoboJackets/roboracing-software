@@ -1,4 +1,0 @@
-<launch>
-	<node name="steerer_circuit" pkg="iarrc" type="steerer_circuit" output="screen">
-	</node>
-</launch>

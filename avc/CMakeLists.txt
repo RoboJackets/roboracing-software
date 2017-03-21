@@ -51,5 +51,4 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/planner)
 add_subdirectory(src/mapper)
