@@ -11,11 +11,10 @@ using namespace cv;
 using uchar = unsigned char;
 
 Publisher img_pub;
+Publisher obstacle_pub;
 
-// image size: 480 x 640
-
-Mat mask;
-Mat mask_horizontal;
+//Mat mask;
+//Mat mask_horizontal;
 
 Mat findWhiteLines(const Mat& image) {
     Mat frame;
@@ -152,7 +151,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	
 	frame = cv_ptr->image;
 
-    frame = frame.mul(mask);
+//    frame = frame.mul(mask);
 
     Mat white_lines = findWhiteLines(frame);
 
@@ -165,11 +164,18 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     output = white_lines + blue_lines + yellow_lines + orange_blobs;
 
     sensor_msgs::Image outmsg;
-
     cv_ptr->image = output;
 	cv_ptr->encoding = "bgr8";
 	cv_ptr->toImageMsg(outmsg);
 	img_pub.publish(outmsg);
+
+    Mat output_gray;
+    cvtColor(output, output_gray, CV_BGR2GRAY);
+    sensor_msgs::Image outmsg2;
+    cv_ptr->image = output_gray;
+    cv_ptr->encoding = "mono8";
+    cv_ptr->toImageMsg(outmsg2);
+    obstacle_pub.publish(outmsg2);
 }
 
 int main(int argc, char** argv) {
@@ -179,25 +185,26 @@ int main(int argc, char** argv) {
     NodeHandle nh;
 
     //Blacks out front bumper from image
-    vector<Mat> mask_hsegments = {
-        Mat(40,205,CV_8UC3, CV_RGB(1,1,1)),
-        Mat::zeros(40,230,CV_8UC3),
-        Mat(40,205,CV_8UC3, CV_RGB(1,1,1))
-    };
+//    vector<Mat> mask_hsegments = {
+//        Mat(40,205,CV_8UC3, CV_RGB(1,1,1)),
+//        Mat::zeros(40,230,CV_8UC3),
+//        Mat(40,205,CV_8UC3, CV_RGB(1,1,1))
+//    };
+//
+//    hconcat(mask_hsegments, mask_horizontal);
+//    vector<Mat> mask_segments = {
+//        Mat::zeros(200,640,CV_8UC3),
+//        Mat(200,640,CV_8UC3, CV_RGB(1,1,1)),
+//        mask_horizontal,
+//        Mat::zeros(40,640,CV_8UC3)
+//    };
+//
+//    vconcat(mask_segments, mask);
 
-    hconcat(mask_hsegments, mask_horizontal);
-    vector<Mat> mask_segments = {
-        Mat::zeros(200,640,CV_8UC3),
-        Mat(200,640,CV_8UC3, CV_RGB(1,1,1)),
-        mask_horizontal,
-        Mat::zeros(40,640,CV_8UC3)
-    };
-
-    vconcat(mask_segments, mask);
-
-    ros::Subscriber img_saver_sub = nh.subscribe("/camera/image_raw", 1, ImageCB);
+    ros::Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
+    obstacle_pub = nh.advertise<sensor_msgs::Image>(string("/obstacles_img"), 1);
         
     spin();
 

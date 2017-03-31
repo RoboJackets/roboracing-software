@@ -1,5 +1,11 @@
 <launch>
-    <include file="$(find rr_platform)/launch/transform.launch"/>
+    <remap from="plan/speed" to="/speed"/>
+    <remap from="plan/steering" to="/steering"/>
+
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/camera/image_rect"/>
+    </node>
+
     <include file="$(find avc)/launch/mapper.launch"/>
-    <include file="$(find avc)/launch/planner.launch"/>
+    <include file="$(find avc)/launch/planner_avc.launch"/>
 </launch>

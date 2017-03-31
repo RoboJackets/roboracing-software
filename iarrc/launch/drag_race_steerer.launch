@@ -1,9 +1,0 @@
-<launch>
-
-	<!-- Dragrace Steerer node -->
-	<node name="drag_race_steerer" pkg="iarrc" type="drag_race_steerer" output="screen" respawn="false">
-		<param name="frame_topic" type="str" value="/joint_frame"/>
-		<param name="steer_topic" type="str" value="/steering"/>
-	</node>
-
-</launch>

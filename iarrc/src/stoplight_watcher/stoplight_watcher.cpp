@@ -117,15 +117,16 @@ int main(int argc, char* argv[]) {
 	ros::NodeHandle nh;
 	ros::NodeHandle nhp("~");
 
-	std::string img_topic;
-	nhp.param(std::string("img_topic"), img_topic, std::string("/ps3_eye/image_raw"));
+	std::string img_topic, stoplight_topic;
+	nhp.getParam(string("img_topic"), img_topic);
+    nhp.getParam("stoplight_topic", stoplight_topic);
 
-	ROS_INFO("Image topic:= %s", img_topic.c_str());
+	ROS_INFO("Stoplight watching %s", img_topic.c_str());
 
 	// Subscribe to ROS topic with callback
 	ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 	img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
-	bool_pub = nh.advertise<std_msgs::Bool>("/light_change",1);
+	bool_pub = nh.advertise<std_msgs::Bool>(stoplight_topic, 1);
 
 	green.data = false;
 

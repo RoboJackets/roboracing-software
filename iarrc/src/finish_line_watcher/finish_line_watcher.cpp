@@ -1,3 +1,9 @@
+/*
+ * Modified version of old speed_controller node which now
+ * publishes the number of times the robot has crossed the
+ * finish line
+ */
+
 #include <ros/ros.h>
 #include <ros/subscriber.h>
 #include <ros/publisher.h>
@@ -5,9 +11,8 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
-#include <iarrc/constants.hpp>
 #include <rr_platform/speed.h>
-#include <std_msgs/Bool.h>
+#include <std_msgs/Int8.h>
 
 using namespace std;
 using namespace cv;
@@ -16,18 +21,14 @@ using namespace ros;
 using uchar = unsigned char;
 
 Publisher debug_pub;
-Publisher speed_pub;
+Publisher crosses_pub;
 
 #define HIGH 1
 #define LOW 0
 
 int state = LOW;
 
-bool stoplight_state = false;
-
 int number_of_crosses = 0;
-
-bool flag = false;
 
 int getWidth(const Mat& image) {
 
@@ -103,15 +104,10 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     //ROS_INFO_STREAM("State: " << state);
 
     sensor_msgs::Image outmsg;
-
     cv_ptr->image = frame;
 	cv_ptr->encoding = "mono8";
 	cv_ptr->toImageMsg(outmsg);
 	debug_pub.publish(outmsg);
-}
-
-void StoplightCB(const std_msgs::BoolConstPtr& msg) {
-    stoplight_state = msg->data;
 }
 
 int main(int argc, char** argv) {
@@ -121,48 +117,23 @@ int main(int argc, char** argv) {
     NodeHandle nh;
     NodeHandle nhp("~");
 
-    Subscriber img_saver_sub = nh.subscribe("/colors_img", 1, ImageCB);
-    Subscriber stoplight_sub = nh.subscribe("/light_change", 1, StoplightCB);
-	
-	debug_pub = nh.advertise<sensor_msgs::Image>("/speed_debug_img", 1);
-    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
+    string img_topic;
+    nhp.getParam("img_topic", img_topic);
+    ROS_INFO("Finish line watching %s", img_topic.c_str());
 
-    int max_crosses;
-    nhp.param("max_crosses", max_crosses, int(1));
-    
-    int go_speed;
-    nhp.param("go_speed", go_speed, int(9));
-    ROS_INFO_STREAM("Go Speed is: " << go_speed);
+    Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
-    bool prev_stoplight_state = false;
-
-    bool should_be_moving = false;
+    crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
+    debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
 
     Rate rate(30);
     while(ros::ok()) {
-        if(!prev_stoplight_state && stoplight_state) {
-            should_be_moving = true;
-        }
-        prev_stoplight_state = stoplight_state;
-
-        if(number_of_crosses >= max_crosses) {
-            should_be_moving = false;
-        }
-
         //ROS_INFO_STREAM("Crosses: " << number_of_crosses);
-
-        rr_platform::speed speed_msg;
-        speed_msg.header.stamp = Time::now();
-
-        if(should_be_moving) {
-            speed_msg.speed = go_speed;
-        } else {
-            speed_msg.speed = 0;
-        }
-        speed_pub.publish(speed_msg);
+        std_msgs::Int8 intmsg;
+        intmsg.data = number_of_crosses;
+        crosses_pub.publish(intmsg);
    
         spinOnce();
-
         rate.sleep();
     }
 
