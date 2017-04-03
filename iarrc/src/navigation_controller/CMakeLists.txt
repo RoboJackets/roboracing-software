@@ -1,0 +1,2 @@
+add_executable(navigation_controller navigation_controller.cpp)
+target_link_libraries(navigation_controller ${catkin_LIBRARIES})

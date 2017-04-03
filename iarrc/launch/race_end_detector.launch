@@ -1,5 +1,5 @@
 <launch>
-  <node name="drag_race_end_detector" pkg="iarrc" type="drag_race_end_detector" output="screen">
-        <param name="img_topic" type="string" value="/ps3_eye/image_color" />
+  <node name="finish_line_watcher" pkg="iarrc" type="finish_line_watcher" output="screen">
+        <param name="img_topic" type="string" value="/colors_img" />
   </node>
 </launch>
