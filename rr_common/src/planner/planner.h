@@ -1,4 +1,6 @@
-#define _USE_MATH_DEFINES //for cmath
+#ifndef RR_COMMON_PLANNER_H
+#define RR_COMMON_PLANNER_H
+
 #include <cmath>
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
@@ -14,6 +16,9 @@
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <random>
+
+#include "path_structs.h"
+#include "density_cluster.h"
 
 
 class planner {
@@ -47,46 +52,19 @@ private:
 	double desired_steer_angle;
 	double desired_velocity;
 
-	struct pose
-	{
-		double x;
-		double y;
-		double theta;
-	};
 
-	struct sim_path
-	{
-		std::vector<pose> poses;
-		std::vector<double> speeds;
-	};
 
-	struct WeightedSteeringVec
-	{
-		std::vector<double> steers;
-		double weight;
-	};
+	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(path::pose &p);
+    static bool steeringVecCompare(const path::WeightedSteeringVec &wsv1, const path::WeightedSteeringVec &wsv2);
 
-	struct SteeringGroup
-	{
-		std::vector<WeightedSteeringVec> weightedSteers;
-		double weightTotal;
-
-		void add(const WeightedSteeringVec &wsv);
-		void addAll(const SteeringGroup &sg);
-		std::vector<double> weightedCenter();
-		double averageWeight();
-        bool operator==(SteeringGroup other);
-	};
-
-	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose &p);
-    static bool steeringVecCompare(const WeightedSteeringVec &wsv1, const WeightedSteeringVec &wsv2);
-
-	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
+	path::pose calculateStep(double speed, double steer_angle, double timestep, path::pose pStart = path::pose{0,0,0});
 	double steeringToSpeed(double angle);
 	double steeringSample();
-	sim_path calculatePath(std::vector<double> angles);
-	double calculatePathCost(sim_path path, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
-	double costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
+	path::path calculatePath(std::vector<double> angles);
+	double calculatePathCost(path::path path, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
+	double costAtPose(path::pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
 
 };
+
+#endif //RR_COMMON_PLANNER_H
