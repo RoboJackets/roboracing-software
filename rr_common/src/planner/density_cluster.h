@@ -2,12 +2,12 @@
 #define RR_COMMON_DENSITY_CLUSTER_H
 
 #include <cmath>
+#include "opencv2/flann/miniflann.hpp"
 
 #include "path_structs.h"
 
 void cluster(const std::vector<path::WeightedSteeringVec> &weightedSteerVecsFiltered,
-             std::vector<path::SteeringGroup> &outGroups, const double connectRadius,
+             std::vector<path::SteeringGroup> &outGroups, const float connectRadius,
              const int minConnections);
-double distance(std::vector<double> vec1, std::vector<double> vec2);
 
 #endif //RR_COMMON_DENSITY_CLUSTER_H

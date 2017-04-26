@@ -65,7 +65,7 @@ double planner::calculatePathCost(path::path path,
     return cost;
 }
 
-path::path planner::calculatePath(vector<double> angles) {
+path::path planner::calculatePath(vector<float> angles) {
     path::path out;
     out.poses.resize(angles.size());
     out.speeds.resize(angles.size());
@@ -111,12 +111,6 @@ geometry_msgs::PoseStamped planner::plannerPoseToPoseStamped(path::pose &pp) {
     return ps;
 }
 
-//use this to sort WeightedSteeringVecs by first steer value in increasing order
-bool planner::steeringVecCompare(const path::WeightedSteeringVec &wsv1,
-                                 const path::WeightedSteeringVec &wsv2) {
-    return wsv1.steers[0] < wsv2.steers[0];
-}
-
 void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*map, pcl_pc2);
@@ -145,7 +139,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     double bestWeight = 0;
     int increments = PATH_STAGE_TIME / TIME_INCREMENT;
     for(int i = 0; i < PATH_ITERATIONS; i++) {
-        vector<double> steerPath(increments * PATH_STAGES, 0);
+        vector<float> steerPath(increments * PATH_STAGES, 0);
         path::WeightedSteeringVec wsv;
         for(int s = 0; s < PATH_STAGES; s++) {
             angle = steeringSample();
@@ -185,8 +179,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     }
 
     //construct a best path
-    vector<double> bestGroupCenter = groups[bestGroupIndex].weightedCenter();
-    vector<double> bestSteering(increments * PATH_STAGES, 0);
+    vector<float> bestGroupCenter = groups[bestGroupIndex].weightedCenter();
+    vector<float> bestSteering(increments * PATH_STAGES, 0);
     for(int s = 0; s < PATH_STAGES; s++) {
         fill_n(bestSteering.begin() + s*increments, increments, bestGroupCenter[s]);
     }

@@ -22,8 +22,8 @@ bool path::SteeringGroup::operator==(SteeringGroup other) {
 }
 
 // find the weighted average steering values in a locally connected set
-vector<double> path::SteeringGroup::weightedCenter() {
-    vector<double> sums;
+vector<float> path::SteeringGroup::weightedCenter() {
+    vector<float> sums;
     for(int j = 0; j < weightedSteers[0].steers.size(); j++) sums.push_back(0);
 
     for(int i = 0; i < weightedSteers.size(); i++) {
@@ -34,7 +34,7 @@ vector<double> path::SteeringGroup::weightedCenter() {
     return sums;
 }
 
-double path::SteeringGroup::averageWeight() {
+float path::SteeringGroup::averageWeight() {
     return (double)weightTotal / weightedSteers.size();
 }
 

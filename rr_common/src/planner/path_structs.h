@@ -3,32 +3,34 @@
 
 #include <vector>
 
+typedef std::vector<float> point_t;
+
 namespace path
 {
     struct pose {
-        double x;
-        double y;
-        double theta;
+        float x;
+        float y;
+        float theta;
     };
 
     struct path {
         std::vector<pose> poses;
-        std::vector<double> speeds;
+        std::vector<float> speeds;
     };
 
     struct WeightedSteeringVec {
-        std::vector<double> steers;
-        double weight;
+        point_t steers;
+        float weight;
     };
 
     struct SteeringGroup {
         std::vector<WeightedSteeringVec> weightedSteers;
-        double weightTotal;
+        float weightTotal;
 
         void add(const WeightedSteeringVec &wsv);
         void addAll(const SteeringGroup &sg);
-        std::vector<double> weightedCenter();
-        double averageWeight();
+        point_t weightedCenter();
+        float averageWeight();
         bool operator==(SteeringGroup other);
     };
 }

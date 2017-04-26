@@ -60,7 +60,7 @@ private:
 	path::pose calculateStep(double speed, double steer_angle, double timestep, path::pose pStart = path::pose{0,0,0});
 	double steeringToSpeed(double angle);
 	double steeringSample();
-	path::path calculatePath(std::vector<double> angles);
+	path::path calculatePath(std::vector<float> angles);
 	double calculatePathCost(path::path path, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	double costAtPose(path::pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
 	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
