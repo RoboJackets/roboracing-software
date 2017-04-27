@@ -2,6 +2,7 @@
 #define RR_COMMON_DENSITY_CLUSTER_H
 
 #include <cmath>
+#include <iostream>
 #include "opencv2/flann/miniflann.hpp"
 
 #include "path_structs.h"

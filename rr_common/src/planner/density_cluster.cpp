@@ -64,6 +64,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
             clusterId++;
             // Cautions: don't use iterators because indices[] is appended to in the loop
             for(int j = 0; j < nNeighbors; j++) {
+                // cout << "cluster " << clusterId << ", nNeighbors = " << nNeighbors << endl;
                 int &index = indices[j];
                 if(groupMembership[index] == 0) {
                     groupMembership[index] = clusterId;
