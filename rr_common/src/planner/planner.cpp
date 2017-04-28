@@ -24,7 +24,7 @@ planner::planner() {
     speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
     path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
-    steer_instructions_pub = nh.advertise<geometry_msgs::Point>("plan_cost", 1);
+    steer_groups_pub = nh.advertise<std_msgs::Float32MultiArray>("steer_groups", 1);
 
     steering_gaussian = normal_distribution<double>(0, STEER_STDDEV);
     rand_gen = mt19937(std::random_device{}());
@@ -153,15 +153,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         weightedSteerVecs.push_back(wsv);
 
         if(wsv.weight > bestWeight) bestWeight = wsv.weight;
-
-        // planner_plotter additions
-        if(steer_instructions_pub.getNumSubscribers() != 0) {
-            geometry_msgs::Point p;
-            p.x = steerPath[0];
-            p.y = steerPath[steerPath.size() / 2 + 1];
-            p.z = wsv.weight;
-            steer_instructions_pub.publish(p);
-        }
     }
     //ROS_INFO("best weight %f", bestWeight);
 
@@ -212,6 +203,22 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     pathMsg.header.frame_id = "base_footprint";
     path_pub.publish(pathMsg);
+
+    // planner_plotter additions
+    if(steer_groups_pub.getNumSubscribers() > 0) {
+        std_msgs::Float32MultiArray arrayMsg;
+        int i = 0;
+        for(int groupIndex = 0; groupIndex < groups.size(); groupIndex++) {
+            for(const auto& sample : groups[groupIndex].weightedSteers) {
+                arrayMsg.data.push_back((float) groupIndex);
+                arrayMsg.data.push_back(sample.steers[0]);
+                arrayMsg.data.push_back(sample.steers[1]);
+                arrayMsg.data.push_back(sample.weight);
+                i += 4;
+            }
+        }
+        steer_groups_pub.publish(arrayMsg);
+    }
 }
 
 
