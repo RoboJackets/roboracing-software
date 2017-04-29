@@ -51,12 +51,12 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     flann::Matrix<float> dists(new float[nSamples], 1, nSamples);
     flann::Matrix<float> query(new float[nDims], 1, nDims);
 
+    vector<int> clusterCheckQueue;
+
     // do a DBSCAN-like clustering. Roughly following Wikipedia pseudocode
     for(int i = 0; i < nSamples; i++) {
 //        fprintf(stderr, "groupMembership[%d] = %d\n", i, groupMembership[i]);
-        if( !(
-            groupMembership[i] == POINT_UNDISCOVERED
-        )) {
+        if(groupMembership[i] != POINT_UNDISCOVERED) {
             continue;
         }
 
@@ -93,11 +93,13 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
         // new cluster
         clusterId++;
 
-//        fprintf(stderr, "making new cluster\n");
-
         for(int j = 0; j < nNeighbors; j++) {
-            // cout << "cluster " << clusterId << ", nNeighbors = " << nNeighbors << endl;
-            int index = indices[0][j];
+            clusterCheckQueue.push_back(indices[0][j]);
+        }
+
+        for(int j = 0; j < clusterCheckQueue.size(); j++) {
+//            cout << "cluster " << clusterId << ", nNeighbors = " << nNeighbors << endl;
+            int index = clusterCheckQueue[j];
 //            fprintf(stderr, "j = %d, index = %d\n", j, index);
             if(groupMembership[index] == POINT_UNDISCOVERED
                     || groupMembership[index] == POINT_DISCOVERED) {
@@ -114,9 +116,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
 
                 int nNeighborsInner = 0;
                 while(nNeighborsInner < nSamples && indicesInner[0][nNeighborsInner] != -1) {
-                    if(groupMembership[indicesInner[0][nNeighborsInner]] == POINT_UNDISCOVERED) {
-                        groupMembership[indicesInner[0][nNeighborsInner]] = POINT_DISCOVERED;
-                    }
                     nNeighborsInner++;
                 }
 
@@ -126,10 +125,9 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
                     for(int ii = 0; ii < nNeighborsInner; ii++) {
                         int indexInner = indicesInner[0][ii];
                         if(groupMembership[indexInner] == POINT_UNDISCOVERED) {
-//                            fprintf(stderr, "discovered index %d, nNeighbors = %d/%d\n", indexInner, nNeighbors, nSamples);
+//                            fprintf(stderr, "discovered index %d, queue size = %lu\n", indexInner, clusterCheckQueue.size());
                             groupMembership[indexInner] = POINT_DISCOVERED;
-                            indices[0][nNeighbors] = indexInner;
-                            nNeighbors++;
+                            clusterCheckQueue.push_back(indexInner);
                         }
 //                            float dist = distance(queryInner, weightedSteerVecs[indicesInner[ii]].steers);
 //                            if(dist > radius) {
