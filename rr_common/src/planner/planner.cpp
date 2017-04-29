@@ -19,6 +19,7 @@ planner::planner() {
     pnh.getParam("obstacle_cloud_topic", obstacle_cloud_topic);
     pnh.getParam("alternate_path_threshold", ALT_PATH_THRESHOLD);
     pnh.getParam("connected_path_distance", CONNECTED_PATH_DIST);
+    pnh.getParam("min_cluster_pts", MIN_CLUSTER_PTS);
 
     map_sub = nh.subscribe(obstacle_cloud_topic, 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
@@ -165,7 +166,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     }
 
     vector<path::SteeringGroup> groups;
-    cluster(weightedSteerVecsFiltered, groups, CONNECTED_PATH_DIST, 0);
+    cluster(weightedSteerVecsFiltered, groups, CONNECTED_PATH_DIST, MIN_CLUSTER_PTS);
     ROS_INFO("Planner found %d path categories", (int)groups.size());
 
     // find the group with highest average weight and use its steering angles
@@ -179,6 +180,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
     }
 
+//    fprintf(stderr, "checkpoint 1\n");
+
     //construct a best path
     vector<float> bestGroupCenter = groups[bestGroupIndex].weightedCenter();
     vector<float> bestSteering(increments * PATH_STAGES, 0);
@@ -186,6 +189,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         fill_n(bestSteering.begin() + s*increments, increments, bestGroupCenter[s]);
     }
     path::path bestPath = calculatePath(bestSteering);
+
+//    fprintf(stderr, "checkpoint 2\n");
 
     desired_steer_angle = bestSteering[0];
     desired_velocity = bestPath.speeds[0];
@@ -197,12 +202,16 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 
+//    fprintf(stderr, "checkpoint 3\n");
+
     nav_msgs::Path pathMsg;
     std::transform(bestPath.poses.begin(), bestPath.poses.end(),
                    back_inserter(pathMsg.poses), plannerPoseToPoseStamped);
 
     pathMsg.header.frame_id = "base_footprint";
     path_pub.publish(pathMsg);
+
+//    fprintf(stderr, "checkpoint 4\n");
 
     // planner_plotter additions
     if(steer_groups_pub.getNumSubscribers() > 0) {
@@ -219,6 +228,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
         steer_groups_pub.publish(arrayMsg);
     }
+
+//    fprintf(stderr, "checkpoint 5\n");
 }
 
 

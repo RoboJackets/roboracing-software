@@ -45,7 +45,8 @@ private:
 	int PATH_STAGES; //number of control values per path
 	double COLLISION_RADIUS; //minimum acceptable distance to obstacle
 	double ALT_PATH_THRESHOLD; //proportion of the max weight needed to use a path
-	double CONNECTED_PATH_DIST; //euclidean distance between two "similar enough" paths
+	double CONNECTED_PATH_DIST; //L2 distance between two "similar enough" paths
+	int MIN_CLUSTER_PTS; //number of similar paths needed to justify a cluster
 
 	double deltaX;
 	double deltaY;
