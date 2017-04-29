@@ -46,7 +46,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     int clusterId = 0;
     flann::SearchParams searchParams;
 
-    //initialize output arrays for radius searches
+    // initialize output arrays for radius searches
     flann::Matrix<int> indices(new int[nSamples], 1, nSamples);
     flann::Matrix<int> indicesInner(new int[nSamples], 1, nSamples);
     flann::Matrix<float> dists(new float[nSamples], 1, nSamples);
@@ -56,7 +56,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
 
     // do a DBSCAN-like clustering. Roughly following Wikipedia pseudocode
     for(int i = 0; i < nSamples; i++) {
-//        fprintf(stderr, "groupMembership[%d] = %d\n", i, groupMembership[i]);
         if(groupMembership[i] != POINT_UNDISCOVERED) {
             continue;
         }
@@ -66,81 +65,73 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
             query[0][d] = samples[i][d];
         }
 
-//        for(int j = 0; j < nSamples; j++) {
-//            fprintf(stderr, "before search: indices[%d] = %d\n", j, indices[j][0]);
-//        }
-
-        // do the top-level radius search
+        // do the initial radius search
         flannIndex.radiusSearch(query, indices, dists, radiusSqr, searchParams);
 
-        // figure out how many results we got
+        // count the results. The indices list is terminated with -1
         int nNeighbors = 0;
         while(nNeighbors < nSamples && indices[0][nNeighbors] != -1) {
             nNeighbors++;
         }
-
-//        for(int j = 0; j < nSamples; j++) {
-//            fprintf(stderr, "after search: indices[%d] = %d\n", j, indices[0][j]);
-//        }
-
-//        cout << "number of radius search results is " << nNeighbors << endl;
+        // cout << "number of radius search results is " << nNeighbors << endl;
 
         if(nNeighbors < minConnections) {
-            // not enough neighbors. mark as noise
+            // not enough neighbors. Mark as noise
             groupMembership[i] = POINT_NOISE;
             continue;
         }
 
-        // new cluster
+        // we have a new cluster
         clusterId++;
 
+        // transfer nearby points to cluster queue
+        clusterCheckQueue.clear();
         for(int j = 0; j < nNeighbors; j++) {
             clusterCheckQueue.push_back(indices[0][j]);
         }
 
+        /*
+         * Iterate through the queue of points, doing a radius search from each.
+         * Any undiscovered/unvisited results of these searches are added to the
+         * queue. This will find all points in a cluster.
+         */
         for(int j = 0; j < clusterCheckQueue.size(); j++) {
-//            cout << "cluster " << clusterId << ", nNeighbors = " << nNeighbors << endl;
             int index = clusterCheckQueue[j];
-//            fprintf(stderr, "j = %d, index = %d\n", j, index);
-            if(groupMembership[index] == POINT_UNDISCOVERED
-                    || groupMembership[index] == POINT_DISCOVERED) {
-                groupMembership[index] = clusterId;
 
-                // copy data into query matrix
-                for(int d = 0; d < nDims; d++) {
-                    query[0][d] = samples[index][d];
-                }
+            // discovered or undiscovered, as opposed to noise or a group ID
+            bool exploreThis = groupMembership[index] == POINT_UNDISCOVERED
+                            || groupMembership[index] == POINT_DISCOVERED;
+            if(!exploreThis) {
+                continue;
+            }
 
-                flannIndex.radiusSearch(query, indicesInner, dists, radiusSqr, searchParams);
+            groupMembership[index] = clusterId;
 
-//                fprintf(stderr, "finished inner radius search\n");
+            // copy data into query matrix
+            for(int d = 0; d < nDims; d++) {
+                query[0][d] = samples[index][d];
+            }
 
-                int nNeighborsInner = 0;
-                while(nNeighborsInner < nSamples && indicesInner[0][nNeighborsInner] != -1) {
-                    nNeighborsInner++;
-                }
+            flannIndex.radiusSearch(query, indicesInner, dists, radiusSqr, searchParams);
 
-//                fprintf(stderr, "nNeighborsInner = %d\n", nNeighborsInner);
+            int nNeighborsInner = 0;
+            while(nNeighborsInner < nSamples && indicesInner[0][nNeighborsInner] != -1) {
+                nNeighborsInner++;
+            }
 
-                if(nNeighborsInner >= minConnections) {
-                    for(int ii = 0; ii < nNeighborsInner; ii++) {
-                        int indexInner = indicesInner[0][ii];
-                        if(groupMembership[indexInner] == POINT_UNDISCOVERED) {
-//                            fprintf(stderr, "discovered index %d, queue size = %lu\n", indexInner, clusterCheckQueue.size());
-                            groupMembership[indexInner] = POINT_DISCOVERED;
-                            clusterCheckQueue.push_back(indexInner);
-                        }
-//                            float dist = distance(queryInner, weightedSteerVecs[indicesInner[ii]].steers);
-//                            if(dist > radius) {
-//                                cout << dist << endl;
-//                            }
+            if(nNeighborsInner >= minConnections) {
+                for(int ii = 0; ii < nNeighborsInner; ii++) {
+                    int indexInner = indicesInner[0][ii];
+                    if(groupMembership[indexInner] == POINT_UNDISCOVERED) {
+                        // fprintf(stderr, "discovered index %d, queue size = %lu\n", indexInner, clusterCheckQueue.size());
+                        groupMembership[indexInner] = POINT_DISCOVERED;
+                        clusterCheckQueue.push_back(indexInner);
                     }
                 }
             }
+
         }
     }
-
-//    fprintf(stderr, "starting grouping. Allocating %d\n", clusterId);
 
     outGroups.resize(clusterId); //clusters are numbered 1..n
     for(int i = 0; i < nSamples; i++) {
@@ -148,7 +139,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
             (outGroups[groupMembership[i] - 1]).add(weightedSteerVecs[i]);
         }
     }
-//    fprintf(stderr, "returning from density cluster\n");
 }
 
 
