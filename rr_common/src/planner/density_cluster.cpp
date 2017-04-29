@@ -42,6 +42,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     fill_n(groupMembership.begin(), nSamples, POINT_UNDISCOVERED);
 
     // set radius search params
+    float radiusSqr = connectRadius * connectRadius;
     int clusterId = 0;
     flann::SearchParams searchParams;
 
@@ -70,7 +71,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
 //        }
 
         // do the top-level radius search
-        flannIndex.radiusSearch(query, indices, dists, connectRadius, searchParams);
+        flannIndex.radiusSearch(query, indices, dists, radiusSqr, searchParams);
 
         // figure out how many results we got
         int nNeighbors = 0;
@@ -110,7 +111,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
                     query[0][d] = samples[index][d];
                 }
 
-                flannIndex.radiusSearch(query, indicesInner, dists, connectRadius, searchParams);
+                flannIndex.radiusSearch(query, indicesInner, dists, radiusSqr, searchParams);
 
 //                fprintf(stderr, "finished inner radius search\n");
 
