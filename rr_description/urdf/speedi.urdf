@@ -226,7 +226,7 @@
                     <format>R8G8B8</format>
                 </image>
                 <clip>
-                    <near>0.1</near>
+                    <near>0.05</near>
                     <far>100</far>
                 </clip>
             </camera>
@@ -288,7 +288,7 @@
     <joint name="chassis_to_left_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_left"/>
-        <origin xyz="0.33246 0.14366 0" rpy="0 0 0"/>
+        <origin xyz="0.34 0.14366 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="-0.366519" upper="0.366519" effort="100000.0" velocity="1000000.0"/>
     </joint>
@@ -302,7 +302,7 @@
     <joint name="chassis_to_right_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_right"/>
-        <origin xyz="0.33246 -0.14366 0" rpy="0 0 0"/>
+        <origin xyz="0.34 -0.14366 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="-0.366519" upper="0.366519" effort="1000.0" velocity="1000.0"/>
     </joint>
@@ -316,9 +316,9 @@
     <joint name="cam_chassis_height" type="prismatic">
         <parent link="chassis"/>
         <child link="camera_base"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0.21793 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit lower="0.274" upper="0.374" effort="1000.0" velocity="1000.0"/>
+        <limit lower="0.1" upper="0.375" effort="1000.0" velocity="1000.0"/>
     </joint>
 
     <joint name="camera_tilt" type="revolute">
@@ -358,10 +358,10 @@
     <transmission name="trans_back_left">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="axle_to_left_wheel">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor_left">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -369,10 +369,10 @@
     <transmission name="trans_back_right">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="axle_to_right_wheel">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor_right">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -380,10 +380,10 @@
     <transmission name="left_steering_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="chassis_to_left_steering">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="left_steer_motor">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -391,10 +391,10 @@
     <transmission name="right_steering_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="chassis_to_right_steering">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="right_steer_motor">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -402,10 +402,10 @@
     <transmission name="cam_height_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="cam_chassis_height">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="cam_height_motor">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -413,10 +413,10 @@
     <transmission name="cam_tilt_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="camera_tilt">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="cam_tilt_motor">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
