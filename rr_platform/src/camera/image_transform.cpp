@@ -62,7 +62,7 @@ void loadCameraPoseFromTf() {
 
     double roll, pitch, yaw;
     tf::Matrix3x3(qTFCamBase).getRPY(roll, pitch, yaw);
-    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
+//    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
 
     cam_mount_angle = pitch;
     cam_height = psDstBase.pose.position.z;
@@ -70,7 +70,7 @@ void loadCameraPoseFromTf() {
 }
 
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-    ROS_INFO("called fovCallback");
+//    ROS_INFO("called fovCallback");
     double fx = msg->P[0]; //horizontal focal length of rectified image, in px
     double fy = msg->P[5]; //vertical focal length
     imageSize = Size(msg->width, msg->height);
@@ -85,6 +85,8 @@ void loadCameraFOV() {
         spinOnce();
         Duration(0.05).sleep();
     }
+    ROS_INFO("Using horizontal FOV %f and vertical FOV %f",
+             camera_fov_horizontal, camera_fov_vertical);
     nh_temp.shutdown();
 }
 

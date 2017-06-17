@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         ros::spinOnce();
         updateState();
-        ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
+        // ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
 
         rr_platform::speed speedMsg;
         speedMsg.speed = speed;

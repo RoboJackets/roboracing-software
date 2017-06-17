@@ -11,7 +11,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     // measure number of samples and dimensionality (# of path segments)
     int nSamples = weightedSteerVecs.size();
     int nDims = weightedSteerVecs[0].steers.size();
-    cout << nSamples << " samples, " << nDims << " dims" << endl;
+//    cout << nSamples << " samples, " << nDims << " dims" << endl;
 
     // fill flann-format sample matrix
     // (weights still available in weightedSteerVecs)
@@ -124,7 +124,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
         }
     }
 
-    cout << "clusterId = " << clusterId << endl;
+//    cout << "clusterId = " << clusterId << endl;
     outGroups.resize(clusterId); //clusters are numbered 1..n
     for(int i = 0; i < nSamples; i++) {
         if(groupMembership[i] > 0) {
