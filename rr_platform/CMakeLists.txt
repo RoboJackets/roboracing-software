@@ -34,7 +34,7 @@ add_message_files(
     FILES
     speed.msg
     steering.msg
-    camera_geometry.msg
+    camera_pose.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -78,6 +78,6 @@ add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 
-add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
-target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
-add_dependencies(speedi_joint_updater rr_platform_generate_messages_cpp)
+add_executable(speedi_joint_controller src/speedi_joint_controller.cpp)
+target_link_libraries(speedi_joint_controller ${catkin_LIBRARIES})
+add_dependencies(speedi_joint_controller rr_platform_generate_messages_cpp)

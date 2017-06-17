@@ -11,6 +11,7 @@ using namespace cv;
 using uchar = unsigned char;
 
 Publisher img_pub;
+Publisher obstacle_pub;
 
 // image size: 480 x 640
 
@@ -164,11 +165,18 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     output = white_lines + blue_lines + yellow_lines + orange_blobs;
 
     sensor_msgs::Image outmsg;
-
     cv_ptr->image = output;
 	cv_ptr->encoding = "bgr8";
 	cv_ptr->toImageMsg(outmsg);
 	img_pub.publish(outmsg);
+
+    Mat output_gray;
+    cvtColor(output, output_gray, CV_BGR2GRAY);
+    sensor_msgs::Image outmsg2;
+    cv_ptr->image = output_gray;
+    cv_ptr->encoding = "mono8";
+    cv_ptr->toImageMsg(outmsg2);
+    obstacle_pub.publish(outmsg2);
 }
 
 int main(int argc, char** argv) {
@@ -185,9 +193,10 @@ int main(int argc, char** argv) {
 
     vconcat(mask_segments, mask);
 
-    ros::Subscriber img_saver_sub = nh.subscribe("/ps3_eye/image_raw", 1, ImageCB);
+    ros::Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, ImageCB);
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
+    obstacle_pub = nh.advertise<sensor_msgs::Image>(string("/obstacles_img"), 1);
         
     spin();
 

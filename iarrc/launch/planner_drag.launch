@@ -12,7 +12,8 @@
         <param name="time_increment"   type="double" value="0.14" />
         <param name="collision_radius" type="double" value="0.4" />
 
-        <param name="alternate_path_threshold"       value="0.5"/>
-        <param name="connected_path_distance"        value="0.1"/>
+        <param name="alternate_path_threshold"       value="0.7"/>
+        <param name="connected_path_distance"        value="0.15"/>
+        <param name="min_cluster_pts"                value="1"/>
     </node>
 </launch>

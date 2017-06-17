@@ -14,5 +14,6 @@
 
         <param name="alternate_path_threshold"       value="0.5"/>
         <param name="connected_path_distance"        value="0.1"/>
+        <param name="min_cluster_pts"                value="8"/>
     </node>
 </launch>

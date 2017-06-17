@@ -4,16 +4,6 @@ using namespace std;
 using namespace path;
 
 
-//return n-dimensional euclidean distance. Used for connecting steering set vectors
-static float distance(point_t vec1, point_t vec2) {
-    float sum = 0;
-    for(int i = 0; i < vec1.size(); i++) {
-        sum += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
-    }
-    return sqrt(sum);
-}
-
-
 void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
          vector<SteeringGroup> &outGroups,
          const float connectRadius, const int minConnections)
@@ -21,6 +11,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     // measure number of samples and dimensionality (# of path segments)
     int nSamples = weightedSteerVecs.size();
     int nDims = weightedSteerVecs[0].steers.size();
+    cout << nSamples << " samples, " << nDims << " dims" << endl;
 
     // fill flann-format sample matrix
     // (weights still available in weightedSteerVecs)
@@ -133,6 +124,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
         }
     }
 
+    cout << "clusterId = " << clusterId << endl;
     outGroups.resize(clusterId); //clusters are numbered 1..n
     for(int i = 0; i < nSamples; i++) {
         if(groupMembership[i] > 0) {

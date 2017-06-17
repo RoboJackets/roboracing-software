@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
 	
 	img_pub = nh.advertise<sensor_msgs::Image>(string("/colors_img"), 1);
     obstacle_pub = nh.advertise<sensor_msgs::Image>(string("/obstacles_img"), 1);
-        
+
     spin();
 
     return 0;
