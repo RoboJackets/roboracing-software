@@ -41,4 +41,7 @@
   <run_depend>laser_geometry</run_depend>
   <run_depend>image_transport</run_depend>
 
+  <export>
+    <nodelet plugin="nodelet_descriptions.xml"/>
+  </export>
 </package>
