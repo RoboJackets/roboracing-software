@@ -21,21 +21,30 @@ public:
     
     void runSelfTest(std::array<float,6 > &results);
     
-    void calibrate();
-    
     void initialize();
 
-    void initializeMagnetometer();
+    void getAccel(double &x, double &y, double &z);
 
-    void getAres();
-    void getGres();
-    void getMres();
+    void getGyro(double &x, double &y, double &z);
 
-    void readAccelData(std::array<int16_t, 3> &data);
+    void getMag(double &x, double &y, double &z);
 
-    void readGyroData(std::array<int16_t, 3> &data);
+    void getTemp(double &temperature);
 
-    void readMagData(std::array<int16_t, 3> &data);
+private:
+    mraa::I2c _i2c;
+    
+    bool _whoAmIPassed = false;
+    
+    std::array<float, 3> gyroBias;
+    std::array<float, 3> accelBias;
+    std::array<float, 3> magBias;
+    std::array<float, 3> magScale;
+
+    uint8_t _Gscale = GFS_250DPS;
+    uint8_t _Ascale = AFS_2G;
+    uint8_t _Mscale = MFS_16BITS;
+    uint8_t _Mmode = M_8HZ;
 
     enum Ascale {
         AFS_2G = 0,
@@ -65,23 +74,26 @@ public:
     float gRes;
     float mRes;
 
-private:
-    mraa::I2c _i2c;
-    
-    bool _whoAmIPassed = false;
-    
-    std::array<float, 3> gyroBias;
-    std::array<float, 3> accelBias;
-    std::array<float, 3> magBias;
-    std::array<float, 3> magScale;
-
-    uint8_t _Gscale = GFS_250DPS;
-    uint8_t _Ascale = AFS_2G;
-    uint8_t _Mscale = MFS_16BITS;
-    uint8_t _Mmode = M_8HZ;
-
     std::array<float, 3> factoryMagCalibration;
     std::array<float, 3> factoryMagBias;
+
+    void getAres();
+    void getGres();
+    void getMres();
+
+    void readAccelData(std::array<int16_t, 3> &data);
+
+    void readGyroData(std::array<int16_t, 3> &data);
+
+    void readMagData(std::array<int16_t, 3> &data);
+
+    void readTempData(uint16_t &data);
+
+    void calibrate();
+
+    void initializeMagnetometer();
+
+    void initializeAccelAndGyro();
     
     // Useful constants
     static constexpr uint8_t MPU9250_ADDRESS = 0b1101000;
@@ -95,11 +107,11 @@ private:
      * https://cdn.sparkfun.com/assets/learn_tutorials/5/5/0/MPU-9250-Register-Map.pdf
      */
     static constexpr uint8_t SELF_TEST_X_GYRO = 0;
-    static constexpr uint8_t SELF_TEST_Y_GYRO = 0;
-    static constexpr uint8_t SELF_TEST_Z_GYRO = 0;
-    static constexpr uint8_t SELF_TEST_X_ACCEL = 0;
-    static constexpr uint8_t SELF_TEST_Y_ACCEL = 0;
-    static constexpr uint8_t SELF_TEST_Z_ACCEL = 0;
+    static constexpr uint8_t SELF_TEST_Y_GYRO = 1;
+    static constexpr uint8_t SELF_TEST_Z_GYRO = 2;
+    static constexpr uint8_t SELF_TEST_X_ACCEL = 13;
+    static constexpr uint8_t SELF_TEST_Y_ACCEL = 14;
+    static constexpr uint8_t SELF_TEST_Z_ACCEL = 15;
     static constexpr uint8_t XG_OFFSET_H = 19;
     static constexpr uint8_t XG_OFFSET_L = 20;
     static constexpr uint8_t YG_OFFSET_H = 21;

@@ -8,13 +8,21 @@ MPU9250::MPU9250(uint8_t i2c_bus)
     : _i2c(i2c_bus)
 {
     _i2c.address(MPU9250_ADDRESS);
-    // Check WhoAmI register to ensure communication is working
+
+    // Check MPU9250 WhoAmI register to ensure communication is working
     auto whoAmIVal = _i2c.readReg(MPU9250_WHO_AM_I);
     if(whoAmIVal != MPU9250_WHO_AM_I_VAL) {
         cerr << "Recieved unexpected value (" << static_cast<int>(whoAmIVal) << ") from MPU9250's \"Who Am I\" register." << endl;
         return;
     }
 
+    // Put MPU9250 auxiliary I2C port into bypass (pass-through) mode
+    // This allows direct communication to the AK8963 magnetometer
+    auto current_config = _i2c.readReg(INT_PIN_CFG);
+    current_config |= 0b00000010;
+    _i2c.writeReg(INT_PIN_CFG, current_config);
+
+    // Check AK8963 WhoAmI register to ensure communication is working
     _i2c.address(AK8963_ADDRESS);
     whoAmIVal = _i2c.readReg(AK8963_WIA);
     if(whoAmIVal != AK8963_WHO_AM_I_VAL) {
@@ -23,6 +31,40 @@ MPU9250::MPU9250(uint8_t i2c_bus)
     }
     
     _whoAmIPassed = true;
+
+    getAres();
+    getGres();
+    getMres();
+}
+
+void MPU9250::getAccel(double &x, double &y, double &z) {
+    array<int16_t, 3> raw_data;
+    readAccelData(raw_data);
+    x = raw_data[0] * aRes;
+    y = raw_data[1] * aRes;
+    z = raw_data[2] * aRes;
+}
+
+void MPU9250::getGyro(double &x, double &y, double &z) {
+    array<int16_t, 3> raw_data;
+    readGyroData(raw_data);
+    x = raw_data[0] * gRes;
+    y = raw_data[1] * gRes;
+    z = raw_data[2] * gRes;
+}
+
+void MPU9250::getMag(double &x, double &y, double &z) {
+    array<int16_t, 3> raw_data;
+    readMagData(raw_data);
+    x = raw_data[0] * mRes;
+    y = raw_data[1] * mRes;
+    z = raw_data[2] * mRes;
+}
+
+void MPU9250::getTemp(double &temperature) {
+    uint16_t raw_data;
+    readTempData(raw_data);
+    temperature = (raw_data / 333.87f) + 21.0f;
 }
 
 void MPU9250::runSelfTest(array<float, 6> &results)
@@ -143,17 +185,17 @@ void MPU9250::runSelfTest(array<float, 6> &results)
     
     // Retrieve factory self-test value from self-test code reads
     // FT[Xa] factory trim calculation
-    factoryTrim[0] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[0] - 1.0) ));
+    factoryTrim[0] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[0] - 1.0f) ));
     // FT[Ya] factory trim calculation
-    factoryTrim[1] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[1] - 1.0) ));
+    factoryTrim[1] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[1] - 1.0f) ));
     // FT[Za] factory trim calculation
-    factoryTrim[2] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[2] - 1.0) ));
+    factoryTrim[2] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[2] - 1.0f) ));
     // FT[Xg] factory trim calculation
-    factoryTrim[3] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[3] - 1.0) ));
+    factoryTrim[3] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[3] - 1.0f) ));
     // FT[Yg] factory trim calculation
-    factoryTrim[4] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[4] - 1.0) ));
+    factoryTrim[4] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[4] - 1.0f) ));
     // FT[Zg] factory trim calculation
-    factoryTrim[5] = (float)(2620)*(pow(1.01 ,((float)factorySelfTestValues[5] - 1.0) ));
+    factoryTrim[5] = 2620.0f*(pow(1.01f ,((float)factorySelfTestValues[5] - 1.0f) ));
     
     // Report results as a ratio of (STR - FT)/FT; the change from Factory Trim
     // of the Self-Test Response
@@ -161,11 +203,11 @@ void MPU9250::runSelfTest(array<float, 6> &results)
     for (int i = 0; i < 3; i++)
     {
         // Report percent differences
-        results[i] = 100.0 * ((float)(aSTAvg[i] - aAvg[i])) / factoryTrim[i]
-          - 100.;
+        results[i] = 100.0f * ((float)(aSTAvg[i] - aAvg[i])) / factoryTrim[i]
+          - 100.0f;
         // Report percent differences
-        results[i+3] = 100.0 * ((float)(gSTAvg[i] - gAvg[i])) / factoryTrim[i+3]
-          - 100.;
+        results[i+3] = 100.0f * ((float)(gSTAvg[i] - gAvg[i])) / factoryTrim[i+3]
+          - 100.0f;
     }
 }
 
@@ -405,6 +447,50 @@ void MPU9250::calibrate()
 
 void MPU9250::initialize()
 {
+    calibrate();
+    initializeAccelAndGyro();
+    initializeMagnetometer();
+}
+
+void MPU9250::initializeMagnetometer() {
+    array<uint8_t, 3> rawData;
+    // Power down magnetometer
+    _i2c.address(AK8963_ADDRESS);
+    _i2c.writeReg(AK8963_CNTL, 0x00);
+    usleep(10'000);
+    // Enter Fuse ROM access mode
+    _i2c.address(AK8963_ADDRESS);
+    _i2c.writeReg(AK8963_CNTL, 0x0F);
+    usleep(10'000);
+
+    // Read the x-, y-, and z-axis calibration values
+    _i2c.address(AK8963_ADDRESS);
+    _i2c.readBytesReg(AK8963_ASAX, rawData.data(), 3);
+
+    // Populate sensitivity adjustment values
+    transform(rawData.begin(), rawData.end(), factoryMagCalibration.begin(),
+              [](const auto &raw){
+                  return static_cast<float>((raw-128)/256. + 1.);
+              });
+
+    // Power down magnetometer
+    _i2c.address(AK8963_ADDRESS);
+    _i2c.writeReg(AK8963_CNTL, 0x00);
+
+    usleep(10'000);
+
+    /* Configure the magnetometer for continuous read and highest resultion.
+     * Set Mscale bit 4 to 1 (0) to enable 16 (14) bit resultion in CNTL
+     * register, and enable continuous mode data acquisition Mmode (bits [3:0]),
+     * 0010 for 8 Hz and 0110 for 100 Hz sample rates.
+     */
+    _i2c.address(AK8963_ADDRESS);
+    _i2c.writeReg(AK8963_CNTL, _Mscale << 4 | _Mmode);
+
+    usleep(10'000);
+}
+
+void MPU9250::initializeAccelAndGyro() {
     // wake up device
     // Clear sleep mode bit (6), enable all sensors
     _i2c.address(MPU9250_ADDRESS);
@@ -492,44 +578,6 @@ void MPU9250::initialize()
     usleep(100'000);
 }
 
-void MPU9250::initializeMagnetometer() {
-    array<uint8_t, 3> rawData;
-    // Power down magnetometer
-    _i2c.address(AK8963_ADDRESS);
-    _i2c.writeReg(AK8963_CNTL, 0x00);
-    usleep(10'000);
-    // Enter Fuse ROM access mode
-    _i2c.address(AK8963_ADDRESS);
-    _i2c.writeReg(AK8963_CNTL, 0x0F);
-    usleep(10'000);
-
-    // Read the x-, y-, and z-axis calibration values
-    _i2c.address(AK8963_ADDRESS);
-    _i2c.readBytesReg(AK8963_ASAX, rawData.data(), 3);
-
-    // Populate sensitivity adjustment values
-    transform(rawData.begin(), rawData.end(), factoryMagCalibration.begin(),
-              [](const auto &raw){
-                  return static_cast<float>((raw-128)/256. + 1.);
-              });
-
-    // Power down magnetometer
-    _i2c.address(AK8963_ADDRESS);
-    _i2c.writeReg(AK8963_CNTL, 0x00);
-
-    usleep(10'000);
-
-    /* Configure the magnetometer for continuous read and highest resultion.
-     * Set Mscale bit 4 to 1 (0) to enable 16 (14) bit resultion in CNTL
-     * register, and enable continuous mode data acquisition Mmode (bits [3:0]),
-     * 0010 for 8 Hz and 0110 for 100 Hz sample rates.
-     */
-    _i2c.address(AK8963_ADDRESS);
-    _i2c.writeReg(AK8963_CNTL, _Mscale << 4 | _Mmode);
-
-    usleep(10'000);
-}
-
 void MPU9250::getAres() {
     switch(_Ascale) {
         case AFS_2G:
@@ -600,7 +648,7 @@ void MPU9250::readGyroData(std::array<int16_t, 3> &data) {
 void MPU9250::readMagData(std::array<int16_t, 3> &data) {
     array<uint8_t, 7> rawData;
 
-    // Wait for magnetometer data ready bit to be ste
+    // Wait for magnetometer data ready bit to be set
     _i2c.address(AK8963_ADDRESS);
     if(_i2c.readReg(AK8963_ST1) & 0x01) {
 
@@ -616,4 +664,13 @@ void MPU9250::readMagData(std::array<int16_t, 3> &data) {
             data[2] = static_cast<int16_t>(rawData[5] << 8) | rawData[4];
         }
     }
+}
+
+void MPU9250::readTempData(uint16_t &data) {
+    array<uint8_t, 2> rawData;
+
+    _i2c.address(MPU9250_ADDRESS);
+    _i2c.readBytesReg(TEMP_OUT_H,rawData.data(),2);
+
+    data  = static_cast<uint16_t>(rawData[0] << 8) | rawData[1];
 }

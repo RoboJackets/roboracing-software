@@ -1,47 +1,29 @@
-#include <signal.h>
 #include <ros/ros.h>
-#include <mraa.hpp>
-#include <iostream>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/MagneticField.h>
+#include <sensor_msgs/Temperature.h>
 #include "mpu9250.h"
+#include "quaternionFilters.h"
 
 using namespace std;
 
-constexpr uint8_t MPU9250_ADDRESS = 0b1101000;
-constexpr uint8_t MPU9250_WHO_AM_I_REGISTER = 117;
-constexpr uint8_t MPU9250_WHO_AM_I_VALUE = 0x71;
-constexpr uint8_t MPU9250_ACCEL_XOUT_H_REG = 59;
-constexpr uint8_t MPU9250_ACCEL_XOUT_L_REG = 60;
-
-volatile bool running = true;
-
-void signal_handler(int) {
-    running = false;
-}
-
-void set_SIGINT_handler() {
-    struct sigaction sigIntHandler;
-    sigIntHandler.sa_handler = signal_handler;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigIntHandler, NULL);
-}
+// Degrees to Radians
+constexpr double DEG_TO_RAD = M_PI/180.0;
+// g's to m/s^2
+constexpr double G_TO_MSS = 9.80665;
+// milliGauss to Tesla
+constexpr double mG_TO_T = 1e-7;
 
 int main(int argc, char **argv) {
 
-    set_SIGINT_handler();
+    ros::init(argc, argv,  "mpu9250_for_joule");
 
-//    ros::init(argc, argv,  "mpu9250_for_joule");
-
-//    ros::NodeHandle handle;
-
-/*
- * TODO look at https://communities.intel.com/thread/110551
- */
+    ros::NodeHandle handle;
 
     MPU9250 imu;
     
     if(!imu.whoAmIPassed()) {
-        cerr << "Failed to read Who-Am-I value from IMU." << endl;
+        ROS_ERROR("Failed to read Who-Am-I value from IMU.");
         return 1;
     }
     
@@ -50,45 +32,86 @@ int main(int argc, char **argv) {
     
     if(any_of(selfTestResults.begin(), selfTestResults.end(),
            [](const auto &e){ return e > 14.0; })) {
-        cerr << "WARNING: SelfTest results outside of acceptable range." << endl;
-        for(const auto &val : selfTestResults) {
-            cerr << val << ", ";
-        }
-        cerr << endl;
+        ROS_WARN("SelfTest results outside of acceptable range.");
+        ROS_WARN_STREAM("SelfTest results: "
+                        << selfTestResults[0] << "  "
+                        << selfTestResults[1] << "  "
+                        << selfTestResults[2] << "  "
+                        << selfTestResults[3] << "  "
+                        << selfTestResults[4] << "  "
+                        << selfTestResults[5] << "  "
+        );
     }
-    
-    imu.calibrate();
 
     imu.initialize();
 
-    imu.initializeMagnetometer();
+    auto imu_publisher = handle.advertise<sensor_msgs::Imu>("/imu/data_raw", 1);
+    auto mag_publisher = handle.advertise<sensor_msgs::MagneticField>("/imu/mag",1);
+    auto temp_publisher = handle.advertise<sensor_msgs::Temperature>("/imu/temperature",1);
 
-    imu.getAres();
-    imu.getGres();
-    imu.getMres();
+    ros::Rate rate(10/*Hz*/);
 
-    array<int16_t, 3> accel_data;
-    array<int16_t, 3> gyro_data;
-    array<int16_t, 3> mag_data;
+    string frame_id = "imu";
 
-    array<float, 3> accel_real;
-    array<float, 3> gyro_real;
-    array<float, 3> mag_real;
+    auto lastStamp = ros::Time::now();
 
-    while(running) {
-        imu.readAccelData(accel_data);
-        imu.readGyroData(gyro_data);
+    while(ros::ok()) {
 
-        transform(accel_data.begin(), accel_data.end(), accel_real.begin(),
-                  [&imu](const auto &e){ return e * imu.aRes;});
+        auto stamp = ros::Time::now();
+        auto deltaT = (stamp - lastStamp).toSec();
+        lastStamp = stamp;
 
-        transform(gyro_data.begin(), gyro_data.end(), gyro_real.begin(),
-                  [&imu](const auto &e){ return e * imu.gRes;});
+        sensor_msgs::Imu imu_msg;
+        imu_msg.header.stamp = stamp;
+        imu_msg.header.frame_id = frame_id;
+        imu.getGyro(imu_msg.angular_velocity.x,imu_msg.angular_velocity.y,imu_msg.angular_velocity.z);
+        imu.getAccel(imu_msg.linear_acceleration.x,imu_msg.linear_acceleration.y,imu_msg.linear_acceleration.z);
 
-        cout << accel_real[0] << " " << accel_real[1] << " " << accel_real[2] << "\t" << gyro_real[0] << " " << gyro_real[1] << " " << gyro_real[2] << endl;
+        sensor_msgs::MagneticField mag_msg;
+        mag_msg.header.stamp = stamp;
+        mag_msg.header.frame_id = frame_id;
+        imu.getMag(mag_msg.magnetic_field.x,mag_msg.magnetic_field.y,mag_msg.magnetic_field.z);
 
-        usleep(500'000);
+        sensor_msgs::Temperature temp_msg;
+        temp_msg.header.stamp = stamp;
+        temp_msg.header.frame_id = frame_id;
+        imu.getTemp(temp_msg.temperature);
+
+        MahonyQuaternionUpdate(static_cast<float>(imu_msg.linear_acceleration.x),
+                               static_cast<float>(imu_msg.linear_acceleration.y),
+                               static_cast<float>(imu_msg.linear_acceleration.z),
+                               static_cast<float>(imu_msg.angular_velocity.x),
+                               static_cast<float>(imu_msg.angular_velocity.y),
+                               static_cast<float>(imu_msg.linear_acceleration.z),
+                               static_cast<float>(mag_msg.magnetic_field.x),
+                               static_cast<float>(mag_msg.magnetic_field.y),
+                               static_cast<float>(mag_msg.magnetic_field.z),
+                               deltaT);
+        auto quat = getQ();
+
+        imu_msg.orientation.x = quat[0];
+        imu_msg.orientation.y = quat[1];
+        imu_msg.orientation.z = quat[2];
+        imu_msg.orientation.w = quat[3];
+
+        imu_msg.angular_velocity.x *= DEG_TO_RAD;
+        imu_msg.angular_velocity.y *= DEG_TO_RAD;
+        imu_msg.angular_velocity.z *= DEG_TO_RAD;
+        imu_msg.linear_acceleration.x *= G_TO_MSS;
+        imu_msg.linear_acceleration.y *= G_TO_MSS;
+        imu_msg.linear_acceleration.z *= G_TO_MSS;
+        mag_msg.magnetic_field.x *= mG_TO_T;
+        mag_msg.magnetic_field.y *= mG_TO_T;
+        mag_msg.magnetic_field.z *= mG_TO_T;
+
+        imu_publisher.publish(imu_msg);
+        mag_publisher.publish(mag_msg);
+        temp_publisher.publish(temp_msg);
+
+        rate.sleep();
     }
+
+    ros::shutdown();
 
     return 0;
 }
