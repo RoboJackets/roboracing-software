@@ -41,6 +41,7 @@
   <run_depend>rr_platform</run_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>image_transport</run_depend>
+  <run_depend>nodelet</run_depend>
 
   <export>
       <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
