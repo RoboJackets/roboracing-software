@@ -6,11 +6,26 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 
-class color_detector {
-private:
+using namespace std;
+using namespace ros;
+using namespace cv;
 
-    void ImageCB(const sensor_msgs::ImageConstPtr &msg);
+namespace iarrc {
+    class color_detector: public nodelet::Nodelet {
 
-    virtual void onInit();
-};
+        private:
+            Publisher img_pub;
+            Rect mask;
+            Mat erosion_kernel;
+            void ImageCB(const sensor_msgs::ImageConstPtr &msg);
+            inline bool is_blue(const uchar &H, const uchar &S);
+            inline bool is_orange(const uchar &H, const uchar &S, const uchar &V);
+            inline bool is_yellow(const uchar &H, const uchar &S, const uchar &V);
+            inline bool is_white(const uchar &H, const uchar &S, const uchar &V);
+            virtual void onInit();
+
+
+    };
+
+}
 
