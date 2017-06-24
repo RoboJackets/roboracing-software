@@ -1,11 +1,8 @@
 #include <ros/ros.h>
-#include <std_msgs/Header.h>
 #include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
-#include <cv_bridge/cv_bridge.h>
 #include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
 #include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
 
 namespace iarrc {
     class color_detector: public nodelet::Nodelet {

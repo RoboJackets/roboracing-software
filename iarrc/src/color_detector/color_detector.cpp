@@ -1,9 +1,11 @@
 #include "color_detector.h"
+#include <pluginlib/class_list_macros.h>
+#include <std_msgs/Header.h>
 
-using namespace std;
+
+//using namespace std;
 using namespace ros;
 using namespace cv;
-//using namespace image_transport;
 
 namespace iarrc {
 
