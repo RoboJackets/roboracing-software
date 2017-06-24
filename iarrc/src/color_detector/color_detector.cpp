@@ -3,6 +3,7 @@
 using namespace std;
 using namespace ros;
 using namespace cv;
+//using namespace image_transport;
 
 namespace iarrc {
 
@@ -78,18 +79,15 @@ namespace iarrc {
     void color_detector::onInit() {
 
         NodeHandle nh = getNodeHandle();
+        image_transport::ImageTransport it(nh);
 
         mask = Rect(0, 120, 640, 310); // x, y, w, h
 
         auto kernel_size = 3;
         erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
 
-        ros::Subscriber img_saver_sub = nh.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
-
-        img_pub = nh.advertise<sensor_msgs::Image>("/colors_img", 1);
-
-        NODELET_INFO("Color detector ready.");
-
+        image_transport::Subscriber img_saver_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
+        img_pub = it.advertise("/colors_img", 1);
         spin();
 
     }

@@ -5,11 +5,12 @@
 #include <cv_bridge/cv_bridge.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
+#include <image_transport/image_transport.h>
 
 namespace iarrc {
     class color_detector: public nodelet::Nodelet {
         private:
-            ros::Publisher img_pub;
+            image_transport::Publisher img_pub;
             cv::Rect mask;
             cv::Mat erosion_kernel;
             void ImageCB(const sensor_msgs::ImageConstPtr &msg);
