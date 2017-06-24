@@ -89,11 +89,9 @@ int main(int argc, char** argv) {
     ros::Subscriber geo_sub = nh.subscribe("/camera_geometry", 1, camInfoCB);
     joint_state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
-    height_command_pub = nh.advertise<std_msgs::Float64>(
-            "/roboracing/camera_height_position_controller/command", 1, true);
+    height_command_pub = nh.advertise<std_msgs::Float64>("/camera_height_position_controller/command", 1, true);
 
-    tilt_command_pub = nh.advertise<std_msgs::Float64>(
-            "/roboracing/camera_tilt_position_controller/command", 1, true);
+    tilt_command_pub = nh.advertise<std_msgs::Float64>("/camera_tilt_position_controller/command", 1, true);
 
     ros::Rate rate(30);
     while(ros::ok()) {

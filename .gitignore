@@ -1,9 +1,3 @@
-# Qt Creator project files
-*.config
-*.creator
-*.creator.user
-*.files
-*.includes
 */CMakeFiles/*
 
 # Clion project files
