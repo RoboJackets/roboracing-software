@@ -15,4 +15,8 @@
         <param name="alternate_path_threshold"       value="0.5"/>
         <param name="connected_path_distance"        value="0.1"/>
     </node>
+
+    <node name="obstacles_img" pkg="rr_platform" type="image_transform" output="screen">
+        <param name="transform_topics" value="/obstacles_img"/>
+    </node>
 </launch>

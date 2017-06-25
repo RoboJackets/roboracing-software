@@ -114,6 +114,7 @@ geometry_msgs::PoseStamped planner::plannerPoseToPoseStamped(path::pose &pp) {
 }
 
 void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
+    ROS_INFO("received point cloud");
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -226,6 +227,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
     planner plan;
+    ROS_INFO("instantiated planner");
     ros::spin();
     return 0;
 }

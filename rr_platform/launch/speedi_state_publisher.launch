@@ -6,6 +6,6 @@
     <node name="speedi_joint_updater" pkg="rr_platform" type="speedi_joint_updater" output="screen">
     	<param name="joint_state_uri" value="$(find rr_platform)/launch/persistent_joint_state.dat"/>
     	<param name="loaded_joint_state" command="cat $(find rr_platform)/launch/persistent_joint_state.dat"/>
-        <param name="use_simulator_control" type="bool" value="true" />
+        <param name="use_simulator_control" type="bool" value="false" />
     </node>
 </launch>

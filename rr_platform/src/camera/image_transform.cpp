@@ -274,8 +274,8 @@ bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
 
 int main(int argc, char **argv) {
     init(argc, argv, "image_transform");
-    NodeHandle nh_temp;
-    nh = &nh_temp;
+    NodeHandle nh;
+    NodeHandle pnh("~");
 
     loadCameraFOV(); //spins ROS event loop for a bit
     loadGeometryFromTf();
@@ -283,24 +283,25 @@ int main(int argc, char **argv) {
     ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);
 
     //publish camera info for a description module to update its model
-    camera_geo_pub = nh->advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
+    camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
 
     string topicsConcat;
-    nh->getParam("/image_transform/transform_topics", topicsConcat);
+    pnh.getParam("transform_topics", topicsConcat);
     vector<string> topics;
     boost::split(topics, topicsConcat, boost::is_any_of(" ,"));
     vector<Subscriber> transform_subs;
+    ROS_INFO_STREAM("Found " << topics.size() << " topics in param.");
     for(const string& topic : topics) {
         if(topic.size() == 0) continue;
-        transform_subs.push_back(nh->subscribe<sensor_msgs::Image>(topic, 1, 
+        transform_subs.push_back(nh.subscribe<sensor_msgs::Image>(topic, 1,
                                  boost::bind(TransformImage, _1, topic)));
         ROS_INFO_STREAM("Image_transform subscribed to " << topic);
         string newTopic(topic + "_transformed");
         ROS_INFO_STREAM("Creating new topic " << newTopic);
-        transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
+        transform_pubs[topic] = nh.advertise<sensor_msgs::Image>(newTopic, 1);
     }
 
-    ServiceServer calibrate_service = nh->advertiseService("/calibrate_image", CalibrateCallback);
+    ServiceServer calibrate_service = nh.advertiseService("/calibrate_image", CalibrateCallback);
 
     spin();
 
