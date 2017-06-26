@@ -17,6 +17,6 @@
     </node>
 
     <node name="obstacles_img" pkg="rr_platform" type="image_transform" output="screen">
-        <param name="transform_topics" value="/obstacles_img"/>
+        <param name="transform_topics" value="/colors_img"/>
     </node>
 </launch>
