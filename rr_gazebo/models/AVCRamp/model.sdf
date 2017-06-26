@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='AVCCourseBoundary'>
+    <link name='link_0'>
+      <pose frame=''>0 0 0 0 0 0</pose>
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://AVCRamp/AVCRamp.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name='collision'>
+        <geometry>
+          <mesh>
+            <uri>model://AVCRamp/AVCRamp.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <static>true</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>

@@ -44,8 +44,9 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
+add_library(iarrc src/color_detector/color_detector.cpp)
+target_link_libraries(iarrc ${catkin_LIBRARIES})
+
 add_subdirectory(src/stoplight_watcher)
-add_subdirectory(src/color_detector_dragrace)
-add_subdirectory(src/color_detector_circuit)
 add_subdirectory(src/navigation_controller)
 add_subdirectory(src/finish_line_watcher)

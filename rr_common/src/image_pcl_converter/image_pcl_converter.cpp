@@ -26,6 +26,7 @@ map<string, Publisher> cloud_pubs;
 double pxPerMeter;
 
 void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
+    ROS_INFO("transforming");
     if(cloud_pubs[topic].getNumSubscribers() == 0) {
         // no one is listening. go home and cry
         return;
@@ -33,7 +34,7 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
 
     cv_bridge::CvImagePtr cv_ptr;
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     } catch(cv_bridge::Exception& e) {
         ROS_ERROR("CV_Bridge error: %s", e.what());
         return;
@@ -41,11 +42,12 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     Mat transformed_gray = cv_ptr->image;
-
+    ROS_INFO("begging iterationss, mat size %d", transformed_gray.size());
     for(int r = 0; r < transformed_gray.rows; r++) {
         uchar* row = transformed_gray.ptr<uchar>(r);
-        for(int c = 0; c < transformed_gray.cols; c++) {
-            if(row[c]) {
+        for(int c = 0; c < transformed_gray.cols; c+=3) {
+            if(row[c] || row[c + 1] || row[c + 2]) {
+
                 pcl::PointXYZ point;
                 point.y = -1 * (c - transformed_gray.cols / 2.0f) / pxPerMeter;
                 point.x = (transformed_gray.rows - r) / pxPerMeter;
@@ -55,7 +57,7 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
             }
         }
     }
-
+    ROS_INFO("finished iters");
     pcl::PCLPointCloud2 cloud_pc2;
     pcl::toPCLPointCloud2(*cloud, cloud_pc2);
     sensor_msgs::PointCloud2 cloud_msg;

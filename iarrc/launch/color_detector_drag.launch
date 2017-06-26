@@ -1,4 +1,0 @@
-<launch>
-	<node name="color_detector_dragrace" pkg="iarrc" type="color_detector_dragrace" output="screen">
-	</node>
-</launch>
