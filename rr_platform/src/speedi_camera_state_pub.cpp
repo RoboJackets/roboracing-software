@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <rr_platform/camera_geometry.h>
+#include <rr_platform/camera_pose.h>
 #include <sensor_msgs/JointState.h>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
@@ -34,7 +34,7 @@ void loadJointState(string &prevState) {
     ROS_INFO("Set camera tilt to %f", cam_tilt);
 }
 
-void camInfoCB(const rr_platform::camera_geometry::ConstPtr &msg) {
+void camInfoCB(const rr_platform::camera_pose::ConstPtr &msg) {
     cam_height = msg->height;
     cam_tilt = msg->angle;
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
     nh_private.getParam("use_simulator_control", USING_GAZEBO);
 
-    ros::Subscriber geo_sub = nh.subscribe("/camera_geometry", 1, camInfoCB);
+    ros::Subscriber geo_sub = nh.subscribe("/camera_pose", 1, camInfoCB);
     joint_state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 1);
 
     height_command_pub = nh.advertise<std_msgs::Float64>("/camera_height_position_controller/command", 1, true);

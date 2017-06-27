@@ -180,6 +180,7 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         defaultWeightedSteeringVec.steers = defaultSteerSample;
         defaultWeightedSteeringVec.weight = 1.0;
         defaultSteeringGroup.add(defaultWeightedSteeringVec);
+        groups[0] = defaultSteeringGroup;
     }
 
     // find the group with highest average weight and use its steering angles
