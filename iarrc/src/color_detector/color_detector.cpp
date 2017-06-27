@@ -79,7 +79,7 @@ namespace iarrc {
     }
 
     void color_detector::onInit() {
-        ROS_INFO("spinning up");
+        ROS_INFO("spinning up color detector");
         NodeHandle nh = getNodeHandle();
         image_transport::ImageTransport it(nh);
 
