@@ -45,7 +45,6 @@ include_directories(
 )
 
 add_subdirectory(src/stoplight_watcher)
-add_subdirectory(src/color_detector_dragrace)
-add_subdirectory(src/color_detector_circuit)
 add_subdirectory(src/navigation_controller)
 add_subdirectory(src/finish_line_watcher)
+add_subdirectory(src/color_detector)
