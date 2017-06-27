@@ -81,6 +81,7 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_for_joule)
 
-add_executable(speedi_joint_controller src/speedi_joint_controller.cpp)
-target_link_libraries(speedi_joint_controller ${catkin_LIBRARIES})
-add_dependencies(speedi_joint_controller rr_platform_generate_messages_cpp)
+add_executable(speedi_camera_state_pub src/speedi_camera_state_pub.cpp)
+target_link_libraries(speedi_camera_state_pub ${catkin_LIBRARIES})
+add_dependencies(speedi_camera_state_pub rr_platform_generate_messages_cpp)
+
