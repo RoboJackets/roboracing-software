@@ -1,3 +1,3 @@
 add_executable(navigation_controller navigation_controller.cpp)
 target_link_libraries(navigation_controller ${catkin_LIBRARIES})
-add_dependencies(navigation_controller  rr_platform_generate_messages_cpp)
+add_dependencies(navigation_controller rr_platform_generate_messages_cpp)

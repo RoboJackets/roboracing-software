@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_platform)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS}")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -26,6 +26,8 @@ find_package(
 
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED filters)
+
+pkg_check_modules(mraa REQUIRED)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
@@ -77,6 +79,7 @@ add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
+add_subdirectory(src/mpu9250_for_joule)
 
 add_executable(speedi_joint_controller src/speedi_joint_controller.cpp)
 target_link_libraries(speedi_joint_controller ${catkin_LIBRARIES})
