@@ -6,7 +6,7 @@
         <param name="steer_stddev"     type="double" value="0.261799" />
         <param name="max_steer_angle"  type="double" value="0.523599" />
         <param name="path_iterations"  type="int"    value="300" />
-        <param name="max_speed"        type="double" value="0.5" />
+        <param name="max_speed"        type="double" value="1.5" />
         <param name="path_stage_time"  type="double" value="2.0" />
         <param name="path_stages"      type="int"    value="2" />
         <param name="time_increment"   type="double" value="0.14" />
@@ -14,6 +14,7 @@
         <param name="min_cluster_pts"  type="int"    value="1" />
         <param name="alternate_path_threshold"       value="0.5"/>
         <param name="connected_path_distance"        value="0.1"/>
+        <param name="min_cluster_pts"                value="8"/>
     </node>
 
     <node name="obstacles_img" pkg="rr_platform" type="image_transform" output="screen">

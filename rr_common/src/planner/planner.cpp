@@ -172,6 +172,20 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     cluster(weightedSteerVecsFiltered, groups, CONNECTED_PATH_DIST, MIN_CLUSTER_PTS);
     ROS_INFO("Planner found %d path categories", (int)groups.size());
 
+    path::SteeringGroup defaultSteeringGroup;
+    path::WeightedSteeringVec defaultWeightedSteeringVec;
+    point_t defaultSteerSample;
+
+    if(groups.size() == 0) {
+        groups.resize(1);
+        defaultSteerSample.resize(PATH_STAGES);
+        fill_n(defaultSteerSample.begin(), PATH_STAGES, 0.0);
+        defaultWeightedSteeringVec.steers = defaultSteerSample;
+        defaultWeightedSteeringVec.weight = 1.0;
+        defaultSteeringGroup.add(defaultWeightedSteeringVec);
+        groups[0] = defaultSteeringGroup;
+    }
+
     // find the group with highest average weight and use its steering angles
     int bestGroupIndex = -1;
     double bestGroupAverageWeight = -1.0;

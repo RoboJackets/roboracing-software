@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-    <world name="default">
+    <world name="IARRC Drag">
         <scene>
             <sky>
-                <clouds>
+                <!--clouds>
                     <speed>12</speed>
-                </clouds>
+                </clouds-->
             </sky>
             <ambient>1.0 1.0 1.0 1.0</ambient>
             <background>0.7 0.7 0.7 1.0</background>

@@ -36,7 +36,7 @@ add_message_files(
     FILES
     speed.msg
     steering.msg
-    camera_geometry.msg
+    camera_pose.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -81,6 +81,7 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_for_joule)
 
-add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
-target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
-add_dependencies(speedi_joint_updater rr_platform_generate_messages_cpp)
+add_executable(speedi_camera_state_pub src/speedi_camera_state_pub.cpp)
+target_link_libraries(speedi_camera_state_pub ${catkin_LIBRARIES})
+add_dependencies(speedi_camera_state_pub rr_platform_generate_messages_cpp)
+

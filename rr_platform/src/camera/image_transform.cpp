@@ -3,7 +3,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <rr_platform/calibrate_image.h>
-#include <rr_platform/camera_geometry.h>
+#include <rr_platform/camera_pose.h>
 #include <cmath>
 #include <sensor_msgs/JointState.h>
 #include <avc/constants.hpp>
@@ -25,12 +25,11 @@ Size mapSize; //pixels = cm
 Size imageSize;
 Mat transform_matrix;
 
-NodeHandle* nh;
-Publisher camera_geo_pub;
+Publisher camera_pose_pub;
 map<string, Publisher> transform_pubs;
 
-void loadGeometryFromTf() {
-    ROS_INFO("image_transform is loading geometry from tf...");
+void loadCameraPoseFromTf() {
+    ROS_INFO("image_transform is loading camera pose from tf...");
     tf::TransformListener listener;
 
     tf::Quaternion qTFCamBase, qTFBaseChassis;
@@ -63,7 +62,7 @@ void loadGeometryFromTf() {
 
     double roll, pitch, yaw;
     tf::Matrix3x3(qTFCamBase).getRPY(roll, pitch, yaw);
-    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
+//    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
 
     cam_mount_angle = pitch;
     cam_height = psDstBase.pose.position.z;
@@ -71,7 +70,7 @@ void loadGeometryFromTf() {
 }
 
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-    ROS_INFO("called fovCallback");
+//    ROS_INFO("called fovCallback");
     double fx = msg->P[0]; //horizontal focal length of rectified image, in px
     double fy = msg->P[5]; //vertical focal length
     imageSize = Size(msg->width, msg->height);
@@ -86,6 +85,8 @@ void loadCameraFOV() {
         spinOnce();
         Duration(0.05).sleep();
     }
+    ROS_INFO("Using horizontal FOV %f and vertical FOV %f",
+             camera_fov_horizontal, camera_fov_vertical);
     nh_temp.shutdown();
 }
 
@@ -122,10 +123,10 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
 
 // let another (platform-specific) module update the tf system with the current info
 void updateJointState() {
-    rr_platform::camera_geometry msg;
+    rr_platform::camera_pose msg;
     msg.height = cam_height - chassis_height;
     msg.angle = cam_mount_angle;
-    camera_geo_pub.publish(msg);
+    camera_pose_pub.publish(msg);
 }
 
 //corners is topLeft, topRight, bottomLeft, bottomRight
@@ -278,12 +279,12 @@ int main(int argc, char **argv) {
     NodeHandle pnh("~");
 
     loadCameraFOV(); //spins ROS event loop for a bit
-    loadGeometryFromTf();
+    loadCameraPoseFromTf();
     setTransformFromGeometry();
     ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);
 
     //publish camera info for a description module to update its model
-    camera_geo_pub = nh.advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
+    camera_pose_pub = nh.advertise<rr_platform::camera_pose>("/camera_pose", 1);
 
     string topicsConcat;
     pnh.getParam("transform_topics", topicsConcat);
