@@ -55,7 +55,14 @@ The following files and folders enable our continuous integration system.
       ```
       git clone git@github.com:ktossell/libuvc_ros.git
       ```
-  
+   3. Libmraa - To interface with IO on the Intel Joule
+      
+      ```
+      sudo add-apt-repository ppa:mraa/mraa
+      sudo apt-get update
+      sudo apt-get install libmraa1 libmraa-dev mraa-tools python-mraa python3-mraa
+      ```
+
 4. Install the remaining dependencies with the following command in your catkin workspace folder:
 
    ```
