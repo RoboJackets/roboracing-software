@@ -21,6 +21,7 @@ int finishLineCrosses;
 void updateState() {
     switch(state) {
         case WAITING_FOR_START:
+            ROS_INFO("waiting");
             speed = 0.0;
             steering = 0.0;
             if(raceStarted) {
@@ -86,7 +87,7 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         ros::spinOnce();
         updateState();
-        ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
+        //ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
 
         rr_platform::speed speedMsg;
         speedMsg.speed = speed;

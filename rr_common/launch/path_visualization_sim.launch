@@ -1,0 +1,8 @@
+<launch>
+
+    <include file="$(find rr_gazebo)/launch/speedi_sim.launch">
+        <arg name="world" value="$(find rr_gazebo)/worlds/avc.world"/>
+        <arg name="run_controllers" value="false"/>
+    </include>
+
+</launch>

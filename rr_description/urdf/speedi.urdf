@@ -318,8 +318,7 @@
         <child link="camera_base"/>
         <origin xyz="0.21793 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit lower="0.1" upper="0.375" effort="1000.0" velocity="1000.0"/>
-    </joint>
+        <limit lower="0.1" upper="1.0" effort="1000.0" velocity="1000.0"/>    </joint>
 
     <joint name="camera_tilt" type="revolute">
         <parent link="camera_base"/>

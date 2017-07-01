@@ -3,7 +3,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <rr_platform/calibrate_image.h>
-#include <rr_platform/camera_geometry.h>
+#include <rr_platform/camera_pose.h>
 #include <cmath>
 #include <sensor_msgs/JointState.h>
 #include <avc/constants.hpp>
@@ -25,12 +25,11 @@ Size mapSize; //pixels = cm
 Size imageSize;
 Mat transform_matrix;
 
-NodeHandle* nh;
-Publisher camera_geo_pub;
+Publisher camera_pose_pub;
 map<string, Publisher> transform_pubs;
 
-void loadGeometryFromTf() {
-    ROS_INFO("image_transform is loading geometry from tf...");
+void loadCameraPoseFromTf() {
+    ROS_INFO("image_transform is loading camera pose from tf...");
     tf::TransformListener listener;
 
     tf::Quaternion qTFCamBase, qTFBaseChassis;
@@ -63,7 +62,7 @@ void loadGeometryFromTf() {
 
     double roll, pitch, yaw;
     tf::Matrix3x3(qTFCamBase).getRPY(roll, pitch, yaw);
-    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
+//    ROS_INFO("found rpy = %f %f %f", roll, pitch, yaw);
 
     cam_mount_angle = pitch;
     cam_height = psDstBase.pose.position.z;
@@ -71,7 +70,7 @@ void loadGeometryFromTf() {
 }
 
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-    ROS_INFO("called fovCallback");
+//    ROS_INFO("called fovCallback");
     double fx = msg->P[0]; //horizontal focal length of rectified image, in px
     double fy = msg->P[5]; //vertical focal length
     imageSize = Size(msg->width, msg->height);
@@ -86,6 +85,8 @@ void loadCameraFOV() {
         spinOnce();
         Duration(0.05).sleep();
     }
+    ROS_INFO("Using horizontal FOV %f and vertical FOV %f",
+             camera_fov_horizontal, camera_fov_vertical);
     nh_temp.shutdown();
 }
 
@@ -122,10 +123,10 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
 
 // let another (platform-specific) module update the tf system with the current info
 void updateJointState() {
-    rr_platform::camera_geometry msg;
+    rr_platform::camera_pose msg;
     msg.height = cam_height - chassis_height;
     msg.angle = cam_mount_angle;
-    camera_geo_pub.publish(msg);
+    camera_pose_pub.publish(msg);
 }
 
 //corners is topLeft, topRight, bottomLeft, bottomRight
@@ -274,33 +275,34 @@ bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
 
 int main(int argc, char **argv) {
     init(argc, argv, "image_transform");
-    NodeHandle nh_temp;
-    nh = &nh_temp;
+    NodeHandle nh;
+    NodeHandle pnh("~");
 
     loadCameraFOV(); //spins ROS event loop for a bit
-    loadGeometryFromTf();
+    loadCameraPoseFromTf();
     setTransformFromGeometry();
     ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);
 
     //publish camera info for a description module to update its model
-    camera_geo_pub = nh->advertise<rr_platform::camera_geometry>("/camera_geometry", 1);
+    camera_pose_pub = nh.advertise<rr_platform::camera_pose>("/camera_pose", 1);
 
     string topicsConcat;
-    nh->getParam("/image_transform/transform_topics", topicsConcat);
+    pnh.getParam("transform_topics", topicsConcat);
     vector<string> topics;
     boost::split(topics, topicsConcat, boost::is_any_of(" ,"));
     vector<Subscriber> transform_subs;
+    ROS_INFO_STREAM("Found " << topics.size() << " topics in param.");
     for(const string& topic : topics) {
         if(topic.size() == 0) continue;
-        transform_subs.push_back(nh->subscribe<sensor_msgs::Image>(topic, 1, 
+        transform_subs.push_back(nh.subscribe<sensor_msgs::Image>(topic, 1,
                                  boost::bind(TransformImage, _1, topic)));
         ROS_INFO_STREAM("Image_transform subscribed to " << topic);
         string newTopic(topic + "_transformed");
         ROS_INFO_STREAM("Creating new topic " << newTopic);
-        transform_pubs[topic] = nh->advertise<sensor_msgs::Image>(newTopic, 1);
+        transform_pubs[topic] = nh.advertise<sensor_msgs::Image>(newTopic, 1);
     }
 
-    ServiceServer calibrate_service = nh->advertiseService("/calibrate_image", CalibrateCallback);
+    ServiceServer calibrate_service = nh.advertiseService("/calibrate_image", CalibrateCallback);
 
     spin();
 
