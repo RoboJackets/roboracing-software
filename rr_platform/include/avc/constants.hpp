@@ -11,7 +11,7 @@ namespace constants {
 
   double pixels_per_meter = 100;
 
-  double camera_distance_max = 5.0; //distance to look ahead of the car
+  double camera_distance_max = 8.0; //distance to look ahead of the car
   double camera_distance_min = 0.5; //avoid the front bumper
 
 }
