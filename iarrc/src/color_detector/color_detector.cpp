@@ -20,7 +20,7 @@ namespace iarrc {
     }
 
     inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 30) < 0) && (S > 50) && (V > 50);
+        return (abs(H - 30) < 7) && (S > 50) && (V > 50);
     }
 
     inline bool color_detector::is_white(const uchar &S, const uchar &V) {
