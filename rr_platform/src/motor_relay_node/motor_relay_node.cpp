@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <chassis_state.h>
+#include <rr_platform/chassis_state.h>
 #include <boost/asio.hpp>
 
 int desiredSpeed = 0;
@@ -73,11 +73,11 @@ void readData(boost::asio::serial_port &port) {
         }
         line += in;
     }
-    std::vector <std::string> data = split(line, ",");
+    std::vector <std::string> data = split(line, ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.mux_automatic = data[0];
-    msg.estop = data[1];
+    msg.mux_automatic = (data[0] == "1");
+    msg.estop = (data[1] == "1");
     state_pub.publish(msg);
 }
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
-    boost::asio::serial_port serial(io_se   rvice, serial_port_name);
+    boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(9600));
 
     ROS_INFO("IARRC motor relay node ready.");
