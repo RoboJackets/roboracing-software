@@ -61,32 +61,16 @@ void sendCommand(boost::asio::serial_port &port) {
     ROS_INFO_STREAM("sent: " + message);
 }
 
-void readData(boost::asio::serial_port &port) {
-    ROS_INFO_STREAM("begin read");
-    std::string line = "";
-    char in;
-    while (in != '\n') {
-        try {
-            boost::asio::read(port, boost::asio::buffer(&in, 1));
-            if (in == '\n') {
-                ROS_INFO_STREAM("empty");
-            }
-        } catch (
-                boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
-            ROS_ERROR("Error reading serial port.");
-            ROS_ERROR_STREAM(err.what());
-        }
-        line += in;
-    }
-    ROS_INFO_STREAM(line);
-    if (line == "" || line[0] != '$') {
+void publishData(const std::string &line) {
+    if (line.empty()) {
         return;
     }
     std::vector <std::string> data = split(line, ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.mux_automatic = (data[0] == "1");
-    msg.estop = (data[1] == "1");
+    msg.speed = std::atof(data[0].c_str());
+    msg.mux_automatic = (data[1] == "1");
+    msg.estop = (data[2] == "1");
     state_pub.publish(msg);
 }
 
@@ -159,7 +143,8 @@ int main(int argc, char **argv) {
             prevSpeed = desiredSpeed;
 
             sendCommand(serial);
-            readData(serial);
+            publishData(readLine(serial));
+
             count = 0;
         }
         count++;

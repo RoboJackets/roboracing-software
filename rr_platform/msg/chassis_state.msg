@@ -2,3 +2,4 @@
 Header header           # header for when the message is published
 bool estop              # whether the estop is on or not
 bool mux_automatic      # whether the mux is set to autonomous or human controlled
+float32 speed           # speed of the car
