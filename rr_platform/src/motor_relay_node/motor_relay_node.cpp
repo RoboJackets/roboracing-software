@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
+#include <chassis_state.h>
 #include <boost/asio.hpp>
 
 int desiredSpeed = 0;
@@ -9,6 +10,8 @@ int prevAngle = 0;
 int prevSpeed = 0;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+ros::Publisher state_pub;
 
 /**
  * @note http://stackoverflow.com/a/27511119
@@ -57,6 +60,27 @@ void sendCommand(boost::asio::serial_port &port) {
     }
 }
 
+void readData(boost::asio::serial_port &port) {
+    std::string line = "";
+    char in;
+    while (in != '\n') {
+        try {
+            boost::asio::read(port, boost::asio::buffer(&in, 1));
+        } catch (
+                boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
+            ROS_ERROR("Error reading serial port.");
+            ROS_ERROR_STREAM(err.what());
+        }
+        line += in;
+    }
+    std::vector <std::string> data = split(line, ",");
+    rr_platform::chassis_state msg;
+    msg.header.stamp = ros::Time::now();
+    msg.mux_automatic = data[0];
+    msg.estop = data[1];
+    state_pub.publish(msg);
+}
+
 std::string readLine(boost::asio::serial_port &port) {
     std::string line = "";
     bool inLine = false;
@@ -95,6 +119,7 @@ int main(int argc, char **argv) {
     std::string steering_topic_name;
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
+    state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
     ROS_INFO_STREAM("Listening for speed on " << speed_topic_name);
     ROS_INFO_STREAM("Listening for steer on " << steering_topic_name);
@@ -103,8 +128,8 @@ int main(int argc, char **argv) {
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
-    boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
+    boost::asio::serial_port serial(io_se   rvice, serial_port_name);
+    serial.set_option(boost::asio::serial_port_base::baud_rate(9600));
 
     ROS_INFO("IARRC motor relay node ready.");
 
@@ -125,6 +150,7 @@ int main(int argc, char **argv) {
             prevSpeed = desiredSpeed;
 
             sendCommand(serial);
+            readData(serial);
             count = 0;
         }
         count++;

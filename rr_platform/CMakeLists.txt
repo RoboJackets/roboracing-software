@@ -37,6 +37,7 @@ add_message_files(
     speed.msg
     steering.msg
     camera_pose.msg
+    chassis_state.msg
 )
 
 ## Generate services in the 'srv' folder
