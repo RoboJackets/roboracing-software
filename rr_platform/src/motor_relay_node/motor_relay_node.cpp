@@ -58,20 +58,29 @@ void sendCommand(boost::asio::serial_port &port) {
     } catch (boost::system::system_error &err) {
         ROS_ERROR("%s", err.what());
     }
+    ROS_INFO_STREAM("sent: " + message);
 }
 
 void readData(boost::asio::serial_port &port) {
+    ROS_INFO_STREAM("begin read");
     std::string line = "";
     char in;
     while (in != '\n') {
         try {
             boost::asio::read(port, boost::asio::buffer(&in, 1));
+            if (in == '\n') {
+                ROS_INFO_STREAM("empty");
+            }
         } catch (
                 boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
             ROS_ERROR("Error reading serial port.");
             ROS_ERROR_STREAM(err.what());
         }
         line += in;
+    }
+    ROS_INFO_STREAM(line);
+    if (line == "" || line[0] != '$') {
+        return;
     }
     std::vector <std::string> data = split(line, ',');
     rr_platform::chassis_state msg;
@@ -119,6 +128,7 @@ int main(int argc, char **argv) {
     std::string steering_topic_name;
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
+
     state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
     ROS_INFO_STREAM("Listening for speed on " << speed_topic_name);
@@ -140,7 +150,6 @@ int main(int argc, char **argv) {
     int sequence = 0;
     while (ros::ok() && serial.is_open()) {
         ros::spinOnce();
-
         if (count == countLimit) {
             if (desiredSteer != prevAngle || desiredSpeed != prevSpeed) {
                 ROS_INFO("Sending command: servo=%d, motor=%d", desiredSteer, desiredSpeed);
