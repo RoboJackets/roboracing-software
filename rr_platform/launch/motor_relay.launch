@@ -3,5 +3,8 @@
     <param name="speed_topic" type="string" value="/speed" />
     <param name="steering_topic" type="string" value="/steering" />
     <param name="serial_port" type="string" value="/dev/ttyUSB0" />
+    <param name="p_const" type="float" value="0.01" />
+    <param name="i_const" type="float" value="0.00" />
+    <param name="d_const" type="float" value="0.00" />
   </node>
 </launch>
