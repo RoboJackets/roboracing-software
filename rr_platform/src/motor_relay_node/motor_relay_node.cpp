@@ -9,7 +9,7 @@ int desiredSteer = 0;
 int prevAngle = 0;
 int prevSpeed = 0;
 
-float p_const, i_const, d_const;
+double p_const, i_const, d_const;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -53,8 +53,10 @@ void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
 
 void sendCommand(boost::asio::serial_port &port) {
     std::string message = "$" + std::to_string(static_cast<char>(desiredSpeed)) + ", " +
-                          std::to_string(static_cast<char>(desiredSteer)) + p_const + "," +
-                            i_const + "," + d_const + "," + "\n";
+                          std::to_string(static_cast<char>(desiredSteer)) + "," +
+                          std::to_string(static_cast<char>(p_const)) + "," +
+                          std::to_string(static_cast<char>(i_const)) + "," +
+                          std::to_string(static_cast<char>(d_const)) + "," + "\n";
     
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
@@ -116,9 +118,9 @@ int main(int argc, char **argv) {
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
 
-    nhp.param(std::string("p_const"), p_const, 0);
-    nhp.param(std::string("p_const"), i_const, 0);
-    nhp.param(std::string("p_const"), d_const, 0);
+    nhp.param(std::string("p_const"), p_const, 0.0);
+    nhp.param(std::string("i_const"), i_const, 0.0);
+    nhp.param(std::string("d_const"), d_const, 0.0);
 
     state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
