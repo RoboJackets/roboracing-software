@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
         ros::spinOnce();
         if (count == countLimit) {
             if (desiredSteer != prevAngle || desiredSpeed != prevSpeed) {
-                ROS_INFO("Sending command: servo=%d, motor=%d", desiredSteer, desiredSpeed);
+                ROS_INFO("Sending command: servo=%f, motor=%f", desiredSteer, desiredSpeed);
             }
 
             prevAngle = desiredSteer;
