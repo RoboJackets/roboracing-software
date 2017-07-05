@@ -4,12 +4,14 @@
 #include <rr_platform/chassis_state.h>
 #include <boost/asio.hpp>
 
-int desiredSpeed = 0;
-int desiredSteer = 0;
-int prevAngle = 0;
-int prevSpeed = 0;
+double desiredSpeed = 0;
+double desiredSteer = 0;
+double prevAngle = 0;
+double prevSpeed = 0;
 
-double p_const, i_const, d_const;
+double p_const = 0;
+double i_const = 0;
+double d_const = 0;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -52,11 +54,11 @@ void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
 }
 
 void sendCommand(boost::asio::serial_port &port) {
-    std::string message = "$" + std::to_string(static_cast<char>(desiredSpeed)) + ", " +
-                          std::to_string(static_cast<char>(desiredSteer)) + "," +
-                          std::to_string(static_cast<char>(p_const)) + "," +
-                          std::to_string(static_cast<char>(i_const)) + "," +
-                          std::to_string(static_cast<char>(d_const)) + "," + "\n";
+    std::string message = "$" + std::to_string(desiredSpeed) + ", " +
+                          std::to_string(desiredSteer) + "," +
+                          std::to_string(p_const) + "," +
+                          std::to_string(i_const) + "," +
+                          std::to_string(d_const) + "," + "\n";
     
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
@@ -70,6 +72,7 @@ void publishData(const std::string &line) {
     if (line.empty()) {
         return;
     }
+    ROS_INFO_STREAM(line);
     std::vector <std::string> data = split(line, ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
