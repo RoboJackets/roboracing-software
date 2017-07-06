@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
 
-    nhp.param(std::string("kP"), kP, 1);
+    nhp.param(std::string("kP"), kP, 1.0);
     nhp.param(std::string("kI"), kI, 0.0);
     nhp.param(std::string("kD"), kD, 0.1);
 
