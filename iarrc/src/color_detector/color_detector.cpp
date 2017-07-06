@@ -3,7 +3,7 @@
 #include <std_msgs/Header.h>
 
 
-//using namespace std;
+using namespace std;
 using namespace ros;
 using namespace cv;
 
@@ -11,22 +11,20 @@ namespace iarrc {
 
     using uchar = unsigned char;
 
-    inline bool color_detector::is_blue(const uchar &H, const uchar &S) {
-        return (abs(H - 108) < 5) && (S > 50);
+    inline bool color_detector::is_blue(const uchar &H, const uchar &S, const uchar &V) {
+        return (abs(H - 108) < 5) && (S > 50) && (V > 70);
     }
 
     inline bool color_detector::is_orange(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 15) < 5) && (S > 70) && (V > 40);
+        return (abs(H - 15) < 7) && (S > 70) && (V > 40);
     }
 
     inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 30) < 0) && (S > 50) && (V > 50);
+        return (abs(H - 30) < 7) && (S > 50) && (V > 50);
     }
 
-    inline bool color_detector::is_white(const uchar &H, const uchar &S, const uchar &V) {
-        return false;
-        // return blue > 220 && green > 220 && red > 220;
-        // TODO convert to HSV
+    inline bool color_detector::is_white(const uchar &S, const uchar &V) {
+        return (S < 25) && (V > 150);
     }
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
@@ -40,12 +38,11 @@ namespace iarrc {
             return;
         }
 
-        const Mat &frame = cv_ptr->image;
-
-        Mat output = Mat::zeros(frame.rows, frame.cols, CV_8UC3);
-
-        const Mat &frame_masked = frame(mask);
-
+        const Mat &frameBGR = cv_ptr->image;
+        const Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
+        cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
+        const Mat frame_masked = frameHSV(mask);
+        Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
         Mat output_masked = output(mask);
 
         for (int r = 0; r < frame_masked.rows; r++) {
@@ -63,11 +60,11 @@ namespace iarrc {
                 } else if (is_yellow(H, S, V)) {
                     out_row[c] = 0;
                     out_row[c + 1] = out_row[c + 2] = 255;
-                } else if (is_blue(H, S)) {
+                } else if (is_blue(H, S, V)) {
                     out_row[c] = 255;
                     out_row[c + 1] = out_row[c + 2] = 0;
                 }
-                if (is_white(H, S, V)) {
+                if (is_white(S, V)) {
                     out_row[c] = out_row[c + 1] = out_row[c + 2] = 255;
                 }
             }

@@ -38,24 +38,7 @@ The following files and folders enable our continuous integration system.
 2. Clone this repo into the _src_ directory of your catkin workspace.
 
 3. Unfortunately, some dependecies have to be installed manually.
-   1. libuvc - for accessing generic USB Cameras
-   
-      From your home directory, or wherever you feel like keeping the libuvc source   
-      ```
-      git clone https://github.com/ktossell/libuvc
-      cd libuvc
-      mkdir build
-      cd build
-      cmake ..
-      make && sudo make install
-      ```
-   2. libuvc_ros - ROS API for libuvc
-   
-      From within the `src` directory of your catkin workspace,
-      ```
-      git clone git@github.com:ktossell/libuvc_ros.git
-      ```
-   3. Libmraa - To interface with IO on the Intel Joule
+  1. Libmraa - To interface with IO on the Intel Joule
       
       ```
       sudo add-apt-repository ppa:mraa/mraa

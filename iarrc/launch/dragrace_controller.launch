@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <node name="color_detector" pkg="iarrc" type="color_detector" output="screen"/>
-    <include file="$(find iarrc)/launch/obstacles_to_pcl.launch"/>
+    <include file="$(find iarrc)/launch/color_detector.launch"/>
+    <include file="$(find iarrc)/launch/camera_to_pcl.launch"/>
     <!--<include file="$(find iarrc)/launch/stoplight_watcher.launch"/>-->
     <include file="$(find iarrc)/launch/race_end_detector.launch"/>
 
