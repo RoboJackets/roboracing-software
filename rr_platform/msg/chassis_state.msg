@@ -1,5 +1,5 @@
 # Message for defining the state of the car
 Header header           # header for when the message is published
-bool estop              # whether the estop is on or not
+bool estop_on           # whether the estop is turned on
 bool mux_automatic      # whether the mux is set to autonomous or human controlled
-float32 speed           # speed of the car
+float32 speed_mps       # speed of the car in m/s

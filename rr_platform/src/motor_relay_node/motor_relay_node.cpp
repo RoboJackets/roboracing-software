@@ -9,9 +9,9 @@ double desiredSteer = 0;
 double prevAngle = 0;
 double prevSpeed = 0;
 
-double p_const = 0;
-double i_const = 0;
-double d_const = 0;
+double kP = 0;
+double kI = 0;
+double kD = 0;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -56,16 +56,16 @@ void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
 void sendCommand(boost::asio::serial_port &port) {
     std::string message = "$" + std::to_string(desiredSpeed) + ", " +
                           std::to_string(desiredSteer) + "," +
-                          std::to_string(p_const) + "," +
-                          std::to_string(i_const) + "," +
-                          std::to_string(d_const) + "," + "\n";
+                          std::to_string(kP) + "," +
+                          std::to_string(kI) + "," +
+                          std::to_string(kD) + "\n";
     
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
         ROS_ERROR("%s", err.what());
     }
-    ROS_INFO_STREAM("sent: " + message);
+    ROS_DEBUG_STREAM("sent: " + message);
 }
 
 void publishData(const std::string &line) {
@@ -76,9 +76,9 @@ void publishData(const std::string &line) {
     std::vector <std::string> data = split(line, ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.speed = std::atof(data[0].c_str());
+    msg.speed_mps = std::atof(data[0].c_str());
     msg.mux_automatic = (data[1] == "1");
-    msg.estop = (data[2] == "1");
+    msg.estop_on = (data[2] == "1");
     state_pub.publish(msg);
 }
 
@@ -121,9 +121,9 @@ int main(int argc, char **argv) {
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
 
-    nhp.param(std::string("p_const"), p_const, 0.0);
-    nhp.param(std::string("i_const"), i_const, 0.0);
-    nhp.param(std::string("d_const"), d_const, 0.0);
+    nhp.param(std::string("kP"), kP, 1);
+    nhp.param(std::string("kI"), kI, 0.0);
+    nhp.param(std::string("kD"), kD, 0.1);
 
     state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(9600));
+    serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
 
     ROS_INFO("IARRC motor relay node ready.");
 
