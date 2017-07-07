@@ -2,6 +2,9 @@
   <node pkg="rr_platform" type="motor_relay_node" name="motor_relay_node" output="screen" respawn="false">
     <param name="speed_topic" type="string" value="/speed" />
     <param name="steering_topic" type="string" value="/steering" />
-    <param name="serial_port" type="string" value="/dev/ttyACM0" />
+    <param name="serial_port" type="string" value="/dev/ttyUSB0" />
+    <param name="kP" type="double" value= "1" />
+    <param name="kI" type="double" value= "0.00" />
+    <param name="kD" type="double" value= "0.1" />
   </node>
 </launch>
