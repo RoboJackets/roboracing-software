@@ -81,6 +81,7 @@ add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_for_joule)
+add_subdirectory(src/imu)
 
 add_executable(speedi_camera_state_pub src/speedi_camera_state_pub.cpp)
 target_link_libraries(speedi_camera_state_pub ${catkin_LIBRARIES})
