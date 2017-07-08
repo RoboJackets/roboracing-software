@@ -65,15 +65,15 @@ void sendCommand(boost::asio::serial_port &port) {
     } catch (boost::system::system_error &err) {
         ROS_ERROR("%s", err.what());
     }
-    ROS_DEBUG_STREAM("sent: " + message);
+    //ROS_INFO_STREAM("sent: " + message);
 }
 
 void publishData(const std::string &line) {
     if (line.empty()) {
         return;
     }
-    ROS_INFO_STREAM(line);
-    std::vector <std::string> data = split(line, ',');
+    //ROS_INFO_STREAM(line);
+    std::vector <std::string> data = split(line.substr(1), ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
     msg.speed_mps = std::atof(data[0].c_str());
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
 
-    ROS_INFO("IARRC motor relay node ready.");
+    ROS_INFO("IARRC motor relay node is ready.");
 
     float hz = 20;
     ros::Rate rate(hz);
@@ -153,7 +153,6 @@ int main(int argc, char **argv) {
 
             prevAngle = desiredSteer;
             prevSpeed = desiredSpeed;
-
             sendCommand(serial);
             publishData(readLine(serial));
 
