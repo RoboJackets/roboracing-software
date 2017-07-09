@@ -73,8 +73,6 @@ std::string readLine(boost::asio::serial_port &port) {
 
 int main(int argc, char **argv) {
 
-    std::cout << "WTF" << std::endl;
-
     ros::init(argc, argv, "imu");
 
     ros::NodeHandle handle;
@@ -82,8 +80,6 @@ int main(int argc, char **argv) {
 
     imu_pub = handle.advertise<sensor_msgs::Imu>("/imu/data_raw", 1);
     mag_pub = handle.advertise<sensor_msgs::MagneticField>("/imu/mag", 1);
-
-    ROS_INFO("TEST");
 
     // Serial port setup
     std::string serial_port_name;
