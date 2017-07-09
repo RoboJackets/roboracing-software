@@ -15,6 +15,9 @@ double kD = 0;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+constexpr float ticks_per_meter = 1725.0f;
+constexpr float s_per_50ms = 0.05f;
+
 ros::Publisher state_pub;
 
 /**
@@ -30,26 +33,12 @@ std::vector <std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-int PWMFromSpeed(double metersPerSecond) {
-    return static_cast<int>(metersPerSecond / 0.18333333);
-}
-
-int PWMFromAngle(double radians) {
-    if(radians < 0) {
-        return static_cast<int>(radians * 0.0436332);
-    }
-    if(radians > 0) {
-        return static_cast<int>(radians * -0.0218166);
-    }
-    return 0;
-}
-
 void SpeedCallback(const rr_platform::speed::ConstPtr &msg) {
-    desiredSpeed = PWMFromSpeed(msg->speed);
+    desiredSpeed = msg->speed * ticks_per_meter * s_per_50ms;
 }
 
 void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
-    desiredSteer = PWMFromAngle(msg->angle);
+    desiredSteer = msg->angle;
     ROS_INFO_STREAM("Desired steer: " << desiredSteer);
 }
 
@@ -76,7 +65,7 @@ void publishData(const std::string &line) {
     std::vector <std::string> data = split(line.substr(1), ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.speed_mps = std::atof(data[0].c_str());
+    msg.speed_mps = std::atof(data[0].c_str()) / (s_per_50ms * ticks_per_meter);
     msg.mux_automatic = (data[1] == "1");
     msg.estop_on = (data[2] == "1");
     state_pub.publish(msg);
@@ -98,10 +87,15 @@ std::string readLine(boost::asio::serial_port &port) {
         if (!inLine && in == '$')
             inLine = true;
         if(inLine) {
-            if (in == '\n')
+            if (in == '\n') {
+	        ROS_INFO_STREAM(line);
                 return line;
-            if (in == '\r')
+	    }
+            if (in == '\r') {
+	        ROS_INFO_STREAM(line);
                 return line;
+	    }
+	    ROS_INFO_STREAM("adding char");
             line += in;
         }
     }
@@ -144,6 +138,7 @@ int main(int argc, char **argv) {
     int count = 0;
     int countLimit = (int) (hz / 10); // Limit motor commands to 10hz regardless of loop rate
     int sequence = 0;
+    ros::Duration(1).sleep();
     while (ros::ok() && serial.is_open()) {
         ros::spinOnce();
         if (count == countLimit) {
