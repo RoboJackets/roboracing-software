@@ -20,11 +20,11 @@ namespace iarrc {
     }
 
     inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 30) < 7) && (S > 50) && (V > 50);
+        return (abs(H - 40) < 7) && (S > 65) && (V > 65);
     }
 
     inline bool color_detector::is_white(const uchar &S, const uchar &V) {
-        return (S < 25) && (V > 150);
+        return (S < 6) && (V > 140);
     }
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
