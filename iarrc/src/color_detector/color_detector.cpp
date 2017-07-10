@@ -12,11 +12,11 @@ namespace iarrc {
     using uchar = unsigned char;
 
     inline bool color_detector::is_blue(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 108) < 5) && (S > 50) && (V > 70);
+        return (abs(H - 108) < 30) && (S > 50) && (V > 70);
     }
 
     inline bool color_detector::is_orange(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 15) < 7) && (S > 70) && (V > 40);
+        return (abs(H - 15) < 14) && (S > 70) && (V > 40);
     }
 
     inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
@@ -24,7 +24,7 @@ namespace iarrc {
     }
 
     inline bool color_detector::is_white(const uchar &S, const uchar &V) {
-        return (S < 6) && (V > 140);
+        return (S < 62 && S > 25) && (V > 180);
     }
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
@@ -70,7 +70,7 @@ namespace iarrc {
             }
         }
 
-        //erode(output_masked, output_masked, erosion_kernel);
+//        erode(output_masked, output_masked, erosion_kernel);
 
         img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
     }
@@ -80,9 +80,9 @@ namespace iarrc {
         NodeHandle nh = getNodeHandle();
         image_transport::ImageTransport it(nh);
 
-        mask = Rect(0, 120, 640, 310); // x, y, w, h
+        mask = Rect(0, 200, 640, 280); // x, y, w, h
 
-        auto kernel_size = 3;
+        auto kernel_size = 5;
         erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
 
         image_transport::Subscriber img_saver_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
