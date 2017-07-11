@@ -54,7 +54,7 @@ void sendCommand(boost::asio::serial_port &port) {
     } catch (boost::system::system_error &err) {
         ROS_ERROR("%s", err.what());
     }
-    //ROS_INFO_STREAM("sent: " + message);
+    ROS_INFO_STREAM("sent: " + message);
 }
 
 void publishData(const std::string &line) {
@@ -88,14 +88,14 @@ std::string readLine(boost::asio::serial_port &port) {
             inLine = true;
         if(inLine) {
             if (in == '\n') {
-	        ROS_INFO_STREAM(line);
+	        //ROS_INFO_STREAM(line);
                 return line;
 	    }
             if (in == '\r') {
-	        ROS_INFO_STREAM(line);
+	        //ROS_INFO_STREAM(line);
                 return line;
 	    }
-	    ROS_INFO_STREAM("adding char");
+	    //ROS_INFO_STREAM("adding char");
             line += in;
         }
     }
@@ -138,7 +138,9 @@ int main(int argc, char **argv) {
     int count = 0;
     int countLimit = (int) (hz / 10); // Limit motor commands to 10hz regardless of loop rate
     int sequence = 0;
-    ros::Duration(1).sleep();
+
+    ros::Duration(2.0).sleep();
+
     while (ros::ok() && serial.is_open()) {
         ros::spinOnce();
         if (count == countLimit) {
