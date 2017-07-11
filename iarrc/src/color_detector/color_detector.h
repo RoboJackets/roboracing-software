@@ -5,18 +5,21 @@
 #include <cv_bridge/cv_bridge.h>
 
 namespace iarrc {
-    class color_detector: public nodelet::Nodelet {
-        private:
-            image_transport::Publisher img_pub;
-            cv::Rect mask;
-            cv::Mat erosion_kernel;
-            void ImageCB(const sensor_msgs::ImageConstPtr &msg);
-            inline bool is_blue(const uchar &H, const uchar &S, const uchar &V);
-            inline bool is_orange(const uchar &H, const uchar &S, const uchar &V);
-            inline bool is_yellow(const uchar &H, const uchar &S, const uchar &V);
-            inline bool is_white(const uchar &S, const uchar &V);
-            virtual void onInit();
-    };
+class color_detector : public nodelet::Nodelet {
+private:
+    image_transport::Publisher img_pub;
+    image_transport::Subscriber img_sub;
+    cv::Rect mask;
+
+    cv::Mat erosion_kernel_blue;
+    cv::Mat erosion_kernel_white;
+    cv::Mat erosion_kernel_orange;
+    cv::Mat erosion_kernel_yellow;
+
+    void ImageCB(const sensor_msgs::ImageConstPtr &msg);
+
+    virtual void onInit();
+};
 
 }
 
