@@ -9,23 +9,21 @@ using namespace cv;
 
 namespace iarrc {
 
-using uchar = unsigned char;
+const Scalar blue_low{78, 50, 70};
+const Scalar blue_high{138, 255, 255};
+const Scalar blue_label{255, 0, 0};
 
-inline bool color_detector::is_blue(const uchar &H, const uchar &S, const uchar &V) {
-  return (abs(H - 108) < 30) && (S > 50) && (V > 70);
-}
+const Scalar white_low{0, 25, 180};
+const Scalar white_high{255, 62, 255};
+const Scalar white_label{255, 255, 255};
 
-inline bool color_detector::is_orange(const uchar &H, const uchar &S, const uchar &V) {
-  return (abs(H - 15) < 14) && (S > 70) && (V > 40);
-}
+const Scalar orange_low{0, 70, 40};
+const Scalar orange_high{30, 255, 255};
+const Scalar orange_label{0, 127, 255};
 
-inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
-  return (abs(H - 40) < 7) && (S > 65) && (V > 65);
-}
-
-inline bool color_detector::is_white(const uchar &S, const uchar &V) {
-  return (S < 62 && S > 25) && (V > 180);
-}
+const Scalar yellow_low{33, 65, 65};
+const Scalar yellow_high{47, 255, 255};
+const Scalar yellow_label{0, 255, 255};
 
 void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
@@ -42,59 +40,48 @@ void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
   const Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
   cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
   const Mat frame_masked = frameHSV(mask);
-  Mat output_white = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC1);
-  Mat output_white_masked = output_white(mask);
-  Mat output_orange = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC1);
-  Mat output_orange_masked = output_white(mask);
-  Mat output_blue = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC1);
-  Mat output_blue_masked = output_white(mask);
-  Mat output_yellow = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC1);
-  Mat output_yellow_masked = output_white(mask);
 
-  for (int r = 0; r < frame_masked.rows; r++) {
-    const uchar *row = frame_masked.ptr<uchar>(r);
-    uchar *out_row_white = output_white_masked.ptr<uchar>(r);
-    uchar *out_row_orange = output_orange_masked.ptr<uchar>(r);
-    uchar *out_row_blue = output_blue_masked.ptr<uchar>(r);
-    uchar *out_row_yellow = output_yellow_masked.ptr<uchar>(r);
-    for (int c = 0; c < frame_masked.cols; c++) {
-      const uchar &H = row[c * 3];
-      const uchar &S = row[c * 3 + 1];
-      const uchar &V = row[c * 3 + 2];
+  Mat output_blue = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_white = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_orange = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_yellow = Mat::zeros(mask.height, mask.width, CV_8U);
 
-      if (is_orange(H, S, V)) {
-        out_row_orange[c] = 255;
-      } else if (is_yellow(H, S, V)) {
-        out_row_yellow[c] = 255;
-      } else if (is_blue(H, S, V)) {
-        out_row_blue[c] = 255;
-      } else if (is_white(S, V)) {
-        out_row_white[c] = 255;
-      }
-    }
-  }
+  inRange(frame_masked, blue_low, blue_high, output_blue);
+  inRange(frame_masked, white_low, white_high, output_white);
+  inRange(frame_masked, orange_low, orange_high, output_orange);
+  inRange(frame_masked, yellow_low, yellow_high, output_yellow);
 
-//        erode(output_white_masked, output_white_masked, erosion_kernel);
+  erode(output_blue, output_blue, erosion_kernel_blue);
+  erode(output_white, output_white, erosion_kernel_white);
+  erode(output_orange, output_orange, erosion_kernel_orange);
+  erode(output_yellow, output_yellow, erosion_kernel_yellow);
 
-  Mat output;
+  Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
+  Mat output_masked = output(mask);
+
+  output_masked.setTo(yellow_label, output_yellow);
+  output_masked.setTo(orange_label, output_orange);
+  output_masked.setTo(white_label, output_white);
+  output_masked.setTo(blue_label, output_blue);
 
   img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
 }
 
 void color_detector::onInit() {
-  ROS_INFO("spinning up color detector");
   NodeHandle nh = getNodeHandle();
   image_transport::ImageTransport it(nh);
 
   mask = Rect(0, 200, 640, 280); // x, y, w, h
 
-  auto kernel_size = 5;
-  erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+  erosion_kernel_blue = getStructuringElement(MORPH_ELLIPSE, Size(11, 11));
+  erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+  erosion_kernel_orange = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
+  erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
 
-  image_transport::Subscriber img_saver_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
+  img_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
   img_pub = it.advertise("/colors_img", 1);
-  spin();
 
+  ROS_INFO("Color Detector ready!");
 }
 
 }
