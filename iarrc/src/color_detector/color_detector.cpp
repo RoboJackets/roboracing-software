@@ -1,7 +1,5 @@
 #include "color_detector.h"
 #include <pluginlib/class_list_macros.h>
-#include <std_msgs/Header.h>
-
 
 using namespace std;
 using namespace ros;
@@ -9,87 +7,80 @@ using namespace cv;
 
 namespace iarrc {
 
-    using uchar = unsigned char;
+const Scalar blue_low{78, 50, 70};
+const Scalar blue_high{138, 255, 255};
+const Scalar blue_label{255, 0, 0};
 
-    inline bool color_detector::is_blue(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 108) < 5) && (S > 50) && (V > 70);
-    }
+const Scalar white_low{0, 25, 180};
+const Scalar white_high{255, 62, 255};
+const Scalar white_label{255, 255, 255};
 
-    inline bool color_detector::is_orange(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 15) < 7) && (S > 70) && (V > 40);
-    }
+const Scalar orange_low{0, 70, 40};
+const Scalar orange_high{30, 255, 255};
+const Scalar orange_label{0, 127, 255};
 
-    inline bool color_detector::is_yellow(const uchar &H, const uchar &S, const uchar &V) {
-        return (abs(H - 40) < 7) && (S > 65) && (V > 65);
-    }
+const Scalar yellow_low{33, 65, 65};
+const Scalar yellow_high{47, 255, 255};
+const Scalar yellow_label{0, 255, 255};
 
-    inline bool color_detector::is_white(const uchar &S, const uchar &V) {
-        return (S < 6) && (V > 140);
-    }
+void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
-    void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
+  cv_bridge::CvImageConstPtr cv_ptr;
 
-        cv_bridge::CvImageConstPtr cv_ptr;
+  try {
+    cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
+  } catch (cv_bridge::Exception &e) {
+    ROS_ERROR("CV-Bridge error: %s", e.what());
+    return;
+  }
 
-        try {
-            cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
-        } catch (cv_bridge::Exception &e) {
-            ROS_ERROR("CV-Bridge error: %s", e.what());
-            return;
-        }
+  const Mat &frameBGR = cv_ptr->image;
+  Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
+  cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
+  const Mat frame_masked = frameHSV(mask);
 
-        const Mat &frameBGR = cv_ptr->image;
-        const Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
-        cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
-        const Mat frame_masked = frameHSV(mask);
-        Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
-        Mat output_masked = output(mask);
+  Mat output_blue = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_white = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_orange = Mat::zeros(mask.height, mask.width, CV_8U);
+  Mat output_yellow = Mat::zeros(mask.height, mask.width, CV_8U);
 
-        for (int r = 0; r < frame_masked.rows; r++) {
-            const uchar *row = frame_masked.ptr<uchar>(r);
-            uchar *out_row = output_masked.ptr<uchar>(r);
-            for (int c = 0; c < frame_masked.cols * frame_masked.channels(); c += frame_masked.channels()) {
-                const uchar &H = row[c];
-                const uchar &S = row[c + 1];
-                const uchar &V = row[c + 2];
+  inRange(frame_masked, blue_low, blue_high, output_blue);
+  inRange(frame_masked, white_low, white_high, output_white);
+  inRange(frame_masked, orange_low, orange_high, output_orange);
+  inRange(frame_masked, yellow_low, yellow_high, output_yellow);
 
-                if (is_orange(H, S, V)) {
-                    out_row[c] = 0;
-                    out_row[c + 1] = 127;
-                    out_row[c + 2] = 255;
-                } else if (is_yellow(H, S, V)) {
-                    out_row[c] = 0;
-                    out_row[c + 1] = out_row[c + 2] = 255;
-                } else if (is_blue(H, S, V)) {
-                    out_row[c] = 255;
-                    out_row[c + 1] = out_row[c + 2] = 0;
-                }
-                if (is_white(S, V)) {
-                    out_row[c] = out_row[c + 1] = out_row[c + 2] = 255;
-                }
-            }
-        }
+  erode(output_blue, output_blue, erosion_kernel_blue);
+  erode(output_white, output_white, erosion_kernel_white);
+  erode(output_orange, output_orange, erosion_kernel_orange);
+  erode(output_yellow, output_yellow, erosion_kernel_yellow);
 
-        //erode(output_masked, output_masked, erosion_kernel);
+  Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
+  Mat output_masked = output(mask);
 
-        img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
-    }
+  output_masked.setTo(yellow_label, output_yellow);
+  output_masked.setTo(orange_label, output_orange);
+  output_masked.setTo(white_label, output_white);
+  output_masked.setTo(blue_label, output_blue);
 
-    void color_detector::onInit() {
-        ROS_INFO("spinning up color detector");
-        NodeHandle nh = getNodeHandle();
-        image_transport::ImageTransport it(nh);
+  img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
+}
 
-        mask = Rect(0, 120, 640, 310); // x, y, w, h
+void color_detector::onInit() {
+  NodeHandle nh = getNodeHandle();
+  image_transport::ImageTransport it(nh);
 
-        auto kernel_size = 3;
-        erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
+  mask = Rect(0, 200, 640, 280); // x, y, w, h
 
-        image_transport::Subscriber img_saver_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
-        img_pub = it.advertise("/colors_img", 1);
-        spin();
+  erosion_kernel_blue = getStructuringElement(MORPH_ELLIPSE, Size(11, 11));
+  erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+  erosion_kernel_orange = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
+  erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
 
-    }
+  img_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
+  img_pub = it.advertise("/colors_img", 1);
+
+  ROS_INFO("Color Detector ready!");
+}
 
 }
 
