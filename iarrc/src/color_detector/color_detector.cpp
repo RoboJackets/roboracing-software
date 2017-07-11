@@ -1,7 +1,5 @@
 #include "color_detector.h"
 #include <pluginlib/class_list_macros.h>
-#include <std_msgs/Header.h>
-
 
 using namespace std;
 using namespace ros;
@@ -37,7 +35,7 @@ void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
   }
 
   const Mat &frameBGR = cv_ptr->image;
-  const Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
+  Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
   cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
   const Mat frame_masked = frameHSV(mask);
 
