@@ -12,6 +12,7 @@ double prevSpeed = 0;
 double kP = 0;
 double kI = 0;
 double kD = 0;
+int trim = 0;
 
 const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -47,7 +48,8 @@ void sendCommand(boost::asio::serial_port &port) {
                           std::to_string(desiredSteer) + "," +
                           std::to_string(kP) + "," +
                           std::to_string(kI) + "," +
-                          std::to_string(kD) + "\n";
+                          std::to_string(kD) + "," +
+                          std::to_string(trim) + "\n";
     
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
@@ -118,6 +120,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("kP"), kP, 1.0);
     nhp.param(std::string("kI"), kI, 0.0);
     nhp.param(std::string("kD"), kD, 0.1);
+    nhp.param(std::string("trim"), trim, 0);
 
     state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
