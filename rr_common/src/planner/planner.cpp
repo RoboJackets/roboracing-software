@@ -125,6 +125,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
         rr_platform::steeringPtr steerMSG(new rr_platform::steering);
         speedMSG->speed = 0.5; //proceed with caution; E-Kill if necessary
         steerMSG->angle = 0;
+        steerMSG->header.stamp = ros::Time::now();
+        speedMSG->header.stamp = ros::Time::now();
         speed_pub.publish(speedMSG);
         steer_pub.publish(steerMSG);
         return;
@@ -212,6 +214,8 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
     speedMSG->speed = desired_velocity;
     steerMSG->angle = desired_steer_angle;
+    steerMSG->header.stamp = ros::Time::now();
+    speedMSG->header.stamp = ros::Time::now();
     speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 
