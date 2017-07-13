@@ -25,6 +25,10 @@ void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor
     imu_ready = false;
     mag_ready = false;
 
+    if(tokens.size() < 9) {
+       return;
+    }
+
     if(tokens[0] == "ax") {
         imu_msg.linear_acceleration.x = std::atof(tokens[2].c_str());
         imu_msg.linear_acceleration.y = std::atof(tokens[5].c_str());
@@ -37,9 +41,9 @@ void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor
     }
     else if(tokens[0] == "q0") {
         imu_msg.orientation.x = std::atof(tokens[2].c_str());
-        imu_msg.orientation.y = std::atof(tokens[2].c_str());
-        imu_msg.orientation.z = std::atof(tokens[2].c_str());
-        imu_msg.orientation.w = std::atof(tokens[2].c_str());
+        imu_msg.orientation.y = std::atof(tokens[5].c_str());
+        imu_msg.orientation.z = std::atof(tokens[8].c_str());
+        imu_msg.orientation.w = std::atof(tokens[11].c_str());
         imu_ready = true;
     }
     else if(tokens[0] == "mx") {
@@ -83,7 +87,7 @@ int main(int argc, char **argv) {
 
     // Serial port setup
     std::string serial_port_name;
-    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB0"));
+    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB1"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(38400));
@@ -103,6 +107,8 @@ int main(int argc, char **argv) {
     bool mag_ready = false;
 
     ROS_INFO("IMU Ready.");
+
+    ros::Duration(2.0).sleep();
 
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();

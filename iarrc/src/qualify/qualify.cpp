@@ -2,7 +2,7 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 #include <rr_platform/chassis_state.h>
-#include <sensor_msgs/MagneticField.h>
+#include <sensor_msgs/Imu.h>
 #include <tf/transform_datatypes.h>
 #include <math.h>
 
@@ -14,10 +14,11 @@ const double kP = 0;
 
 bool go = false;
 
-void imuCallback(const sensor_msgs::MagneticFieldConstPtr& msg) {
-    auto orientation = msg->magnetic_field;
-    auto yaw = atan(orientation.y / orientation.x);
-    currentYaw = yaw;
+void imuCallback(const sensor_msgs::ImuConstPtr& msg) {
+    auto orientation = msg->orientation;
+    tf::Quaternion tf_quat;
+    tf::quaternionMsgToTF(orientation, tf_quat);
+    auto currentYaw = tf::getYaw(tf_quat);
     ROS_INFO_STREAM(currentYaw);
 }
 
@@ -43,11 +44,11 @@ int main(int argc, char* argv[]) {
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
     steeringPub = nh.advertise<rr_platform::steering>("/steering", 1);
     ros::Subscriber chassisSub = nh.subscribe("/chassis_state", 1, chassisCB);
-    ros::Subscriber imuSub = nh.subscribe("/imu/mag", 1, imuCallback);
+    ros::Subscriber imuSub = nh.subscribe("/imu/data_raw", 1, imuCallback);
     while (!go && ros::ok()) {
         ros::spinOnce();
     }
-    publishSpeed(2.0);
+    publishSpeed(0.0);
     ros::Duration(5).sleep();
     publishSpeed(0.0);
     return 0;
