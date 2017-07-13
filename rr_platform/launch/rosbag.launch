@@ -1,4 +1,4 @@
 <launch>
     <node pkg="rosbag" type="record" name="record" output="screen"
-        args="-a -x '(.*)theora(.*)|(.*)compressed(.*)|(.*)image_raw(.*)' -o /media/$(env USER)/RR-OnBoard-1/logs/RR" />
+        args="-a -x '(.*)theora(.*)|(.*)compressed(.*)|(.*)image_raw(.*)' -o /home/$(env USER)/logs/RR" />
 </launch>
