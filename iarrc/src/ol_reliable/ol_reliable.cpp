@@ -34,7 +34,7 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
 
     blue_mask = ~blue_mask;
 
-    frame *= blue_mask;
+    //frame *= blue_mask;
 
     Mat frame_1channel;
 
@@ -48,7 +48,7 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
     }
 
     // Discount center region to encourage forward motion
-    counts[(counts.size() / 2)+1] *= center_discount;
+    counts[(counts.size() / 2)] *= center_discount;
 
     auto min_iter = min_element(counts.begin(), counts.end());
 
@@ -79,12 +79,17 @@ int main(int argc, char **argv) {
     int num_regions;
     pnh.param("num_regions", num_regions, 3);
 
+    int regionWidth = 640 / num_regions;
+    for (int i = 0; i < num_regions; i++) {
+        regions.push_back(Rect(i * regionWidth, 0, regionWidth, 480));
+    }
+
     pnh.param("min_steering", min_steering, -0.35);
 
     double max_steering;
     pnh.param("max_steering", max_steering, 0.35);
 
-    steering_rate = (max_steering - min_steering) / num_regions;
+    steering_rate = (max_steering - min_steering) / (num_regions - 1);
 
     steering_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
     speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
