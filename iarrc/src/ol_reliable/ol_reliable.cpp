@@ -1,9 +1,11 @@
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <rr_platform/steering.h>
+#include <rr_platform/speed.h>
 #include <cv_bridge/cv_bridge.h>
 
 ros::Publisher steering_pub;
+ros::Publisher speed_pub;
 
 using namespace cv;
 using namespace std;
@@ -58,6 +60,11 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
     steering_msg.header.stamp = ros::Time::now();
     steering_msg.angle = steering_val;
     steering_pub.publish(steering_msg);
+
+    rr_platform::speed speed_msg;
+    speed_msg.header.stamp = ros::Time::now();
+    speed_msg.speed = 2;
+    speed_pub.publish(speed_msg);
 }
 
 int main(int argc, char **argv) {
@@ -79,7 +86,8 @@ int main(int argc, char **argv) {
 
     steering_rate = (max_steering - min_steering) / num_regions;
 
-    steering_pub = nh.advertise<rr_platform::steering>("/steering", 1);
+    steering_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
 
     image_transport::ImageTransport imageTransport{nh};
 

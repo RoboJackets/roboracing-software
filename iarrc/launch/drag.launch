@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <include file="$(find iarrc)/launch/color_detector.launch"/>
+    <include file="$(find iarrc)/launch/ol_reliable.launch"/>
+    <node name="navigation_controller" pkg="iarrc" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="1"/>
+    </node>
+</launch>
+ 
