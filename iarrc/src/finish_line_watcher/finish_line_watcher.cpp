@@ -73,7 +73,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             auto& blue = row[c];
             auto& green = row[c+1];
             auto& red = row[c+2];
-            if(blue == 255 && green == 0 && red == 0) {
+            if(blue == 255 && green == 0 && red == 0 || (blue == 145 && red == 10 && green == 70)) {
                 blue = green = red = 255;
             } else if(blue != 0 || green != 0 || red != 0) {
                 blue = green = red = 0;
@@ -99,6 +99,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
+	ROS_INFO("crossed!");
     }
 
     //ROS_INFO_STREAM("State: " << state);

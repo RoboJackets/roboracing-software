@@ -11,8 +11,8 @@ namespace iarrc {
     const Scalar blue_high{138, 255, 255};
     const Scalar blue_label{255, 0, 0};
 
-    const Scalar white_low{0, 00, 200}; //10->25
-    const Scalar white_high{255, 32, 255}; //32->62
+    const Scalar white_low{0, 00, 200}; 
+    const Scalar white_high{255, 32, 255};
     const Scalar white_label{255, 255, 255};
 
     const Scalar orange_low{0, 80, 40};
@@ -71,7 +71,7 @@ namespace iarrc {
         Mat output_masked = output(mask);
 
         output_masked.setTo(yellow_label, output_yellow);
-        //output_masked.setTo(orange_label, output_orange);
+        output_masked.setTo(orange_label, output_orange);
         output_masked.setTo(white_label, output_white);
         output_masked.setTo(blue_label, output_blue);
         output_masked.setTo(magenta_label, output_magenta);
