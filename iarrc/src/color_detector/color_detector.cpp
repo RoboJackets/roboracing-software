@@ -11,7 +11,7 @@ namespace iarrc {
     const Scalar blue_high{138, 255, 255};
     const Scalar blue_label{255, 0, 0};
 
-    const Scalar white_low{0, 00, 175}; //10->25
+    const Scalar white_low{0, 00, 200}; //10->25
     const Scalar white_high{255, 32, 255}; //32->62
     const Scalar white_label{255, 255, 255};
 
@@ -19,7 +19,7 @@ namespace iarrc {
     const Scalar orange_high{30, 255, 255};
     const Scalar orange_label{0, 127, 255};
 
-    const Scalar yellow_low{25, 45, 45}; //55,50 -> 65, 23->33
+    const Scalar yellow_low{25, 60, 45}; //55,50 -> 65, 23->33
     const Scalar yellow_high{45, 255, 255}; //47 > 57
     const Scalar yellow_label{0, 255, 255};
     
@@ -39,8 +39,11 @@ namespace iarrc {
         }
 
         const Mat &frameBGR = cv_ptr->image;
-        Mat frameHSV = Mat::zeros(frameBGR.rows, frameBGR.cols, CV_8UC3);
-        cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
+        Mat frameBlurred;
+        GaussianBlur(frameBGR, frameBlurred, Size{7,7}, 0);
+        Mat frameHSV;
+        cvtColor(frameBlurred, frameHSV, CV_BGR2HSV);
+
         const Mat frame_masked = frameHSV(mask);
 
         Mat output_blue = Mat::zeros(mask.height, mask.width, CV_8U);
@@ -60,6 +63,9 @@ namespace iarrc {
         erode(output_orange, output_orange, erosion_kernel_orange);
         erode(output_yellow, output_yellow, erosion_kernel_yellow);
         erode(output_magenta, output_magenta, erosion_kernel_magenta);
+
+        dilate(output_white, output_white, dilation_kernel_white);
+        dilate(output_yellow, output_yellow, dilation_kernel_yellow);
 
         Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
         Mat output_masked = output(mask);
@@ -84,10 +90,14 @@ namespace iarrc {
         mask = Rect(0, mask_y_coordinate, 640, 480-mask_y_coordinate); // x, y, w, h
 
         erosion_kernel_blue = getStructuringElement(MORPH_ELLIPSE, Size(11, 11));
-        erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
+        erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(9, 9));
         erosion_kernel_orange = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
         erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(7, 7)); 
         erosion_kernel_magenta = getStructuringElement(MORPH_ELLIPSE, Size(7, 7)); 
+        erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(9, 9));
+
+        dilation_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(5,5));
+        dilation_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(5,5));
 
         img_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
         img_pub = it.advertise("/colors_img", 1);
