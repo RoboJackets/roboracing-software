@@ -22,6 +22,10 @@ namespace iarrc {
     const Scalar yellow_low{25, 45, 45}; //55,50 -> 65, 23->33
     const Scalar yellow_high{45, 255, 255}; //47 > 57
     const Scalar yellow_label{0, 255, 255};
+    
+    const Scalar magenta_low{165, 25, 66}; 
+    const Scalar magenta_high{255, 255, 255}; 
+    const Scalar magenta_label{145, 10, 70};
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
@@ -43,16 +47,19 @@ namespace iarrc {
         Mat output_white = Mat::zeros(mask.height, mask.width, CV_8U);
         Mat output_orange = Mat::zeros(mask.height, mask.width, CV_8U);
         Mat output_yellow = Mat::zeros(mask.height, mask.width, CV_8U);
+        Mat output_magenta = Mat::zeros(mask.height, mask.width, CV_8U);
 
         inRange(frame_masked, blue_low, blue_high, output_blue);
         inRange(frame_masked, white_low, white_high, output_white);
         inRange(frame_masked, orange_low, orange_high, output_orange);
         inRange(frame_masked, yellow_low, yellow_high, output_yellow);
+        inRange(frame_masked, magenta_low, magenta_high, output_magenta);
 
         erode(output_blue, output_blue, erosion_kernel_blue);
         erode(output_white, output_white, erosion_kernel_white);
         erode(output_orange, output_orange, erosion_kernel_orange);
         erode(output_yellow, output_yellow, erosion_kernel_yellow);
+        erode(output_magenta, output_magenta, erosion_kernel_magenta);
 
         Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
         Mat output_masked = output(mask);
@@ -61,6 +68,7 @@ namespace iarrc {
         //output_masked.setTo(orange_label, output_orange);
         output_masked.setTo(white_label, output_white);
         output_masked.setTo(blue_label, output_blue);
+        output_masked.setTo(magenta_label, output_magenta);
 
         img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
     }
@@ -78,7 +86,8 @@ namespace iarrc {
         erosion_kernel_blue = getStructuringElement(MORPH_ELLIPSE, Size(11, 11));
         erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
         erosion_kernel_orange = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
-        erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(7, 7)); //9->5
+        erosion_kernel_yellow = getStructuringElement(MORPH_ELLIPSE, Size(7, 7)); 
+        erosion_kernel_magenta = getStructuringElement(MORPH_ELLIPSE, Size(7, 7)); 
 
         img_sub = it.subscribe("/camera/image_rect", 1, &color_detector::ImageCB, this);
         img_pub = it.advertise("/colors_img", 1);
