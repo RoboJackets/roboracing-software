@@ -36,6 +36,7 @@ void updateState() {
             }
             break;
         case FINISHED:
+            ROS_INFO("finished");
             speed = 0.0;
             steering = 0.0;
             break;
@@ -92,7 +93,7 @@ int main(int argc, char** argv) {
         rr_platform::speed speedMsg;
         speedMsg.speed = speed;
         speedMsg.header.stamp = ros::Time::now();
-        speedPub.publish(speedMsg);
+	speedPub.publish(speedMsg);
 
         rr_platform::steering steerMsg;
         steerMsg.angle = steering;

@@ -6,6 +6,6 @@
     <param name="kP" type="double" value= "0.05" />
     <param name="kI" type="double" value= "0.00" />
     <param name="kD" type="double" value= "0.08" />
-    <param name="trim" value= "40.2" />
+    <param name="trim" value= "4" />
   </node>
 </launch>

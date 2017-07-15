@@ -90,11 +90,11 @@ std::string readLine(boost::asio::serial_port &port) {
             inLine = true;
         if(inLine) {
             if (in == '\n') {
-	        //ROS_INFO_STREAM(line);
+	        ROS_INFO_STREAM(line);
                 return line;
 	    }
             if (in == '\r') {
-	        //ROS_INFO_STREAM(line);
+	        ROS_INFO_STREAM(line);
                 return line;
 	    }
 	    //ROS_INFO_STREAM("adding char");
