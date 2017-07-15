@@ -93,7 +93,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     //ROS_INFO_STREAM("Count: " << count);
     //ROS_INFO_STREAM("Width: " << width);
 
-    if(state == LOW && count > 8000 && width > 300) {
+    if(state == LOW && count > 3000 && width > 300) {
         state = HIGH;
     } else if(state == HIGH && count < 1000) {
         // We crossed the line!
