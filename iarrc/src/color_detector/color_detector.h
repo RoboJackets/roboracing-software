@@ -15,6 +15,10 @@ private:
     cv::Mat erosion_kernel_white;
     cv::Mat erosion_kernel_orange;
     cv::Mat erosion_kernel_yellow;
+    cv::Mat erosion_kernel_magenta;
+
+    cv::Mat dilation_kernel_white;
+    cv::Mat dilation_kernel_yellow;
 
     void ImageCB(const sensor_msgs::ImageConstPtr &msg);
 
