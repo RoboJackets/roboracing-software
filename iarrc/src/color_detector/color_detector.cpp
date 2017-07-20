@@ -11,12 +11,12 @@ namespace iarrc {
     const Scalar blue_high{138, 255, 255};
     const Scalar blue_label{255, 0, 0};
 
-    const Scalar white_low{0, 00, 200}; 
-    const Scalar white_high{255, 32, 255};
+    const Scalar white_low{0, 00, 180}; 
+    const Scalar white_high{255, 35, 255};
     const Scalar white_label{255, 255, 255};
 
     const Scalar orange_low{0, 80, 40};
-    const Scalar orange_high{30, 255, 255};
+    const Scalar orange_high{35, 255, 255};
     const Scalar orange_label{0, 127, 255};
 
     const Scalar yellow_low{25, 60, 45}; //55,50 -> 65, 23->33
@@ -25,7 +25,7 @@ namespace iarrc {
     
     const Scalar magenta_low{165, 25, 66}; 
     const Scalar magenta_high{255, 255, 255}; 
-    const Scalar magenta_label{145, 10, 70};
+    const Scalar magenta_label{255 , 0, 0};
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 

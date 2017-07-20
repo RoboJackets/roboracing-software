@@ -64,7 +64,11 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
 
     rr_platform::speed speed_msg;
     speed_msg.header.stamp = ros::Time::now();
-    speed_msg.speed = 1;
+    if (steering_msg.angle == 0) {
+        speed_msg.speed = 1.5;
+    } else {
+	speed_msg.speed = 1.0;
+    }
     speed_pub.publish(speed_msg);
 }
 
