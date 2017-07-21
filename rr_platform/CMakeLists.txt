@@ -27,8 +27,6 @@ find_package(
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED filters)
 
-pkg_check_modules(mraa REQUIRED)
-
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 ## Generate messages in the 'msg' folder

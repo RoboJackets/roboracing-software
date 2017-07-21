@@ -37,22 +37,13 @@ The following files and folders enable our continuous integration system.
 
 2. Clone this repo into the _src_ directory of your catkin workspace.
 
-3. Unfortunately, some dependecies have to be installed manually.
-  1. Libmraa - To interface with IO on the Intel Joule
-      
-      ```
-      sudo add-apt-repository ppa:mraa/mraa
-      sudo apt-get update
-      sudo apt-get install libmraa1 libmraa-dev mraa-tools python-mraa python3-mraa
-      ```
-
-4. Install the remaining dependencies with the following command in your catkin workspace folder:
+3. Install the remaining dependencies with the following command in your catkin workspace folder:
 
    ```
    rosdep install --from-path src --ignore-src -y
    ```
     
-5. You should now be able to build the project with `catkin_make`.
+4. You should now be able to build the project with `catkin_make`.
 
 ## Simulation
 
