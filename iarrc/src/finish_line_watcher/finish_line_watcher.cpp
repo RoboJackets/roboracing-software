@@ -73,7 +73,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             auto& blue = row[c];
             auto& green = row[c+1];
             auto& red = row[c+2];
-            if(blue == 255 && green == 0 && red == 0 || (blue == 145 && red == 10 && green == 70)) {
+            if(blue == 255 && green == 0 && red == 0) {
                 blue = green = red = 255;
             } else if(blue != 0 || green != 0 || red != 0) {
                 blue = green = red = 0;
@@ -93,7 +93,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     //ROS_INFO_STREAM("Count: " << count);
     //ROS_INFO_STREAM("Width: " << width);
 
-    if(state == LOW && count > 3000 && width > 300) {
+    if(state == LOW && count > 1000 && width > 240) {
         state = HIGH;
     } else if(state == HIGH && count < 1000) {
         // We crossed the line!
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 
     Rate rate(30);
     while(ros::ok()) {
-        //ROS_INFO_STREAM("Crosses: " << number_of_crosses);
+        ROS_INFO_STREAM("Crosses: " << number_of_crosses);
         std_msgs::Int8 intmsg;
         intmsg.data = number_of_crosses;
         crosses_pub.publish(intmsg);

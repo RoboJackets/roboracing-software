@@ -36,7 +36,7 @@ void updateState() {
             }
             break;
         case FINISHED:
-            ROS_INFO("finished");
+            //ROS_INFO("finished");
             speed = 0.0;
             steering = 0.0;
             break;
