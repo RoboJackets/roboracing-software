@@ -40,7 +40,6 @@ void SpeedCallback(const rr_platform::speed::ConstPtr &msg) {
 
 void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
     desiredSteer = msg->angle;
-    ROS_INFO_STREAM("Desired steer: " << desiredSteer);
 }
 
 void sendCommand(boost::asio::serial_port &port) {
@@ -56,14 +55,12 @@ void sendCommand(boost::asio::serial_port &port) {
     } catch (boost::system::system_error &err) {
         ROS_ERROR("%s", err.what());
     }
-    ROS_INFO_STREAM("sent: " + message);
 }
 
 void publishData(const std::string &line) {
     if (line.empty()) {
         return;
     }
-    //ROS_INFO_STREAM(line);
     std::vector <std::string> data = split(line.substr(1), ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
@@ -90,14 +87,11 @@ std::string readLine(boost::asio::serial_port &port) {
             inLine = true;
         if(inLine) {
             if (in == '\n') {
-	        ROS_INFO_STREAM(line);
                 return line;
 	    }
             if (in == '\r') {
-	        ROS_INFO_STREAM(line);
                 return line;
 	    }
-	    //ROS_INFO_STREAM("adding char");
             line += in;
         }
     }

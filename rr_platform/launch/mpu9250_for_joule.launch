@@ -1,5 +1,0 @@
-<launch>
-
-    <node pkg="rr_platform" type="mpu9250_for_joule" name="imu" />
-
-</launch>
