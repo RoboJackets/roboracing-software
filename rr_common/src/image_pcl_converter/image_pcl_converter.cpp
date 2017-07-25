@@ -26,7 +26,6 @@ map<string, Publisher> cloud_pubs;
 double pxPerMeter;
 
 void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
-    //ROS_INFO("transforming");
     if(cloud_pubs[topic].getNumSubscribers() == 0) {
         // no one is listening. go home and cry
         return;
@@ -42,7 +41,6 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     Mat transformed = cv_ptr->image;
-    //ROS_INFO("begging iterationss, mat size %d", transformed_gray.size());
     for(int r = 0; r < transformed.rows; r++) {
         uchar* row = transformed.ptr<uchar>(r);
         for(int c = 0; c < transformed.cols; c++) {
@@ -57,7 +55,6 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
             }
         }
     }
-    //ROS_INFO("finished iters");
     pcl::PCLPointCloud2 cloud_pc2;
     pcl::toPCLPointCloud2(*cloud, cloud_pc2);
     sensor_msgs::PointCloud2 cloud_msg;

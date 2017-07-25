@@ -95,13 +95,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     double minResult, maxResult;
     minMaxLoc(centerLightChangeness, &minResult, &maxResult);
     if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
-        ROS_INFO_STREAM("green");
         green.data = true;
-    } else {
-        ROS_INFO_STREAM((TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) -  maxResult);
-        //cout << "Wait for it...";
     }
-    //cout << "   " << maxResult << endl;
 
     bool_pub.publish(green);
 
