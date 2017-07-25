@@ -2,11 +2,6 @@
 <sdf version="1.6">
     <world name="IARRC Drag">
         <scene>
-            <sky>
-                <!--clouds>
-                    <speed>12</speed>
-                </clouds-->
-            </sky>
             <ambient>1.0 1.0 1.0 1.0</ambient>
             <background>0.7 0.7 0.7 1.0</background>
             <shadows>true</shadows>
