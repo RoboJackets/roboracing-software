@@ -49,7 +49,6 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
 
     // Discount center region to encourage forward motion
     counts[(counts.size() / 2)] *= center_discount;
-    counts[(counts.size() / 2)] -= 100;
 
     auto min_iter = min_element(counts.begin(), counts.end());
 
