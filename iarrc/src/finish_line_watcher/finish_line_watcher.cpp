@@ -96,7 +96,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
-	ROS_INFO("Finish line crossed - " + to_string(number_of_crosses));
+	ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
     }
 
     sensor_msgs::Image outmsg;
