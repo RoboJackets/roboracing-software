@@ -21,7 +21,6 @@ int finishLineCrosses;
 void updateState() {
     switch(state) {
         case WAITING_FOR_START:
-            ROS_INFO("waiting");
             speed = 0.0;
             steering = 0.0;
             if(raceStarted) {
