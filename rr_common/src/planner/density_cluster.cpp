@@ -11,7 +11,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     // measure number of samples and dimensionality (# of path segments)
     int nSamples = weightedSteerVecs.size();
     int nDims = weightedSteerVecs[0].steers.size();
-//    cout << nSamples << " samples, " << nDims << " dims" << endl;
 
     // fill flann-format sample matrix
     // (weights still available in weightedSteerVecs)
@@ -33,7 +32,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     fill_n(groupMembership.begin(), nSamples, POINT_UNDISCOVERED);
 
     // set radius search params
-    float radiusSqr = connectRadius * connectRadius;
+    const float radiusSqr = connectRadius * connectRadius;
     int clusterId = 0;
     flann::SearchParams searchParams;
 
@@ -64,7 +63,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
         while(nNeighbors < nSamples && indices[0][nNeighbors] != -1) {
             nNeighbors++;
         }
-        // cout << "number of radius search results is " << nNeighbors << endl;
 
         if(nNeighbors < minConnections) {
             // not enough neighbors. Mark as noise
@@ -114,7 +112,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
                 for(int ii = 0; ii < nNeighborsInner; ii++) {
                     int indexInner = indicesInner[0][ii];
                     if(groupMembership[indexInner] == POINT_UNDISCOVERED) {
-                        // fprintf(stderr, "discovered index %d, queue size = %lu\n", indexInner, clusterCheckQueue.size());
                         groupMembership[indexInner] = POINT_DISCOVERED;
                         clusterCheckQueue.push_back(indexInner);
                     }
@@ -124,7 +121,6 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
         }
     }
 
-//    cout << "clusterId = " << clusterId << endl;
     outGroups.resize(clusterId); //clusters are numbered 1..n
     for(int i = 0; i < nSamples; i++) {
         if(groupMembership[i] > 0) {
