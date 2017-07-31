@@ -12,8 +12,6 @@
 
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
 
-    <include file="$(find rr_platform)/launch/macaroni_state_publisher.launch" />
-
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
             left_steer_position_controller right_steer_position_controller camera_height_position_controller
