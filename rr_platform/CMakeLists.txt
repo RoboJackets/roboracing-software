@@ -80,9 +80,9 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/imu)
 
-add_executable(speedi_camera_state_pub src/speedi_camera_state_pub.cpp)
-target_link_libraries(speedi_camera_state_pub ${catkin_LIBRARIES})
-add_dependencies(speedi_camera_state_pub rr_platform_generate_messages_cpp)
+add_executable(macaroni_camera_state_pub src/macaroni_camera_state_pub.cpp)
+target_link_libraries(macaroni_camera_state_pub ${catkin_LIBRARIES})
+add_dependencies(macaroni_camera_state_pub rr_platform_generate_messages_cpp)
 
 add_executable(mag_field_bias_calc src/mag_field_bias_calc.cpp)
 target_link_libraries(mag_field_bias_calc ${catkin_LIBRARIES})

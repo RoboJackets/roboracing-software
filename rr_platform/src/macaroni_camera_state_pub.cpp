@@ -73,7 +73,7 @@ void publishJointCommands() {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "speedi_joint_updater");
+    ros::init(argc, argv, "macaroni_joint_updater");
 
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");

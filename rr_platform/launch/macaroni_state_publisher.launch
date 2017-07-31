@@ -1,0 +1,11 @@
+<launch>
+    <param name="robot_description" command="cat $(find rr_description)/urdf/macaroni.urdf"/>
+
+    <node name="macaroni_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
+
+    <node name="macaroni_camera_state_pub" pkg="rr_platform" type="macaroni_camera_state_pub" output="screen">
+    	<param name="joint_state_uri" value="$(find rr_platform)/launch/camera_joint_state.dat"/>
+    	<param name="loaded_joint_state" command="cat $(find rr_platform)/launch/camera_joint_state.dat"/>
+        <param name="use_simulator_control" type="bool" value="false" />
+    </node>
+</launch>

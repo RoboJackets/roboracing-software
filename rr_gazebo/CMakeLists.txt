@@ -21,9 +21,9 @@ catkin_package(
         LIBRARIES
 )
 
-add_executable(speedi_controller nodes/speedi_controller.cpp)
-target_link_libraries(speedi_controller ${catkin_LIBRARIES})
-add_dependencies(speedi_controller rr_platform_generate_messages_cpp)
+add_executable(macaroni_controller nodes/macaroni_controller.cpp)
+target_link_libraries(macaroni_controller ${catkin_LIBRARIES})
+add_dependencies(macaroni_controller rr_platform_generate_messages_cpp)
 
 catkin_install_python(
         PROGRAMS
@@ -32,6 +32,6 @@ catkin_install_python(
 )
 
 install(PROGRAMS
-        scripts/spawn_speedi_platform.sh
+        scripts/spawn_macaroni_platform.sh
         scripts/controller_spawner.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
