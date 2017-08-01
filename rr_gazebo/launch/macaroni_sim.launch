@@ -10,12 +10,13 @@
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
+    <include file="$(find rr_platform)/launch/macaroni_state_publisher.launch"/>
+
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
 
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
-            left_steer_position_controller right_steer_position_controller camera_height_position_controller
-            camera_tilt_position_controller --shutdown-timeout 1"/>
+            left_steer_position_controller right_steer_position_controller --shutdown-timeout 1"/>
 
     <rosparam file="$(find rr_gazebo)/config/macaroni_control.yaml" command="load"/>
 
