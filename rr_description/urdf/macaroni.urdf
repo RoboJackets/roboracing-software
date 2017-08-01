@@ -398,26 +398,4 @@
         </actuator>
     </transmission>
 
-    <transmission name="cam_height_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="cam_chassis_height">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="cam_height_motor">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-    </transmission>
-
-    <transmission name="cam_tilt_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="camera_tilt">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="cam_tilt_motor">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-    </transmission>
-
 </robot>
