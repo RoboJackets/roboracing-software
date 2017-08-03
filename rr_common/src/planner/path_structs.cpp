@@ -8,13 +8,6 @@ void path::SteeringGroup::add(const WeightedSteeringVec &wsv) {
     weightedSteers.push_back(wsv);
 }
 
-// merge two connected-component groups of path instructions
-void path::SteeringGroup::addAll(const SteeringGroup &sg) {
-    weightedSteers.insert(weightedSteers.end(), sg.weightedSteers.begin(),
-                          sg.weightedSteers.end());
-    weightTotal += sg.weightTotal;
-}
-
 // makes sure two connected components are compared by reference equality
 bool path::SteeringGroup::operator==(SteeringGroup other) {
     // shallow equality

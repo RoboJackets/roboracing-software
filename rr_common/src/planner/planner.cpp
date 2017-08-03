@@ -158,8 +158,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
 
         if(wsv.weight > bestWeight) bestWeight = wsv.weight;
     }
-    //ROS_INFO("best weight %f", bestWeight);
-    //ROS_INFO("paths found %d", weightedSteerVecs.size());
 
     // Filter paths by weight and store the results in weightedSteerVecsFiltered
     vector<path::WeightedSteeringVec> weightedSteerVecsFiltered;
@@ -168,7 +166,6 @@ void planner::mapCb(const sensor_msgs::PointCloud2ConstPtr& map) {
             weightedSteerVecsFiltered.push_back(steerVec);
         }
     }
-    //ROS_INFO("after filter %d entries", weightedSteerVecsFiltered.size());
 
     vector<path::SteeringGroup> groups;
     cluster(weightedSteerVecsFiltered, groups, CONNECTED_PATH_DIST, MIN_CLUSTER_PTS);
