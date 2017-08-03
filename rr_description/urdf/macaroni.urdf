@@ -1,4 +1,4 @@
-<robot name="speedi">
+<robot name="macaroni">
 
     <!--Car Links-->
 
@@ -313,14 +313,14 @@
         <axis xyz="0 1 0"/>
     </joint>
 
-    <joint name="cam_chassis_height" type="prismatic">
+    <joint name="cam_chassis_height" type="fixed">
         <parent link="chassis"/>
         <child link="camera_base"/>
         <origin xyz="0.21793 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="0.1" upper="1.0" effort="1000.0" velocity="1000.0"/>    </joint>
 
-    <joint name="camera_tilt" type="revolute">
+    <joint name="camera_tilt" type="fixed">
         <parent link="camera_base"/>
         <child link="camera"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -393,28 +393,6 @@
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="right_steer_motor">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-    </transmission>
-
-    <transmission name="cam_height_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="cam_chassis_height">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="cam_height_motor">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-    </transmission>
-
-    <transmission name="cam_tilt_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="camera_tilt">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="cam_tilt_motor">
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
