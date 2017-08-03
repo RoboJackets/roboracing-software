@@ -17,9 +17,6 @@ planner::planner() {
     pnh.getParam("path_iterations", PATH_ITERATIONS);
     pnh.getParam("time_increment", TIME_INCREMENT);
     pnh.getParam("obstacle_cloud_topic", obstacle_cloud_topic);
-    pnh.getParam("alternate_path_threshold", ALT_PATH_THRESHOLD);
-    pnh.getParam("connected_path_distance", CONNECTED_PATH_DIST);
-    pnh.getParam("min_cluster_pts", MIN_CLUSTER_PTS);
 
     map_sub = nh.subscribe(obstacle_cloud_topic, 1, &planner::mapCb, this);
     speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
@@ -62,7 +59,7 @@ double planner::calculatePathCost(path::path path,
                                   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
     double cost = 0.0;
     for(int i = 0; i < path.poses.size(); i++) {
-        cost += costAtPose(path.poses[i], kdtree) / pow(path.speeds[i], 2);
+        cost += costAtPose(path.poses[i], kdtree) / path.speeds[i];
     }
     return cost;
 }
@@ -81,7 +78,7 @@ path::path planner::calculatePath(vector<float> angles) {
 }
 
 // eyeballed it. see https://www.desmos.com/calculator/suy8y1ylf0
-double planner::steeringToSpeed(double angle) {
+inline double planner::steeringToSpeed(double angle) {
     return MAX_SPEED * cos(angle * 1.4706 / MAX_STEER_ANGLE);
 }
 

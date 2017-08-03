@@ -23,7 +23,7 @@ void cluster(const vector<WeightedSteeringVec> &weightedSteerVecs,
     flann::Matrix<float> samples(sampleArray, nSamples, nDims);
 
     // construct FLANN index (nearest neighbors preprocessing)
-    flann::Index<flann::L2<float>> flannIndex(samples, flann::KDTreeIndexParams(1));
+    flann::Index<flann::L2<float>> flannIndex(samples, flann::KDTreeSingleIndexParams());
     flannIndex.buildIndex();
 
     // Initialize group membership list. Index corresponds to indices

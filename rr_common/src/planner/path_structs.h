@@ -3,18 +3,18 @@
 
 #include <vector>
 
-typedef std::vector<float> point_t;
+typedef std::vector<float> control_vector;
 
 namespace path
 {
-    struct pose {
+    struct Pose2D {
         float x;
         float y;
         float theta;
     };
 
-    struct path {
-        std::vector<pose> poses;
+    struct Path {
+        std::vector<Pose2D> poses;
         std::vector<float> speeds;
     };
 
