@@ -28,7 +28,6 @@ namespace path
         float weightTotal;
 
         void add(const WeightedSteeringVec &wsv);
-        void addAll(const SteeringGroup &sg);
         point_t weightedCenter();
         float averageWeight();
         bool operator==(SteeringGroup other);

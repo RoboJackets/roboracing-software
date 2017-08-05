@@ -8,5 +8,3 @@ catkin_install_python(
         planner_plotter.py
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-add_executable(flann_test flann_test.cpp)
