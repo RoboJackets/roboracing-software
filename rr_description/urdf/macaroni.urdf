@@ -316,9 +316,8 @@
     <joint name="cam_chassis_height" type="fixed">
         <parent link="chassis"/>
         <child link="camera_base"/>
-        <origin xyz="0.21793 0 0" rpy="0 0 0"/>
-        <axis xyz="0 0 1"/>
-        <limit lower="0.1" upper="1.0" effort="1000.0" velocity="1000.0"/>    </joint>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+    </joint>
 
     <joint name="camera_tilt" type="fixed">
         <parent link="camera_base"/>
