@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
     <node name="planner_iarrc" pkg="rr_common" type="planner" output="screen" >
-        <param name="obstacle_cloud_topic" value="/colors_img_transformed_cloud"/>
-
-        <param name="steer_stddev"     type="double" value="0.261799" />
-        <param name="max_steer_angle"  type="double" value="0.523599" />
-        <param name="path_iterations"  type="int"    value="300" />
-        <param name="max_speed"        type="double" value="1.5" />
-        <param name="path_stage_time"  type="double" value="2.0" />
-        <param name="path_stages"      type="int"    value="2" />
-        <param name="time_increment"   type="double" value="0.14" />
-        <param name="collision_radius" type="double" value="0.4" />
-        <param name="min_cluster_pts"  type="int"    value="1" />
-        <param name="alternate_path_threshold"       value="0.5"/>
-        <param name="connected_path_distance"        value="0.1"/>
-        <param name="min_cluster_pts"                value="8"/>
+        <param name="N_PATH_SEGMENTS" value="2"/>
+        <param name="N_CONTROL_SAMPLES" value="250"/>
+        <param name="SEGMENT_DISTANCES" value="3 5"/>
+        <param name="STEER_LIMITS" value="0.5 0.4"/>
+        <param name="STEER_STDDEVS" value="0.3 0.2"/>
+        <param name="INPUT_CLOUD_TOPIC" value="/colors_img_transformed_cloud"/>
+        <param name="MAX_SPEED" value="1.5"/>
+        <param name="PATH_SIMILARITY_CUTOFF" value="0.08"/>
+        <param name="MAX_RELATIVE_COST" value="2.0"/>
     </node>
 </launch>
