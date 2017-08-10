@@ -17,7 +17,6 @@
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
 #include "flann/flann.hpp"
-//#include <chrono>
 
 int N_PATH_SEGMENTS;
 int N_CONTROL_SAMPLES;
