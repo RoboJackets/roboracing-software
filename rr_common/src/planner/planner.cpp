@@ -196,9 +196,6 @@ void getLocalMinima(const vector<control_vector> &controlVectors,
 
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
-//    chrono::time_point<std::chrono::system_clock> start, end, subStart, subEnd;
-//    start = std::chrono::system_clock::now();
-
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
@@ -222,7 +219,6 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     vector<control_vector> controlVectors(N_CONTROL_SAMPLES);
     vector<float> costs(N_CONTROL_SAMPLES);
 
-//    subStart = chrono::system_clock::now();
     float bestCost = 1e10;
     for(int i = 0; i < N_CONTROL_SAMPLES; i++) {
         for(int stage = 0; stage < N_PATH_SEGMENTS; stage++) {
@@ -233,7 +229,6 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
             bestCost = cost;
         costs[i] = cost;
     }
-//    subEnd = chrono::system_clock::now();
 
     vector<control_vector> goodControlVectors;
     vector<float> goodCosts;
@@ -289,11 +284,6 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         pathMsg.header.frame_id = "base_footprint";
         path_pub.publish(pathMsg);
     }
-
-//    end = chrono::system_clock::now();
-//    chrono::duration<double> elapsedSeconds = end - start;
-//    chrono::duration<double> clusterSeconds = subEnd - subStart;
-//    ROS_INFO("time proportion: %f", clusterSeconds.count() / elapsedSeconds.count());
 }
 
 void parseFloatArrayStr(string &arrayAsString, vector<float> &floats) {

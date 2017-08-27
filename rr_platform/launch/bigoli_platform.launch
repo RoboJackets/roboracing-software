@@ -1,0 +1,3 @@
+<launch>
+    <include file="$(find rr_platform)/launch/bigoli_camera.launch/>
+</launch>
