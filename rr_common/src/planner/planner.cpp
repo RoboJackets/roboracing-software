@@ -243,20 +243,27 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     getLocalMinima(goodControlVectors, goodCosts, localMinimaIndices);
 
-    // TODO implement smart path selection. For now, choose the lowest cost
-    int bestGoodIndex = 0;
+    // TODO implement smart path selection. For now, choose the straighest path
+    int bestIndex = -1;
+    float bestCurviness = 0;
     for(int i : localMinimaIndices) {
-        if(goodCosts[i] < goodCosts[bestGoodIndex]) {
-            bestGoodIndex = i;
+        float curviness = 0; // square of euclidean distance from zero turning
+        for(auto x : goodControlVectors[i]) {
+            curviness += x*x;
+        }
+        // cout << "i = " << i << ", curviness = " << curviness << endl;
+        if(bestIndex == -1 || curviness < bestCurviness) {
+            bestIndex = i;
+            bestCurviness = curviness;
         }
     }
 
-    ROS_INFO("Planner found %d local minima in control space. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestGoodIndex]);
+    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
+             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-    steerMSG->angle = goodControlVectors[bestGoodIndex][0];
+    steerMSG->angle = goodControlVectors[bestIndex][0];
     speedMSG->speed = steeringToSpeed(steerMSG->angle, STEER_LIMITS[0]);
     steerMSG->header.stamp = ros::Time::now();
     speedMSG->header.stamp = ros::Time::now();
@@ -266,7 +273,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     if(path_pub.getNumSubscribers() > 0) {
         nav_msgs::Path pathMsg;
         Pose2D pose{0,0,0};
-        control_vector &controlVector = goodControlVectors[bestGoodIndex];
+        control_vector &controlVector = goodControlVectors[bestIndex];
         for(int segmentIdx = 0; segmentIdx < N_PATH_SEGMENTS; segmentIdx++) {
             float steering = controlVector[segmentIdx];
             float speed = steeringToSpeed(steering, STEER_LIMITS[segmentIdx]);
