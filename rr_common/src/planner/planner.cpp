@@ -99,7 +99,7 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
             dist += DISTANCE_INCREMENT)
         {
             advanceStep(steering, pose);
-            costSum += getCostAtPose(pose, kdtree) / speed;
+            costSum += getCostAtPose(pose, kdtree) / pow(speed, 2);
         }
     }
     return costSum;
@@ -148,7 +148,7 @@ void getLocalMinima(const vector<control_vector> &controlVectors,
     flann::Matrix<float> samples(sampleArray, nSamples, N_PATH_SEGMENTS);
 
     // construct FLANN index (nearest neighbors preprocessing)
-    flann::Index<flann::L2<float>> flannIndex(samples, flann::KDTreeSingleIndexParams());
+    flann::Index<flann::L1<float>> flannIndex(samples, flann::KDTreeSingleIndexParams());
     flannIndex.buildIndex();
 
     // Initialize group membership list
