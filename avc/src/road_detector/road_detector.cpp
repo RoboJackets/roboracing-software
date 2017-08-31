@@ -41,7 +41,7 @@ cv::Mat calculateHistogram(cv::Mat image, cv::Mat histogram, int bins){
 	bool uniform = true; bool accumulate = false;
 	int histSize = bins; //Establish number of BINS
 
-	float range[] = { 0, bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note.(and below) check...
+	float range[] = { 0.f, (float)bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note.(and below) check...
 	const float* histRange = { range };
 	int channels [] = {0};
 
@@ -53,7 +53,7 @@ cv::Mat calculateHistogramMask(cv::Mat image, cv::Mat histogram, cv::Mat mask, i
 	bool uniform = true; bool accumulate = false;//true;//false;
 	int histSize = bins; //Establish number of BINS
 
-	float range[] = { 0, bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note. (and above) check...
+	float range[] = { 0.f, (float)bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note. (and above) check...
 	const float* histRange = { range };
 	int channels [] = {0};
 
@@ -66,10 +66,10 @@ cv::Mat calculateHistogramMask(cv::Mat image, cv::Mat histogram, cv::Mat mask, i
 cv::Mat bootstrap(cv::Mat image_hue){
 	float threshold = 0.16;//0.08; //TODO: Play with this number 0-1
 
-	const int rectangle_x = 670; //TODO: set rectangle more in the middle? or find a better calibration point.
-	const int rectangle_y = 760;
-	const int rectangle_width = 580;
-	const int rectangle_height = 300;
+	const int rectangle_x = 240; //TODO: set rectangle more in the middle? or find a better calibration point.
+	const int rectangle_y = 315;
+	const int rectangle_width = 400-240;
+	const int rectangle_height = 375-315;
 
 	cv::Mat mask(image_hue.rows, image_hue.cols, CV_8UC1); //mask. Same width/height of input image. Greyscale.
 	cv::Mat histogram_hue;
@@ -231,21 +231,19 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
 //#TODO: Maybe try bluring the image before?
 	//###TESTING4####################### !!
-	cv::imwrite("/home/brian/12before1.png",road_mask);
+	cv::imwrite("/tmp/road_hist/12before1.png",road_mask);
 	auto kernel1 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(4,4));
 	cv::morphologyEx(road_mask,road_mask,cv::MORPH_CLOSE,kernel1);
-	cv::imwrite("/home/brian/12close2.png",road_mask);
+	cv::imwrite("/tmp/road_hist/12close2.png",road_mask);
 	auto kernel2 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(10,10));
 	cv::morphologyEx(road_mask,road_mask,cv::MORPH_OPEN,kernel2);
-	cv::imwrite("/home/brian/12close3.png",road_mask);
+	cv::imwrite("/tmp/road_hist/12close3.png",road_mask);
 
 	//Clear out last random black noise. May be bad because loss of detail
 	auto kernel3 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(30,30)); //Larger num = no noise but loose exactness. Try 50.
 	cv::morphologyEx(road_mask,road_mask,cv::MORPH_CLOSE,kernel3);
-	cv::imwrite("/home/brian/12close4.png",road_mask);
+	cv::imwrite("/tmp/road_hist/12close4.png",road_mask);
 	//###############################
-
-
 
 
 		/* THE PLAN:

@@ -21,10 +21,10 @@ const int hist_bins_hue = 361; //0-360 +1 exclusive
 const int hist_bins_saturation = 101; //0-100 +1 exclusive
 
 //Histogram Calculation Rectangle
-const int rectangle_x = 670; //TODO: set rectangle more in the middle? or find a better calibration point.
-const int rectangle_y = 760;
-const int rectangle_width = 580;
-const int rectangle_height = 300;
+const int rectangle_x = 240; //TODO: set rectangle more in the middle? or find a better calibration point.
+const int rectangle_y = 0;
+const int rectangle_width = 400-240;
+const int rectangle_height = 375-0;
 const int rectangle_Area = rectangle_width * rectangle_height;
 
 
@@ -34,7 +34,7 @@ cv::Mat calculateHistogram(cv::Mat image, cv::Mat histogram, int bins){
 	bool uniform = true; bool accumulate = false;
 	int histSize = bins; //Establish number of BINS
 
-	float range[] = { 0, bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note.(and below) check...
+	float range[] = { 0.0, (float)bins } ; //the upper boundary is exclusive. HUE from 0 - 360 //TODO: There is a compiler note.(and below) check...
 	const float* histRange = { range };
 	int channels [] = {0};
 
