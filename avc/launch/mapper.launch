@@ -1,5 +1,0 @@
-<launch>
-    <node pkg="avc" type="mapper" name="mapper" output="screen">
-        <param name="sources" value="/scan/pointcloud"/>
-    </node>
-</launch>

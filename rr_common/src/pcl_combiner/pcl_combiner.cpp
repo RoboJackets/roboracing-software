@@ -12,8 +12,8 @@
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr partialT;
 
 std::map<std::string,pcl::PointCloud<pcl::PointXYZ>::Ptr> partials;
-pcl::PointCloud<pcl::PointXYZ>::Ptr map;
-pcl::PointCloud<pcl::PointXYZ>::Ptr map_filtered;
+pcl::PointCloud<pcl::PointXYZ>::Ptr combo_cloud;
+pcl::PointCloud<pcl::PointXYZ>::Ptr combo_cloud_filtered;
 bool needsUpdating = false;
 
 void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
@@ -44,15 +44,18 @@ std::vector <std::string> split(const std::string &s, char delim) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "mapper");
+    ros::init(argc, argv, "pcl_combiner");
 
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
 
-    map.reset(new pcl::PointCloud<pcl::PointXYZ>);
-    map_filtered.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    combo_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    combo_cloud_filtered.reset(new pcl::PointCloud<pcl::PointXYZ>);
 
     std::string sourceList = nh_private.param("sources", std::string());
+    std::string publishName = nh_private.param("destination", std::string("/map"));
+    std::string combinedFrame = nh_private.param("combined_frame", std::string("base_footprint"));
+    int refreshRate = nh_private.param("refresh_rate", 30);
 
     auto topics = split(sourceList, ',');
 
@@ -60,38 +63,38 @@ int main(int argc, char** argv) {
 
     for(const auto& topic : topics) {
         partial_Subscribers.push_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
-        ROS_INFO_STREAM("Mapper subscribed to " << topic);
+        ROS_INFO_STREAM("Pointcloud combiner subscribed to " << topic);
     }
 
-    auto map_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);
+    auto combo_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);
 
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.2f, 0.2f, 0.2f);
 
-    ros::Rate rate(20);
+    ros::Rate rate(refreshRate);
     while(ros::ok()) {
         ros::spinOnce();
 
         if(needsUpdating) {
 
-            map->clear();
-            map_filtered->clear();
+            combo_cloud->clear();
+            combo_cloud_filtered->clear();
 
             for(const auto& partial : partials) {
-                *map += *(partial.second);
+                *combo_cloud += *(partial.second);
             }
-            filter.setInputCloud(map);
-            filter.filter(*map_filtered);
+            filter.setInputCloud(combo_cloud);
+            filter.filter(*combo_cloud_filtered);
 
-            pcl::PCLPointCloud2 map_pc2;
-            pcl::toPCLPointCloud2(*map_filtered,map_pc2);
+            pcl::PCLPointCloud2 combo_pc2;
+            pcl::toPCLPointCloud2(*combo_cloud_filtered, combo_pc2);
             sensor_msgs::PointCloud2 msg;
-            pcl_conversions::fromPCL(map_pc2,msg);
+            pcl_conversions::fromPCL(combo_pc2,msg);
 
-            msg.header.frame_id = "base_footprint";
+            msg.header.frame_id = combinedFrame;
             msg.header.stamp = ros::Time::now();
 
-            map_pub.publish(msg);
+            combo_pub.publish(msg);
 
             needsUpdating = false;
         }

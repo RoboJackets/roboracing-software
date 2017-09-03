@@ -51,8 +51,6 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/mapper)
-add_subdirectory(src/tutorial)
 add_subdirectory(src/histogram)
 add_subdirectory(src/road_detector)
 add_subdirectory(src/road_detector_histogramTrainer)
