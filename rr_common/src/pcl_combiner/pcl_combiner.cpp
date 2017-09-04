@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         ROS_INFO_STREAM("Pointcloud combiner subscribed to " << topic);
     }
 
-    auto combo_pub = nh.advertise<sensor_msgs::PointCloud2>("map",1);
+    auto combo_pub = nh.advertise<sensor_msgs::PointCloud2>(publishName, 1);
 
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.2f, 0.2f, 0.2f);

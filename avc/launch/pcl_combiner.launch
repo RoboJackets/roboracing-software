@@ -1,6 +1,7 @@
 <launch>
     <node pkg="rr_common" type="pcl_combiner" name="pcl_combiner">
         <param name="sources" value="/scan/pointcloud"/>
+        <param name="destination" value="/current_obstacles"/>
         <param name="refresh_rate" value="20"/>
         <param name="combined_frame" value="base_footprint"/>
     </node>
