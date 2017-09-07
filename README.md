@@ -4,9 +4,11 @@
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
-[![Software Lead | Maintainer](https://img.shields.io/badge/Software%20Lead%20%7C%20Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
+[![Software Lead](https://img.shields.io/badge/Software%20Lead-Sahit%20Chintalapudi%20-blue.svg)](https://github.com/chsahit)
 
-[![Project Manager](https://img.shields.io/badge/Project%20Manager-Ransomed%20Adebayo-blue.svg)](https://github.com/radebayo)
+[![Project Manager](https://img.shields.io/badge/Project%20Manager-Evan%20Bretl-blue.svg)](https://github.com/ebretl)
+
+[![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
 
 ## Organization
 
