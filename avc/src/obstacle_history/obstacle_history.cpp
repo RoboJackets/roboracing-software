@@ -44,15 +44,10 @@ void chassis_state_callback(const rr_platform::chassis_state::ConstPtr &msg) {
 }
 
 void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
-//    cout << "0" << endl;
-
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*msg, pcl_pc2);
     cloud_ptr_t newCloudPtr(new cloud_t);
     pcl::fromPCLPointCloud2(pcl_pc2, *newCloudPtr);
-
-//    cout << "1" << endl;
-//    cout << "size 1: " << cloud_ptr->size() << endl;
 
     int nRemove = 0;
     if(cloud_sizes_queue.size() >= 25) {
@@ -64,9 +59,6 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     if(nRemove > 0) {
         cloud_ptr->erase(cloud_ptr->begin(), cloud_ptr->begin() + nRemove);
     }
-
-//    cout << "2" << endl;
-//    cout << "size 2: " << cloud_ptr->size() << endl;
 
     tf::Quaternion tfQuaternion;
     tfQuaternion.setRPY(0, 0, -(yaw - lastYaw));
@@ -82,33 +74,18 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     tf::Vector3 offset(-estimatedDistance, 0, 0);
     tfTransform.setOrigin(offset);
 
-//    cout << "3" << endl;
-
-
-//    cout << "3.1" << endl;
-//    pcl_ros::transformPointCloud(*cloud_ptr, transformedCloud, tfTransform);
     pcl_ros::transformPointCloud(*cloud_ptr, *cloud_ptr, tfTransform);
-//    cout << "3.2" << endl;
-//    cloud_ptr.swap(transformedCloudPtr);
-
-//    cout << "4" << endl;
 
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.3f, 0.3f, 0.3f);
 
-    cout << "size before = " << cloud_ptr->size() << endl;
+//    cout << "size before = " << cloud_ptr->size() << endl;
     cloud_ptr->insert(cloud_ptr->end(), newCloudPtr->begin(), newCloudPtr->end());
-    cout << "size after =  " << cloud_ptr->size() << endl;
-
-//    cout << "5" << endl;
+//    cout << "size after =  " << cloud_ptr->size() << endl;
 
     cloud_t filteredCloud;
     filter.setInputCloud(cloud_ptr);
     filter.filter(filteredCloud);
-//    filter.filter(*cloud_ptr);
-//    cloud_ptr.swap(filteredCloudPtr);
-
-//    cout << "6" << endl;
 
     pcl::PCLPointCloud2 resultPC2;
     pcl::toPCLPointCloud2(filteredCloud, resultPC2);

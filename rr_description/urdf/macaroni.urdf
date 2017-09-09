@@ -184,11 +184,11 @@
             <always_on>true</always_on>
             <update_rate>100</update_rate>
             <visualize>true</visualize>
-            <topic>__default_topic__</topic>
+            <topic>imu</topic>
             <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
                 <topicName>imu</topicName>
                 <bodyName>imu_link</bodyName>
-                <updateRateHZ>10.0</updateRateHZ>
+                <updateRateHZ>50.0</updateRateHZ>
                 <gaussianNoise>0.001</gaussianNoise>
                 <xyzOffset>0 0 0</xyzOffset>
                 <rpyOffset>0 0 0</rpyOffset>
