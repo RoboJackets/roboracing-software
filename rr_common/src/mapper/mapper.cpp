@@ -8,6 +8,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <tf/transform_listener.h>
+#include <pcl_ros/transforms.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr partialT;
 
@@ -44,7 +46,7 @@ std::vector <std::string> split(const std::string &s, char delim) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "pcl_combiner");
+    ros::init(argc, argv, "mapper");
 
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
@@ -56,6 +58,7 @@ int main(int argc, char** argv) {
     std::string publishName = nh_private.param("destination", std::string("/map"));
     std::string combinedFrame = nh_private.param("combined_frame", std::string("base_footprint"));
     int refreshRate = nh_private.param("refresh_rate", 30);
+    float groundThreshold = nh_private.param("ground_threshold", 0.05);
 
     auto topics = split(sourceList, ',');
 
@@ -63,13 +66,15 @@ int main(int argc, char** argv) {
 
     for(const auto& topic : topics) {
         partial_Subscribers.push_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
-        ROS_INFO_STREAM("Pointcloud combiner subscribed to " << topic);
+        ROS_INFO_STREAM("Mapper subscribed to " << topic);
     }
 
     auto combo_pub = nh.advertise<sensor_msgs::PointCloud2>(publishName, 1);
 
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.2f, 0.2f, 0.2f);
+
+    tf::TransformListener tfListener;
 
     ros::Rate rate(refreshRate);
     while(ros::ok()) {
@@ -80,9 +85,18 @@ int main(int argc, char** argv) {
             combo_cloud->clear();
             combo_cloud_filtered->clear();
 
-            for(const auto& partial : partials) {
-                *combo_cloud += *(partial.second);
+            for(const auto& partial_pair : partials) {
+                auto& partialCloud = partial_pair.second;
+                pcl::PointCloud<pcl::PointXYZ> transformed;
+                pcl_ros::transformPointCloud(combinedFrame, *partialCloud, transformed, tfListener);
+                for(auto& pt : transformed) {
+                    if(pt.z > groundThreshold) {
+                        pt.z = 0.f;
+                        combo_cloud->push_back(pt);
+                    }
+                }
             }
+            
             filter.setInputCloud(combo_cloud);
             filter.filter(*combo_cloud_filtered);
 
@@ -104,3 +118,4 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+

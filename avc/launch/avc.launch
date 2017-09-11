@@ -4,7 +4,6 @@
 
     <include file="$(find avc)/launch/pcl_combiner.launch"/>
     <include file="$(find avc)/launch/planner_avc.launch"/>
-    <include file="$(find avc)/launch/image_to_pcl.launch"/>
-
-    <node pkg="avc" type="obstacle_history" name="obstacle_history" output="screen"/>
+    <!--<include file="$(find avc)/launch/image_to_pcl.launch"/>-->
+    <!--<node pkg="avc" type="obstacle_history" name="obstacle_history" output="screen"/>-->
 </launch>

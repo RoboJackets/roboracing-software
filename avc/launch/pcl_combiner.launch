@@ -1,8 +1,9 @@
 <launch>
-    <node pkg="rr_common" type="pcl_combiner" name="pcl_combiner">
+    <node pkg="rr_common" type="mapper" name="mapper">
         <param name="sources" value="/scan/pointcloud"/>
         <param name="destination" value="/current_obstacles"/>
         <param name="refresh_rate" value="30"/>
         <param name="combined_frame" value="base_footprint"/>
+        <param name="ground_threshold" value="0.05"/>
     </node>
 </launch>
