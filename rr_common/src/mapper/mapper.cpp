@@ -87,8 +87,10 @@ int main(int argc, char** argv) {
 
             for(const auto& partial_pair : partials) {
                 auto& partialCloud = partial_pair.second;
-                pcl::PointCloud<pcl::PointXYZ> transformed;
-                pcl_ros::transformPointCloud(combinedFrame, *partialCloud, transformed, tfListener);
+                pcl::PointCloud<pcl::PointXYZ> filtered, transformed;
+                filter.setInputCloud(partialCloud);
+                filter.filter(filtered);
+                pcl_ros::transformPointCloud(combinedFrame, filtered, transformed, tfListener);
                 for(auto& pt : transformed) {
                     if(pt.z > groundThreshold) {
                         pt.z = 0.f;
