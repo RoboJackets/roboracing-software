@@ -218,8 +218,8 @@
             <camera>
                 <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
                 <image>
-                    <width>640</width>
-                    <height>480</height>
+                    <width>320</width>
+                    <height>240</height>
                     <format>R8G8B8</format>
                 </image>
                 <clip>
@@ -234,7 +234,7 @@
                 <robotNamespace>/</robotNamespace>
                 <baseline>0.1</baseline>
                 <alwaysOn>true</alwaysOn>
-                <updateRate>15.0</updateRate>
+                <updateRate>30.0</updateRate>
                 <cameraName>camera</cameraName>
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>

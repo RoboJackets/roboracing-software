@@ -6,29 +6,22 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/passthrough.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 
-typedef pcl::PointCloud<pcl::PointXYZ>::Ptr partialT;
+typedef pcl::PointCloud<pcl::PointXYZ> cloud_t;
+typedef pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr_t;
 
-std::map<std::string,pcl::PointCloud<pcl::PointXYZ>::Ptr> partials;
-pcl::PointCloud<pcl::PointXYZ>::Ptr combo_cloud;
-pcl::PointCloud<pcl::PointXYZ>::Ptr combo_cloud_filtered;
+std::map<std::string,sensor_msgs::PointCloud2ConstPtr> partials;
+cloud_ptr_t combo_cloud;
+cloud_ptr_t combo_cloud_filtered;
 bool needsUpdating = false;
 
 void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl_conversions::toPCL(*msg, pcl_pc2);
-    auto& partial = partials[topic];
-
-    if(!partial) {
-        partial.reset(new pcl::PointCloud<pcl::PointXYZ>);
-    }
-
-    pcl::fromPCLPointCloud2(pcl_pc2, *partial);
-
+    partials[topic] = msg;
     needsUpdating = true;
 }
 
@@ -51,8 +44,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
 
-    combo_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-    combo_cloud_filtered.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    combo_cloud.reset(new cloud_t);
+    combo_cloud_filtered.reset(new cloud_t);
 
     std::string sourceList = nh_private.param("sources", std::string());
     std::string publishName = nh_private.param("destination", std::string("/map"));
@@ -71,8 +64,12 @@ int main(int argc, char** argv) {
 
     auto combo_pub = nh.advertise<sensor_msgs::PointCloud2>(publishName, 1);
 
-    pcl::VoxelGrid<pcl::PointXYZ> filter;
-    filter.setLeafSize(0.2f, 0.2f, 0.2f);
+    pcl::VoxelGrid<pcl::PointXYZ> filterVG;
+    filterVG.setLeafSize(0.1f, 0.1f, 0.1f);
+
+    pcl::PassThrough<pcl::PointXYZ> filterPass;
+    filterPass.setFilterFieldName("z");
+    filterPass.setFilterLimits(groundThreshold, 5.0);
 
     tf::TransformListener tfListener;
 
@@ -86,21 +83,30 @@ int main(int argc, char** argv) {
             combo_cloud_filtered->clear();
 
             for(const auto& partial_pair : partials) {
-                auto& partialCloud = partial_pair.second;
-                pcl::PointCloud<pcl::PointXYZ> filtered, transformed;
-                filter.setInputCloud(partialCloud);
-                filter.filter(filtered);
-                pcl_ros::transformPointCloud(combinedFrame, filtered, transformed, tfListener);
-                for(auto& pt : transformed) {
-                    if(pt.z > groundThreshold) {
-                        pt.z = 0.f;
-                        combo_cloud->push_back(pt);
-                    }
-                }
+                auto& msg = partial_pair.second;
+                if(msg->width == 0) continue;
+
+                pcl::PCLPointCloud2 pcl_pc2;
+                pcl_conversions::toPCL(*msg, pcl_pc2);
+                cloud_t partialCloud;
+                pcl::fromPCLPointCloud2(pcl_pc2, partialCloud);
+
+                cloud_ptr_t transformed(new cloud_t);
+                pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
+
+                cloud_t filtered;
+                filterPass.setInputCloud(transformed);
+                filterPass.filter(filtered);
+
+                *(combo_cloud) += filtered;
             }
-            
-            filter.setInputCloud(combo_cloud);
-            filter.filter(*combo_cloud_filtered);
+
+            for(auto& pt : *combo_cloud) {
+                pt.z = 0;
+            }
+
+            filterVG.setInputCloud(combo_cloud);
+            filterVG.filter(*combo_cloud_filtered);
 
             pcl::PCLPointCloud2 combo_pc2;
             pcl::toPCLPointCloud2(*combo_cloud_filtered, combo_pc2);
