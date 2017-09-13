@@ -25,15 +25,6 @@ double lastUpdateSeconds = 0;
 
 cloud_t transformedCloud;
 
-/*
- * useful methods
- *
- * void pcl_ros::transformPointCloud (const pcl::PointCloud< PointT > &cloud_in,
- *                              pcl::PointCloud< PointT > &cloud_out,
- *                              const tf::Transform &transform)
- *
- * iterator pcl::PointCloud<T>::erase(iterator first, iterator last)
- */
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
     yaw = tf::getYaw(msg->orientation);
@@ -62,12 +53,10 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
 
     tf::Quaternion tfQuaternion;
     tfQuaternion.setRPY(0, 0, -(yaw - lastYaw));
-//    cout << "yaw diff = " << yaw - lastYaw << endl;
     lastYaw = yaw;
 
     float estimatedDistance = speed * (ros::Time::now().toSec() - lastUpdateSeconds);
     lastUpdateSeconds = ros::Time::now().toSec();
-//    cout << "estimatedDistance = " << estimatedDistance << endl;
 
     tf::Transform tfTransform;
     tfTransform.setRotation(tfQuaternion);
@@ -79,9 +68,7 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     pcl::VoxelGrid<pcl::PointXYZ> filter;
     filter.setLeafSize(0.3f, 0.3f, 0.3f);
 
-//    cout << "size before = " << cloud_ptr->size() << endl;
     cloud_ptr->insert(cloud_ptr->end(), newCloudPtr->begin(), newCloudPtr->end());
-//    cout << "size after =  " << cloud_ptr->size() << endl;
 
     cloud_t filteredCloud;
     filter.setInputCloud(cloud_ptr);
