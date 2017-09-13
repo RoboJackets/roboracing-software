@@ -4,7 +4,7 @@
         <param name="N_CONTROL_SAMPLES" value="300"/>
         <param name="SEGMENT_DISTANCES" value="2 3 3"/>
         <param name="STEER_LIMITS" value="0.3 0.3 0.3"/>
-        <param name="STEER_STDDEVS" value="0.15 0.10 0.05"/>
+        <param name="STEER_STDDEVS" value="0.2 0.15 0.15"/>
         <param name="INPUT_CLOUD_TOPIC" value="/current_obstacles"/>
         <param name="MAX_SPEED" value="1.5"/>
         <param name="PATH_SIMILARITY_CUTOFF" value="0.20"/>

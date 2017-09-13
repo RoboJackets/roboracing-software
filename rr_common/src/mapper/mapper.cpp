@@ -7,6 +7,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/statistical_outlier_removal.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf/transform_listener.h>
@@ -52,6 +53,8 @@ int main(int argc, char** argv) {
     std::string combinedFrame = nh_private.param("combined_frame", std::string("base_footprint"));
     int refreshRate = nh_private.param("refresh_rate", 30);
     float groundThreshold = nh_private.param("ground_threshold", 0.05);
+    float outlierThreshold = nh_private.param("outlier_threshold", 2.0);
+    int outlierNeighbors = nh_private.param("outlier_neighbors", 1);
 
     auto topics = split(sourceList, ',');
 
@@ -70,6 +73,10 @@ int main(int argc, char** argv) {
     pcl::PassThrough<pcl::PointXYZ> filterPass;
     filterPass.setFilterFieldName("z");
     filterPass.setFilterLimits(groundThreshold, 5.0);
+
+    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> filterOutliers;
+    filterOutliers.setMeanK(outlierNeighbors);
+    filterOutliers.setStddevMulThresh(outlierThreshold);
 
     tf::TransformListener tfListener;
 
@@ -92,6 +99,7 @@ int main(int argc, char** argv) {
                 pcl::fromPCLPointCloud2(pcl_pc2, partialCloud);
 
                 cloud_ptr_t transformed(new cloud_t);
+                tfListener.waitForTransform(msg->header.frame_id, combinedFrame, ros::Time(0), ros::Duration(0.1));
                 pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
 
                 cloud_t filtered;
@@ -105,8 +113,13 @@ int main(int argc, char** argv) {
                 pt.z = 0;
             }
 
+            cloud_ptr_t tmpFiltered(new cloud_t);
+
             filterVG.setInputCloud(combo_cloud);
-            filterVG.filter(*combo_cloud_filtered);
+            filterVG.filter(*tmpFiltered);
+
+            filterOutliers.setInputCloud(tmpFiltered);
+            filterOutliers.filter(*combo_cloud_filtered);
 
             pcl::PCLPointCloud2 combo_pc2;
             pcl::toPCLPointCloud2(*combo_cloud_filtered, combo_pc2);

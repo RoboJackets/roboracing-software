@@ -4,6 +4,9 @@
         <param name="destination" value="/current_obstacles"/>
         <param name="refresh_rate" value="15"/>
         <param name="combined_frame" value="base_footprint"/>
+
         <param name="ground_threshold" value="0.05"/>
+        <param name="outlier_neighbors" value="2"/>
+        <param name="outlier_threshold" value="1.5"/>
     </node>
 </launch>
