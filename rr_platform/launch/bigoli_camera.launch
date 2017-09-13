@@ -56,4 +56,6 @@
 
   </group> <!-- camera -->
 
+  <node pkg="rr_platform" type="bigoli_camera_dynconfig.sh" name="dynamic_configurator"/>
+
 </launch>
