@@ -44,11 +44,11 @@
       <arg name="depth_registered"                value="depth_registered" />
       <arg name="projector"                       value="projector" />
       <arg name="respawn"                         value="false" />
-      <arg name="rgb_processing"                  value="true" />
+      <arg name="rgb_processing"                  value="false" />
       <arg name="ir_processing"                   value="true" />
       <arg name="depth_processing"                value="true" />
       <arg name="depth_registered_processing"     value="false" />
-      <arg name="disparity_processing"            value="true" />
+      <arg name="disparity_processing"            value="false" />
       <arg name="disparity_registered_processing" value="false" />
       <arg name="hw_registered_processing"        value="false" />
       <arg name="sw_registered_processing"        value="false" />

@@ -1,5 +1,10 @@
 <launch>
-    <rosparam command="load" file="$(find rr_platform)/launch/realsense_settings.yaml"/>
+    <!-- Don't forget commas between entries in the dictionary -->
     <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_configurator"
-          args="set_from_parameters /camera/driver" />
+          args="set camera/driver &quot;{
+            'r200_dc_preset': 3,
+            'r200_lr_auto_exposure_enabled': 1,
+            'r200_emitter_enabled': 0
+          }&quot;">
+    </node>
 </launch>
