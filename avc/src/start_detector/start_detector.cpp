@@ -22,12 +22,12 @@ namespace avc {
         const Mat &frameBGR = cv_ptr->image;
         Mat blurredImage;
         GaussianBlur(frameBGR, blurredImage, Size{7, 7}, 3);
-        Mat mask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
-        inRange(blurredImage, red_low, red_high, mask);
-        Mat output;
-        bitwise_and(blurredImage, blurredImage, output, mask);
+        Mat redMask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
+        inRange(blurredImage, red_low, red_high, redMask);
+        Mat redImage;
+        bitwise_and(blurredImage, blurredImage, redImage, redMask);
         Mat gray;
-        cvtColor(output, gray, CV_BGR2GRAY);
+        cvtColor(redImage, gray, CV_BGR2GRAY);
         vector<Vec3f> circles;
         HoughCircles(gray, circles, CV_HOUGH_GRADIENT, 1, 150, 10, 25, 50, 150);
         if (circles.size() != 0) {
@@ -36,11 +36,11 @@ namespace avc {
                 Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
                 Mat circleMask = Mat::zeros(gray.rows, gray.cols, CV_8U);
                 circle(circleMask, center, circles[i][2], Scalar(255, 255, 255), -1); 
-                Mat outputMasked;
-                bitwise_and(output, output, circleMask);
-                int imgsum = sum(outputMasked)[0];
-                if (imgsum > maxSum) {
-                    maxSum = imgsum;
+                Mat circleImage;
+                bitwise_and(redImage, redImage, circleImage, circleMask);
+                int imgSum = sum(circleImage)[0];
+                if (imgSum > maxSum) {
+                    maxSum = imgSum;
                 }
             }
 
