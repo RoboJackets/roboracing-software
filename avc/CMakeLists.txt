@@ -51,4 +51,7 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
+add_library(avc src/start_detector/start_detector.cpp)
+target_link_libraries(avc ${catkin_LIBRARIES})
+
 add_subdirectory(src/mapper)
