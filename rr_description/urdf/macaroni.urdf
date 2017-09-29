@@ -178,27 +178,24 @@
 
 
     <link name="imu"/>
-    <gazebo>
-        <plugin filename="libhector_gazebo_ros_imu.so" name="imu_sensor">
-            <robotNamespace>/</robotNamespace>
-            <serviceName>/imu/calibrate</serviceName>
-            <updateRate>200.0</updateRate>
-            <bodyName>imu</bodyName>
-            <frameId>imu</frameId>
-            <topicName>imu</topicName>
-            <rpyOffset>0 0 0</rpyOffset>
-            <xyzOffset>0 0 0</xyzOffset>
-            <gaussianNoise>0.00000001</gaussianNoise>
-            <accelDrift>0.00000001 0.00000001 0.00000001</accelDrift>
-            <accelDriftFrequency>0.00000001 0.00000001 0.00000001</accelDriftFrequency>
-            <accelGaussianNoise>0.00000001 0.00000001 0.00000001</accelGaussianNoise>
-            <rateDrift>0.0 0.0 0.0</rateDrift>
-            <rateDriftFrequency>0.0 0.0 0.0</rateDriftFrequency>
-            <rateGaussianNoise>0.0 0.0 0.0</rateGaussianNoise>
-            <headingDrift>0.0 0.0 0.0</headingDrift>
-            <headingDriftFrequency>0.0 0.0 0.0</headingDriftFrequency>
-            <headingGaussianNoise>0.0 0.0 0.0</headingGaussianNoise>
-        </plugin>
+    <gazebo reference="imu">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>imu</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>imu</topicName>
+                <bodyName>imu_link</bodyName>
+                <updateRateHZ>50.0</updateRateHZ>
+                <gaussianNoise>0.001</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
     </gazebo>
 
 
@@ -217,12 +214,12 @@
         </inertial>
     </link>
     <gazebo reference="camera">
-        <sensor name="camera_sensor" type="camera">
+        <sensor name="camera_sensor" type="depth">
             <camera>
-                <horizontal_fov>2.0944<!-- 120 deg in rad --></horizontal_fov>
+                <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
                 <image>
-                    <width>640</width>
-                    <height>480</height>
+                    <width>320</width>
+                    <height>240</height>
                     <format>R8G8B8</format>
                 </image>
                 <clip>
@@ -233,15 +230,29 @@
             <always_on>true</always_on>
             <update_rate>30</update_rate>
             <visualize>false</visualize>
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
                 <robotNamespace>/</robotNamespace>
+                <baseline>0.1</baseline>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>30.0</updateRate>
                 <cameraName>camera</cameraName>
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <depthImageTopicName>depth/image_raw</depthImageTopicName>
+                <depthImageInfoTopicName>depth/camera_info</depthImageInfoTopicName>
+                <pointCloudTopicName>depth/points</pointCloudTopicName>
                 <frameName>camera_optical</frameName>
-                <hackBaseline>0.07</hackBaseline>
+                <pointCloudCutoff>0.4</pointCloudCutoff>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+                <CxPrime>0</CxPrime>
+                <Cx>0</Cx>
+                <Cy>0</Cy>
+                <focalLength>0</focalLength>
+                <!--<hackBaseline>0</hackBaseline>-->
             </plugin>
         </sensor>
     </gazebo>
@@ -336,7 +347,7 @@
     <joint name="lidar_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser"/>
-        <origin xyz="0.265 0 0.110" rpy="0 0 0"/>
+        <origin xyz="0.275 0 0.110" rpy="0 0 0"/>
     </joint>
 
     <joint name="imu" type="fixed">

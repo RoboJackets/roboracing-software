@@ -4,9 +4,6 @@
 */*.idea
 *.idea
 
-# BitTorrent Sync files
-.sync/*
-
 # Sublime Text 3 project files
 *.sublime-project
 */*.sublime-project

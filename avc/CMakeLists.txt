@@ -51,4 +51,4 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_subdirectory(src/mapper)
+add_subdirectory(src/obstacle_history)

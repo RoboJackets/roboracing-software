@@ -25,10 +25,10 @@
       <arg name="depth"                     value="depth" />
       <arg name="rgb"                       value="rgb" />
       <arg name="ir"                        value="ir" />
-      <arg name="publish_tf"                value="true" />
+      <arg name="publish_tf"                value="false" />
       <arg name="mode"                      value="manual" />
-      <arg name="depth_width"               value="480" />
-      <arg name="depth_height"              value="360" />
+      <arg name="depth_width"               value="320" />
+      <arg name="depth_height"              value="240" />
       <arg name="color_width"               value="640" />
       <arg name="color_height"              value="480" />
       <arg name="depth_fps"                 value="30" />
