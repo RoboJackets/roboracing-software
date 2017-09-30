@@ -1,5 +1,7 @@
 #include "start_detector.h"
 #include <pluginlib/class_list_macros.h>
+#include <cv_bridge/cv_bridge.h>
+#include <std_msgs/Bool.h>
 
 using namespace std;
 using namespace ros;

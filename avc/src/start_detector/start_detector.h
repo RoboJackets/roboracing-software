@@ -2,8 +2,6 @@
 #include <sensor_msgs/Image.h>
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <std_msgs/Bool.h>
 
 namespace avc {
 class start_detector : public nodelet::Nodelet {
