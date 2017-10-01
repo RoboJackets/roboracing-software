@@ -30,7 +30,7 @@ namespace avc {
         Mat redMask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
         inRange(blurredImage, red_low, red_high, redMask);
         Mat redImage;
-        bitwise_and(blurredImage, blurredImage, redImage, redMask);
+        blurredImage.copyTo(redImage, redMask);
         Mat gray;
         cvtColor(redImage, gray, CV_BGR2GRAY);
         vector<Vec3f> circles;
@@ -42,11 +42,9 @@ namespace avc {
                 Mat circleMask = Mat::zeros(gray.rows, gray.cols, CV_8U);
                 circle(circleMask, center, circles[i][2], Scalar(255, 255, 255), -1); 
                 Mat circleImage;
-                bitwise_and(redImage, redImage, circleImage, circleMask);
+                redImage.copyTo(circleImage, circleMask);
                 int imgSum = sum(circleImage)[0];
-                if (imgSum > maxSum) {
-                    maxSum = imgSum;
-                }
+                maxSum = max(maxSum, imgSum);
             }
 
             if (maxSum > sumThreshold) {
