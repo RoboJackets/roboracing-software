@@ -1,0 +1,411 @@
+<robot name="bigoli">
+
+    <!--Car Links-->
+
+    <link name="chassis">
+        <inertial>
+            <origin xyz="0 0 0"/>
+            <mass value="5.0"/>
+            <inertia ixx="0.10595165" ixy="-0.002487144" ixz="0.011981253" iyy="0.126271962" iyz="0.011832006" izz="0.033185337"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/car.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/car.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="chassis">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+
+    <link name="back_axle">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <link name="wheel_back_left">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <mass value="0.1" />
+            <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="wheel_back_left">
+        <mu1>0.7</mu1>
+        <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+
+    <link name="wheel_back_right">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <mass value="0.1" />
+            <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
+        </inertial>
+        <visual>
+            <origin rpy="0 0 3.14" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="wheel_back_right">
+        <mu1>0.7</mu1>
+        <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+
+    <link name="steering_front_left">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <link name="wheel_front_left">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.1" />
+            <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="wheel_front_left">
+        <mu1>0.7</mu1>
+        <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <link name="steering_front_right">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <link name="wheel_front_right">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.1" />
+            <inertia  ixx="0.000405599" ixy="0.0"  ixz="0.0"  iyy="0.000405599"  iyz="0.0"  izz="0.000518265" />
+        </inertial>
+        <visual>
+            <origin rpy="0 0 3.14" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://rr_description/meshes/wheel.dae"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="wheel_front_right">
+        <mu1>0.7</mu1>
+        <mu2>0.75</mu2>
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+
+
+    <!--Sensor Links-->
+
+    <link name="laser"/>
+    <gazebo reference="laser">
+        <sensor type="ray" name="lidar">
+            <visualize>false</visualize>
+            <update_rate>15</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>270</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-2.35619</min_angle>
+                        <max_angle>2.35619</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.05</min>
+                    <max>8.00</max>
+                    <resolution>0.02</resolution>
+                </range>
+            </ray>
+            <plugin name="lidar_plugin" filename="libgazebo_ros_laser.so">
+                <robotNamespace>/</robotNamespace>
+                <topicName>/scan</topicName>
+                <frameName>/laser</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+
+    <link name="imu"/>
+    <gazebo reference="imu">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>imu</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>imu</topicName>
+                <bodyName>imu_link</bodyName>
+                <updateRateHZ>50.0</updateRateHZ>
+                <gaussianNoise>0.001</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
+
+
+    <link name="camera_base">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+
+    <link name="camera">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <gazebo reference="camera">
+        <sensor name="camera_sensor" type="depth">
+            <camera>
+                <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
+                <image>
+                    <width>320</width>
+                    <height>240</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>100</far>
+                </clip>
+            </camera>
+            <always_on>true</always_on>
+            <update_rate>30</update_rate>
+            <visualize>false</visualize>
+            <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+                <robotNamespace>/</robotNamespace>
+                <baseline>0.1</baseline>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>30.0</updateRate>
+                <cameraName>camera</cameraName>
+                <imageTopicName>image_raw</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <depthImageTopicName>depth/image_raw</depthImageTopicName>
+                <depthImageInfoTopicName>depth/camera_info</depthImageInfoTopicName>
+                <pointCloudTopicName>depth/points</pointCloudTopicName>
+                <frameName>camera_optical</frameName>
+                <pointCloudCutoff>0.4</pointCloudCutoff>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+                <CxPrime>0</CxPrime>
+                <Cx>0</Cx>
+                <Cy>0</Cy>
+                <focalLength>0</focalLength>
+                <!--<hackBaseline>0</hackBaseline>-->
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <link name="camera_optical"/>
+
+
+    <link name="base_footprint">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+
+
+    <!--Joints-->
+
+    <joint name="base_footprint_to_chassis" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="chassis"/>
+        <origin xyz="0 0 0.036" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="chassis_to_back_axle" type="fixed">
+        <parent link="chassis"/>
+        <child link="back_axle"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="axle_to_left_wheel" type="continuous">
+        <parent link="back_axle"/>
+        <child link="wheel_back_left"/>
+        <origin xyz="0 0.14439 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="axle_to_right_wheel" type="continuous">
+        <parent link="back_axle"/>
+        <child link="wheel_back_right"/>
+        <origin xyz="0 -0.14439 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <joint name="chassis_to_left_steering" type="revolute">
+        <parent link="chassis"/>
+        <child link="steering_front_left"/>
+        <origin xyz="0.34 0.14366 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.366519" upper="0.366519" effort="100000.0" velocity="1000000.0"/>
+    </joint>
+    <joint name="left_steering_to_wheel" type="continuous">
+        <parent link="steering_front_left"/>
+        <child link="wheel_front_left"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <joint name="chassis_to_right_steering" type="revolute">
+        <parent link="chassis"/>
+        <child link="steering_front_right"/>
+        <origin xyz="0.34 -0.14366 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.366519" upper="0.366519" effort="1000.0" velocity="1000.0"/>
+    </joint>
+    <joint name="right_steering_to_wheel" type="continuous">
+        <parent link="steering_front_right"/>
+        <child link="wheel_front_right"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <joint name="cam_chassis_height" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera_base"/>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="camera_tilt" type="fixed">
+        <parent link="camera_base"/>
+        <child link="camera"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="0" upper="3.14" effort="1000.0" velocity="1000.0"/>
+    </joint>
+
+    <joint name="camera_optical_joint" type="fixed">
+        <parent link="camera"/>
+        <child link="camera_optical"/>
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+
+    <joint name="lidar_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="laser"/>
+        <origin xyz="0.275 0 0.110" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="imu" type="fixed">
+        <parent link="chassis"/>
+        <child link="imu"/>
+        <origin xyz="0 0 0.1778" rpy="0 0 0"/>
+    </joint>
+
+    <!--Actuators-->
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+
+    <transmission name="trans_back_left">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="axle_to_left_wheel">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor_left">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="trans_back_right">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="axle_to_right_wheel">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor_right">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="left_steering_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="chassis_to_left_steering">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="left_steer_motor">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="right_steering_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="chassis_to_right_steering">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="right_steer_motor">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+</robot>
