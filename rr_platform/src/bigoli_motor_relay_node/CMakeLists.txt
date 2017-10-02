@@ -1,0 +1,3 @@
+add_executable(bigoli_motor_relay_node bigoli_motor_relay_node.cpp)
+target_link_libraries(bigolo_motor_relay_node ${catkin_LIBRARIES})
+add_dependencies(bigolo_motor_relay_node rr_platform_generate_messages_cpp)
