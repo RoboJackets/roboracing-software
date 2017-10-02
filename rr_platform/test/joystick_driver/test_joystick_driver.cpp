@@ -54,7 +54,7 @@ TEST_F(JoystickDriverTestSuite, FullForward)  {
     steering_received = false;
 
     sensor_msgs::Joy joy_msg;
-    joy_msg.axes = {0, 0, 0, 1.0};
+    joy_msg.axes = {0, 1, 0, 0};
     joy_msg.buttons = {0, 0, 0, 0};
     joy_pub.publish(joy_msg);
 
