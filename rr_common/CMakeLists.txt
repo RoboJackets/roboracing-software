@@ -51,3 +51,4 @@ include_directories(
 
 add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
+add_subdirectory(src/mapper)
