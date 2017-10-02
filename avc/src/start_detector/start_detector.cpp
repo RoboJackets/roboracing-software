@@ -78,10 +78,12 @@ namespace avc {
         pnh.param("minSize", minSize, 50);
         pnh.param("maxSize", maxSize, 150);
 
-        pnh.param("sumThreshold", sumThreshold, 100);
+        pnh.param("sumThreshold", sumThreshold, 10000);
         
-        img_sub = it.subscribe("/camera/image_rect", 1, &start_detector::ImageCB, this);
+        img_sub = it.subscribe("/camera/rgb/image_raw", 1, &start_detector::ImageCB, this);
         start_pub = nh.advertise<std_msgs::Bool>("/start_detected", 1);
+
+        ROS_INFO("Start Detector Ready!");
     }
 
 }
