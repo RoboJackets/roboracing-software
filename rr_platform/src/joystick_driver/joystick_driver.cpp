@@ -13,7 +13,7 @@ double speed_max;
 void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
     rr_platform::speed sp_cmd;
     rr_platform::steering st_cmd;
-    sp_cmd.speed = speed_max * msg->axes[3];
+    sp_cmd.speed = speed_max * msg->axes[1];
     // -3 for steering offset
     st_cmd.angle = -(angle_max * 2 * msg->axes[0]);
     //st_cmd.angle = 20;//angle_max * msg->axes[0];
@@ -42,8 +42,8 @@ int main(int argc, char** argv)
     steering_publisher = nh.advertise<rr_platform::steering>(steering_topic, 1);
 
     // Driving limits
-    nhp.param(std::string("angle_max"), angle_max, 20.0);
-    nhp.param(std::string("speed_max"), speed_max, 10.0);
+    nhp.param(std::string("angle_max"), angle_max, 0.366);
+    nhp.param(std::string("speed_max"), speed_max, 0.2);
 
 	ROS_INFO("joystick_driver node ready.");
 	ros::spin();
