@@ -8,6 +8,7 @@ const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
 int REQ_FINISH_LINE_CROSSES;
+std::string startSignal;
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
@@ -62,7 +63,7 @@ void finishLineCB(const std_msgs::Int8::ConstPtr &int_msg) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "iarrc_navigation_controller");
+    ros::init(argc, argv, "navigation_controller");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
@@ -73,11 +74,12 @@ int main(int argc, char** argv) {
     finishLineCrosses = 0;
 
     nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
+    nhp.getParam("startSignal", startSignal);
     ROS_INFO("req finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
-    auto startLightSub = nh.subscribe("/green_light", 1, startLightCB);
+    auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
     auto finishLineSub = nh.subscribe("/finish_line_crosses", 1, finishLineCB);
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
