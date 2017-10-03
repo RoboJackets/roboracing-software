@@ -54,4 +54,4 @@ include_directories(
 add_library(avc src/start_detector/start_detector.cpp)
 target_link_libraries(avc ${catkin_LIBRARIES})
 
-add_subdirectory(src/mapper)
+add_subdirectory(src/obstacle_history)

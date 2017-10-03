@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
+#include <rr_platform/chassis_state.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
 
@@ -107,6 +108,8 @@ int main(int argc, char **argv) {
 
     ros::Publisher rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
 
+    ros::Publisher chassisStatePublisher = handle.advertise<rr_platform::chassis_state>("/chassis_state", 1);
+
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
 
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
@@ -140,6 +143,13 @@ int main(int argc, char **argv) {
 
         leftSteeringPublisher.publish(leftSteerMsg);
         rightSteeringPublisher.publish(rightSteerMsg);
+
+        rr_platform::chassis_state chassisStateMsg;
+        chassisStateMsg.header.stamp = ros::Time::now();
+        chassisStateMsg.speed_mps = -(speed_measured_left + speed_measured_right) / 2;
+        chassisStateMsg.mux_automatic = true;
+        chassisStateMsg.estop_on = false;
+        chassisStatePublisher.publish(chassisStateMsg);
 
         rate.sleep();
     }

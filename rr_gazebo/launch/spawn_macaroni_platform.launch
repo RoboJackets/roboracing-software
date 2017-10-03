@@ -4,5 +4,5 @@
             -gazebo_namespace /gazebo
             -urdf -model macaroni
             -x 0 -y 0 -z 0
-            -R 0 -P 0 -Y 0"/>
+            -R 0 -P 0 -Y -0.65"/>
 </launch>
