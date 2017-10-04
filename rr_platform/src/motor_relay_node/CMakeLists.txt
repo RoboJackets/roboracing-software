@@ -5,3 +5,7 @@ add_dependencies(motor_relay_node rr_platform_generate_messages_cpp)
 add_executable(bigoli_drive_test bigoli_drive_test.cpp)
 target_link_libraries(bigoli_drive_test ${catkin_LIBRARIES})
 add_dependencies(bigoli_drive_test rr_platform_generate_messages_cpp)
+
+add_executable(bigoli_steer_test bigoli_steer_test.cpp)
+target_link_libraries(bigoli_steer_test ${catkin_LIBRARIES})
+add_dependencies(bigoli_steer_test rr_platform_generate_messages_cpp)

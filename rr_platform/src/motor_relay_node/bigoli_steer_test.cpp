@@ -6,10 +6,11 @@
 
 using namespace std;
 
-double speed = 0;
+double angle = 0;
+const double maxAngle = 0.3; //TODO parameterize
 
 void sendCommand(boost::asio::serial_port &port) {
-    string message = "$" + std::to_string(speed) + "\n";
+    string message = "$" + std::to_string(angle) + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -33,7 +34,7 @@ string readLine(boost::asio::serial_port &port) {
         }
         if (!inLine && in == '$')
             inLine = true;
-        if(inLine) {
+        if (inLine) {
             if (in == '\n') {
                 return line;
             }
@@ -45,8 +46,9 @@ string readLine(boost::asio::serial_port &port) {
     }
 }
 
-void speedCallback(const rr_platform::speed::ConstPtr &msg) {
-    speed = msg->speed;
+
+void steerCallback(const rr_platform::steering::ConstPtr &msg) {
+    angle = msg->angle / maxAngle;
 }
 
 int main(int argc, char** argv) {
@@ -55,7 +57,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    auto speedSub = nh.subscribe("/speed", 1, speedCallback);
+    auto speedSub = nh.subscribe("/steering", 1, steerCallback);
 
     // Serial port setup
     string serial_port_name;
@@ -73,7 +75,7 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         sendCommand(serial);
         string response = readLine(serial);
-        ROS_INFO_STREAM("sent " << speed << ", received " << response);
+        ROS_INFO_STREAM("sent " << angle << ", received " << response);
         rate.sleep();
     }
 
