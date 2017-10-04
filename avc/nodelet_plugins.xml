@@ -1,0 +1,7 @@
+<library path="lib/libavc">
+    <class name="avc/start_detector" type="avc::start_detector" base_class_type="nodelet::Nodelet">
+        <description>
+            Uses hough circles to identify the start signal in AVC
+        </description>
+    </class>
+</library>                         
