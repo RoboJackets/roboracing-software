@@ -1,6 +1,6 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/RaceCar.JPG "Picture of first RoboRacing car.")
+<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/Macaroni.jpg" style="max-height=400px;">
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
