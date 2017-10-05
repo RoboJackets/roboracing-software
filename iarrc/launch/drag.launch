@@ -6,6 +6,7 @@
     <include file="$(find iarrc)/launch/stoplight_watcher.launch"/>
     <node name="navigation_controller" pkg="iarrc" type="navigation_controller" output="screen">
         <param name="req_finish_line_crosses" type="int" value="1"/>
+        <param name="startSignal" type="string" value="/green_light"/>
     </node>
 </launch>
  
