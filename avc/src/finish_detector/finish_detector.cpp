@@ -18,8 +18,6 @@ namespace avc {
             ROS_ERROR("CV-Bridge error: %s", e.what());
             return;
         }
-        
-        const Mat &frameBGR = cv_ptr->image;
     }
 
     void finish_detector::onInit() {
