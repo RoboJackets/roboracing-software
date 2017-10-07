@@ -6,11 +6,12 @@
 
 using namespace std;
 
-double angle = 0;
-const double maxAngle = 0.3; //TODO parameterize
+double output = 0;
+double maxAngleMsg;
+const double maxOutput = 1.0;
 
 void sendCommand(boost::asio::serial_port &port) {
-    string message = "$" + std::to_string(angle) + "\n";
+    string message = "$" + std::to_string(output) + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -48,7 +49,7 @@ string readLine(boost::asio::serial_port &port) {
 
 
 void steerCallback(const rr_platform::steering::ConstPtr &msg) {
-    angle = msg->angle / maxAngle;
+    output = msg->angle / maxAngleMsg * maxOutput;
 }
 
 int main(int argc, char** argv) {
@@ -58,6 +59,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle nhp("~");
 
     auto speedSub = nh.subscribe("/steering", 1, steerCallback);
+
+    maxAngleMsg = nhp.param("max_angle_msg_in", 1.0);
 
     // Serial port setup
     string serial_port_name;
@@ -75,7 +78,7 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         sendCommand(serial);
         string response = readLine(serial);
-        ROS_INFO_STREAM("sent " << angle << ", received " << response);
+        ROS_INFO_STREAM("steer relay sent " << output << ", received " << response);
         rate.sleep();
     }
 

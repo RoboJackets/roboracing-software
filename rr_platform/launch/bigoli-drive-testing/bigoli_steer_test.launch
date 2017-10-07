@@ -1,0 +1,8 @@
+<launch>
+    <arg name="steer_port"/>
+
+    <node pkg="rr_platform" type="bigoli_steer_test" name="steer_relay" output="screen">
+        <param name="serial_port" value="$(arg steer_port)"/>
+        <param name="max_angle_msg_in" value="0.3"/>
+    </node>
+</launch>

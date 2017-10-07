@@ -1,0 +1,8 @@
+<launch>
+    <arg name="drive_port"/>
+
+    <node pkg="rr_platform" type="bigoli_drive_test" name="drive_relay" output="screen">
+        <param name="serial_port" value="$(arg drive_port)"/>
+        <param name="max_speed_msg_in" value="1.0"/>
+    </node>
+</launch>

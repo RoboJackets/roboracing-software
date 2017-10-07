@@ -6,10 +6,12 @@
 
 using namespace std;
 
-double speed = 0;
+double output = 0;
+double maxSpeedMsg = 1.0;
+const double maxOutput = 1.0;
 
 void sendCommand(boost::asio::serial_port &port) {
-    string message = "$" + std::to_string(speed) + "\n";
+    string message = "$" + std::to_string(output) + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -46,7 +48,7 @@ string readLine(boost::asio::serial_port &port) {
 }
 
 void speedCallback(const rr_platform::speed::ConstPtr &msg) {
-    speed = msg->speed;
+    output = msg->speed / maxSpeedMsg * maxOutput;
 }
 
 int main(int argc, char** argv) {
@@ -56,6 +58,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle nhp("~");
 
     auto speedSub = nh.subscribe("/speed", 1, speedCallback);
+
+    maxSpeedMsg = nhp.param("max_speed_msg_in", 10.0);
 
     // Serial port setup
     string serial_port_name;
@@ -73,7 +77,7 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         sendCommand(serial);
         string response = readLine(serial);
-        ROS_INFO_STREAM("sent " << speed << ", received " << response);
+        ROS_INFO_STREAM("drive relay sent " << output << ", received " << response);
         rate.sleep();
     }
 
