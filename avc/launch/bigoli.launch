@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
     <include file="$(find avc)/launch/avc.launch"/>
-    <include file="$(find avc)/launch/start_detector_standalone.launch"/>
+    <include file="$(find avc)/launch/start_detector.launch"/>
     <include file="$(find rr_platform)/bigoli_platform.launch"/>
 </launch>
