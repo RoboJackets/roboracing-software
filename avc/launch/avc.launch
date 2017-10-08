@@ -1,9 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <remap from="plan/speed" to="/speed"/>
-    <remap from="plan/steering" to="/steering"/>
-
     <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner_avc.launch"/>
-    <!--<include file="$(find avc)/launch/image_to_pcl.launch"/>-->
-    <!--<node pkg="avc" type="obstacle_history" name="obstacle_history" output="screen"/>-->
+    <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="2"/>
+        <param name="startSignal" type="string" value="/start_detected"/>
+    </node>
 </launch>
