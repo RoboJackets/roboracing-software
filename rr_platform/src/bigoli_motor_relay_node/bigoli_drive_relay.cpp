@@ -7,8 +7,6 @@
 using namespace std;
 
 double output = 0;
-double maxSpeedMsg = 1.0;
-const double maxOutput = 1.0;
 
 void sendCommand(boost::asio::serial_port &port) {
     string message = "$" + std::to_string(output) + "\n";
@@ -48,7 +46,7 @@ string readLine(boost::asio::serial_port &port) {
 }
 
 void speedCallback(const rr_platform::speed::ConstPtr &msg) {
-    output = msg->speed / maxSpeedMsg * maxOutput;
+    output = msg->speed;
 }
 
 int main(int argc, char** argv) {

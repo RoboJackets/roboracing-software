@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="rr_platform" type="bigoli_drive_test" name="drive_relay" output="screen">
+        <param name="serial_port" value="/dev/arduino"/>
+    </node>
+</launch>
