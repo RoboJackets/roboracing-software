@@ -10,8 +10,8 @@ double output = 0;
 double maxAngleMsg;
 const double maxOutput = 1.0;
 
-void sendCommand(boost::asio::serial_port &port) {
-    string message = "$" + std::to_string(output) + "\n";
+void sendCommand(boost::asio::serial_port &port, string command) {
+    string message = "$" + command + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -21,7 +21,7 @@ void sendCommand(boost::asio::serial_port &port) {
 
 // copied from motor_relay_node
 string readLine(boost::asio::serial_port &port) {
-    std::string line = "";
+    string line = "";
     bool inLine = false;
     while (true) {
         char in;
@@ -53,18 +53,23 @@ void steerCallback(const rr_platform::steering::ConstPtr &msg) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "bigoli_tester");
+    ros::init(argc, argv, "bigoli_steer_relay");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    auto speedSub = nh.subscribe("/steering", 1, steerCallback);
+    string steerTopic = nhp.param(string("topic"), string("/steering"));
+    auto speedSub = nh.subscribe(steerTopic, 1, steerCallback);
 
-    maxAngleMsg = nhp.param("max_angle_msg_in", 1.0);
+    maxAngleMsg = nhp.param(string("max_angle_msg_in"), 1.0);
+
+    float pid_p = nhp.param(string("pid_p"), 0.0);
+    float pid_i = nhp.param(string("pid_i"), 0.0);
+    float pid_d = nhp.param(string("pid_d"), 0.0);
 
     // Serial port setup
     string serial_port_name;
-    nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
+    nhp.param(string("serial_port"), serial_port_name, string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(9600));
@@ -74,9 +79,15 @@ int main(int argc, char** argv) {
     // wait for microcontroller to start
     ros::Duration(2.0).sleep();
 
+    // update pid controller
+    char* command;
+    sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
+    sendCommand(serial, string(command));
+    ros::Duration(1.0).sleep();
+
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();
-        sendCommand(serial);
+        sendCommand(serial, to_string(output));
         string response = readLine(serial);
         ROS_INFO_STREAM("steer relay sent " << output << ", received " << response);
         rate.sleep();

@@ -76,6 +76,7 @@ include_directories(
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
+add_subdirectory(src/bigoli_motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_imu)
