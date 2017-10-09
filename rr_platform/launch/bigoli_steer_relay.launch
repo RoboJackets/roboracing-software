@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="rr_platform" type="bigoli_steer_test" name="steer_relay" output="screen">
+    <node pkg="rr_platform" type="bigoli_steer_relay" name="steer_relay" output="screen" respawn="false">
         <param name="serial_port" value="/dev/mbed"/>
         <param name="max_angle_msg_in" value="0.3"/>
         <param name="pid_p" value="0.7"/>

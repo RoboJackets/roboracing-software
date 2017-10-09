@@ -7,9 +7,10 @@
 using namespace std;
 
 double output = 0;
+ros::Time lastPIDSendTime = ros::Time(1);
 
 void sendCommand(boost::asio::serial_port &port, string command) {
-    string message = "$" + command + "\n";
+    string message = command + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -78,11 +79,21 @@ int main(int argc, char** argv) {
     char* command;
     sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
     sendCommand(serial, string(command));
+    ROS_INFO("%s", command);
+    ROS_INFO_STREAM(readLine(serial));
     ros::Duration(1.0).sleep();
+
+    ROS_INFO("sent pid constants command");
 
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();
-        sendCommand(serial, to_string(output));
+        // sendCommand(serial, "$" + to_string(output));
+
+        if(lastPIDSendTime
+        char* command;
+        sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
+        sendCommand(serial, "$" + to_string(output) + " #" + string(command));
+
         string response = readLine(serial);
         ROS_INFO_STREAM("drive relay sent " << output << ", received " << response);
         rate.sleep();
