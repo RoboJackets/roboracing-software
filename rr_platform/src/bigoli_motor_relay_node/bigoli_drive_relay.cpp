@@ -7,7 +7,6 @@
 using namespace std;
 
 double output = 0;
-ros::Time lastPIDSendTime = ros::Time(1);
 
 void sendCommand(boost::asio::serial_port &port, string command) {
     string message = command + "\n";
@@ -70,32 +69,20 @@ int main(int argc, char** argv) {
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(9600));
 
-    ros::Rate rate(10);
-
     // wait for microcontroller to start
     ros::Duration(2.0).sleep();
 
-    // update pid controller
-    char* command;
-    sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
-    sendCommand(serial, string(command));
-    ROS_INFO("%s", command);
-    ROS_INFO_STREAM(readLine(serial));
-    ros::Duration(1.0).sleep();
-
-    ROS_INFO("sent pid constants command");
+    ros::Rate rate(10);
 
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();
-        // sendCommand(serial, "$" + to_string(output));
 
-        if(lastPIDSendTime
-        char* command;
-        sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
-        sendCommand(serial, "$" + to_string(output) + " #" + string(command));
-
+        char buf[100];
+        sprintf(buf, "$%.2f,%.2f,%.2f,%.2f", output, pid_p, pid_i, pid_d);
+        string command = string(buf);
+        sendCommand(serial, command);
         string response = readLine(serial);
-        ROS_INFO_STREAM("drive relay sent " << output << ", received " << response);
+        ROS_INFO_STREAM("drive relay sent " << command << ", received " << response);
         rate.sleep();
     }
 

@@ -11,7 +11,7 @@ double maxAngleMsg;
 const double maxOutput = 1.0;
 
 void sendCommand(boost::asio::serial_port &port, string command) {
-    string message = "$" + command + "\n";
+    string message = command + "\n";
     try {
         boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
     } catch (boost::system::system_error &err) {
@@ -79,17 +79,17 @@ int main(int argc, char** argv) {
     // wait for microcontroller to start
     ros::Duration(2.0).sleep();
 
-    // update pid controller
-    char* command;
-    sprintf(command, "#%f,%f,%f", pid_p, pid_i, pid_d);
-    sendCommand(serial, string(command));
-    ros::Duration(1.0).sleep();
-
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();
-        sendCommand(serial, to_string(output));
+
+        char buf[100];
+        sprintf(buf, "$%.2f,%.2f,%.2f,%.2f", output, pid_p, pid_i, pid_d);
+        string command(buf);
+
+        sendCommand(serial, command);
+        ros::Duration(0.01).sleep();
         string response = readLine(serial);
-        ROS_INFO_STREAM("steer relay sent " << output << ", received " << response);
+        ROS_INFO_STREAM("steer relay sent " << command << ", received " << response);
         rate.sleep();
     }
 
