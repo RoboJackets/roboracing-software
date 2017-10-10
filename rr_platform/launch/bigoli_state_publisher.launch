@@ -1,4 +1,4 @@
 <launch>
     <param name="robot_description" command="cat $(find rr_description)/urdf/bigoli.urdf"/>
-    <node name="macaroni_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
+    <node name="bigoli_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
 </launch>
