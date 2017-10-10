@@ -1,0 +1,5 @@
+<launch>
+    <group ns="camera">
+        <node pkg="nodelet" type="nodelet" name="start_detector" args="load avc/start_detector camera_nodelet_manager"/>
+    </group>
+</launch>
