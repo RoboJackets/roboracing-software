@@ -51,7 +51,7 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_library(avc src/start_detector/start_detector.cpp)
+add_library(avc src/start_detector/start_detector.cpp src/finish_detector/finish_detector.cpp)
 target_link_libraries(avc ${catkin_LIBRARIES})
 
 add_subdirectory(src/obstacle_history)
