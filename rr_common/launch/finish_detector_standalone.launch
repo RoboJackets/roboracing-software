@@ -1,0 +1,6 @@
+<launch>
+    <group ns="camera">
+        <node pkg="nodelet" type="nodelet" name="finish_detector_manager" output="screen" args="manager"/>
+        <node pkg="nodelet" type="nodelet" name="finish_detector" output="screen" args="load rr_common/finish_detector finish_detector_manager"/>
+    </group>
+</launch>

@@ -11,7 +11,6 @@ private:
     ros::Publisher crosses_pub;
     image_transport::Subscriber img_saver_sub;
 
-    int getWidth(const cv::Mat& image);
     void ImageCB(const sensor_msgs::ImageConstPtr &msg);
 
     virtual void onInit();
