@@ -55,10 +55,6 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
 
-    Rect ROI(0,270,640,50);
-
-    frame = frame(ROI);
-
     auto count = countNonZero(frame);
 
     if(state == LOW && count > 1000) {
