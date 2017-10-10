@@ -1,5 +1,3 @@
-# a carbon copy of avc's CMakeLists
-
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_common)
 

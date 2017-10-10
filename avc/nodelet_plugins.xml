@@ -3,5 +3,11 @@
         <description>
             Uses hough circles to identify the start signal in AVC
         </description>
+        </class>
+    
+        <class name="avc/finish_detector" type="avc::finish_detector" base_class_type="nodelet::Nodelet">
+        <description>
+            Detects a (finish) line of arbitrary color
+        </description>
     </class>
 </library>                         
