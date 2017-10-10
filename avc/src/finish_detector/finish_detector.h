@@ -2,8 +2,6 @@
 #include <sensor_msgs/Image.h>
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
-#include <ros/publisher.h>
-#include <opencv2/opencv.hpp>
 
 namespace avc {
 class finish_detector : public nodelet::Nodelet {
