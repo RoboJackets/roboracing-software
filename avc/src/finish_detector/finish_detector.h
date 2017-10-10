@@ -5,7 +5,7 @@
 #include <ros/publisher.h>
 #include <opencv2/opencv.hpp>
 
-namespace rr_common {
+namespace avc {
 class finish_detector : public nodelet::Nodelet {
 private:
     ros::Publisher crosses_pub;

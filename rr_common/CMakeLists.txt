@@ -47,9 +47,6 @@ include_directories(
   ${EIGEN_INCLUDE_DIRS}
 )
 
-add_library(rr_common src/finish_detector/finish_detector.cpp)
-target_link_libraries(rr_common ${catkin_LIBRARIES})
-
 add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
 add_subdirectory(src/mapper)

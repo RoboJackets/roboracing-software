@@ -9,7 +9,7 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 
-namespace rr_common {
+namespace avc {
 using uchar = unsigned char;
 
 Publisher debug_pub;
@@ -100,4 +100,4 @@ void finish_detector::onInit() {
 
 }
 }
-PLUGINLIB_EXPORT_CLASS(rr_common::finish_detector, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(avc::finish_detector, nodelet::Nodelet)
