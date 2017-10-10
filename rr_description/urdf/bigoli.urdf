@@ -258,6 +258,7 @@
     </gazebo>
 
     <link name="camera_optical"/>
+    <link name="camera_depth_optical_frame"/>
 
 
     <link name="base_footprint">
@@ -342,6 +343,12 @@
         <parent link="camera"/>
         <child link="camera_optical"/>
         <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+
+    <joint name="camera_depth_optical_joint" type="fixed">
+        <parent link="camera_optical"/>
+        <child link="camera_depth_optical_frame"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
     <joint name="lidar_joint" type="fixed">
