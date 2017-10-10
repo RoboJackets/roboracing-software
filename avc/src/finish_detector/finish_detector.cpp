@@ -83,7 +83,7 @@ void finish_detector::onInit() {
     NodeHandle nhp = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
 
-    img_saver_sub = it.subscribe("/camera_mono/image_raw", 1, &finish_detector::ImageCB, this);
+    img_saver_sub = it.subscribe("/camera/image_raw", 1, &finish_detector::ImageCB, this);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
     debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
