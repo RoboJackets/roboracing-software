@@ -82,12 +82,12 @@ int main(int argc, char** argv) {
     while(ros::ok() && serial.is_open()) {
         ros::spinOnce();
 
-        char buf[100];
-        sprintf(buf, "$%.2f,%.2f,%.2f,%.2f", output, pid_p, pid_i, pid_d);
-        string command(buf);
+        stringstream ss;
+        ss << "$" << output << "," << pid_p << "," << pid_i << "," << pid_d;
+        string command;
+        ss >> command;
 
         sendCommand(serial, command);
-        ros::Duration(0.01).sleep();
         string response = readLine(serial);
         ROS_INFO_STREAM("steer relay sent " << command << ", received " << response);
         rate.sleep();
