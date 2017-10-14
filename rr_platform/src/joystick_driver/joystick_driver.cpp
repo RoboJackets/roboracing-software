@@ -13,10 +13,8 @@ double speed_max;
 void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
     rr_platform::speed sp_cmd;
     rr_platform::steering st_cmd;
-    sp_cmd.speed = speed_max * msg->axes[1];
-    // -3 for steering offset
-    st_cmd.angle = -(angle_max * 2 * msg->axes[0]);
-    //st_cmd.angle = 20;//angle_max * msg->axes[0];
+    sp_cmd.speed = speed_max * msg->axes[4];
+    st_cmd.angle = -(angle_max * msg->axes[0]);
 
     speed_publisher.publish(sp_cmd);
     steering_publisher.publish(st_cmd);

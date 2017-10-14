@@ -25,6 +25,7 @@
       <arg name="depth"                     value="depth" />
       <arg name="rgb"                       value="rgb" />
       <arg name="ir"                        value="ir" />
+      <arg name="enable_fisheye"            value="false"/>
       <arg name="publish_tf"                value="false" />
       <arg name="mode"                      value="manual" />
       <arg name="depth_width"               value="320" />
