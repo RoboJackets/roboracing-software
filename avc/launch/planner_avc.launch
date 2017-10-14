@@ -9,5 +9,8 @@
         <param name="MAX_SPEED" value="1.5"/>
         <param name="PATH_SIMILARITY_CUTOFF" value="0.20"/>
         <param name="MAX_RELATIVE_COST" value="7.0"/>
+
+        <param name="WHEEL_BASE" value="1.17"/>
+        <param name="COLLISION_RADIUS" value="0.70"/>
     </node>
 </launch>

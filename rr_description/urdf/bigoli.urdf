@@ -258,6 +258,7 @@
     </gazebo>
 
     <link name="camera_optical"/>
+    <link name="camera_depth_optical_frame"/>
 
 
     <link name="base_footprint">
@@ -274,7 +275,7 @@
     <joint name="base_footprint_to_chassis" type="fixed">
         <parent link="base_footprint"/>
         <child link="chassis"/>
-        <origin xyz="0 0 0.036" rpy="0 0 0"/>
+        <origin xyz="0 0 0.125" rpy="0 0 0"/>
     </joint>
 
     <joint name="chassis_to_back_axle" type="fixed">
@@ -286,20 +287,20 @@
     <joint name="axle_to_left_wheel" type="continuous">
         <parent link="back_axle"/>
         <child link="wheel_back_left"/>
-        <origin xyz="0 0.14439 0" rpy="0 0 0"/>
+        <origin xyz="0 0.33 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
     </joint>
     <joint name="axle_to_right_wheel" type="continuous">
         <parent link="back_axle"/>
         <child link="wheel_back_right"/>
-        <origin xyz="0 -0.14439 0" rpy="0 0 0"/>
+        <origin xyz="0 -0.33 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
     </joint>
 
     <joint name="chassis_to_left_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_left"/>
-        <origin xyz="0.34 0.14366 0" rpy="0 0 0"/>
+        <origin xyz="1.125 0.33 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="-0.366519" upper="0.366519" effort="100000.0" velocity="1000000.0"/>
     </joint>
@@ -313,7 +314,7 @@
     <joint name="chassis_to_right_steering" type="revolute">
         <parent link="chassis"/>
         <child link="steering_front_right"/>
-        <origin xyz="0.34 -0.14366 0" rpy="0 0 0"/>
+        <origin xyz="1.125 -0.33 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
         <limit lower="-0.366519" upper="0.366519" effort="1000.0" velocity="1000.0"/>
     </joint>
@@ -327,13 +328,14 @@
     <joint name="cam_chassis_height" type="fixed">
         <parent link="chassis"/>
         <child link="camera_base"/>
-        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+        <origin xyz="1.25 0 0.455" rpy="0 0 0"/>
+<!--0.57-->
     </joint>
 
     <joint name="camera_tilt" type="fixed">
         <parent link="camera_base"/>
         <child link="camera"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0.066 0"/>
         <axis xyz="0 1 0"/>
         <limit lower="0" upper="3.14" effort="1000.0" velocity="1000.0"/>
     </joint>
@@ -344,10 +346,16 @@
         <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
     </joint>
 
+    <joint name="camera_depth_optical_joint" type="fixed">
+        <parent link="camera_optical"/>
+        <child link="camera_depth_optical_frame"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
     <joint name="lidar_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser"/>
-        <origin xyz="0.275 0 0.110" rpy="0 0 0"/>
+        <origin xyz="1.142 0 0.110" rpy="0 0 0"/>
     </joint>
 
     <joint name="imu" type="fixed">

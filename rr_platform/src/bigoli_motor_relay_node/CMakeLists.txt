@@ -1,3 +1,7 @@
-add_executable(bigoli_motor_relay_node bigoli_motor_relay_node.cpp)
-target_link_libraries(bigoli_motor_relay_node ${catkin_LIBRARIES})
-add_dependencies(bigoli_motor_relay_node rr_platform_generate_messages_cpp)
+add_executable(bigoli_drive_relay bigoli_drive_relay.cpp)
+target_link_libraries(bigoli_drive_relay ${catkin_LIBRARIES})
+add_dependencies(bigoli_drive_relay rr_platform_generate_messages_cpp)
+
+add_executable(bigoli_steer_relay bigoli_steer_relay.cpp)
+target_link_libraries(bigoli_steer_relay ${catkin_LIBRARIES})
+add_dependencies(bigoli_steer_relay rr_platform_generate_messages_cpp)
