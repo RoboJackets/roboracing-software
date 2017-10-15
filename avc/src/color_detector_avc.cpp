@@ -15,107 +15,32 @@ using namespace ros;
 
 using uchar = unsigned char;
 
-//img size: 480 x 640 for camera
-
 Publisher img_pub;
-Publisher cloud_pub;
 Mat mask;
 
-//DETECTS CURBS
-Mat detectCurb(const Mat& image) {
+vector<Scalar> lows;
+vector<Scalar> highs;
+
+
+Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high) {
     Mat frame;
     image.copyTo(frame);
+	Mat frameHSV;
+	cvtColor(frame, frameHSV, CV_BGR2HSV);
 
-    Mat curb(image.rows, image.cols, CV_8UC3);
+	Mat blurredImage;
+    GaussianBlur(frameHSV, blurredImage, Size{21, 21}, 15);
 
-    for(int r = 0; r < frame.rows; r++){
-        uchar* row = frame.ptr<uchar>(r);
-        uchar* curb_row = curb.ptr<uchar>(r);
-        for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()) {
-            uchar B = row[c];
-            uchar G = row[c + 1];
-            uchar R = row[c + 2];
+    Mat obstacleImg;
+    inRange(blurredImage, low, high, obstacleImg);
 
-            if(((B < 105 && B > 85) && (G < 105 && G > 85) && (R < 105 && R > 85))
-            || ((B < 235 && B > 215) && (G < 235 && G > 215) && (R < 235 && R > 215))
-            || ((B < 196 && B > 174) && (G < 196 && G > 174) && (R < 196 && R > 174))) {
-                curb_row[c] = curb_row[c + 1] = curb_row[c + 2] = 255;
-            } else {
-                curb_row[c] = curb_row[c + 1] = curb_row[c + 2] = 0;
-            }
-        }
-    }
-
-    auto kernel_size = 7;
-    Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
-
-    erode(curb, curb, erosion_kernel);
-
-    curb = curb.mul(mask);
-
-    return curb;
-}
-
-Mat detectHoop(const Mat& image) {
-    Mat frame;
-    image.copyTo(frame);
-
-    Mat hoop(image.rows, image.cols, CV_8UC3);
-
-    for(int r = 0; r < frame.rows; r++){
-        uchar* row = frame.ptr<uchar>(r);
-        uchar* hoop_row = hoop.ptr<uchar>(r);
-        for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()) {
-            uchar B = row[c];
-            uchar G = row[c + 1];
-            uchar R = row[c + 2];
-
-            if((B < 135 && B > 95) && (G < 140 && G > 100) && (R < 100 && R > 74)) {
-                hoop_row[c] = hoop_row[c + 1] = hoop_row[c + 2] = 255;
-            } else {
-                hoop_row[c] = hoop_row[c + 1] = hoop_row[c + 2] = 0;
-            }
-        }
-    }
-
-    return hoop;
-}
-
-Mat detectRamp(const Mat& image) {
-    Mat frame;
-    image.copyTo(frame);
-
-    Mat ramp(image.rows, image.cols, CV_8UC3);
-
-    for(int r = 0; r < frame.rows; r++) {
-        uchar* row = frame.ptr<uchar>(r);
-        uchar* ramp_row = ramp.ptr<uchar>(r);
-        for(int c = 0; c < frame.cols * frame.channels(); c += frame.channels()) {
-            uchar B = row[c];
-            uchar G = row[c + 1];
-            uchar R = row[c + 2];
-
-            if((B < 180 && B > 145) && (G < 165 && G > 110) && (R < 150 && R > 85)) {
-                ramp_row[c] = ramp_row[c + 1] = ramp_row[c + 2] = 255;
-            } else {
-                ramp_row[c] = ramp_row[c + 1] = ramp_row[c + 2] = 0;
-            }
-        }
-    }
-
-    auto kernel_size = 5;
-    Mat erosion_kernel = getStructuringElement(MORPH_CROSS, Size(kernel_size, kernel_size));
-
-    erode(ramp, ramp, erosion_kernel);
-
-    return ramp;
+    return obstacleImg;
 }
 
 void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat frame;
-    Mat output;
 
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
@@ -123,57 +48,22 @@ void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
     }
+	frame = cv_ptr->image;
+    Mat output(frame.rows, frame.cols, CV_8UC1, Scalar::all(0));
 
-    //applying detectCurb() function to image
-    frame = cv_ptr->image;
-    Mat curbs = detectCurb(frame);
-    Mat hoop = detectHoop(frame);
-    Mat ramp = detectRamp(frame);
-    output = curbs + hoop + ramp;
+	for (int i = 0; i < lows.size(); i++) {
+		Mat partial;
+		partial = detectObstacleColor(frame, lows[i], highs[i]);
+		bitwise_or(output, partial, output);
+	}
 
     sensor_msgs::Image outmsg;
     cv_ptr->image = output;
-    cv_ptr->encoding = "bgr8";
+    cv_ptr->encoding = "mono8";
     cv_ptr->toImageMsg(outmsg);
     img_pub.publish(outmsg);
 }
 
-void ColorsTransformedCB(const sensor_msgs::ImageConstPtr& msg) {
-    float pxPerMeter = 100.0;
-    cv_bridge::CvImagePtr cv_ptr;
-    try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-    } catch(cv_bridge::Exception& e) {
-        ROS_ERROR("CV_Bridge error: %s", e.what());
-        return;
-    }
-
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    Mat transformed = cv_ptr->image;
-    cvtColor(transformed, transformed, CV_BGR2GRAY);
-
-    for(int r = 0; r < transformed.rows; r++) {
-        uchar* row = transformed.ptr<uchar>(r);
-        for(int c = 0; c < transformed.cols; c++) {
-            if(row[c]) {
-                pcl::PointXYZ point;
-                point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
-                point.x = (transformed.rows - r) / pxPerMeter;
-                point.z = 0.0;
-
-                cloud->push_back(point);
-            }
-        }
-    }
-
-    pcl::PCLPointCloud2 cloud_pc2;
-    pcl::toPCLPointCloud2(*cloud, cloud_pc2);
-    sensor_msgs::PointCloud2 cloud_msg;
-    pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
-    cloud_msg.header.frame_id = "base_footprint";
-    cloud_msg.header.stamp = ros::Time::now();
-    cloud_pub.publish(cloud_msg);
-}
 
 int main(int argc, char** argv) {
 
@@ -181,18 +71,25 @@ int main(int argc, char** argv) {
 
     //Doesn't proccess the top half of the picture
     vector<Mat> mask_segments = {
-        Mat(1080,960,CV_8UC3, Scalar::all(1)),
-        Mat::zeros(1080,960,CV_8UC3)
+        Mat::zeros(640,240,CV_8UC3), 
+		Mat(640,240,CV_8UC3, Scalar::all(1))
     };
-
-    hconcat(mask_segments, mask);
+    vconcat(mask_segments, mask);
 
     NodeHandle nh;
 
-    cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/colors_img/cloud", 1);
     img_pub = nh.advertise<sensor_msgs::Image>("/colors_img", 1);
-    auto img_sub = nh.subscribe("/camera/image_rect", 1, ImageRectCB);
-    auto transformed_sub = nh.subscribe("/colors_img_transformed", 1, ColorsTransformedCB);
+    //auto img_sub = nh.subscribe("/camera/image_rect", 1, ImageRectCB);
+	auto img_sub = nh.subscribe("/camera_wide/image_raw", 1, ImageRectCB);
+
+    lows.push_back(Scalar(0,0,0));
+    highs.push_back(Scalar(180,255,255));
+
+    //lows.push_back(Scalar(0,0,0));
+    //highs.push_back(Scalar(180,255,255));
+
+    //lows.push_back(Scalar(0,0,0));
+    //highs.push_back(Scalar(180,255,255));
 
     spin();
 

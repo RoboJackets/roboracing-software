@@ -9,9 +9,13 @@
       <param name="height" value="90"/>
       <param name="video_mode" value="uncompressed"/>
       <param name="frame_rate" value="20"/>
+<<<<<<< HEAD
       <param name="camera_info_url" value="package://rr_platform/launch/GeniusF100_calibration.yaml"/>
     </node>
 
 
+=======
+    </node>
+>>>>>>> usb/bigoli_test
   </group>
 </launch>

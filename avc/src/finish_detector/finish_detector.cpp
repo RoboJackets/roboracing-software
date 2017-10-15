@@ -4,6 +4,7 @@
 #include <climits>
 #include <std_msgs/Int8.h>
 #include <pluginlib/class_list_macros.h> 
+#include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace cv;
@@ -20,13 +21,17 @@ Publisher debug_pub;
 
 int red_thresh = 0;
 int blue_thresh = 0;
-
+Scalar red_low1;
+Scalar red_low2;
+Scalar red_high1;
+Scalar red_high2;
 int state = LOW;
 
 int number_of_crosses = 0;
-
+Time lastCross;
 
 void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
+    //NODELET_FATAL_STREAM("Roar of nodelet, hear my cry");
     cv_bridge::CvImagePtr cv_ptr;
 	Mat frame;
 	Mat output;
@@ -39,31 +44,31 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	}
 	
 	frame = cv_ptr->image;
+	Mat frameHSV;
+	cvtColor(frame, frameHSV, CV_BGR2HSV);
+        Mat blurredImage;
+        GaussianBlur(frameHSV, blurredImage, Size{7, 7}, 7);
+        Mat redMask1 = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
+        Mat redMask2 = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
+        inRange(blurredImage, red_low1, red_high1, redMask1);
+        inRange(blurredImage, red_low2, red_high2, redMask2);
+	Mat mask;
+	bitwise_or(redMask1, redMask2, mask);
+	imshow("filtered", mask);
+	waitKey(10);
 
-    for(int r = 0; r < frame.rows; r++) {
-        unsigned char* row = frame.ptr<unsigned char>(r);
-        for(int c = 0; c < frame.cols * frame.channels(); c+= frame.channels()) {
-            auto& blue = row[c];
-            auto& green = row[c+1];
-            auto& red = row[c+2];
-            if(blue < 50 && green < 50 && red > 200) {
-                blue = green = red = 255;
-            } else {
-                blue = green = red = 0;
-            }
-        }
-    }
-    cvtColor(frame, frame, CV_BGR2GRAY);
-
-    auto count = countNonZero(frame);
+    auto count = countNonZero(mask);
 
     if(state == LOW && count > 1000) {
         state = HIGH;
     } else if(state == HIGH && count < 1000) {
         // We crossed the line!
         state = LOW;
-        number_of_crosses++;
-	ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
+	if (ros::Time::now() > lastCross + ros::Duration(10)) {
+            number_of_crosses++;
+	    lastCross = ros::Time::now();
+	}
+	NODELET_FATAL_STREAM("Finish line crossed - " << to_string(number_of_crosses));
     }
 
     sensor_msgs::Image outmsg;
@@ -74,7 +79,7 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 }
 
 void finish_detector::onInit() {
-    
+    lastCross = ros::Time::now() - ros::Duration(100); 
     NodeHandle nh =  getNodeHandle();
     NodeHandle nhp = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
@@ -83,6 +88,18 @@ void finish_detector::onInit() {
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
     debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
+
+        nhp.param("red_low_h", red_low_h, 160.f);
+        nhp.param("red_low_s", red_low_s, 130.0f);
+        nhp.param("red_low_v", red_low_v, 0.0f);
+        red_low1 = Scalar{red_low_h, red_low_s, red_low_v};
+        red_low2 = Scalar{0, red_low_s, red_low_v};
+
+        nhp.param("red_high_h", red_high_h, 15.0f);
+        nhp.param("red_high_s", red_high_s, 255.0f);
+        nhp.param("red_high_v", red_high_v, 255.0f);
+        red_high1 = Scalar{180, red_high_s, red_high_v};
+        red_high2 = Scalar{red_high_h, red_high_s, red_high_v};
 
     Rate rate(30);
     while(ros::ok()) {
