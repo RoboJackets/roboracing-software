@@ -29,7 +29,7 @@ namespace avc {
 	Mat frameHSV;
 	cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
         Mat blurredImage;
-        GaussianBlur(frameHSV, blurredImage, Size{7, 7}, 3);
+        GaussianBlur(frameHSV, blurredImage, Size{21, 21}, 15);
         Mat redMask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
         inRange(blurredImage, red_low, red_high, redMask);
         Mat redImage;
@@ -39,12 +39,12 @@ namespace avc {
 	threshold(gray, gray, 10, 255, 0);
         vector<Vec3f> circles;
         HoughCircles(gray, circles, CV_HOUGH_GRADIENT, dp, minDist, param1, param2, minSize, maxSize);
-	/*Mat render;
+	Mat render;
 	cvtColor(gray, render, CV_GRAY2BGR);
 	for (auto i = 0; i < circles.size(); i++) {
             Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
 	    circle(render, center, circles[i][2], Scalar(255, 0, 0), 3);
-	}*/
+	}
         if (circles.size() != 0) {
             int maxSum = 0, maxX = 0, maxY = 0, maxR = 0;
             for (size_t i = 0; i < circles.size(); i++) {
@@ -61,14 +61,15 @@ namespace avc {
 		}
                 maxSum = max(maxSum, imgSum);
             }
-	    detection_ring_buffer.push_back(maxSum);
+	    auto areaPercentage = static_cast<double>(maxSum) / (3.14*maxR*maxR);
+	    detection_ring_buffer.push_back(areaPercentage);
 	    detection_ring_buffer.erase(detection_ring_buffer.begin());
-	    auto avgDetections = std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0) / detection_ring_buffer.size();
-            if (avgDetections > 0.50*(3.14*maxR*maxR)) {
+	    auto avgDetections = static_cast<double>(std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0.0)) / static_cast<double>(detection_ring_buffer.size());
+            if (avgDetections > 0.8) {
                 std_msgs::Bool start;
                 start.data = true;
                 start_pub.publish(start); 
-	        //circle(render, Point(maxX, maxY), maxR, Scalar(0, 255, 0), 3);
+	        circle(render, Point(maxX, maxY), maxR, Scalar(0, 255, 0), 3);
             } else {
 		std_msgs::Bool start;
                 start.data = false;
@@ -79,8 +80,8 @@ namespace avc {
 		start.data = false;
 		start_pub.publish(start); 
 	    }
-        //imshow("hough", render);
-	//waitKey(10);
+        imshow("hough", render);
+	waitKey(10);
     }
 
     void start_detector::onInit() {
