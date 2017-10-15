@@ -10,7 +10,13 @@ private:
     image_transport::Subscriber img_saver_sub;
 
     void ImageCB(const sensor_msgs::ImageConstPtr &msg);
+    float red_low_h;
+    float red_low_s;
+    float red_low_v;
 
+    float red_high_h;
+    float red_high_s;
+    float red_high_v;
     virtual void onInit();
 };
 
