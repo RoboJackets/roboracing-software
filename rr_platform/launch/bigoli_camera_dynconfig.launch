@@ -1,0 +1,10 @@
+<launch>
+    <!-- Don't forget commas between entries in the dictionary -->
+    <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_configurator"
+          args="set camera/driver &quot;{
+            'r200_dc_preset': 5,
+            'r200_lr_auto_exposure_enabled': 1,
+            'r200_emitter_enabled': 1
+          }&quot;">
+    </node>
+</launch>

@@ -1,5 +1,3 @@
-# a carbon copy of avc's CMakeLists
-
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_common)
 
@@ -51,3 +49,5 @@ include_directories(
 
 add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
+add_subdirectory(src/mapper)
+add_subdirectory(src/navigation_controller)

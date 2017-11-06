@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <include file="$(find avc)/launch/avc.launch"/>
+    <include file="$(find avc)/launch/start_detector.launch"/>
+    <include file="$(find avc)/launch/finish_detector.launch"/>
+    <include file="$(find rr_platform)/launch/bigoli_platform.launch"/>
+</launch>

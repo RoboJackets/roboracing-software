@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/camera/image_rect,/colors_img"/>
+    </node>
+
+    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
+        <param name="image_topics" value="/colors_img_transformed"/>
+        <param name="px_per_meter" value="100.0"/>
+    </node>
+</launch>

@@ -1,4 +1,9 @@
-
-
 # UVC cameras
-SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0458", ATTRS{idProduct}=="708c", MODE="0666"
+SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082d", MODE="0666"
+
+SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="19a2", ATTRS{idProduct}=="5001", MODE="0666"
+
+KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="954373133343517061C0", SYMLINK+="arduino_drive"
+
+KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="5533033393035151F070", SYMLINK+="arduino_steer"
+

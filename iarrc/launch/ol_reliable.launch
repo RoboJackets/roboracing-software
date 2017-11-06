@@ -1,0 +1,8 @@
+<launch>
+    <node name="ol_reliable" pkg="iarrc" type="ol_reliable" output="screen">
+        <param name="center_discount" value="0.85" />
+        <param name="num_regions" value="3" />
+        <param name="min_steering" value="-0.35" />
+        <param name="max_steering" value="0.35" />
+    </node>
+</launch>

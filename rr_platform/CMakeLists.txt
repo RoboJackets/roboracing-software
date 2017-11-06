@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_platform)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS}")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -34,7 +34,8 @@ add_message_files(
     FILES
     speed.msg
     steering.msg
-    camera_geometry.msg
+    camera_pose.msg
+    chassis_state.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -75,9 +76,14 @@ include_directories(
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
+add_subdirectory(src/bigoli_motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
+add_subdirectory(src/mpu9250_imu)
 
-add_executable(speedi_joint_updater src/speedi_joint_updater.cpp)
-target_link_libraries(speedi_joint_updater ${catkin_LIBRARIES})
-add_dependencies(speedi_joint_updater rr_platform_generate_messages_cpp)
+add_executable(mag_field_bias_calc src/mag_field_bias_calc.cpp)
+target_link_libraries(mag_field_bias_calc ${catkin_LIBRARIES})
+
+install(PROGRAMS launch/bigoli_camera_dynconfig.sh
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

@@ -1,0 +1,5 @@
+<launch>
+    <node name="imu" pkg="rr_platform" type="imu" output="screen">
+        <param name="serial_port" value="/dev/ttyUSB0"/>
+    </node>
+</launch>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <launch>
-    <include file="$(find rr_platform)/launch/speedi_state_publisher.launch"/>
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/obstacles_img"/>
     </node>

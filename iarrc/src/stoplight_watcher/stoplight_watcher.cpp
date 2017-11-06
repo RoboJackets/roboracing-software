@@ -11,10 +11,10 @@
 #include <opencv2/opencv.hpp>
 
 #define HIST_FRAMES 5     // Number of frames to keep in history
-#define LIGHT_DIST_PIX 60 // Pixels between the center of red and green lights
-#define MAXSUMRESULTSRED2GREEN 700 // experimental value of the max of the 2d traffic light filter
-#define TRIGGERPERCENTAGE .70 // The percentage an event must be from experimental, accounting for noise, to trigger
-#define LIGHT_SIZE_PIX 50 // The width or height of the observable stoplight light halo
+#define LIGHT_DIST_PIX 35 // Pixels between the center of red and green lights
+#define MAXSUMRESULTSRED2GREEN 600 // experimental value of the max of the 2d traffic light filter
+#define TRIGGERPERCENTAGE .85 // The percentage an event must be from experimental, accounting for noise, to trigger
+#define LIGHT_SIZE_PIX 35 // The width or height of the observable stoplight light halo
 
 using namespace cv;
 using namespace std;
@@ -94,13 +94,9 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     double minResult, maxResult;
     minMaxLoc(centerLightChangeness, &minResult, &maxResult);
-
     if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
         green.data = true;
-    } else {
-        //cout << "Wait for it...";
     }
-    //cout << "   " << maxResult << endl;
 
     bool_pub.publish(green);
 

@@ -1,8 +1,0 @@
-<launch>
-    <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/speedi.urdf
-            -gazebo_namespace /gazebo
-            -urdf -model speedi
-            -x 0 -y 0 -z 0
-            -R 0 -P 0 -Y 0"/>
-</launch>

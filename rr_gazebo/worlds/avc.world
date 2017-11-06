@@ -1,31 +1,41 @@
-<?xml version="1.0" ?>
 <sdf version="1.6">
-    <world name="IARRC Circuit">
+    <world name="AVC Circuit">
         <scene>
+            <ambient>1 1 1 1</ambient>
+            <background>0.7 0.7 0.7 1</background>
+            <shadows>true</shadows>
+            <grid>false</grid>
+            <origin_visual>false</origin_visual>
             <sky>
                 <clouds>
                     <speed>12</speed>
                 </clouds>
-                <time>12</time>
             </sky>
-            <ambient>1.0 1.0 1.0 1.0</ambient>
-            <background>0.7 0.7 0.7 1.0</background>
-            <shadows>true</shadows>
-            <grid>false</grid>
-            <origin_visual>false</origin_visual>
         </scene>
-
         <include>
             <uri>model://sun</uri>
         </include>
-
         <include>
             <uri>model://ground_plane</uri>
         </include>
-
         <include>
             <uri>model://AVCCourseBoundary</uri>
             <pose>0 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://stop_sign</uri>
+            <static>true</static>
+            <pose>-27.5 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://RedPedestrian</uri>
+            <static>true</static>
+            <pose>-25 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://AVCRamp</uri>
+            <static>true</static>
+            <pose>0.5 3.5 0 0 0 -0.9</pose>
         </include>
     </world>
 </sdf>

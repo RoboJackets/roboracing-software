@@ -1,92 +1,55 @@
-#define _USE_MATH_DEFINES //for cmath
-#include <cmath>
+#ifndef RR_COMMON_PLANNER_H
+#define RR_COMMON_PLANNER_H
+
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <avc/constants.hpp>
-#include <sensor_msgs/PointCloud2.h>
+#include <cmath>
+#include <cstring>
+#include <string>
+#include <random>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_types.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
+#include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <random>
+#include "flann/flann.hpp"
 
+int N_PATH_SEGMENTS;
+int N_CONTROL_SAMPLES;
+std::vector<float> SEGMENT_DISTANCES;
+std::vector<float> STEER_LIMITS;
+std::vector<float> STEER_STDDEVS;
+float DISTANCE_INCREMENT;
+float MAX_SPEED;
+float WHEEL_BASE;
+float COLLISION_RADIUS;
+float COLLISION_PENALTY;
+float PATH_SIMILARITY_CUTOFF;
+float MAX_RELATIVE_COST;
 
-class planner {
-public:
-	planner();
+std::vector<std::normal_distribution<float> > steering_gaussians;
+std::mt19937 rand_gen;
+ros::Publisher speed_pub, steer_pub, path_pub;
 
-private:
-	ros::Subscriber map_sub;
-	ros::Publisher speed_pub;
-	ros::Publisher steer_pub;
-	ros::Publisher path_pub;
+typedef std::vector<float> control_vector;
 
-	std::normal_distribution<double> steering_gaussian;
-	std::mt19937 rand_gen;
-
-	double STEER_STDDEV; //standard dev of steering randomizer (degrees)
-	double MAX_STEER_ANGLE; //degrees
-	int PATH_ITERATIONS; //number of random paths to generate
-	double MAX_SPEED; //meters per second
-	double PATH_STAGE_TIME; //simulate this much time per control value
-	double TIME_INCREMENT; //timestep between points on the path
-	int PATH_STAGES; //number of control values per path
-	double COLLISION_RADIUS; //minimum acceptable distance to obstacle
-	double ALT_PATH_THRESHOLD; //proportion of the max weight needed to use a path
-	double CONNECTED_PATH_DIST; //euclidean distance between two "similar enough" paths
-
-	double deltaX;
-	double deltaY;
-	double deltaTheta;
-
-	double desired_steer_angle;
-	double desired_velocity;
-
-	struct pose
-	{
-		double x;
-		double y;
-		double theta;
-	};
-
-	struct sim_path
-	{
-		std::vector<pose> poses;
-		std::vector<double> speeds;
-	};
-
-	struct WeightedSteeringVec
-	{
-		std::vector<double> steers;
-		double weight;
-	};
-
-	struct SteeringGroup
-	{
-		std::vector<WeightedSteeringVec> weightedSteers;
-		double weightTotal;
-
-		void add(const WeightedSteeringVec &wsv);
-		void addAll(const SteeringGroup &sg);
-		std::vector<double> weightedCenter();
-		double averageWeight();
-        bool operator==(SteeringGroup other);
-	};
-
-	static geometry_msgs::PoseStamped plannerPoseToPoseStamped(pose &p);
-    static bool steeringVecCompare(const WeightedSteeringVec &wsv1, const WeightedSteeringVec &wsv2);
-
-	pose calculateStep(double speed, double steer_angle, double timestep, pose pStart = pose{0,0,0});
-	double steeringToSpeed(double angle);
-	double steeringSample();
-	sim_path calculatePath(std::vector<double> angles);
-	double calculatePathCost(sim_path path, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
-	double costAtPose(pose step, pcl::KdTreeFLANN<pcl::PointXYZ> kdtree);
-	void mapCb(const sensor_msgs::PointCloud2ConstPtr& map);
-
+struct Pose2D {
+    float x;
+    float y;
+    float theta;
 };
+
+void advanceStep(float steerAngle, Pose2D &inOutPose);
+float getCostAtPose(Pose2D &pose, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
+inline float steeringToSpeed(float steering, float maxSteering);
+float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
+float steeringSample(int stage);
+void getLocalMinima(const std::vector<control_vector>&, const std::vector<float>&, std::vector<int>&);
+void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map);
+void parseFloatArrayStr(std::string &arrayAsString, std::vector<float> &floats);
+
+#endif //RR_COMMON_PLANNER_H

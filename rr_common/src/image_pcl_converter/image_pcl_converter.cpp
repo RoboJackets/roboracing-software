@@ -33,29 +33,28 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
 
     cv_bridge::CvImagePtr cv_ptr;
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     } catch(cv_bridge::Exception& e) {
         ROS_ERROR("CV_Bridge error: %s", e.what());
         return;
     }
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    Mat transformed_gray = cv_ptr->image;
+    Mat transformed = cv_ptr->image;
+    for(int r = 0; r < transformed.rows; r++) {
+        uchar* row = transformed.ptr<uchar>(r);
+        for(int c = 0; c < transformed.cols; c++) {
+            if(row[3*c] || row[3*c + 1] || row[3*c + 2]) {
 
-    for(int r = 0; r < transformed_gray.rows; r++) {
-        uchar* row = transformed_gray.ptr<uchar>(r);
-        for(int c = 0; c < transformed_gray.cols; c++) {
-            if(row[c]) {
                 pcl::PointXYZ point;
-                point.y = -1 * (c - transformed_gray.cols / 2.0f) / pxPerMeter;
-                point.x = (transformed_gray.rows - r) / pxPerMeter;
+                point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
+                point.x = (transformed.rows - r) / pxPerMeter;
                 point.z = 0.0;
 
                 cloud->push_back(point);
             }
         }
     }
-
     pcl::PCLPointCloud2 cloud_pc2;
     pcl::toPCLPointCloud2(*cloud, cloud_pc2);
     sensor_msgs::PointCloud2 cloud_msg;

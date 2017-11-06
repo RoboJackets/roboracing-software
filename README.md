@@ -1,12 +1,14 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/RaceCar.JPG "Picture of first RoboRacing car.")
+<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/Macaroni.jpg" style="max-height=400px;">
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
-[![Software Lead | Maintainer](https://img.shields.io/badge/Software%20Lead%20%7C%20Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
+[![Software Lead](https://img.shields.io/badge/Software%20Lead-Sahit%20Chintalapudi%20-blue.svg)](https://github.com/chsahit)
 
-[![Project Manager](https://img.shields.io/badge/Project%20Manager-Ransomed%20Adebayo-blue.svg)](https://github.com/radebayo)
+[![Project Manager](https://img.shields.io/badge/Project%20Manager-Evan%20Bretl-blue.svg)](https://github.com/ebretl)
+
+[![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
 
 ## Organization
 
@@ -37,32 +39,13 @@ The following files and folders enable our continuous integration system.
 
 2. Clone this repo into the _src_ directory of your catkin workspace.
 
-3. Unfortunately, some dependecies have to be installed manually.
-   1. libuvc - for accessing generic USB Cameras
-   
-      From your home directory, or wherever you feel like keeping the libuvc source   
-      ```
-      git clone https://github.com/ktossell/libuvc
-      cd libuvc
-      mkdir build
-      cd build
-      cmake ..
-      make && sudo make install
-      ```
-   2. libuvc_ros - ROS API for libuvc
-   
-      From within the `src` directory of your catkin workspace,
-      ```
-      git clone git@github.com:ktossell/libuvc_ros.git
-      ```
-  
-4. Install the remaining dependencies with the following command in your catkin workspace folder:
+3. Install the remaining dependencies with the following command in your catkin workspace folder:
 
    ```
    rosdep install --from-path src --ignore-src -y
    ```
     
-5. You should now be able to build the project with `catkin_make`.
+4. You should now be able to build the project with `catkin_make`.
 
 ## Simulation
 
@@ -70,7 +53,7 @@ You can get started with the RoboRacing code base right away by launching our si
 
 The following command will load our platform in the Sparkfun AVC track:
 ```
-roslaunch rr_gazebo speedi_avc.launch
+roslaunch rr_gazebo macaroni_avc.launch
 ```
 Then, the following command will start our race AI and drive the car around the track:
 ```

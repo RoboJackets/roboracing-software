@@ -5,6 +5,8 @@
   <description>The RoboRacing platform package</description>
 
   <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
+  <maintainer email="chsahit@gmail.com">Sahit Chintalapudi</maintainer>
+  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
 
 
 
@@ -30,6 +32,8 @@
   <build_depend>message_generation</build_depend>
   <build_depend>libusb-1.0</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>
+  <build_depend>libuvc_camera</build_depend>
+  <build_depend>libuvc</build_depend>
 
   <run_depend>laser_geometry</run_depend>
   <run_depend>sick_tim</run_depend>
@@ -44,5 +48,9 @@
   <run_depend>joy</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
+  <run_depend>libuvc_camera</run_depend>
+  <run_depend>libuvc</run_depend>
+  <run_depend>realsense_camera</run_depend>
+  <run_depend>librealsense</run_depend>
 
 </package>

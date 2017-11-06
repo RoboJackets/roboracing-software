@@ -1,17 +1,8 @@
-# Qt Creator project files
-*.config
-*.creator
-*.creator.user
-*.files
-*.includes
 */CMakeFiles/*
 
 # Clion project files
 */*.idea
 *.idea
-
-# BitTorrent Sync files
-.sync/*
 
 # Sublime Text 3 project files
 *.sublime-project

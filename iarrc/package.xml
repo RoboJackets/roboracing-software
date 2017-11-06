@@ -5,14 +5,12 @@
   <description>The iarrc package</description>
 
   <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-  <maintainer email="joshua.morton@gatech.edu">Joshua Morton</maintainer>
+  <maintainer email="chsahit@gmail.edu">Sahit Chintalapudi</maintainer>
+  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
 
 
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>MIT</license>
 
 
   <url type="website">http://robojackets.org</url>
@@ -29,6 +27,7 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>rr_platform</build_depend>
   <build_depend>cv_bridge</build_depend>
+  <build_depend>nodelet</build_depend>
   <build_depend>image_transport</build_depend>
 
   <run_depend>laser_geometry</run_depend>
@@ -40,5 +39,9 @@
   <run_depend>rr_platform</run_depend>
   <run_depend>laser_geometry</run_depend>
   <run_depend>image_transport</run_depend>
+  <run_depend>nodelet</run_depend>
 
+  <export>
+      <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
+  </export>
 </package>
