@@ -3,8 +3,13 @@
         <param name="joystick_topic" type="str" value="/joy"/>
         <param name="speed_topic" type="str" value="/speed"/>
         <param name="steering_topic" type="str" value="/steering"/>
-        <param name="angle_max" type="int" value="50"/>
-        <param name="speed_max" type="int" value="20"/>
+        <param name="angle_max" type="double" value="0.3"/>
+        <param name="speed_max" type="double" value="20.0"/>
     </node>
-    <test test-name="test_joystick_driver" pkg="rr_platform" type="test_joystick_driver"/>
+    <test test-name="test_joystick_driver" pkg="rr_platform" type="test_joystick_driver">
+        <param name="angle_max" type="double" value="0.3"/>
+        <param name="speed_max" type="double" value="20.0"/>
+        <param name="angle_axis" type="int" value="0"/>
+        <param name="speed_axis" type="int" value="4"/>
+    </test>
 </launch>
