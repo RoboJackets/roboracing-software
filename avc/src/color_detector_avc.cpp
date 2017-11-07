@@ -25,16 +25,21 @@ vector<Scalar> highs;
 Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high) {
     Mat frame;
     image.copyTo(frame);
-	Mat frameHSV;
-	cvtColor(frame, frameHSV, CV_BGR2HSV);
 
-	Mat blurredImage;
-    GaussianBlur(frameHSV, blurredImage, Size{21, 21}, 15);
+    Mat blurredImage;
+    GaussianBlur(frame, blurredImage, Size{5, 5}, 5);
+	
+    Mat frameHSV;
+	  cvtColor(blurredImage, frameHSV, CV_BGR2HSV);
 
     Mat obstacleImg;
-    inRange(blurredImage, low, high, obstacleImg);
+    inRange(frameHSV, low, high, obstacleImg);
+    
+    //ROS_INFO_STREAM(obstacleImg.rows << ", " << obstacleImg.cols << ", " << mask.rows << ", " << mask.cols);
+    Mat masked;
+    obstacleImg.copyTo(masked, mask);
 
-    return obstacleImg;
+    return masked;
 }
 
 void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
@@ -71,22 +76,22 @@ int main(int argc, char** argv) {
 
     //Doesn't proccess the top half of the picture
     vector<Mat> mask_segments = {
-        Mat::zeros(640,240,CV_8UC3), 
-		Mat(640,240,CV_8UC3, Scalar::all(1))
+        Mat::zeros(45,160,CV_8UC1), 
+		    Mat(30,160,CV_8UC1, Scalar::all(1)),
+        Mat::zeros(15,160,CV_8UC1)
     };
     vconcat(mask_segments, mask);
 
     NodeHandle nh;
 
     img_pub = nh.advertise<sensor_msgs::Image>("/colors_img", 1);
-    //auto img_sub = nh.subscribe("/camera/image_rect", 1, ImageRectCB);
-	auto img_sub = nh.subscribe("/camera_wide/image_raw", 1, ImageRectCB);
+    auto img_sub = nh.subscribe("/camera/image_raw", 1, ImageRectCB);
 
-    lows.push_back(Scalar(0,0,0));
+    lows.push_back(Scalar(0,50,0));
     highs.push_back(Scalar(180,255,255));
 
-    //lows.push_back(Scalar(0,0,0));
-    //highs.push_back(Scalar(180,255,255));
+    lows.push_back(Scalar(0,0,0));
+    highs.push_back(Scalar(180,255,85));
 
     //lows.push_back(Scalar(0,0,0));
     //highs.push_back(Scalar(180,255,255));
