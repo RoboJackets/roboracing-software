@@ -54,10 +54,11 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         inRange(blurredImage, red_low2, red_high2, redMask2);
 	Mat mask;
 	bitwise_or(redMask1, redMask2, mask);
-	imshow("filtered", mask);
-	waitKey(10);
+	//imshow("filtered", mask);
+	//waitKey(10);
 
     auto count = countNonZero(mask);
+    //NODELET_FATAL_STREAM("red " << count << endl);
 
     if(state == LOW && count > 1000) {
         state = HIGH;
@@ -76,12 +77,16 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 	cv_ptr->encoding = "mono8";
 	cv_ptr->toImageMsg(outmsg);
 	debug_pub.publish(outmsg);
+
+	std_msgs::Int8 intmsg;
+        intmsg.data = number_of_crosses;
+        crosses_pub.publish(intmsg);
 }
 
 void finish_detector::onInit() {
     lastCross = ros::Time::now() - ros::Duration(100); 
-    NodeHandle nh =  getNodeHandle();
-    NodeHandle nhp = getPrivateNodeHandle();
+    auto nh =  getNodeHandle();
+    auto nhp = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
 
     img_saver_sub = it.subscribe("/camera/image_raw", 1, &finish_detector::ImageCB, this);
@@ -101,7 +106,7 @@ void finish_detector::onInit() {
         red_high1 = Scalar{180, red_high_s, red_high_v};
         red_high2 = Scalar{red_high_h, red_high_s, red_high_v};
 
-    Rate rate(30);
+    /*Rate rate(30);
     while(ros::ok()) {
         std_msgs::Int8 intmsg;
         intmsg.data = number_of_crosses;
@@ -109,7 +114,7 @@ void finish_detector::onInit() {
    
         spinOnce();
         rate.sleep();
-    }
+    }*/
 
 }
 }

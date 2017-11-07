@@ -1,6 +1,5 @@
 <launch>
-    <group ns="camera">
-        <node pkg="nodelet" type="nodelet" name="start_detector" args="load avc/start_detector camera_mono_nodelet_manager" output="screen">
+        <node pkg="nodelet" type="nodelet" name="start_detector" args="load avc/start_detector camera/camera_mono_nodelet_manager" output="screen">
 		<param name="red_low_r" value="20.0"/> <!--V-->
 		<param name="red_high_r" value="150.0"/>
 
@@ -18,5 +17,4 @@
 
 		
 	</node>
-    </group>
 </launch>

@@ -16,6 +16,7 @@ namespace avc {
     Scalar red_high;
 
     void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
+	NODELET_FATAL_STREAM("image received");
         cv_bridge::CvImageConstPtr cv_ptr;
 
         try {
@@ -24,7 +25,7 @@ namespace avc {
             ROS_ERROR("CV-Bridge error: %s", e.what());
             return;
         }
-        
+		NODELET_FATAL_STREAM("6");
         const Mat &frameBGR = cv_ptr->image;
 	Mat frameHSV;
 	cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
@@ -39,6 +40,7 @@ namespace avc {
 	threshold(gray, gray, 10, 255, 0);
         vector<Vec3f> circles;
         HoughCircles(gray, circles, CV_HOUGH_GRADIENT, dp, minDist, param1, param2, minSize, maxSize);
+		NODELET_FATAL_STREAM("7");
 	Mat render;
 	cvtColor(gray, render, CV_GRAY2BGR);
 	for (auto i = 0; i < circles.size(); i++) {
@@ -61,32 +63,38 @@ namespace avc {
 		}
                 maxSum = max(maxSum, imgSum);
             }
+		NODELET_FATAL_STREAM("1");
 	    auto areaPercentage = static_cast<double>(maxSum) / (3.14*maxR*maxR);
 	    detection_ring_buffer.push_back(areaPercentage);
 	    detection_ring_buffer.erase(detection_ring_buffer.begin());
 	    auto avgDetections = static_cast<double>(std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0.0)) / static_cast<double>(detection_ring_buffer.size());
+		NODELET_FATAL_STREAM("2");
             if (avgDetections > 0.8) {
                 std_msgs::Bool start;
                 start.data = true;
                 start_pub.publish(start); 
 	        circle(render, Point(maxX, maxY), maxR, Scalar(0, 255, 0), 3);
+		NODELET_FATAL_STREAM("3");
             } else {
 		std_msgs::Bool start;
                 start.data = false;
                 start_pub.publish(start);
+		NODELET_FATAL_STREAM("4");
 	    }
         } else {
 		std_msgs::Bool start;
 		start.data = false;
 		start_pub.publish(start); 
+		NODELET_FATAL_STREAM("5");
 	    }
-        imshow("hough", render);
-	waitKey(10);
+        //imshow("hough", render);
+	//waitKey(10);
+			NODELET_FATAL_STREAM("10");
     }
 
     void start_detector::onInit() {
-        NodeHandle nh = getNodeHandle();
-        NodeHandle pnh = getPrivateNodeHandle();
+        auto nh = getNodeHandle();
+        auto pnh = getPrivateNodeHandle();
         image_transport::ImageTransport it(nh);
 
         pnh.param("red_low_r", red_low_r, 100.0);
