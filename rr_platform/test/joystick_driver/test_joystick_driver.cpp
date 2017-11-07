@@ -9,10 +9,15 @@ class JoystickDriverTestSuite : public testing::Test {
 public:
     JoystickDriverTestSuite()
             : handle(),
+              handle_private("~"),
               joy_pub(handle.advertise<sensor_msgs::Joy>("/joy", 1)),
               speed_sub(handle.subscribe("/speed", 1, &JoystickDriverTestSuite::speedCallback, this)),
               steering_sub(handle.subscribe("/steering", 1, &JoystickDriverTestSuite::steeringCallback, this))
     {
+        handle_private.param("speed_max", speed_max, 0.0f);
+        handle_private.param("angle_max", angle_max, 0.0f);
+        handle_private.param("speed_axis", speed_axis, 0);
+        handle_private.param("angle_axis", angle_axis, 0);
     }
 
     void speedCallback(const rr_platform::speed::ConstPtr& msg) {
@@ -38,6 +43,7 @@ protected:
     }
 
     ros::NodeHandle handle;
+    ros::NodeHandle handle_private;
     ros::Publisher joy_pub;
     ros::Subscriber speed_sub;
     ros::Subscriber steering_sub;
@@ -45,7 +51,10 @@ protected:
     volatile bool steering_received = false;
     rr_platform::speed speed_msg;
     rr_platform::steering steering_msg;
-
+    float angle_max;
+    float speed_max;
+    int angle_axis;
+    int speed_axis;
 };
 
 TEST_F(JoystickDriverTestSuite, FullForward)  {
@@ -54,16 +63,18 @@ TEST_F(JoystickDriverTestSuite, FullForward)  {
     steering_received = false;
 
     sensor_msgs::Joy joy_msg;
-    joy_msg.axes = {0, 1, 0, 0};
-    joy_msg.buttons = {0, 0, 0, 0};
+    joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0}; //8 axes
+    joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //11 buttons
+    joy_msg.axes[angle_axis] = 0.0;
+    joy_msg.axes[speed_axis] = 1.0;
     joy_pub.publish(joy_msg);
 
     while(!speed_received || !steering_received) {
         ros::spinOnce();
     }
 
-    EXPECT_EQ(speed_msg.speed, 20);
-    EXPECT_EQ(steering_msg.angle, 0);
+    EXPECT_FLOAT_EQ(speed_max, speed_msg.speed);
+    EXPECT_FLOAT_EQ(0.0, steering_msg.angle);
 }
 
 int main(int argc, char **argv) {
