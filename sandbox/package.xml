@@ -4,16 +4,12 @@
   <version>0.0.0</version>
   <description>The sandbox package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="sastorer@todo.todo">sastorer</maintainer>
+  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
+  <maintainer email="chsahit@gmail.com">Sahit Chintalapudi</maintainer>
+  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
 
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>MIT</license>
 
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
