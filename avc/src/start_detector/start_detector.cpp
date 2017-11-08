@@ -24,8 +24,8 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     }
 
     const Mat &frameBGR = cv_ptr->image;
-	Mat frameHSV;
-	cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
+    Mat frameHSV;
+    cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
 
     Mat blurredImage;
     GaussianBlur(frameHSV, blurredImage, Size{21, 21}, 15);
@@ -43,11 +43,11 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     HoughCircles(gray, circles, CV_HOUGH_GRADIENT, dp, minDist, param1, param2, minSize, maxSize);
 
     /*Mat render;
-	cvtColor(gray, render, CV_GRAY2BGR);
-	for (auto i = 0; i < circles.size(); i++) {
+    cvtColor(gray, render, CV_GRAY2BGR);
+    for (auto i = 0; i < circles.size(); i++) {
         Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-	    circle(render, center, circles[i][2], Scalar(255, 0, 0), 3);
-	}*/
+        circle(render, center, circles[i][2], Scalar(255, 0, 0), 3);
+    }*/
 
     if (circles.size() != 0) {
         int maxSum = 0, maxX = 0, maxY = 0, maxR = 0;
@@ -75,17 +75,17 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
             start_pub.publish(start);
             //circle(render, Point(maxX, maxY), maxR, Scalar(0, 255, 0), 3);
         } else {
-		    std_msgs::Bool start;
+            std_msgs::Bool start;
             start.data = false;
             start_pub.publish(start);
-	    }
+        }
     } else {
-		std_msgs::Bool start;
-		start.data = false;
-		start_pub.publish(start); 
+        std_msgs::Bool start;
+        start.data = false;
+        start_pub.publish(start); 
     }
     //imshow("hough", render);
-	waitKey(10);
+    waitKey(10);
 }
 
 void start_detector::onInit() {

@@ -55,17 +55,17 @@ int getWidth(const Mat& image) {
 
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
-	Mat frame;
-	Mat output;
-	
-	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-	} catch (cv_bridge::Exception& e) {
-		ROS_ERROR("CV-Bridge error: %s", e.what());
-		return;
-	}
-	
-	frame = cv_ptr->image;
+    Mat frame;
+    Mat output;
+    
+    try {
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+    } catch (cv_bridge::Exception& e) {
+        ROS_ERROR("CV-Bridge error: %s", e.what());
+        return;
+    }
+    
+    frame = cv_ptr->image;
 
     for(int r = 0; r < frame.rows; r++) {
         unsigned char* row = frame.ptr<unsigned char>(r);
@@ -96,14 +96,14 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
-	ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
+    ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
     }
 
     sensor_msgs::Image outmsg;
     cv_ptr->image = frame;
-	cv_ptr->encoding = "mono8";
-	cv_ptr->toImageMsg(outmsg);
-	debug_pub.publish(outmsg);
+    cv_ptr->encoding = "mono8";
+    cv_ptr->toImageMsg(outmsg);
+    debug_pub.publish(outmsg);
 }
 
 int main(int argc, char** argv) {

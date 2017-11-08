@@ -12,19 +12,19 @@ using uchar = unsigned char;
 
 void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
-	Mat frame;
-	Mat output;
-	
-	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-	} catch (cv_bridge::Exception& e) {
-		ROS_ERROR("CV-Bridge error: %s", e.what());
-		return;
-	}
-	
-	frame = cv_ptr->image;
-	Mat frameHSV;
-	cvtColor(frame, frameHSV, CV_BGR2HSV);
+    Mat frame;
+    Mat output;
+
+    try {
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+    } catch (cv_bridge::Exception& e) {
+        ROS_ERROR("CV-Bridge error: %s", e.what());
+        return;
+    }
+
+    frame = cv_ptr->image;
+    Mat frameHSV;
+    cvtColor(frame, frameHSV, CV_BGR2HSV);
 
     Mat blurredImage;
     GaussianBlur(frameHSV, blurredImage, Size{7, 7}, 7);
@@ -35,9 +35,9 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     inRange(blurredImage, red_low2, red_high2, redMask2);
 
     Mat mask;
-	bitwise_or(redMask1, redMask2, mask);
-	imshow("filtered", mask);
-	waitKey(10);
+    bitwise_or(redMask1, redMask2, mask);
+    imshow("filtered", mask);
+    waitKey(10);
 
     auto count = countNonZero(mask);
 
@@ -55,9 +55,9 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     sensor_msgs::Image outmsg;
     cv_ptr->image = frame;
-	cv_ptr->encoding = "mono8";
-	cv_ptr->toImageMsg(outmsg);
-	debug_pub.publish(outmsg);
+    cv_ptr->encoding = "mono8";
+    cv_ptr->toImageMsg(outmsg);
+    debug_pub.publish(outmsg);
 }
 
 void finish_detector::onInit() {

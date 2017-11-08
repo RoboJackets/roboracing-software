@@ -13,7 +13,7 @@ Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high)
 
     Mat blurredImage;
     GaussianBlur(frame, blurredImage, Size{blur_strength, blur_strength}, blur_strength);
-	
+
     Mat frameHSV;
     cvtColor(blurredImage, frameHSV, CV_BGR2HSV);
 
@@ -37,14 +37,14 @@ void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
     }
-	frame = cv_ptr->image;
+    frame = cv_ptr->image;
     Mat output(frame.rows, frame.cols, CV_8UC1, Scalar::all(0));
 
-	for (int i = 0; i < lows.size(); i++) {
-		Mat partial;
-		partial = detectObstacleColor(frame, lows[i], highs[i]);
-		bitwise_or(output, partial, output);
-	}
+    for (int i = 0; i < lows.size(); i++) {
+        Mat partial;
+        partial = detectObstacleColor(frame, lows[i], highs[i]);
+        bitwise_or(output, partial, output);
+    }
 
     sensor_msgs::Image outmsg;
     cv_ptr->image = output;
