@@ -1,5 +1,0 @@
-<launch>
-	<include file="$(find rr_platform)/launch/logitech_camera.launch"/>
-	<include file="$(find rr_platform)/launch/wide_camera.launch"/>
-	<include file="$(find avc)/launch/start_detector.launch"/>
-</launch>

@@ -1,13 +1,4 @@
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/conversions.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <rr_platform/transform_image.h>
+#include "color_detector_avc.h"
 
 using namespace std;
 using namespace cv;
@@ -15,27 +6,20 @@ using namespace ros;
 
 using uchar = unsigned char;
 
-Publisher img_pub;
-Mat mask;
-
-vector<Scalar> lows;
-vector<Scalar> highs;
-
 
 Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high) {
     Mat frame;
     image.copyTo(frame);
 
     Mat blurredImage;
-    GaussianBlur(frame, blurredImage, Size{5, 5}, 5);
+    GaussianBlur(frame, blurredImage, Size{blur_strength, blur_strength}, blur_strength);
 	
     Mat frameHSV;
-	  cvtColor(blurredImage, frameHSV, CV_BGR2HSV);
+    cvtColor(blurredImage, frameHSV, CV_BGR2HSV);
 
     Mat obstacleImg;
     inRange(frameHSV, low, high, obstacleImg);
-    
-    //ROS_INFO_STREAM(obstacleImg.rows << ", " << obstacleImg.cols << ", " << mask.rows << ", " << mask.cols);
+
     Mat masked;
     obstacleImg.copyTo(masked, mask);
 
@@ -74,27 +58,33 @@ int main(int argc, char** argv) {
 
     init(argc, argv, "color_detector_avc");
 
-    //Doesn't proccess the top half of the picture
+    NodeHandle nh;
+    NodeHandle nhp("~");
+
+    nhp.param(string("image_topic"), image_topic, string("/camera/image_rect"));
+    nhp.param(string("pub_topic"), pub_topic, string("/colors_img"));
+    nhp.param(string("image_width"), image_width, 640);
+    nhp.param(string("image_height"), image_height, 480);
+    nhp.param(string("mask_px_top"), mask_px_top, 320);
+    nhp.param(string("mask_px_bottom"), mask_px_bottom, 1);
+    nhp.param(string("blur_strength"), blur_strength, 7);
+
+    img_pub = nh.advertise<sensor_msgs::Image>(pub_topic, 1);
+    auto img_sub = nh.subscribe(image_topic, 1, ImageRectCB);
+
+    int good_height = image_height - mask_px_bottom - mask_px_top;
     vector<Mat> mask_segments = {
-        Mat::zeros(45,160,CV_8UC1), 
-		    Mat(30,160,CV_8UC1, Scalar::all(1)),
-        Mat::zeros(15,160,CV_8UC1)
+            Mat::zeros(mask_px_top, image_width, CV_8UC1),
+            Mat(good_height, image_width, CV_8UC1, Scalar::all(1)),
+            Mat::zeros(mask_px_bottom, image_width, CV_8UC1)
     };
     vconcat(mask_segments, mask);
-
-    NodeHandle nh;
-
-    img_pub = nh.advertise<sensor_msgs::Image>("/colors_img", 1);
-    auto img_sub = nh.subscribe("/camera/image_raw", 1, ImageRectCB);
 
     lows.push_back(Scalar(0,50,0));
     highs.push_back(Scalar(180,255,255));
 
     lows.push_back(Scalar(0,0,0));
     highs.push_back(Scalar(180,255,85));
-
-    //lows.push_back(Scalar(0,0,0));
-    //highs.push_back(Scalar(180,255,255));
 
     spin();
 
