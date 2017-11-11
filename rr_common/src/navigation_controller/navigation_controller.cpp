@@ -35,19 +35,18 @@ void updateState() {
             steering = planSteering;
             if(finishLineCrosses >= REQ_FINISH_LINE_CROSSES) {
                 state = FINISHED;
-		finishTime = ros::Time::now();
+                finishTime = ros::Time::now();
             } else {
-		
-            speed = planSpeed;
-            steering = planSteering;
-		}
+                speed = planSpeed;
+                steering = planSteering;
+            }
             break;
         case FINISHED:
             //ROS_INFO("finished");
-		if( (ros::Time::now() - finishTime) > ros::Duration(0.65)) {
-            		speed = 0.0;
-            		steering = 0.0;
-		}
+            if( (ros::Time::now() - finishTime) > ros::Duration(0.65)) {
+                speed = 0.0;
+                steering = 0.0;
+            }
             break;
         default:
             ROS_WARN("State machine defaulted");
@@ -103,7 +102,7 @@ int main(int argc, char** argv) {
         rr_platform::speed speedMsg;
         speedMsg.speed = speed;
         speedMsg.header.stamp = ros::Time::now();
-	speedPub.publish(speedMsg);
+        speedPub.publish(speedMsg);
 
         rr_platform::steering steerMsg;
         steerMsg.angle = steering;
