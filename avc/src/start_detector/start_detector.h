@@ -27,6 +27,8 @@ private:
 
     int sumThreshold;
 
+    std::vector<double> detection_ring_buffer;
+
     void ImageCB(const sensor_msgs::ImageConstPtr &msg);
 
     virtual void onInit();
