@@ -1,5 +1,5 @@
-#ifndef PROJECT_PLATFORMENABLEPANEL_H
-#define PROJECT_PLATFORMENABLEPANEL_H
+#ifndef PROJECT_EXAMPLEPANEL_H
+#define PROJECT_EXAMPLEPANEL_H
 
 #include <ros/ros.h>
 #include <rviz/panel.h>
@@ -23,4 +23,4 @@ protected:
 
 }
 
-#endif //PROJECT_PLATFORMENABLEPANEL_H
+#endif //PROJECT_EXAMPLEPANEL_H
