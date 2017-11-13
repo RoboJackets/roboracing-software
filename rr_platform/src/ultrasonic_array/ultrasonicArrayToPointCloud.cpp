@@ -8,6 +8,8 @@ using namespace std;
 
 #define NUM_SENSORS 8
 #define RADIUS 0.15 //radius in m
+#define NUM_POINTS 5 //# points for each semicircle
+#define PI 3.1415926535897; //#TODO: is there a better way?
 
 
 
@@ -45,19 +47,19 @@ vector<float> parseLine(string line) {
 }
 
 void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
-  numPoints -= 1; //aleady have one point
-  float angle = 180.0 / (numPoints);
+  numPoints = numPoints - 1; //already have 1 point plotted
+  int numAngleShifts =  numPoints - 1; //numPoints - 1 = # of angleShifta
+  float angle = 2 * PI / (numAngleShifts);
   float center = point.x + radius;
 
 
-  float currentAngle = 360.0;
+  float currentAngle = 2 * PI;
 
   for (int i = 0; i < numPoints; i++) {
     int x = radius * (cos(currentAngle)) + point.x;
-    int y = radius * (sin(currentAngle)) + point.y;
+    int y = -radius * (sin(currentAngle)) + point.y; //- because urdf standards of left is +y
     pcl::PointXYZ newPoint = new PointXYZ(x, y, 0.0);
-    cloud += newPoint;
-    //#TODO: finish this because it currently is not thought out to to ensure that the point given is always in right spot
+    cloud.push_back(newPoint);
     currentAngle -= angle;
   }
 
@@ -81,7 +83,7 @@ int main(int argc, char** argv) {
     string serial_port_name;
     nhp.param(string("serial_port"), serial_port_name, string("/dev/ttyACM0")); //#TODO: launch file
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
-    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic"));
+    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
     nhp.param(string("rate"), rate, 10); //#TODO
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
@@ -113,8 +115,8 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < NUM_SENSORS; i++) {
       pcl::PointXYZ point = new PointXYZ(distances[i], 0.0, 0.0);
-      clouds[i] += point; //add point given
-      drawSemiCircle()//#TODO: this method and propely calling it
+      clouds[i].push_back(point); //add point given
+      drawSemiCircle(cloud[i], points, RADIUS, NUM_POINTS); //numPoints is number of points including the one we added line above!
 
 
       if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(3.0))) {
