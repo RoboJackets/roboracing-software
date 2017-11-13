@@ -1,6 +1,6 @@
-//#define DEBUG 0 //num is the sensor to debug
-#define NUM_SENSORS 6
+#define NUM_SENSORS 8
 #define BAUD_RATE 9600
+#define SPEED_OF_SOUND 294.12 //microseconds per meter!
 
 //Firmware for sensor array with HC-SR04 ultrasonic sensors
 
@@ -16,19 +16,17 @@ long ping(int trigPin, int echoPin) {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
 
-  distance = (duration / 2) / 29.1;
+  distance = (duration / 2) / SPEED_OF_SOUND; //Distance = (Time x SpeedOfSound) / 2. The "2" is in the formula because the sound has to travel back and forth
   return distance;
 
 }
 
-//#TODO: write a version of ping that does not use delay. Use states. i=0;j=NUM_SENSORS/2 First state check sensor i and j, increment for next state, etc
+//#TODO: write a version of ping that does not use delay. Increment through two at a time, need to write your own "pulseIn"
 //#TODO: https://www.bananarobotics.com/shop/HC-SR04-Ultrasonic-Distance-Sensor for info on sensor
 
 int trigPins[] = {13}; //trigger pins in order of left to right
 int echoPins[] = {12}; //echo pins in order of left to right
 long distances[NUM_SENSORS];
-
-int state = 0;
 
 void setup() {
   Serial.begin(BAUD_RATE);
@@ -41,20 +39,10 @@ void setup() {
 }
 
 void loop() {
+
   for (int i = 0; i < NUM_SENSORS; i++) {
-    distances[i] = ping(trigPins[i], echoPins[i])
+    distances[i] = ping(trigPins[i], echoPins[i]);
   }
-
-
-#ifdef DEBUG
-  if (distances[DEBUG] >= 200 || distances[DEBUG] <= 0){
-    Serial.println("Out of range");
-  }
-  else {
-    Serial.print(distances[DEBUG]);
-    Serial.println(" cm");
-  }
-#endif
 
 
   //output distances to serial
