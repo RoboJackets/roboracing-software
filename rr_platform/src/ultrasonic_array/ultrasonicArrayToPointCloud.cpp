@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     nhp.param(string("serial_port"), serial_port_name, string("/dev/ttyACM0")); //#TODO: launch file
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
     nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-    nhp.param(string("rate"), rate, 10); //#TODO
+    nhp.param(string("rate"), rate, 10.0); //#TODO
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
