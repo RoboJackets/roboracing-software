@@ -2,16 +2,12 @@
 #include <pluginlib/class_list_macros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <std_msgs/Bool.h>
-#include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace ros;
 using namespace cv;
 
 namespace avc {
-
-Scalar red_low;
-Scalar red_high;
 
 void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     cv_bridge::CvImageConstPtr cv_ptr;
@@ -42,13 +38,6 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     vector<Vec3f> circles;
     HoughCircles(gray, circles, CV_HOUGH_GRADIENT, dp, minDist, param1, param2, minSize, maxSize);
 
-    /*Mat render;
-    cvtColor(gray, render, CV_GRAY2BGR);
-    for (auto i = 0; i < circles.size(); i++) {
-        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        circle(render, center, circles[i][2], Scalar(255, 0, 0), 3);
-    }*/
-
     if (circles.size() != 0) {
         int maxSum = 0, maxX = 0, maxY = 0, maxR = 0;
         for (size_t i = 0; i < circles.size(); i++) {
@@ -69,29 +58,29 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
         detection_ring_buffer.push_back(areaPercentage);
         detection_ring_buffer.erase(detection_ring_buffer.begin());
         auto avgDetections = static_cast<double>(std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0.0)) / static_cast<double>(detection_ring_buffer.size());
-        if (avgDetections > 0.8) {
-            std_msgs::Bool start;
-            start.data = true;
-            start_pub.publish(start);
-            //circle(render, Point(maxX, maxY), maxR, Scalar(0, 255, 0), 3);
-        } else {
-            std_msgs::Bool start;
-            start.data = false;
-            start_pub.publish(start);
-        }
+
+        std_msgs::Bool start;
+        start.data = (avgDetections > 0.8);
+        start_pub.publish(start);
+
     } else {
         std_msgs::Bool start;
         start.data = false;
-        start_pub.publish(start); 
+        start_pub.publish(start);
     }
-    //imshow("hough", render);
-    waitKey(10);
 }
 
 void start_detector::onInit() {
-    NodeHandle nh = getNodeHandle();
-    NodeHandle pnh = getPrivateNodeHandle();
+    auto nh = getNodeHandle();
+    auto pnh = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
+
+    double red_low_r;
+    double red_low_g;
+    double red_low_b;
+    double red_high_r;
+    double red_high_g;
+    double red_high_b;
 
     pnh.param("red_low_r", red_low_r, 100.0);
     pnh.param("red_low_g", red_low_g, 0.0);

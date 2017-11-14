@@ -7,17 +7,17 @@ using namespace cv;
 using namespace ros;
 
 namespace avc {
+
 using uchar = unsigned char;
 
-
-void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
+void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     cv_bridge::CvImagePtr cv_ptr;
     Mat frame;
     Mat output;
 
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-    } catch (cv_bridge::Exception& e) {
+    } catch (cv_bridge::Exception &e) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
     }
@@ -36,14 +36,15 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     Mat mask;
     bitwise_or(redMask1, redMask2, mask);
-    imshow("filtered", mask);
-    waitKey(10);
+    //imshow("filtered", mask);
+    //waitKey(10);
 
     auto count = countNonZero(mask);
+    //NODELET_FATAL_STREAM("red " << count << endl);
 
-    if(state == LOW && count > 1000) {
+    if (state == LOW && count > 1000) {
         state = HIGH;
-    } else if(state == HIGH && count < 1000) {
+    } else if (state == HIGH && count < 1000) {
         // We crossed the line!
         state = LOW;
         if (ros::Time::now() > lastCross + ros::Duration(10)) {
@@ -58,6 +59,10 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr->encoding = "mono8";
     cv_ptr->toImageMsg(outmsg);
     debug_pub.publish(outmsg);
+
+    std_msgs::Int8 intmsg;
+    intmsg.data = number_of_crosses;
+    crosses_pub.publish(intmsg);
 }
 
 void finish_detector::onInit() {
@@ -65,8 +70,8 @@ void finish_detector::onInit() {
     lastCross = ros::Time::now() - ros::Duration(100);
     number_of_crosses = 0;
 
-    NodeHandle nh =  getNodeHandle();
-    NodeHandle nhp = getPrivateNodeHandle();
+    auto nh = getNodeHandle();
+    auto nhp = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
 
     img_saver_sub = it.subscribe("/camera/image_raw", 1, &finish_detector::ImageCB, this);
@@ -86,16 +91,7 @@ void finish_detector::onInit() {
     red_high1 = Scalar{180, red_high_s, red_high_v};
     red_high2 = Scalar{red_high_h, red_high_s, red_high_v};
 
-    Rate rate(30);
-    while(ros::ok()) {
-        std_msgs::Int8 intmsg;
-        intmsg.data = number_of_crosses;
-        crosses_pub.publish(intmsg);
-   
-        spinOnce();
-        rate.sleep();
-    }
-
 }
 }
-PLUGINLIB_EXPORT_CLASS(avc::finish_detector, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(avc::finish_detector, nodelet::Nodelet
+)
