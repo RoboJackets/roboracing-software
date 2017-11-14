@@ -31,11 +31,11 @@ include_directories(
 )
 
 set (rviz_plugins_SRCS
-    src/ExamplePanel.cpp
+    src/PosePanel.cpp
 )
 
 set (rviz_plugins_HDRS
-    include/rr_rviz_plugins/ExamplePanel.h
+    include/rr_rviz_plugins/PosePanel.h
 )
 
 qt5_wrap_cpp(rviz_plugins_MOCS ${rviz_plugins_HDRS})

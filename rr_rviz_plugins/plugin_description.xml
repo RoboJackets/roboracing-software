@@ -1,9 +1,9 @@
 <library path="lib/librr_rviz_plugins">
-    <class name="rr_rviz_plugins/ExamplePanel"
-           type="rr_rviz_plugins::ExamplePanel"
+    <class name="rr_rviz_plugins/PosePanel"
+           type="rr_rviz_plugins::PosePanel"
            base_class_type="rviz::Panel">
-        <description>
-            Example panel for getting started
+           <description>
+               Speed and Steer as text output
         </description>
     </class>
 </library>
