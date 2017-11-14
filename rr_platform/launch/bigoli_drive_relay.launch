@@ -1,7 +1,7 @@
 <launch>
     <node pkg="rr_platform" type="bigoli_drive_relay" name="drive_relay" output="screen" respawn="false">
         <param name="serial_port" value="/dev/arduino_drive"/>
-        <param name="pid_p" value="0.1"/>
+        <param name="pid_p" value="0.15"/>>
         <param name="pid_i" value="0.0"/>
         <param name="pid_d" value="0.5"/>
     </node>
