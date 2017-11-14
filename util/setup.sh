@@ -1,8 +1,6 @@
 #!/bin/bash
 # A small script to automate installation of dependencies
 
-
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd "$DIR/../.."
