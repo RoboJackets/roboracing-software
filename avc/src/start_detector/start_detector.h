@@ -2,6 +2,7 @@
 #include <sensor_msgs/Image.h>
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
+#include <opencv2/opencv.hpp>
 
 namespace avc {
 class start_detector : public nodelet::Nodelet {
@@ -9,14 +10,8 @@ private:
     ros::Publisher start_pub;
     image_transport::Subscriber img_sub;
 
-
-    double red_low_r;
-    double red_low_g;
-    double red_low_b;
-    
-    double red_high_r;
-    double red_high_g;
-    double red_high_b;
+    cv::Scalar red_low;
+    cv::Scalar red_high;
 
     int dp;
     int minDist;

@@ -38,10 +38,6 @@ catkin_package(
 ## Build ##
 ###########
 
-add_executable(color_detector_avc src/color_detector_avc.cpp)
-target_link_libraries(color_detector_avc ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(color_detector_avc rr_platform_generate_messages_cpp)
-
 ## Specify additional locations of header files
 include_directories(
   include
@@ -55,3 +51,4 @@ add_library(avc src/start_detector/start_detector.cpp src/finish_detector/finish
 target_link_libraries(avc ${catkin_LIBRARIES})
 
 add_subdirectory(src/obstacle_history)
+add_subdirectory(src/color_detector)
