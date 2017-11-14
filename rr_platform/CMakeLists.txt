@@ -80,6 +80,7 @@ add_subdirectory(src/bigoli_motor_relay_node)
 add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_imu)
+add_subdirectory(src/ultrasonic_array)
 
 add_executable(mag_field_bias_calc src/mag_field_bias_calc.cpp)
 target_link_libraries(mag_field_bias_calc ${catkin_LIBRARIES})

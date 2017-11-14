@@ -1,5 +1,7 @@
 #include <ros/ros.h>
 #include <ros/publisher.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <tf/transform_listener.h>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp> //#TODO: is this the right import?
@@ -9,7 +11,7 @@ using namespace std;
 #define NUM_SENSORS 8
 #define RADIUS 0.15 //radius in m
 #define NUM_POINTS 5 //# points for each semicircle
-#define PI 3.1415926535897; //#TODO: is there a better way?
+#define PI 3.1415926535897 //#TODO: is there a better way?
 
 
 
@@ -49,16 +51,16 @@ vector<float> parseLine(string line) {
 void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
   numPoints = numPoints - 1; //already have 1 point plotted
   int numAngleShifts =  numPoints - 1; //numPoints - 1 = # of angleShifta
-  float angle = 2 * PI / (numAngleShifts);
+  float angle = (2 * PI ) / (numAngleShifts);
   float center = point.x + radius;
 
 
-  float currentAngle = 2 * PI;
+  float currentAngle = 3 * PI / 2; //#TODO: shift if necssary? Should provide semicircle with outside facing the robot
 
   for (int i = 0; i < numPoints; i++) {
     int x = radius * (cos(currentAngle)) + point.x;
     int y = -radius * (sin(currentAngle)) + point.y; //- because urdf standards of left is +y
-    pcl::PointXYZ newPoint = new PointXYZ(x, y, 0.0);
+    pcl::PointXYZ newPoint = new pcl::PointXYZ(x, y, 0.0);
     cloud.push_back(newPoint);
     currentAngle -= angle;
   }
@@ -132,9 +134,9 @@ int main(int argc, char** argv) {
 
 
     //##########################
-    sensor_msgs::PointCloud outmsg;
+    sensor_msgs::PointCloud2 outmsg;
     outmsg.header = sensor_base_link;
-    outmsg.points = compiled_cloud; //#TODO: um I don't think this is the proper way
+    pcl::toROSMsg(outmsg, compiled_cloud);
 
     pub.publish(outmsg);
 
