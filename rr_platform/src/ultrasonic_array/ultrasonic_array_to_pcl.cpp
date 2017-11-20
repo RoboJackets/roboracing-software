@@ -133,14 +133,15 @@ int main(int argc, char** argv) {
       }
 
       //add point clouds to the output one
-      pcl::concatenatePointCloud(clouds[i], compiled_cloud, compiled_cloud);
+      compiled_cloud += clouds[i];
+      //pcl::concatenatePointCloud(clouds[i], compiled_cloud, compiled_cloud);
     }
 
 
     //##########################
     sensor_msgs::PointCloud2 outmsg;
-    outmsg.header = sensor_base_link;
-    pcl::toROSMsg(outmsg, compiled_cloud);
+    outmsg.header.frame_id = sensor_base_link;
+    pcl::toROSMsg(compiled_cloud, outmsg);
 
     pub.publish(outmsg);
 
