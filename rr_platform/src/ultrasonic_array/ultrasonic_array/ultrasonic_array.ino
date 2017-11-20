@@ -1,7 +1,12 @@
 #define NUM_SENSORS 2
 #define BAUD_RATE 9600
-#define SPEED_OF_SOUND 2941.2 //microseconds per meter!
+//multiplexer pins
+#define S0 2
+#define S1 3
+#define S2 4
+#define S3 5
 
+#define SPEED_OF_SOUND 2941.2 //microseconds per meter!
 //Firmware for sensor array with HC-SR04 ultrasonic sensors
 //#TODO: write a version of ping that does not use delay. Increment through two at a time, need to write your own "pulseIn"
 //#TODO: https://www.bananarobotics.com/shop/HC-SR04-Ultrasonic-Distance-Sensor for info on sensor
@@ -11,8 +16,18 @@ int echoPins[] = {3, 9}; //echo pins in order of left to right
 double distances[NUM_SENSORS];
 
 
+void switchMux(int channel) { //#TODO: implement mux stuff
+  //Channels 0 - 15 on mux
+  digitalWrite(S0, bitRead(channel, 0));
+  digitalWrite(S1, bitRead(channel, 1));
+  digitalWrite(S2, bitRead(channel, 2));
+  digitalWrite(S3, bitRead(channel, 3));
+
+  }
+
+
 double ping(int trigPin, int echoPin) {
-  //outputs distance (in cm currently; #TODO change that?)
+  //outputs distance in meters
 
   long duration;
   double distance;
@@ -30,7 +45,7 @@ double ping(int trigPin, int echoPin) {
 
 void setup() {
   Serial.begin(BAUD_RATE);
-  
+
   for (int i = 0; i < NUM_SENSORS; i++) {
     pinMode(trigPins[i], OUTPUT);
     pinMode(echoPins[i], INPUT);
