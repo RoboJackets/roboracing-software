@@ -1,8 +1,8 @@
 <launch>
-  <node pkg="rr_platform" type="ultrasonicArrayToPointCloud" name="ultrasonicArrayToPointCloud" output="screen" respawn="false">
+  <node pkg="rr_platform" type="ultrasonic_array" name="ultrasonic_array_to_pcl" output="screen" respawn="false">
     <param name="serial_port_name" type="string" value="/dev/ttyACM1" />
-    <param name="sensor_base_link" type="string" value= "/ultrasonic_base_link" />
-    <param name="sensor_link" type="string" value= "ultrasonic_link" />
+    <param name="sensor_base_link" type="string" value= "/ultrasonic_array_base_" />
+    <param name="sensor_link" type="string" value= "ultrasonic_" />
     <param name="rate" type="double" value= "10.0" />
   </node>
 </launch>

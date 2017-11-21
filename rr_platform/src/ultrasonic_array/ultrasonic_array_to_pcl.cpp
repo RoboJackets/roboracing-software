@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define NUM_SENSORS 8
+#define NUM_SENSORS 1
 #define RADIUS 0.15 //radius in m
 #define NUM_POINTS 5 //# points for each semicircle
 #define PI 3.1415926535897 //#TODO: is there a better way?
