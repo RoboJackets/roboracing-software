@@ -6,7 +6,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import itertools
-import cPickle as pickle
+import pickle
+import numpy as np
 
 bag = rosbag.Bag(sys.argv[1])
 bridge = CvBridge()
@@ -19,10 +20,11 @@ for topic1, img, t1 in bag.read_messages(topics=['/camera/image_rect']):
         cv_image = bridge.imgmsg_to_cv2(img, 'bgr8')
         while (t1 > t2):
             topic2, msg, t2 = iter_obj.next()
-        data.append((cv_image, msg))
+        data.append((cv_image, str(msg)))
     except CvBridgeError, e:
         print e
 
-with open('data.pickle', 'wb') as pickle_file:
-    pickle.dump(data, pickle_file)
+'''with open('data.pickle', 'wb') as pickle_file:
+    pickle.dump(data, pickle_file)'''
+np.save('data.npy', data)
 bag.close()
