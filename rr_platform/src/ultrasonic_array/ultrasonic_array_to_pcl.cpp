@@ -12,7 +12,7 @@ using namespace std;
 #define NUM_SENSORS 1
 #define RADIUS 0.15 //radius in m
 #define NUM_POINTS 5 //# points for each semicircle
-#define PI 3.1415926535897 //#TODO: is there a better way?
+#define PI 3.1415926535897f //#TODO: is there a better way?
 
 
 
@@ -52,11 +52,11 @@ vector<double> parseLine(string line) {
 void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
   numPoints = numPoints - 1; //already have 1 point plotted
   int numAngleShifts =  numPoints - 1; //numPoints - 1 = # of angleShifta
-  float angle = (2 * PI ) / (numAngleShifts);
+  float angle = (2.0 * PI ) / (float) numAngleShifts;
   float center = point.x + radius;
 
 
-  float currentAngle = 3 * PI / 2; //#TODO: shift if necssary? Should provide semicircle with outside facing the robot
+  float currentAngle = 3.0 * PI / 2.0; //#TODO: shift if necssary? Should provide semicircle with outside facing the robot
 
   for (int i = 0; i < numPoints; i++) {
     float x = radius * (cos(currentAngle)) + point.x;
@@ -74,7 +74,7 @@ void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, 
 ros::Publisher pub;
 string sensor_base_link;
 string sensor_link;
-float rate;
+float rate_time;
 int baud_rate;
 
 int main(int argc, char** argv) {
@@ -90,21 +90,20 @@ int main(int argc, char** argv) {
     nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyACM0")); //#TODO: launch file
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
     nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-    nhp.param(string("rate"), rate, 10.0f); //#TODO
-    boost::asio::io_service io_service;
-    boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
+    nhp.param(string("rate"), rate_time, 10.0f); //#TODO
+//    boost::asio::io_service io_service;
+//    boost::asio::serial_port serial(io_service, serial_port_name);
+//    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
 
     // wait for microcontroller to start
     ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
-    ros::Rate rate(rate);//#TODO: rate from arduino?
+    ros::Rate rate(rate_time);//#TODO: rate from arduino?
 
 //#########################
     //#TODO: Get serial port and sensor_base_link from launch file
     //#TODO: make urdf have the link of all the sensors and have a num 0 = left higher = more right
 
   //#####
-    vector<pcl::PointCloud<pcl::PointXYZ>> clouds;
     tf::TransformListener tf_listener;
     tf::StampedTransform tf_transform;
     pcl::PointCloud<pcl::PointXYZ> compiled_cloud;
@@ -113,38 +112,46 @@ int main(int argc, char** argv) {
 
 
 //#######
-  while(ros::ok() && serial.is_open()) {
+  while(ros::ok() ){///&& serial.is_open()) {
     ros::spinOnce();
 
-    string line = readLine(serial);
-    vector<double> distances = parseLine(line);
+//    string line = readLine(serial);
+//    vector<double> distances = parseLine(line);
+vector<double> distances = {1.0};
+//#TODO: DELETE#################### above
+
+
 
     for (int i = 0; i < NUM_SENSORS; i++) {
+      pcl::PointCloud<pcl::PointXYZ> cloud;
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
-      clouds[i].push_back(point); //add point given
-      drawSemiCircle(clouds[i], point, RADIUS, NUM_POINTS); //numPoints is number of points including the one we added line above!
+
+      cloud.push_back(point); //add point given
+//      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //numPoints is number of points including the one we added line above!
 
 
       if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(3.0))) {
         tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
         //transform cloud to base_link frame
         //pcl::transformPointCloud(base_link, cloud[i], cloud[i], listener); #TODO: can we use this and get rid of the listener if above?? I don't understand the co
-        pcl_ros::transformPointCloud(clouds[i], clouds[i], tf_transform);
+        pcl_ros::transformPointCloud(cloud, cloud, tf_transform);
       }
 
-      //add point clouds to the output one
-      compiled_cloud += clouds[i];
-      //pcl::concatenatePointCloud(clouds[i], compiled_cloud, compiled_cloud);
+
+      //add point cloud to the output one
+      compiled_cloud += cloud;
     }
 
 
     //##########################
     sensor_msgs::PointCloud2 outmsg;
-    outmsg.header.frame_id = sensor_base_link;
     pcl::toROSMsg(compiled_cloud, outmsg);
+    outmsg.header.frame_id = "base_footprint";//sensor_base_link; #TODO SET AS SENSOR BASE LINK and should we set the compiled cloud header instead?
+
 
     pub.publish(outmsg);
 
+ROS_INFO("HI"); //TODO: DELETE debug
     rate.sleep();
   }
 
@@ -153,6 +160,6 @@ int main(int argc, char** argv) {
 
 
 
-  serial.close();
+//TODO  serial.close();
   return 0;
 }
