@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define NUM_SENSORS 1
+#define NUM_SENSORS 3
 #define RADIUS 0.15 //radius in m
 #define NUM_POINTS 5 //# points for each semicircle
 #define PI 3.1415926535897f //#TODO: is there a better way?
@@ -49,26 +49,40 @@ vector<double> parseLine(string line) {
   return dist;
 }
 
-void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
-  numPoints = numPoints - 1; //already have 1 point plotted
-  int numAngleShifts =  numPoints - 1; //numPoints - 1 = # of angleShifta
-  float angle = (2.0 * PI ) / (float) numAngleShifts;
-  float center = point.x + radius;
+void drawWall(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ center, float length, int numPoints) {
+  length = (length + 1) / 2.0; //@Note: adds one to ensure we get at least the numPoints desired
+  float step = length / (float) numPoints / 2.0;
+  float dist = step;
+  for (int i = 0; i < numPoints / 2; i++) {
+    //draw half the line and mirror
+    pcl::PointXYZ point1(center.x, dist, 0); //#TODO: might need to swap x and y
+    pcl::PointXYZ point2(center.x, -dist, 0); //#TODO: might need to swap x and y
 
-
-  float currentAngle = 3.0 * PI / 2.0; //#TODO: shift if necssary? Should provide semicircle with outside facing the robot
-
-  for (int i = 0; i < numPoints; i++) {
-    float x = radius * (cos(currentAngle)) + point.x;
-    float y = -radius * (sin(currentAngle)) + point.y; //- because urdf standards of left is +y
-    pcl::PointXYZ newPoint(x, y, 0.0);
-    cloud.push_back(newPoint);
-    currentAngle -= angle;
+    cloud.push_back(point1);
+    cloud.push_back(point2);
+    dist = dist + step;
   }
 
 }
 
+void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
+  numPoints = (numPoints + 1) / 2; //@Note: adds one to ensure we get at least the numPoints desired
+  float angleStep = (PI / 2) / numPoints;
 
+  float angle = 0; //#TODO: may need to shift this start angle
+
+  for (int i = 0; i < numPoints - 1; i++) {
+    //draw a quarter of a cicle and mirror
+    float x = radius * cos(angle);
+    float y = radius * sin(angle);
+
+    cloud.push_back(pcl::PointXYZ(point.x + radius + x, y, 0));
+    cloud.push_back(pcl::PointXYZ(point.x + radius + x, -y, 0)); //#TODO: should we mirror along x or y??
+
+    angle = angle + angleStep; //#TODO: this may need to be minus because
+  }
+
+}
 
 
 ros::Publisher pub;
@@ -117,20 +131,20 @@ int main(int argc, char** argv) {
 
 //    string line = readLine(serial);
 //    vector<double> distances = parseLine(line);
-vector<double> distances = {1.0};
+vector<double> distances = {1.0, 2.0, 3.0};
 //#TODO: DELETE#################### above
 
 
 
-    for (int i = 0; i < NUM_SENSORS; i++) {
+    for (int i = 0; i < NUM_POINTS; i++) {
       pcl::PointCloud<pcl::PointXYZ> cloud;
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
-      cloud.push_back(point); //add point given
-//      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //numPoints is number of points including the one we added line above!
+      cloud.push_back(point); //add point direct from Arduino sensor
+//      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: fix this function to draw a semicircle
+      drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
 
-
-      if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(3.0))) {
+      if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(1.0))) {
         tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
         //transform cloud to base_link frame
         //pcl::transformPointCloud(base_link, cloud[i], cloud[i], listener); #TODO: can we use this and get rid of the listener if above?? I don't understand the co
@@ -146,7 +160,7 @@ vector<double> distances = {1.0};
     //##########################
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(compiled_cloud, outmsg);
-    outmsg.header.frame_id = "base_footprint";//sensor_base_link; #TODO SET AS SENSOR BASE LINK and should we set the compiled cloud header instead?
+    outmsg.header.frame_id = sensor_base_link;//"base_footprint";//sensor_base_link; #TODO SET AS SENSOR BASE LINK and should we set the compiled cloud header instead?
 
 
     pub.publish(outmsg);
