@@ -84,9 +84,6 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_imu)
 
-add_executable(mag_field_bias_calc src/mag_field_bias_calc.cpp)
-target_link_libraries(mag_field_bias_calc ${catkin_LIBRARIES})
-
 install(PROGRAMS launch/bigoli_camera_dynconfig.sh
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
