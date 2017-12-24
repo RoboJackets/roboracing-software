@@ -12,3 +12,7 @@
 
 # gedit autosave files
 *~
+
+#bag files and pickles of bag files
+*.bag
+*.npy
