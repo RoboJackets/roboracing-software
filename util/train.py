@@ -1,4 +1,5 @@
 import numpy as np
+import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras import backend
@@ -22,6 +23,10 @@ print type(data[0])
 trainData = data[:1500]
 testData = data[1500:]
 print backend.image_data_format()
+input_shape = (240, 320, 3)
+num_classes = 5
+batch_size = 150
+epochs = 12
 
 #format our data
 xTrain = flatten(trainData[:,0])
@@ -37,13 +42,30 @@ xTest /= 255
 #create output bins
 yTrain = trainData[:,1]
 yTest = testData[:,1]
-yTrain = [defineCategory(steer) for steer in yTrain]
-yTest = [defineCategory(steer) for steer in yTest]
+yTrain = np.array([defineCategory(steer) for steer in yTrain])
+yTest = np.array([defineCategory(steer) for steer in yTest])
 
-
-print "x train " + str(xTrain.shape)
-print "y train " + str(len(yTrain)) + " " + str(len(yTrain[0]))
-print "x test " + str(xTest.shape)
-print "y test ", len(yTest), len(yTrain[0])
 model = Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3),
+                 activation='relu',
+                 input_shape=input_shape))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
 
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.Adadelta(),
+              metrics=['accuracy'])
+
+model.fit(xTrain, yTrain,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(xTest, yTest))
+score = model.evaluate(xTest, yTest, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
