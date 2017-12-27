@@ -1,11 +1,13 @@
 import numpy as np
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise
 from keras.datasets import mnist
 import cv2
 import collections
 import random
+
+np.random.seed(1234)
 
 #get our data
 data = np.load('data.npy')
@@ -57,22 +59,20 @@ print "testing label counts:", cnt
 
 model = Sequential()
 # 120x90
-model.add(keras.layers.GaussianNoise(0.05, input_shape=input_shape))
-model.add(Conv2D(25, (3, 3), activation='relu'))
+model.add(GaussianNoise(0.05, input_shape=input_shape))
+model.add(Conv2D(30, (3, 3), activation='relu'))
 # 118x88
+model.add(MaxPooling2D((2,2)))
+# 59x44
 model.add(Conv2D(50, (3, 3), activation='relu'))
-# 116x86
-model.add(MaxPooling2D(pool_size=(2, 2)))
-# 58x43
-model.add(Dropout(0.25))
-model.add(Conv2D(100, (3, 3), activation='relu'))
-# 56x41
-model.add(MaxPooling2D(pool_size=(2, 2)))
-# 28x20
+# 57x42
+model.add(MaxPooling2D((4, 4)))
+# 14x10
+
 model.add(Flatten())
-model.add(Dropout(0.25))
-model.add(Dense(150, activation='relu'))
-model.add(Dropout(0.25))
+model.add(Dropout(0.3))
+model.add(Dense(120, activation='relu'))
+model.add(Dropout(0.1))
 model.add(Dense(50, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(len(categories), activation='softmax'))
