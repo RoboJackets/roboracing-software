@@ -16,3 +16,5 @@
 #bag files and pickles of bag files
 *.bag
 *.npy
+
+util/model\.h5
