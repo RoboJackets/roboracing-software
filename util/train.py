@@ -14,9 +14,9 @@ n_train = int(len(data) * 0.7)
 trainData = data[:n_train]
 testData = data[n_train:]
 
-input_shape = (60, 80, 3)
+input_shape = (90, 120, 3)
 batch_size = 128
-epochs = 12
+epochs = 100
 categories = [-0.1, -0.05, 0, 0.05, 0.1]
 
 def defineCategory(steering):
@@ -26,9 +26,9 @@ def defineCategory(steering):
     return oneHot
 
 def format_data(data):
-    data2 = np.zeros((len(data), 60, 80, 3))
+    data2 = np.zeros((len(data),) + input_shape)
     for i in range(len(data)):
-        data2[i] = cv2.resize(data[i], None, fx=0.25, fy=0.25)
+        data2[i] = cv2.resize(data[i], (input_shape[1], input_shape[0]))
     return data2
 
 #format our data
@@ -56,20 +56,29 @@ for x,y in zip(xTest,yTest):
 print "testing label counts:", cnt
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
+# 120x90
+model.add(keras.layers.GaussianNoise(0.05, input_shape=input_shape))
+model.add(Conv2D(25, (3, 3), activation='relu'))
+# 118x88
+model.add(Conv2D(50, (3, 3), activation='relu'))
+# 116x86
 model.add(MaxPooling2D(pool_size=(2, 2)))
+# 58x43
 model.add(Dropout(0.25))
+model.add(Conv2D(100, (3, 3), activation='relu'))
+# 56x41
+model.add(MaxPooling2D(pool_size=(2, 2)))
+# 28x20
 model.add(Flatten())
-model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.25))
+model.add(Dense(150, activation='relu'))
+model.add(Dropout(0.25))
+model.add(Dense(50, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(len(categories), activation='softmax'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
-              # optimizer=keras.optimizers.RMSprop(lr=0.0002),
               metrics=['accuracy'])
 
 model.fit(xTrain, yTrain,
