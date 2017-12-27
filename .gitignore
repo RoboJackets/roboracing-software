@@ -17,4 +17,5 @@
 *.bag
 *.npy
 
-util/model\.h5
+#exported neural nets
+*.h5
