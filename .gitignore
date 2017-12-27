@@ -16,3 +16,6 @@
 #bag files and pickles of bag files
 *.bag
 *.npy
+
+#exported neural nets
+*.h5
