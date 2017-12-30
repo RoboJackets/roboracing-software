@@ -5,7 +5,6 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Gaussian
 from keras.datasets import mnist
 import cv2
 import collections
-import random
 
 np.random.seed(1234)
 
@@ -18,7 +17,7 @@ testData = data[n_train:]
 
 input_shape = (90, 120, 3)
 batch_size = 128
-epochs = 100
+epochs = 15
 categories = [-0.1, -0.05, 0, 0.05, 0.1]
 
 def defineCategory(steering):

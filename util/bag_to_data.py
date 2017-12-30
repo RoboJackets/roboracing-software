@@ -8,7 +8,7 @@ import numpy as np
 bag = rosbag.Bag(sys.argv[1])
 bridge = CvBridge()
 data = list()
-iter_obj = iter(bag.read_messages(topics=["/plan/steering"]))
+iter_obj = iter(bag.read_messages(topics=["/steering"]))
 topic2, msg, t2 = iter_obj.next()
 
 for topic1, img, t1 in bag.read_messages(topics=['/camera/image_rect']):
