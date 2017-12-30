@@ -17,5 +17,5 @@
 *.bag
 *.npy
 
-#exported neural nets
-*.h5
+# exported neural nets in their default location
+util/*.h5
