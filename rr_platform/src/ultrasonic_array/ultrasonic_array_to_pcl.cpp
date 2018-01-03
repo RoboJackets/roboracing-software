@@ -10,8 +10,8 @@
 using namespace std;
 
 #define NUM_SENSORS 3
-#define RADIUS 0.15 //radius in m
-#define NUM_POINTS 5 //# points for each semicircle
+#define RADIUS 0.4 //radius in m
+#define NUM_POINTS 12 //# points for each semicircle/circle/wall
 #define PI 3.1415926535897f //#TODO: is there a better way?
 
 
@@ -67,22 +67,41 @@ void drawWall(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ center, float
 
 void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
   numPoints = (numPoints + 1) / 2; //@Note: adds one to ensure we get at least the numPoints desired
-  float angleStep = (PI / 2) / numPoints;
+  float angleStep = (PI / 2.0) / numPoints;
 
-  float angle = 0; //#TODO: may need to shift this start angle
+  float angle = 0.0; //#TODO: may need to shift this start angle
 
-  for (int i = 0; i < numPoints - 1; i++) {
+  for (int i = 0; i < numPoints ; i++) {
     //draw a quarter of a cicle and mirror
     float x = radius * cos(angle);
     float y = radius * sin(angle);
 
-    cloud.push_back(pcl::PointXYZ(point.x + radius + x, y, 0));
-    cloud.push_back(pcl::PointXYZ(point.x + radius + x, -y, 0)); //#TODO: should we mirror along x or y??
+    cloud.push_back(pcl::PointXYZ(point.x + radius - x, y, 0));
+    cloud.push_back(pcl::PointXYZ(point.x + radius - x, -y, 0));
 
     angle = angle + angleStep; //#TODO: this may need to be minus because
   }
 
 }
+
+void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, double radius, int numPoints) {
+  double angleStep = (2.0 * PI) / numPoints;
+
+  double angle = 0; //start angle
+
+  for (int i = 0; i < numPoints; i++) {
+    //draw a circler
+    double x = radius * cos(angle);
+    double y = radius * sin(angle);
+
+    cloud.push_back(pcl::PointXYZ(point.x + radius + x, y, 0)); //point.x + radius is center of circle
+    angle = angle + angleStep;
+
+  }
+
+}
+
+
 
 
 ros::Publisher pub;
@@ -141,8 +160,9 @@ vector<double> distances = {1.0, 2.0, 3.0};
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
       cloud.push_back(point); //add point direct from Arduino sensor
-//      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: fix this function to draw a semicircle
-      drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
+      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS);
+      //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
+      //drawCircle(cloud, point, 0.4, 6);
 
       if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(1.0))) {
         tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
@@ -164,8 +184,6 @@ vector<double> distances = {1.0, 2.0, 3.0};
 
 
     pub.publish(outmsg);
-
-ROS_INFO("HI"); //TODO: DELETE debug
     rate.sleep();
   }
 
