@@ -6,11 +6,11 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Gaussian
 from keras.datasets import mnist
 import cv2
 import collections
-from example_set import ExampleSetArchiver, ExampleSet
 import random
+from example_set import ExampleSet
 
 
-n_examples_to_load = 6000 # if the number of training examples is below this, load another data archive
+n_examples_to_load = 6000 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
 epochs = 15
@@ -32,7 +32,7 @@ def format_data(data):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print "Usage: python train.py [data folder] [model output file]"
+        print "Usage: python train.py [data directory] [model output file]"
         sys.exit(1)
 
     model = Sequential()
@@ -60,17 +60,17 @@ if __name__ == '__main__':
                   metrics=['accuracy'])
 
 
-    archiver = ExampleSetArchiver(sys.argv[1])
     for epoch in range(epochs):
-        print "epoch", epoch+1
+        print "\nepoch", epoch+1
 
         data = ExampleSet()
-        indices = range(len(archiver.sets))
+        sets = [f for f in os.listdir(sys.argv[1]) if '.pkl.lz4' in f]
+        indices = range(len(sets))
         random.shuffle(indices)
         for i in indices:
             if len(data.train) >= n_examples_to_load:
                 break
-            data.add(archiver.get(i))
+            data.add(ExampleSet.load(os.path.join(sys.argv[1], sets[i])))
 
         #format our data
         xTrain = format_data([ex.get_image() for ex in data.train])
@@ -84,26 +84,22 @@ if __name__ == '__main__':
         yTrain = np.array([defineCategory(ex.angle) for ex in data.train])
         yTest = np.array([defineCategory(ex.angle) for ex in data.test])
 
-        # cnt = collections.Counter()
-        # for x,y in zip(xTrain,yTrain):
-        #     i = np.argmax(y)
-        #     cnt[i] += 1
-        # print "training label counts:", cnt
+        cnt = collections.Counter()
+        for x,y in zip(xTrain,yTrain):
+            i = np.argmax(y)
+            cnt[i] += 1
+        print "training label counts:", cnt
 
-        # cnt = collections.Counter()
-        # for x,y in zip(xTest,yTest):
-        #     i = np.argmax(y)
-        #     cnt[i] += 1
-        # print "testing label counts:", cnt
+        cnt = collections.Counter()
+        for x,y in zip(xTest,yTest):
+            i = np.argmax(y)
+            cnt[i] += 1
+        print "testing label counts:", cnt
 
         model.fit(xTrain, yTrain,
                   batch_size=batch_size,
                   epochs=1,
                   verbose=1,
                   validation_data=(xTest, yTest))
-
-        # score = model.evaluate(xTest, yTest, verbose=0)
-        # print 'Test loss:', score[0]
-        # print 'Test accuracy:', score[1]
 
     model.save(sys.argv[2])
