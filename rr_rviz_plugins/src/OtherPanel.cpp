@@ -39,18 +39,19 @@ OtherPanel::OtherPanel(QWidget *parent)
 void OtherPanel::paintEvent(QPaintEvent*)
 {
  QPainter painter(this);
- painter.drawLine(width,height, 210,0);
- painter.drawArc(10,-200,400,400,0,-5760/2);
-
+ painter.drawLine(width,height, 210,210);
+ painter.drawArc(10,10,400,400,0,5760/2);
+ painter.drawLine(0,210,420,210);
 
  //this is for the lines every 10mph
- painter.drawLine(0,0,20,0);
- painter.drawLine(210-(190*.866),190/2, 210-(210*.866),105);
- painter.drawLine(210-(190*.5),190*.866, 210-(210*.5),210*.866);
- painter.drawLine(210,190,210,210);
- painter.drawLine(210+(190*.5),190*.866, 210+(210*.5),210*.866);
- painter.drawLine(210+(190*.866),190/2, 210+(210*.866),105);
- painter.drawLine(210+190,0,420,0);
+ painter.drawLine(0,210,20,210);
+ painter.drawLine(210-(190*.866),210-190/2, 210-(210*.866),210-105);
+ painter.drawLine(210-(190*.5),210-190*.866, 210-(210*.5),210-210*.866);
+ painter.drawLine(210,210-190,210,210-210);
+ painter.drawLine(210+(190*.5),210-190*.866, 210+(210*.5),210-210*.866);
+ painter.drawLine(210+(190*.866),210-190/2, 210+(210*.866),210-105);
+ painter.drawLine(210+190,210,420,210);
+ 
 
 }
 
@@ -63,7 +64,7 @@ void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg,
     //calculations for height and width
     double angle = ((msg->speed_mps)/maxSpeed)*3.14159256;
     width = 210-(200*cos(angle));
-    height = 200*sin(angle);
+    height = 210-200*sin(angle);
     update();
 }
 
