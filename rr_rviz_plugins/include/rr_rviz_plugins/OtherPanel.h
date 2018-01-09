@@ -8,6 +8,7 @@
 #include <QtGui>
 #include <QPainter>
 #include <math.h>
+#include <QString>
 
 
 /*

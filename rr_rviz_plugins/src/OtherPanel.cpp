@@ -39,19 +39,40 @@ OtherPanel::OtherPanel(QWidget *parent)
 void OtherPanel::paintEvent(QPaintEvent*)
 {
  QPainter painter(this);
- painter.drawLine(width,height, 210,210);
- painter.drawArc(10,10,400,400,0,5760/2);
- painter.drawLine(0,210,420,210);
+ painter.drawLine(width,height, 270,270);
+ painter.drawArc(70,70,400,400,0,5760/2);
+ painter.drawLine(0+60,270,480,270);
 
- //this is for the lines every 10mph
- painter.drawLine(0,210,20,210);
- painter.drawLine(210-(190*.866),210-190/2, 210-(210*.866),210-105);
- painter.drawLine(210-(190*.5),210-190*.866, 210-(210*.5),210-210*.866);
- painter.drawLine(210,210-190,210,210-210);
- painter.drawLine(210+(190*.5),210-190*.866, 210+(210*.5),210-210*.866);
- painter.drawLine(210+(190*.866),210-190/2, 210+(210*.866),210-105);
- painter.drawLine(210+190,210,420,210);
+ //this is for the lines every .5 m/s
+ painter.drawLine(0+60,210+60,20+60,210+60);
+ QString *string_one = new QString("0");
+ painter.drawText(40,270,*string_one);
+
+
+ painter.drawLine(210-(190*.866)+60,210-190/2+60, 210-(210*.866)+60,210-105+60);
+ QString *string_two = new QString("0.5");
+ painter.drawText(210-(190*.866)+60-45,210-190/2+60-15,*string_two);
+
+
+ painter.drawLine(210-(190*.5)+60,210-190*.866+60, 210-(210*.5)+60,210-210*.866+60);
+
+
+
+ painter.drawLine(210+60,210-190+60,210+60,210-210+60);
+
+
+
+ painter.drawLine(210+(190*.5)+60,210-190*.866+60, 210+(210*.5)+60,210-210*.866+60);
+
+
+
+ painter.drawLine(210+(190*.866)+60,210-190/2+60, 210+(210*.866)+60,210-105+60);
+
+
+
+ painter.drawLine(210+190+60,210+60,420+60,210+60);
  
+
 
 }
 
@@ -63,8 +84,8 @@ void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg,
 
     //calculations for height and width
     double angle = ((msg->speed_mps)/maxSpeed)*3.14159256;
-    width = 210-(200*cos(angle));
-    height = 210-200*sin(angle);
+    width = 60+210-(200*cos(angle));
+    height = 60+210-200*sin(angle);
     update();
 }
 
