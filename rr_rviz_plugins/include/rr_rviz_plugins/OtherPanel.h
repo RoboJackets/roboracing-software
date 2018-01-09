@@ -41,7 +41,7 @@ protected:
      */
     int height = 200;
     int width = 200;
-    int maxSpeed = 60;
+    int maxSpeed = 3;
     void paintEvent(QPaintEvent*);
     /*
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
