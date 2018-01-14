@@ -31,14 +31,14 @@ def convert_bag_file(bag_file_path, output_dir, examples_per_file):
     for topic1, img, t1 in bag.read_messages(topics=['/camera/image_rect']):
         try:
             cv_image = bridge.imgmsg_to_cv2(img, 'bgr8')
-            
-            while (t1 > t2):
+
+            while (t1 >= t2):
                 try:
                     topic2, msg, t2 = iter_obj.next()
                 except StopIteration, e:
                     print str(t2) + " " + str(t1)
                     break
-            
+
             angle = float(str(msg).split()[-1])
             ex = Example(cv_image, angle)
 
