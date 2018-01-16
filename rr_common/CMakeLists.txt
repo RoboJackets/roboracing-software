@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
     laser_geometry
     image_transport
     message_generation
+    sound_play
 )
 
 find_package(OpenCV REQUIRED)
@@ -51,3 +52,4 @@ add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
 add_subdirectory(src/mapper)
 add_subdirectory(src/navigation_controller)
+add_subdirectory(src/sound_node)
