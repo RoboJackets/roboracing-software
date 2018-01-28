@@ -14,6 +14,8 @@ using namespace std;
 #define NUM_POINTS 12 //# points for each semicircle/circle/wall
 #define PI 3.1415926535897f //#TODO: is there a better way?
 
+#define BAUD_RATE 9600 //rate of transfer. Needs to match Arduino
+
 
 
 
@@ -43,7 +45,7 @@ vector<double> parseLine(string line) {
   boost::split(strs, line, boost::is_any_of(","));
 
   for (int i = 0; i < strs.size(); i++) {
-    dist[i] = atof(strs[i].c_str()); //convert string to double
+    dist.push_back(atof(strs[i].c_str())); //convert string to double
   }
 
   return dist;
@@ -108,7 +110,7 @@ ros::Publisher pub;
 string sensor_base_link;
 string sensor_link;
 float rate_time;
-int baud_rate;
+int baud_rate = 9600;
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "ultrasonic_array");
@@ -120,13 +122,18 @@ int main(int argc, char** argv) {
 
 // Serial port setup
     string serial_port_name;
-    nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyACM0")); //#TODO: launch file
-    nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
-    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-    nhp.param(string("rate"), rate_time, 10.0f); //#TODO
-//    boost::asio::io_service io_service;
-//    boost::asio::serial_port serial(io_service, serial_port_name);
-//    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
+//    nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0")); //#TODO: launch file
+//    nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
+//    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
+//    nhp.param(string("rate"), rate_time, 10.0f); //#TODO
+    serial_port_name = string("/dev/ttyUSB0");
+    sensor_base_link = string("ultrasonic_array_base");
+    sensor_link = string("ultrasonic_");
+    rate_time = 10.0f; //#TODO want from launch file (and serial port and base link)
+
+    boost::asio::io_service io_service;
+    boost::asio::serial_port serial(io_service, serial_port_name);
+   serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
 
     // wait for microcontroller to start
     ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
@@ -145,17 +152,17 @@ int main(int argc, char** argv) {
 
 
 //#######
-  while(ros::ok() ){///&& serial.is_open()) {
+  while(ros::ok() ){///&& serial.is_open()) { #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!add this. just lazy now
     ros::spinOnce();
 
-//    string line = readLine(serial);
-//    vector<double> distances = parseLine(line);
-vector<double> distances = {1.0, 2.0, 3.0};
-//#TODO: DELETE#################### above
+    string line = readLine(serial);
+    ROS_INFO_STREAM(line);
+    vector<double> distances = parseLine(line);
 
 
 
     for (int i = 0; i < NUM_POINTS; i++) {
+
       pcl::PointCloud<pcl::PointXYZ> cloud;
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
@@ -184,14 +191,13 @@ vector<double> distances = {1.0, 2.0, 3.0};
 
 
     pub.publish(outmsg);
+    compiled_cloud.clear(); //remove old data for next round
     rate.sleep();
   }
 
 
+  ROS_INFO_STREAM("Shutting down Ultrasonic Array");
+  serial.close();
 
-
-
-
-//TODO  serial.close();
   return 0;
 }
