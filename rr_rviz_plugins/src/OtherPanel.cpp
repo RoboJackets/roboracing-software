@@ -38,7 +38,7 @@ OtherPanel::OtherPanel(QWidget *parent)
 
 void OtherPanel::paintEvent(QPaintEvent*)
 {
- QPainter painter(this);
+  QPainter painter(this);
  painter.drawLine(width,height, 270,270);
  painter.drawArc(70,70,400,400,0,5760/2);
  painter.drawLine(0+60,270,480,270);
@@ -55,24 +55,32 @@ void OtherPanel::paintEvent(QPaintEvent*)
 
 
  painter.drawLine(210-(190*.5)+60,210-190*.866+60, 210-(210*.5)+60,210-210*.866+60);
+ QString *string_three = new QString("1.0");
+ painter.drawText(210-(190*.4)+60-45,210-190*.5-40,*string_three);
 
 
 
  painter.drawLine(210+60,210-190+60,210+60,210-210+60);
+ QString *string_four = new QString("1.5");
+ painter.drawText(260,47,*string_four);
 
 
 
  painter.drawLine(210+(190*.5)+60,210-190*.866+60, 210+(210*.5)+60,210-210*.866+60);
+ QString *string_five = new QString("2.0");
+ painter.drawText(210+(190*.4)+60+25,210-190*.5-40,*string_five);
+
 
 
 
  painter.drawLine(210+(190*.866)+60,210-190/2+60, 210+(210*.866)+60,210-105+60);
-
+ QString *string_six = new QString("2.5");
+ painter.drawText(210+(190*.866)+45+45,210-190/2+60-15,*string_six);
 
 
  painter.drawLine(210+190+60,210+60,420+60,210+60);
- 
-
+ QString *string_seven = new QString("3.0");
+ painter.drawText(493,270,*string_seven);
 
 }
 
