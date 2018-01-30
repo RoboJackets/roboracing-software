@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise, BatchNormalization
 from keras.datasets import mnist
 import cv2
 import collections
@@ -38,7 +38,8 @@ if __name__ == '__main__':
     model = Sequential()
     # 120x90
     model.add(GaussianNoise(0.05, input_shape=input_shape))
-    model.add(Conv2D(30, (3, 3), activation='relu'))
+    model.add(Conv2D(30, (3, 3), activation='relu', kernel_initializer='Orthogonal'))
+    model.add(BatchNormalization(axis=3))
     # 118x88
     model.add(MaxPooling2D((2,2)))
     # 59x44
