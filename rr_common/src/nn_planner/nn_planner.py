@@ -34,7 +34,7 @@ def plan(image_message):
 
     i = np.argmax(Y)
     global steering_angle
-    steering_angle = [-0.15, -0.05, 0, 0.05, 0.15][i]
+    steering_angle = [-0.25, -0.1, 0, 0.1, 0.25][i]
 
 
 if __name__ == "__main__":

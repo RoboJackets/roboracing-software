@@ -13,8 +13,8 @@ from example_set import ExampleSet
 n_examples_to_load = 6000 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
-epochs = 15
-categories = [-0.1, -0.05, 0, 0.05, 0.1]
+epochs = 5
+categories = [-0.2, -0.1, 0, 0.1, 0.2]
 
 
 def defineCategory(steering):
@@ -72,6 +72,8 @@ if __name__ == '__main__':
             if len(data.train) >= n_examples_to_load:
                 break
             data.add(ExampleSet.load(os.path.join(sys.argv[1], sets[i])))
+
+        random.shuffle(data.train)
 
         #format our data
         xTrain = format_data([ex.get_image() for ex in data.train])
