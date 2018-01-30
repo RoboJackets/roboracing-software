@@ -148,8 +148,15 @@ int main(int argc, char** argv) {
     tf::StampedTransform tf_transform;
     pcl::PointCloud<pcl::PointXYZ> compiled_cloud;
 
-    //######
+    //lookup transforms and store them as they do not change
+    vector<tf::StampedTransform> tf_transform_vector;
+    for (int i = 0; i < NUM_SENSORS; i++) {
+      if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(5.0))) {
+        tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
+      }
 
+      tf_transform_vector.push_back(tf_transform);
+    }
 
 
 //#######
@@ -168,17 +175,11 @@ int main(int argc, char** argv) {
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
       cloud.push_back(point); //add point direct from Arduino sensor
-      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS);
+      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
       //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
       //drawCircle(cloud, point, 0.4, 6);
 
-      if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(1.0))) {
-        tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
-        //transform cloud to base_link frame
-        //pcl::transformPointCloud(base_link, cloud[i], cloud[i], listener); #TODO: can we use this and get rid of the listener if above?? I don't understand the co
-        pcl_ros::transformPointCloud(cloud, cloud, tf_transform);
-      }
-
+      pcl_ros::transformPointCloud(cloud, cloud, tf_transform_vector[i]);
 
       //add point cloud to the output one
       compiled_cloud += cloud;
