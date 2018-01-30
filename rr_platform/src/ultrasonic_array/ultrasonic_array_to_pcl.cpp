@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 
     // wait for microcontroller to start
     ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
-    ros::Rate rate(rate_time);//#TODO: rate from arduino?
+    ros::Rate rate(rate_time);
 
 //#########################
     //#TODO: Get serial port and sensor_base_link from launch file
@@ -151,8 +151,9 @@ int main(int argc, char** argv) {
     //######
 
 
+
 //#######
-  while(ros::ok() ){///&& serial.is_open()) { #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!add this. just lazy now
+  while(ros::ok() && serial.is_open()) {
     ros::spinOnce();
 
     string line = readLine(serial);
@@ -161,7 +162,7 @@ int main(int argc, char** argv) {
 
 
 
-    for (int i = 0; i < NUM_POINTS; i++) {
+    for (int i = 0; i < NUM_SENSORS; i++) {
 
       pcl::PointCloud<pcl::PointXYZ> cloud;
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
