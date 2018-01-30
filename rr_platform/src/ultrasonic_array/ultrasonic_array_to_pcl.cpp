@@ -10,7 +10,7 @@
 using namespace std;
 
 #define NUM_SENSORS 3
-#define RADIUS 0.4 //radius in m
+#define RADIUS 0.4 //radius in meters
 #define NUM_POINTS 12 //# points for each semicircle/circle/wall
 #define PI 3.1415926535897f //#TODO: is there a better way?
 
@@ -19,7 +19,7 @@ using namespace std;
 
 
 
-string readLine(boost::asio::serial_port &port) { //#TODO: ensure this reads the lines right and doesn't include newline
+string readLine(boost::asio::serial_port &port) {
     string line = "";
     bool inLine = false;
     while (true) {
@@ -110,7 +110,6 @@ ros::Publisher pub;
 string sensor_base_link;
 string sensor_link;
 float rate_time;
-int baud_rate = 9600;
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "ultrasonic_array");
@@ -133,7 +132,7 @@ int main(int argc, char** argv) {
 
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
-   serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
+   serial.set_option(boost::asio::serial_port_base::baud_rate(BAUD_RATE));
 
     // wait for microcontroller to start
     ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
@@ -158,8 +157,8 @@ int main(int argc, char** argv) {
       tf_transform_vector.push_back(tf_transform);
     }
 
+//#TODO may want to do some sort of serial flushing here to clear out stale data in buffer
 
-//#######
   while(ros::ok() && serial.is_open()) {
     ros::spinOnce();
 
