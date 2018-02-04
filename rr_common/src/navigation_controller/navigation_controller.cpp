@@ -3,12 +3,15 @@
 #include <rr_platform/steering.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/Empty.h>
 
 const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
 int REQ_FINISH_LINE_CROSSES;
 std::string startSignal;
+std::string resetSignal;
+
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
@@ -70,8 +73,9 @@ void finishLineCB(const std_msgs::Int8::ConstPtr &int_msg) {
     finishLineCrosses = int_msg->data;
 }
 
-vold resetCB(const std_msgs::Empty) {
+void resetCB(const std_msgs::Empty &empty_msg) {
     state = WAITING_FOR_START;
+    raceStarted = false;
     updateState();
 }
 
@@ -89,7 +93,7 @@ int main(int argc, char** argv) {
     nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
     nhp.getParam("startSignal", startSignal);
     nhp.getParam("resetSignal", resetSignal);
-    ROS_INFO("req finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
+    ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
@@ -103,6 +107,7 @@ int main(int argc, char** argv) {
     ros::Rate rate(30.0);
     while(ros::ok()) {
         ros::spinOnce();
+        ROS_INFO_STREAM(state);
         updateState();
         //ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
 
