@@ -107,7 +107,6 @@ int main(int argc, char** argv) {
     ros::Rate rate(30.0);
     while(ros::ok()) {
         ros::spinOnce();
-        ROS_INFO_STREAM(state);
         updateState();
         //ROS_INFO("Nav Mux = %d, crosses = %d", state, finishLineCrosses);
 

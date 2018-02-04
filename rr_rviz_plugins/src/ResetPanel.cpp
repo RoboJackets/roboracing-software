@@ -18,7 +18,6 @@ ResetPanel::ResetPanel(QWidget *parent)
 
 void ResetPanel::resetCallback() {
     std_msgs::Empty reset;
-    //reset_btn->setText("!teseR");
     reset_pub.publish(reset);
 }
 
