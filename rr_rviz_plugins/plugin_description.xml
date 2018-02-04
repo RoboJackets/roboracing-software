@@ -1,9 +1,9 @@
 <library path="lib/librr_rviz_plugins">
-    <class name="rr_rviz_plugins/ExamplePanel"
-           type="rr_rviz_plugins::ExamplePanel"
+    <class name="rr_rviz_plugins/ResetPanel"
+           type="rr_rviz_plugins::ResetPanel"
            base_class_type="rviz::Panel">
         <description>
-            Example panel for getting started
+            Panel used for reseting the state to race start.
         </description>
     </class>
 </library>
