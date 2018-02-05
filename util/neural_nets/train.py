@@ -10,10 +10,10 @@ import random
 from example_set import ExampleSet
 
 
-n_examples_to_load = 6000 # if the number of training examples is below this, load more data
+n_examples_to_load = 1024 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
-epochs = 5
+epochs = 50
 categories = [-0.2, -0.1, 0, 0.1, 0.2]
 
 
