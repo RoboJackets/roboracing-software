@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 #include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
 #include <QLabel>
 
 /*
@@ -14,7 +15,7 @@ namespace rr_rviz_plugins {
 /*
  * Each panel is a subclass of rviz::Panel
  */
-class ExamplePanel : public rviz::Panel {
+class PosePanel : public rviz::Panel {
 /*
  * rviz is based on QT, so our panels need to be QObjects, which requires this macro keyword.
  */
@@ -25,7 +26,7 @@ public:
      * This is a standard QWidget constructor.
      * @param parent The parent widget, which will be responsible for the lifetime of this widget.
      */
-    ExamplePanel(QWidget *parent = 0);
+    PosePanel(QWidget *parent = 0);
 
 protected:
     /*
@@ -33,6 +34,7 @@ protected:
      * the lifetime of the widget.
      */
     ros::Subscriber speed_subscriber;
+    ros::Subscriber steer_subscriber;
 
     /**
      * Declare any ROS callbacks you need here. Be sure to create a parameter for any UI elements you need to update.
@@ -40,6 +42,7 @@ protected:
      * @param label A QT label whose text we will update based on the message contents.
      */
     void speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label);
+    void steering_callback(const rr_platform::steeringConstPtr &msg, QLabel *label);
 
     /**
      * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
