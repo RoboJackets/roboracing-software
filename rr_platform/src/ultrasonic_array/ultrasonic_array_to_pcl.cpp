@@ -9,14 +9,22 @@
 
 using namespace std;
 
-#define NUM_SENSORS 3
-#define RADIUS 0.4 //radius in meters
+#define NUM_SENSORS 6
+#define RADIUS 0.1 //radius in meters
 #define NUM_POINTS 12 //# points for each semicircle/circle/wall
 #define PI 3.1415926535897f //#TODO: is there a better way?
 
 #define BAUD_RATE 9600 //rate of transfer. Needs to match Arduino
 
-
+/*
+#TODO:Ignore 4+ meter points
+      Do launch file
+      decide best point strategy
+      Clean up rate code and other var names if need be
+      Random todos around the place
+      parameterize things not already parameterized
+      fix problem if serial becomes unplugged it seems to become unresponsive
+*/
 
 
 string readLine(boost::asio::serial_port &port) {
@@ -26,16 +34,16 @@ string readLine(boost::asio::serial_port &port) {
         char in;
         try {
             boost::asio::read(port, boost::asio::buffer(&in, 1));
+            if (in == '\n') {
+                return line;
+            }
+            line += in;
         } catch (
                 boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
             ROS_ERROR("Error reading serial port.");
             ROS_ERROR_STREAM(err.what());
-            return line;
         }
-        if (in == '\n') {
-            return line;
-        }
-        line += in;
+
     }
 }
 
@@ -174,7 +182,7 @@ int main(int argc, char** argv) {
       pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
       cloud.push_back(point); //add point direct from Arduino sensor
-      drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
+      //drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
       //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
       //drawCircle(cloud, point, 0.4, 6);
 
