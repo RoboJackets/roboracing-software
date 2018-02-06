@@ -34,6 +34,7 @@ add_message_files(
     FILES
     speed.msg
     steering.msg
+    race_reset.msg
     camera_pose.msg
     chassis_state.msg
 )

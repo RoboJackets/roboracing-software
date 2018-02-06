@@ -6,8 +6,7 @@ namespace rr_rviz_plugins {
 
 ResetPanel::ResetPanel(QWidget *parent)
   : rviz::Panel(parent) // Base class constructor
-{
-
+{   
     reset_btn = new QPushButton("Reset!");
     connect(reset_btn, SIGNAL (released()), this, SLOT (resetCallback()));
 
@@ -17,7 +16,9 @@ ResetPanel::ResetPanel(QWidget *parent)
 }
 
 void ResetPanel::resetCallback() {
-    std_msgs::Empty reset;
+    ros::NodeHandle nh;
+    ros::Publisher reset_pub = nh.advertise<rr_platform::race_reset>("/reset_detected", 0);
+    rr_platform::race_reset reset;
     reset_pub.publish(reset);
 }
 

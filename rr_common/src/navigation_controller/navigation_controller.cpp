@@ -1,9 +1,9 @@
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
+#include <rr_platform/race_reset.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
-#include <std_msgs/Empty.h>
 
 const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
@@ -73,7 +73,7 @@ void finishLineCB(const std_msgs::Int8::ConstPtr &int_msg) {
     finishLineCrosses = int_msg->data;
 }
 
-void resetCB(const std_msgs::Empty &empty_msg) {
+void resetCB(const rr_platform::race_reset &reset_msg) {
     state = WAITING_FOR_START;
     raceStarted = false;
     updateState();
