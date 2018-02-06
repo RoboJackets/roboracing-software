@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<launch>
+    <node pkg="rr_common" type="sound_node" name="sound_node" output="screen">
+
+    </node>
+
+    <node pkg="sound_play" type="soundplay_node.py" name="sound_client" output="screen">
+
+    </node>
+</launch>
