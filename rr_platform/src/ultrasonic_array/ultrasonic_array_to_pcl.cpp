@@ -6,15 +6,18 @@
 #include <tf/transform_listener.h>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/math/constants/constants.hpp>
 
 using namespace std;
 
 #define NUM_SENSORS 6
-#define RADIUS 0.1 //radius in meters
+#define RADIUS 0.1 //radius of semicircle/circle in meters
 #define NUM_POINTS 12 //# points for each semicircle/circle/wall
-#define PI 3.1415926535897f //#TODO: is there a better way?
-
 #define BAUD_RATE 9600 //rate of transfer. Needs to match Arduino
+
+#define IGNORE_DISTANCE 4 //# of meters away a point (>=) is that is too far to be correct
+
+const double pi = boost::math::constants::pi<double>();
 
 /*
 #TODO:Ignore 4+ meter points
@@ -38,7 +41,7 @@ string readLine(boost::asio::serial_port &port) {
             }
             line += in;
         } catch (
-                boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
+            boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
             ROS_ERROR("Error reading serial port.");
             ROS_ERROR_STREAM(err.what());
         }
@@ -76,7 +79,7 @@ void drawWall(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ center, float
 
 void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, float radius, int numPoints) {
   numPoints = (numPoints + 1) / 2; //@Note: adds one to ensure we get at least the numPoints desired
-  float angleStep = (PI / 2.0) / numPoints;
+  float angleStep = (pi / 2.0) / numPoints;
 
   float angle = 0.0; //#TODO: may need to shift this start angle
 
@@ -94,7 +97,7 @@ void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, 
 }
 
 void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, double radius, int numPoints) {
-  double angleStep = (2.0 * PI) / numPoints;
+  double angleStep = (2.0 * pi) / numPoints;
 
   double angle = 0; //start angle
 
@@ -109,7 +112,6 @@ void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, doub
   }
 
 }
-
 
 
 
@@ -173,17 +175,20 @@ int main(int argc, char** argv) {
     for (int i = 0; i < NUM_SENSORS; i++) {
 
       pcl::PointCloud<pcl::PointXYZ> cloud;
-      pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
-      cloud.push_back(point); //add point direct from Arduino sensor
-      //drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
-      //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
-      //drawCircle(cloud, point, 0.4, 6);
+      if(distances[i] < IGNORE_DISTANCE) {
+        pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
-      pcl_ros::transformPointCloud(cloud, cloud, tf_transform_vector[i]);
+        cloud.push_back(point); //add point direct from Arduino sensor
+        //drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
+        //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
+        //drawCircle(cloud, point, 0.4, 6);
 
-      //add point cloud to the output one
-      compiled_cloud += cloud;
+        pcl_ros::transformPointCloud(cloud, cloud, tf_transform_vector[i]);
+
+        //add point cloud to the output one
+        compiled_cloud += cloud;
+      }
     }
 
 
