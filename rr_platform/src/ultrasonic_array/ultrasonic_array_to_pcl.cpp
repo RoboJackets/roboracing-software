@@ -5,7 +5,7 @@
 #include <pcl_ros/transforms.h>
 #include <tf/transform_listener.h>
 #include <boost/asio.hpp>
-#include <boost/algorithm/string.hpp> //#TODO: is this the right import?
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -18,7 +18,6 @@ using namespace std;
 
 /*
 #TODO:Ignore 4+ meter points
-      Do launch file
       decide best point strategy
       Clean up rate code and other var names if need be
       Random todos around the place
@@ -100,7 +99,7 @@ void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, doub
   double angle = 0; //start angle
 
   for (int i = 0; i < numPoints; i++) {
-    //draw a circler
+    //draw a circle
     double x = radius * cos(angle);
     double y = radius * sin(angle);
 
@@ -127,30 +126,25 @@ int main(int argc, char** argv) {
 
 	pub = nh.advertise<sensor_msgs::PointCloud2>("/ultrasonic_array", 1);
 
-// Serial port setup
+  //Roslaunch file
     string serial_port_name;
-//    nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0")); //#TODO: launch file
-//    nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
-//    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-//    nhp.param(string("rate"), rate_time, 10.0f); //#TODO
-    serial_port_name = string("/dev/ttyUSB0");
-    sensor_base_link = string("ultrasonic_array_base");
-    sensor_link = string("ultrasonic_");
-    rate_time = 10.0f; //#TODO want from launch file (and serial port and base link)
+    nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
+    nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
+    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
+    nhp.param(string("rate"), rate_time, 10.0f);
 
+  //Connect serial
+    ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
-   serial.set_option(boost::asio::serial_port_base::baud_rate(BAUD_RATE));
+    serial.set_option(boost::asio::serial_port_base::baud_rate(BAUD_RATE));
 
     // wait for microcontroller to start
     ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
+
     ros::Rate rate(rate_time);
 
-//#########################
-    //#TODO: Get serial port and sensor_base_link from launch file
-    //#TODO: make urdf have the link of all the sensors and have a num 0 = left higher = more right
-
-  //#####
+    //Transforms
     tf::TransformListener tf_listener;
     tf::StampedTransform tf_transform;
     pcl::PointCloud<pcl::PointXYZ> compiled_cloud;
