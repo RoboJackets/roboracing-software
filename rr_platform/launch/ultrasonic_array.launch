@@ -4,5 +4,6 @@
     <param name="sensor_base_link" type="string" value= "/ultrasonic_array_base_" />
     <param name="sensor_link" type="string" value= "ultrasonic_" />
     <param name="rate" type="double" value= "10.0" />
+    <param name="distance_clip" type="double" value= "4.0" />
   </node>
 </launch>

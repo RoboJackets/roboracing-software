@@ -15,14 +15,11 @@ using namespace std;
 #define NUM_POINTS 12 //# points for each semicircle/circle/wall
 #define BAUD_RATE 9600 //rate of transfer. Needs to match Arduino
 
-#define IGNORE_DISTANCE 4 //# of meters away a point (>=) is that is too far to be correct
-
 const double pi = boost::math::constants::pi<double>();
 
 /*
-#TODO:Ignore 4+ meter points
+#TODO:
       decide best point strategy
-      Clean up rate code and other var names if need be
       Random todos around the place
       parameterize things not already parameterized
       fix problem if serial becomes unplugged it seems to become unresponsive
@@ -119,6 +116,8 @@ ros::Publisher pub;
 string sensor_base_link;
 string sensor_link;
 float rate_time;
+string serial_port_name;
+float distance_clip;
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "ultrasonic_array");
@@ -129,11 +128,11 @@ int main(int argc, char** argv) {
 	pub = nh.advertise<sensor_msgs::PointCloud2>("/ultrasonic_array", 1);
 
   //Roslaunch file
-    string serial_port_name;
     nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
     nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
     nhp.param(string("rate"), rate_time, 10.0f);
+    nph.param(string("distance_clip"), distance_clip, 5.0f);
 
   //Connect serial
     ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
@@ -173,10 +172,9 @@ int main(int argc, char** argv) {
 
 
     for (int i = 0; i < NUM_SENSORS; i++) {
-
       pcl::PointCloud<pcl::PointXYZ> cloud;
 
-      if(distances[i] < IGNORE_DISTANCE) {
+      if(distances[i] < distance_clip) {
         pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
         cloud.push_back(point); //add point direct from Arduino sensor
@@ -195,7 +193,7 @@ int main(int argc, char** argv) {
     //##########################
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(compiled_cloud, outmsg);
-    outmsg.header.frame_id = sensor_base_link;//"base_footprint";//sensor_base_link; #TODO SET AS SENSOR BASE LINK and should we set the compiled cloud header instead?
+    outmsg.header.frame_id = sensor_base_link;
 
 
     pub.publish(outmsg);
