@@ -21,7 +21,7 @@ const double pi = boost::math::constants::pi<double>();
 #TODO:
       decide best point strategy
       Random todos around the place
-      parameterize things not already parameterized
+      parameterize things not already parameterized (length of wall, which draw option)
       fix problem if serial becomes unplugged it seems to become unresponsive
 */
 
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
     nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
     nhp.param(string("rate"), rate_time, 10.0f);
-    nph.param(string("distance_clip"), distance_clip, 5.0f);
+    nhp.param(string("distance_clip"), distance_clip, 5.0f);
 
   //Connect serial
     ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
