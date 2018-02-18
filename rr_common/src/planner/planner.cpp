@@ -1,4 +1,5 @@
 #include "planner.h"
+#include <queue>
 
 using namespace std;
 
@@ -11,6 +12,9 @@ using namespace std;
  * inOutPose - pose (x,y,theta) that is read and updated
  *      with the new pose
  */
+queue<float> prevCurves;
+float prevCurveSum = 0.0;
+
 void advanceStep(float steerAngle, Pose2D &inOutPose) {
     float deltaX, deltaY, deltaTheta;
     if (abs(steerAngle) < 1e-3) {
@@ -103,6 +107,22 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
         }
     }
     return costSum;
+}
+
+/*
+ * bestCurve: calculated in the callback according to map
+ * prevCurves: a queue of previous calculated best curves (NOT AVERAGE CURVES)
+*/
+float smoothenedCurve(float bestCurve) {
+    float smoothCurve = bestCurve;
+    if(prevCurves.size() == 0)
+        return smoothCurve;
+    if (prevCurves.size() >= 5)
+        prevCurves.pop();
+    prevCurves.push(bestCurve);
+    prevCurveSum += bestCurve;
+    float averageCurve = prevCurveSum / prevCurves.size();
+    return averageCurve;
 }
 
 /*
@@ -257,6 +277,9 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
             bestCurviness = curviness;
         }
     }
+
+    //TODO Smoothened curve
+    bestCurviness = smoothenedCurve(bestCurviness);
 
     /*ROS_INFO("Planner found %d local minima. Best cost is %.3f",
              (int)localMinimaIndices.size(), goodCosts[bestIndex]);*/
