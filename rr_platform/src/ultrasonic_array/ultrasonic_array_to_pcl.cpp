@@ -10,20 +10,16 @@
 
 using namespace std;
 
-#define NUM_SENSORS 6
-#define RADIUS 0.1 //radius of semicircle/circle in meters
-#define NUM_POINTS 12 //# points for each semicircle/circle/wall
-#define BAUD_RATE 9600 //rate of transfer. Needs to match Arduino
+//defaults for launch file paramenters
+#define NUM_SENSORS_DEFAULT 6
+#define DRAW_METHOD_DEFAULT 0 //0 = Single Point, 1 = wall, 2 = circle, 3 = semicircle
+#define NUM_POINTS_DEFAULT 12 //# minimum points for each semicircle/circle/wall
+#define RADIUS_DEFAULT 0.1f //radius of semicircle/circle in meters
+#define LENGTH_DEFAULT 0.1f //length of wall
+#define DISTANCE_CLIP_DEFAULT 5.0f //distance beyond which we ignore point in meters
+#define BAUD_RATE_DEFAULT 9600 //rate of transfer. Needs to match Arduino
 
 const double pi = boost::math::constants::pi<double>();
-
-/*
-#TODO:
-      decide best point strategy
-      Random todos around the place
-      parameterize things not already parameterized (length of wall, which draw option)
-      fix problem if serial becomes unplugged it seems to become unresponsive
-*/
 
 
 string readLine(boost::asio::serial_port &port) {
@@ -88,7 +84,7 @@ void drawSemiCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, 
     cloud.push_back(pcl::PointXYZ(point.x + radius - x, y, 0));
     cloud.push_back(pcl::PointXYZ(point.x + radius - x, -y, 0));
 
-    angle = angle + angleStep; //#TODO: this may need to be minus because
+    angle = angle + angleStep;
   }
 
 }
@@ -115,9 +111,16 @@ void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, doub
 ros::Publisher pub;
 string sensor_base_link;
 string sensor_link;
-float rate_time;
+float update_rate;
 string serial_port_name;
 float distance_clip;
+float length;
+float radius;
+int num_sensors;
+int num_points;
+int draw_method;
+int baud_rate;
+
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "ultrasonic_array");
@@ -131,19 +134,25 @@ int main(int argc, char** argv) {
     nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
     nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
     nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-    nhp.param(string("rate"), rate_time, 10.0f);
-    nhp.param(string("distance_clip"), distance_clip, 5.0f);
+    nhp.param(string("update_rate"), update_rate, 10.0f);
+    nhp.param(string("number_of_sensors"), num_sensors, NUM_SENSORS_DEFAULT);
+    nhp.param(string("baud_rate"), baud_rate, BAUD_RATE_DEFAULT);
+    nhp.param(string("distance_clip"), distance_clip, DISTANCE_CLIP_DEFAULT);
+    nhp.param(string("draw_method"), draw_method, DRAW_METHOD_DEFAULT);
+    nhp.param(string("wall_length"), length, LENGTH_DEFAULT);
+    nhp.param(string("circle_radius"), radius, RADIUS_DEFAULT);
+    nhp.param(string("number_of_points"), num_points, NUM_POINTS_DEFAULT);
 
   //Connect serial
     ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(BAUD_RATE));
+    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
 
     // wait for microcontroller to start
-    ros::Duration(2.0).sleep(); //#TODO: taken from motor_relay_node may not need this
+    ros::Duration(2.0).sleep();
 
-    ros::Rate rate(rate_time);
+    ros::Rate rate(update_rate);
 
     //Transforms
     tf::TransformListener tf_listener;
@@ -152,15 +161,13 @@ int main(int argc, char** argv) {
 
     //lookup transforms and store them as they do not change
     vector<tf::StampedTransform> tf_transform_vector;
-    for (int i = 0; i < NUM_SENSORS; i++) {
+    for (int i = 0; i < num_sensors; i++) {
       if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(5.0))) {
         tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
       }
 
       tf_transform_vector.push_back(tf_transform);
     }
-
-//#TODO may want to do some sort of serial flushing here to clear out stale data in buffer
 
   while(ros::ok() && serial.is_open()) {
     ros::spinOnce();
@@ -171,20 +178,26 @@ int main(int argc, char** argv) {
 
 
 
-    for (int i = 0; i < NUM_SENSORS; i++) {
+    for (int i = 0; i < num_sensors; i++) {
       pcl::PointCloud<pcl::PointXYZ> cloud;
 
       if(distances[i] < distance_clip) {
         pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
         cloud.push_back(point); //add point direct from Arduino sensor
-        //drawSemiCircle(cloud, point, RADIUS, NUM_POINTS); //#TODO: SHOULD WE drawCircle after TRANSFORM TO TECHNICALLY SAVE time?
-        //drawWall(cloud, point, 0.4, 4); //#TODO:is a wall better than semi circle?
-        //drawCircle(cloud, point, 0.4, 6);
+        switch (draw_method) {
+            case 0: break;
+            case 1: drawWall(cloud, point, length, num_points);
+                    break;
+            case 2: drawCircle(cloud, point, radius, num_points);
+                    break;
+            case 3: drawSemiCircle(cloud, point, radius, num_points);
+                    break;
+        }
 
         pcl_ros::transformPointCloud(cloud, cloud, tf_transform_vector[i]);
 
-        //add point cloud to the output one
+        //add point cloud to the output cloud
         compiled_cloud += cloud;
       }
     }
