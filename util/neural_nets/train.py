@@ -13,8 +13,8 @@ from example_set import ExampleSet
 n_examples_to_load = 1024 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
-epochs = 50
-categories = [-0.2, -0.1, 0, 0.1, 0.2]
+epochs = 100
+categories = [-0.3, -0.05, 0, 0.05, 0.3]
 
 
 def defineCategory(steering):
@@ -85,6 +85,12 @@ if __name__ == '__main__':
         #create output bins
         yTrain = np.array([defineCategory(ex.angle) for ex in data.train])
         yTest = np.array([defineCategory(ex.angle) for ex in data.test])
+
+        for i in range(len(xTrain)):
+            if random.random() < 0.3: # 70-30
+                xTrain[i] = cv2.flip(xTrain[i], 1)
+                yTrain[i] = yTrain[i][::-1]
+            # print(yTrain[i])
 
         cnt = collections.Counter()
         for x,y in zip(xTrain,yTrain):
