@@ -10,6 +10,16 @@
 
 using namespace std;
 
+/*
+  README
+  @author Brian Cochran, github: @btdubs
+  Node for taking in serial CSV distances from ultrasonic array,
+  then outputing a point cloud. Ultrasonic sensors defined in
+  urdf and uses that for transforming points.
+  Requires a tf tree being published.
+*/
+
+
 //defaults for launch file paramenters
 #define NUM_SENSORS_DEFAULT 6
 #define DRAW_METHOD_DEFAULT 0 //0 = Single Point, 1 = wall, 2 = circle, 3 = semicircle
