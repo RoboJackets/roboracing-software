@@ -37,8 +37,8 @@ std_msgs::Bool green;
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Intialize variables
     if(green.data) {
-	bool_pub.publish(green);
-	return; // do not to all this computing if the signal has already been seen and go broadcast
+    bool_pub.publish(green);
+    return; // do not to all this computing if the signal has already been seen and go broadcast
     }
 
     cv_bridge::CvImagePtr cv_ptr;
@@ -47,15 +47,15 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     static int counttostart = 1;
 
 
-	// Convert ROS to OpenCV
-	try {
-		cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-	} catch (cv_bridge::Exception& e) {
-		ROS_ERROR("CV-Bridge error: %s", e.what());
-		return;
-	}
+    // Convert ROS to OpenCV
+    try {
+        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+    } catch (cv_bridge::Exception& e) {
+        ROS_ERROR("CV-Bridge error: %s", e.what());
+        return;
+    }
 
-	Mat frame = cv_ptr.get()->image;
+    Mat frame = cv_ptr.get()->image;
 
 
     for(int i = HIST_FRAMES-1; i > 0; i--) {
@@ -109,26 +109,26 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 }
 
 int main(int argc, char* argv[]) {
-	ros::init(argc, argv, "iarrc_image_display");
-	ros::NodeHandle nh;
-	ros::NodeHandle nhp("~");
+    ros::init(argc, argv, "iarrc_image_display");
+    ros::NodeHandle nh;
+    ros::NodeHandle nhp("~");
 
-	std::string img_topic, stoplight_topic;
-	nhp.getParam(string("img_topic"), img_topic);
+    std::string img_topic, stoplight_topic;
+    nhp.getParam(string("img_topic"), img_topic);
     nhp.getParam("stoplight_topic", stoplight_topic);
 
-	ROS_INFO("Stoplight watching %s", img_topic.c_str());
+    ROS_INFO("Stoplight watching %s", img_topic.c_str());
 
-	// Subscribe to ROS topic with callback
-	ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
-	img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
-	bool_pub = nh.advertise<std_msgs::Bool>(stoplight_topic, 1);
+    // Subscribe to ROS topic with callback
+    ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
+    img_pub = nh.advertise<sensor_msgs::Image>("/image_circles", 1);
+    bool_pub = nh.advertise<std_msgs::Bool>(stoplight_topic, 1);
 
-	green.data = false;
+    green.data = false;
 
 
-	ROS_INFO("IARRC stoplight watcher node ready.");
-	ros::spin();
-	ROS_INFO("Shutting down IARRC stoplight watcher node.");
-	return 0;
+    ROS_INFO("IARRC stoplight watcher node ready.");
+    ros::spin();
+    ROS_INFO("Shutting down IARRC stoplight watcher node.");
+    return 0;
 }

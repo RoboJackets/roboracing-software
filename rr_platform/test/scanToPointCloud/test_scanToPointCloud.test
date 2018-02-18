@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" respawn="false"/>
+    <test test-name="test_scanToPointCloud" pkg="rr_platform" type="test_scanToPointCloud"/>
+</launch>

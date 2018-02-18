@@ -258,8 +258,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
     }
 
-    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
+    /*ROS_INFO("Planner found %d local minima. Best cost is %.3f",
+             (int)localMinimaIndices.size(), goodCosts[bestIndex]);*/
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);

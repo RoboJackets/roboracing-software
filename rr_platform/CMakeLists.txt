@@ -63,6 +63,9 @@ if(CATKIN_ENABLE_TESTING)
     add_rostest_gtest(test_joystick_driver test/joystick_driver/test_joystick_driver.test test/joystick_driver/test_joystick_driver.cpp)
     target_link_libraries(test_joystick_driver ${catkin_LIBRARIES})
     add_dependencies(test_joystick_driver rr_platform_generate_messages_cpp)
+    add_rostest_gtest(test_scanToPointCloud test/scanToPointCloud/test_scanToPointCloud.test test/scanToPointCloud/test_scanToPointCloud.cpp)
+    target_link_libraries(test_scanToPointCloud ${catkin_LIBRARIES})
+    add_dependencies(test_scanToPointCloud rr_platform_generate_messages_cpp)
 endif()
 
 ## Specify additional locations of header files
@@ -81,9 +84,6 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_imu)
 add_subdirectory(src/ultrasonic_array)
-
-add_executable(mag_field_bias_calc src/mag_field_bias_calc.cpp)
-target_link_libraries(mag_field_bias_calc ${catkin_LIBRARIES})
 
 install(PROGRAMS launch/bigoli_camera_dynconfig.sh
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

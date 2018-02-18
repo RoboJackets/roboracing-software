@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
         sendCommand(serial, command);
         string response = readLine(serial);
-        ROS_INFO_STREAM("steer relay sent " << command << ", received " << response);
+        //ROS_INFO_STREAM("steer relay sent " << command << ", received " << response);
         rate.sleep();
     }
 

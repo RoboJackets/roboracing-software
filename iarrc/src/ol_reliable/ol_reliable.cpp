@@ -66,7 +66,7 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
     if (steering_msg.angle == 0) {
         speed_msg.speed = 1.5;
     } else {
-	speed_msg.speed = 1.0;
+    speed_msg.speed = 1.0;
     }
     speed_pub.publish(speed_msg);
 }
@@ -83,9 +83,9 @@ int main(int argc, char **argv) {
     int num_regions;
     pnh.param("num_regions", num_regions, 3);
 
-    int regionWidth = 640 / num_regions;
+    int regionWidth = 160 / num_regions;
     for (int i = 0; i < num_regions; i++) {
-        regions.push_back(Rect(i * regionWidth, 0, regionWidth, 480));
+        regions.push_back(Rect(i * regionWidth, 0, regionWidth, 90));
     }
 
     pnh.param("min_steering", min_steering, -0.35);
@@ -95,8 +95,8 @@ int main(int argc, char **argv) {
 
     steering_rate = (max_steering - min_steering) / (num_regions - 1);
 
-    steering_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
-    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
+    steering_pub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
 
     image_transport::ImageTransport imageTransport{nh};
 
