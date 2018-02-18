@@ -13,7 +13,7 @@ from example_set import ExampleSet
 n_examples_to_load = 6000 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
-epochs = 5
+epochs = 15
 categories = [-0.2, -0.1, 0, 0.1, 0.2]
 
 
@@ -38,8 +38,9 @@ if __name__ == '__main__':
     model = Sequential()
     # 120x90
     model.add(GaussianNoise(0.05, input_shape=input_shape))
-    model.add(Conv2D(30, (3, 3), activation='relu', kernel_initializer='Orthogonal'))
-    model.add(BatchNormalization(axis=3))
+    #model.add(Conv2D(30, (3, 3), activation='relu', kernel_initializer='Orthogonal'))
+    model.add(Conv2D(30, (3, 3), activation='relu'))
+    #model.add(BatchNormalization(axis=3))
     # 118x88
     model.add(MaxPooling2D((2,2)))
     # 59x44
