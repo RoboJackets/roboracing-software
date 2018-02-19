@@ -1,2 +1,0 @@
-roboracing-software/avc:roboracing-software/iarrc:roboracing-software/rr_platform:roboracing-software/sandbox
--DCATKIN_DEVEL_PREFIX=/home/brian/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/brian/catkin_ws/install -G Unix Makefiles

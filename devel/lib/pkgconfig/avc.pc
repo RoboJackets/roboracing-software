@@ -1,8 +1,0 @@
-prefix=/home/brian/catkin_ws/devel
-
-Name: avc
-Description: Description of avc
-Version: 0.0.0
-Cflags: -I/home/brian/catkin_ws/devel/include -I/home/brian/catkin_ws/src/roboracing-software/avc/include
-Libs: -L/home/brian/catkin_ws/devel/lib 
-Requires: roscpp rospy std_msgs rr_platform message_runtime
