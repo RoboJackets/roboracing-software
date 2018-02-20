@@ -177,6 +177,19 @@ int main(int argc, char** argv) {
     tf_transform_vector.push_back(tf_transform);
   }
 
+  function<void(pcl::PointCloud<pcl::PointXYZ> &a, pcl::PointXYZ &b)> draw;
+  switch (draw_method) {
+      default:
+      case 0: draw = [](pcl::PointCloud<pcl::PointXYZ> a, pcl::PointXYZ b){};
+              break;
+      case 1: draw = bind(drawWall, _1, _2, length, num_points);
+              break;
+      case 2: draw = bind(drawCircle, _1, _2, radius, num_points);
+              break;
+      case 3: draw = bind(drawSemiCircle, _1, _2, radius, num_points);
+              break;
+  }
+
   while(ros::ok() && serial.is_open()) {
     ros::spinOnce();
 
@@ -193,15 +206,7 @@ int main(int argc, char** argv) {
         pcl::PointXYZ point(distances[i], 0.0, 0.0);
 
         cloud.push_back(point); //add point direct from Arduino sensor
-        switch (draw_method) {
-            case 0: break;
-            case 1: drawWall(cloud, point, length, num_points);
-                    break;
-            case 2: drawCircle(cloud, point, radius, num_points);
-                    break;
-            case 3: drawSemiCircle(cloud, point, radius, num_points);
-                    break;
-        }
+        draw(cloud, point);
 
         pcl_ros::transformPointCloud(cloud, cloud, tf_transform_vector[i]);
 
@@ -210,8 +215,6 @@ int main(int argc, char** argv) {
       }
     }
 
-
-    //##########################
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(compiled_cloud, outmsg);
     outmsg.header.frame_id = sensor_base_link;
