@@ -96,7 +96,8 @@ int main(int argc, char **argv) {
 
     SerialPort serial_port;
     if(!serial_port.Open(serial_port_name, 115200)) {
-        ROS_FATAL_STREAM("Failed to open serial port: " << serial_port_name);
+        ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
+        return 1;
     }
 
     ROS_INFO("IARRC motor relay node is ready.");
