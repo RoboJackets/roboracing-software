@@ -47,6 +47,7 @@ protected:
 
     double wheelAngle = 0;	
     void paintEvent(QPaintEvent* event) override;
+    void tickMarkGenerator(QPainter &painter, float speeds);
     /*
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
      * the lifetime of the widget.
