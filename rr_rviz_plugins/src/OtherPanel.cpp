@@ -25,6 +25,7 @@ OtherPanel::OtherPanel(QWidget *parent)
     * Note the use of boost::bind, which allows us to give the callback a pointer to our UI label.
     */
     chassis_subscriber = handle.subscribe<rr_platform::chassis_state>("/chassis_state", 1, boost::bind(&OtherPanel::chassis_callback, this, _1, speedlabel));
+    steering_subscriber = handle.subscribe<rr_platform::steering>("/steering", 1, &OtherPanel::steering_callback, this); 	
 
     /* Use QT layouts to add widgets to the panel.
     * Here, we're using a VBox layout, which allows us to stack all of our widgets vertically.
@@ -82,6 +83,13 @@ void OtherPanel::paintEvent(QPaintEvent*)
  QString *string_seven = new QString("3.0");
  painter.drawText(493,270,*string_seven);
 
+
+ painter.drawArc(70,400,400,400,0,5760);
+ painter.drawLine(270+100*cos(wheelAngle + 3.14159265/3), 600-100*sin(wheelAngle + 3.14159265/3), 270+200*cos(wheelAngle + 3.14159265/3), 600-200*sin(wheelAngle + 3.14159265/3));
+ painter.drawLine(270+100*cos(wheelAngle + 2 * 3.14159265/3), 600-100*sin(wheelAngle + 2 * 3.14159265/3), 270+200*cos(wheelAngle + 2 * 3.14159265/3), 600-200*sin(wheelAngle + 2 * 3.14159265/3));
+ 
+
+
 }
 
 void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg, QLabel *speedlabel) {
@@ -94,7 +102,17 @@ void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg,
     double angle = ((msg->speed_mps)/maxSpeed)*3.14159256;
     width = 60+210-(200*cos(angle));
     height = 60+210-200*sin(angle);
+	
+    //wheelAngle = 1;
+    
+    	
     update();
+}
+
+
+void OtherPanel::steering_callback(const rr_platform::steeringConstPtr &msg) {
+   wheelAngle = msg->angle;
+   update();
 }
 
 //void ExamplePanel::paintEvent(QPaintEvent *event)  {

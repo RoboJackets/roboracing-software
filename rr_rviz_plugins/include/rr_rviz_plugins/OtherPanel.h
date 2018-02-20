@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 #include <rr_platform/chassis_state.h>
+#include <rr_platform/steering.h>
 #include <QLabel>
 #include <QtGui>
 #include <QPainter>
@@ -43,12 +44,15 @@ protected:
     int height = 200;
     int width = 200;
     int maxSpeed = 3;
+
+    double wheelAngle = 0;	
     void paintEvent(QPaintEvent*);
     /*
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
      * the lifetime of the widget.
      */
     ros::Subscriber chassis_subscriber;
+    ros::Subscriber steering_subscriber;
 
     /**
      * Declare any ROS callbacks you need here. Be sure to create a parameter for any UI elements you need to update.
@@ -56,6 +60,8 @@ protected:
      * @param label A QT label whose text we will update based on the message contents.
      */
     void chassis_callback(const rr_platform::chassis_stateConstPtr &msg, QLabel *speedlabel);
+
+    void steering_callback(const rr_platform::steeringConstPtr &msg); 
 
     /**
      * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
