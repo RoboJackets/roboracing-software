@@ -7,6 +7,8 @@
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/math/constants/constants.hpp>
+#include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -53,13 +55,11 @@ string readLine(boost::asio::serial_port &port) {
 }
 
 vector<double> parseLine(string line) {
-  vector<double> dist;
   vector<string> strs;
   boost::split(strs, line, boost::is_any_of(","));
 
-  for (int i = 0; i < strs.size(); i++) {
-    dist.push_back(atof(strs[i].c_str())); //convert string to double
-  }
+  vector<double> dist(strs.size());
+  std::transform(strs.begin(), strs.end(), dist.begin(), [](const auto &s){return std::stod(s);}); //convert string to double
 
   return dist;
 }
