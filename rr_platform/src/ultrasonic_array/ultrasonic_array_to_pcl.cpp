@@ -118,66 +118,64 @@ void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, doub
 
 
 
-ros::Publisher pub;
-string sensor_base_link;
-string sensor_link;
-float update_rate;
-string serial_port_name;
-float distance_clip;
-float length;
-float radius;
-int num_sensors;
-int num_points;
-int draw_method;
-int baud_rate;
-
-
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "ultrasonic_array");
 
-	ros::NodeHandle nh;
+  ros::init(argc, argv, "ultrasonic_array");
+
+  ros::NodeHandle nh;
   ros::NodeHandle nhp("~");
 
-	pub = nh.advertise<sensor_msgs::PointCloud2>("/ultrasonic_array", 1);
+  ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2>("/ultrasonic_array", 1);
 
   //Roslaunch file
-    nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
-    nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
-    nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
-    nhp.param(string("update_rate"), update_rate, 10.0f);
-    nhp.param(string("number_of_sensors"), num_sensors, NUM_SENSORS_DEFAULT);
-    nhp.param(string("baud_rate"), baud_rate, BAUD_RATE_DEFAULT);
-    nhp.param(string("distance_clip"), distance_clip, DISTANCE_CLIP_DEFAULT);
-    nhp.param(string("draw_method"), draw_method, DRAW_METHOD_DEFAULT);
-    nhp.param(string("wall_length"), length, LENGTH_DEFAULT);
-    nhp.param(string("circle_radius"), radius, RADIUS_DEFAULT);
-    nhp.param(string("number_of_points"), num_points, NUM_POINTS_DEFAULT);
+  string sensor_base_link;
+  string sensor_link;
+  float update_rate;
+  string serial_port_name;
+  float distance_clip;
+  float length;
+  float radius;
+  int num_sensors;
+  int num_points;
+  int draw_method;
+  int baud_rate;
+  nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
+  nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
+  nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
+  nhp.param(string("update_rate"), update_rate, 10.0f);
+  nhp.param(string("number_of_sensors"), num_sensors, NUM_SENSORS_DEFAULT);
+  nhp.param(string("baud_rate"), baud_rate, BAUD_RATE_DEFAULT);
+  nhp.param(string("distance_clip"), distance_clip, DISTANCE_CLIP_DEFAULT);
+  nhp.param(string("draw_method"), draw_method, DRAW_METHOD_DEFAULT);
+  nhp.param(string("wall_length"), length, LENGTH_DEFAULT);
+  nhp.param(string("circle_radius"), radius, RADIUS_DEFAULT);
+  nhp.param(string("number_of_points"), num_points, NUM_POINTS_DEFAULT);
 
   //Connect serial
-    ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
-    boost::asio::io_service io_service;
-    boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
+  ROS_INFO_STREAM("Connecting to serial at port: " + serial_port_name);
+  boost::asio::io_service io_service;
+  boost::asio::serial_port serial(io_service, serial_port_name);
+  serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
 
-    // wait for microcontroller to start
-    ros::Duration(2.0).sleep();
+  // wait for microcontroller to start
+  ros::Duration(2.0).sleep();
 
-    ros::Rate rate(update_rate);
+  ros::Rate rate(update_rate);
 
-    //Transforms
-    tf::TransformListener tf_listener;
-    tf::StampedTransform tf_transform;
-    pcl::PointCloud<pcl::PointXYZ> compiled_cloud;
+  //Transforms
+  tf::TransformListener tf_listener;
+  tf::StampedTransform tf_transform;
+  pcl::PointCloud<pcl::PointXYZ> compiled_cloud;
 
-    //lookup transforms and store them as they do not change
-    vector<tf::StampedTransform> tf_transform_vector;
-    for (int i = 0; i < num_sensors; i++) {
-      if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(5.0))) {
-        tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
-      }
-
-      tf_transform_vector.push_back(tf_transform);
+  //lookup transforms and store them as they do not change
+  vector<tf::StampedTransform> tf_transform_vector;
+  for (int i = 0; i < num_sensors; i++) {
+    if(tf_listener.waitForTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), ros::Duration(5.0))) {
+      tf_listener.lookupTransform(sensor_base_link, sensor_link + to_string(i), ros::Time(0), tf_transform);
     }
+
+    tf_transform_vector.push_back(tf_transform);
+  }
 
   while(ros::ok() && serial.is_open()) {
     ros::spinOnce();
