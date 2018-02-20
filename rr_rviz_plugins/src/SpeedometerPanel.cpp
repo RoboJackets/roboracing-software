@@ -1,4 +1,4 @@
-#include <rr_rviz_plugins/OtherPanel.h>
+#include <rr_rviz_plugins/SpeedometerPanel.h>
 #include <QVBoxLayout>
 #include <pluginlib/class_list_macros.h>
 
@@ -10,7 +10,7 @@ namespace rr_rviz_plugins {
 
 
 
-OtherPanel::OtherPanel(QWidget *parent)
+SpeedometerPanel::SpeedometerPanel(QWidget *parent)
   : rviz::Panel(parent) // Base class constructor
 {
 
@@ -24,8 +24,8 @@ OtherPanel::OtherPanel(QWidget *parent)
     /* Initialize our subscriber to listen to the /speed topic.
     * Note the use of boost::bind, which allows us to give the callback a pointer to our UI label.
     */
-    chassis_subscriber = handle.subscribe<rr_platform::chassis_state>("/chassis_state", 1, boost::bind(&OtherPanel::chassis_callback, this, _1, speedlabel));
-    steering_subscriber = handle.subscribe<rr_platform::steering>("/steering", 1, &OtherPanel::steering_callback, this); 	
+    chassis_subscriber = handle.subscribe<rr_platform::chassis_state>("/chassis_state", 1, boost::bind(&SpeedometerPanel::chassis_callback, this, _1, speedlabel));
+    steering_subscriber = handle.subscribe<rr_platform::steering>("/steering", 1, &SpeedometerPanel::steering_callback, this); 	
 
     /* Use QT layouts to add widgets to the panel.
     * Here, we're using a VBox layout, which allows us to stack all of our widgets vertically.
@@ -37,14 +37,14 @@ OtherPanel::OtherPanel(QWidget *parent)
 
 }
 
-void OtherPanel::paintEvent(QPaintEvent*)
+void SpeedometerPanel::paintEvent(QPaintEvent* event)
 {
-  QPainter painter(this);
+ QPainter painter(this);
  painter.drawLine(width,height, 270,270);
  painter.drawArc(70,70,400,400,0,5760/2);
  painter.drawLine(0+60,270,480,270);
 
- //this is for the lines every .5 m/s
+ //this is for the ticks (every .5 m/s)
  painter.drawLine(0+60,210+60,20+60,210+60);
  QString *string_one = new QString("0");
  painter.drawText(40,270,*string_one);
@@ -92,7 +92,7 @@ void OtherPanel::paintEvent(QPaintEvent*)
 
 }
 
-void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg, QLabel *speedlabel) {
+void SpeedometerPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg, QLabel *speedlabel) {
     // Create the new contents of the label based on the speed message.
     auto text = std::to_string(msg->speed_mps) + " m/s (actual)";
     // Set the contents of the label.
@@ -110,7 +110,7 @@ void OtherPanel::chassis_callback(const rr_platform::chassis_stateConstPtr &msg,
 }
 
 
-void OtherPanel::steering_callback(const rr_platform::steeringConstPtr &msg) {
+void SpeedometerPanel::steering_callback(const rr_platform::steeringConstPtr &msg) {
    wheelAngle = msg->angle;
    update();
 }
@@ -124,4 +124,4 @@ void OtherPanel::steering_callback(const rr_platform::steeringConstPtr &msg) {
 /*
  * IMPORTANT! This macro must be filled out correctly for your panel class.
  */
-PLUGINLIB_EXPORT_CLASS( rr_rviz_plugins::OtherPanel, rviz::Panel)
+PLUGINLIB_EXPORT_CLASS( rr_rviz_plugins::SpeedometerPanel, rviz::Panel)

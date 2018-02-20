@@ -1,5 +1,5 @@
-#ifndef PROJECT_OTHERPANEL_H
-#define PROJECT_OTHERPANEL_H
+#ifndef PROJECT_SPEEDOMETERPANEL_H
+#define PROJECT_SPEEDOMETERPANEL_H
 
 #include <ros/ros.h>
 #include <rviz/panel.h>
@@ -20,7 +20,7 @@ namespace rr_rviz_plugins {
 /*
  * Each panel is a subclass of rviz::Panel
  */
-class OtherPanel : public rviz::Panel {
+class SpeedometerPanel : public rviz::Panel {
 
 
 
@@ -35,7 +35,7 @@ public:
      * This is a standard QWidget constructor.
      * @param parent The parent widget, which will be responsible for the lifetime of this widget.
      */
-    OtherPanel(QWidget *parent = 0);
+    SpeedometerPanel(QWidget *parent = 0);
 
 protected:
     /*
@@ -46,7 +46,7 @@ protected:
     int maxSpeed = 3;
 
     double wheelAngle = 0;	
-    void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent* event) override;
     /*
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
      * the lifetime of the widget.
@@ -63,14 +63,9 @@ protected:
 
     void steering_callback(const rr_platform::steeringConstPtr &msg); 
 
-    /**
-     * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
-     * You can find out more about this method here: http://doc.qt.io/qt-5/qwidget.html#paintEvent
-     */
-//    void paintEvent(QPaintEvent *event) override;
 
 };
 
 }
 
-#endif //PROJECT_OTHERPANEL_H
+#endif //PROJECT_SpeedometerPanel_H

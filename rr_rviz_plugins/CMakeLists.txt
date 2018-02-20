@@ -32,12 +32,12 @@ include_directories(
 
 set (rviz_plugins_SRCS
     src/ExamplePanel.cpp
-    src/OtherPanel.cpp
+    src/SpeedometerPanel.cpp
 )
 
 set (rviz_plugins_HDRS
     include/rr_rviz_plugins/ExamplePanel.h
-    include/rr_rviz_plugins/OtherPanel.h
+    include/rr_rviz_plugins/SpeedometerPanel.h
 )
 
 qt5_wrap_cpp(rviz_plugins_MOCS ${rviz_plugins_HDRS})
