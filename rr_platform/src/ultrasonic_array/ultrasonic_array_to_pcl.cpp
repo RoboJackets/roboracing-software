@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
   int baud_rate;
   nhp.param(string("serial_port_name"), serial_port_name, string("/dev/ttyUSB0"));
   nhp.param(string("sensor_base_link"), sensor_base_link, string("ultrasonic_array_base"));
-  nhp.param(string("sensor_link"), sensor_link, string("ultrasonic_"));
+  nhp.param(string("sensor_link_prefix"), sensor_link, string("ultrasonic_"));
   nhp.param(string("update_rate"), update_rate, 10.0f);
   nhp.param(string("number_of_sensors"), num_sensors, NUM_SENSORS_DEFAULT);
   nhp.param(string("baud_rate"), baud_rate, BAUD_RATE_DEFAULT);

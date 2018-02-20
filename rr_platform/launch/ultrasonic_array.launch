@@ -4,7 +4,7 @@
     <param name="baud_rate" type="int" value="9600" />
     <param name="serial_port_name" type="string" value="/dev/ttyUSB0" />
     <param name="sensor_base_link" type="string" value= "/ultrasonic_array_base" />
-    <param name="sensor_link" type="string" value= "ultrasonic_" />
+    <param name="sensor_link_prefix" type="string" value= "ultrasonic_" />
     <param name="update_rate" type="double" value= "10.0" />
     <param name="draw_method" type="int" value="0" />
     <param name="number_of_points" type="int" value="5" />
