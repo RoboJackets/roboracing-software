@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include <random>
+#include <algorithm>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_types.h>
@@ -20,9 +21,12 @@
 
 int N_PATH_SEGMENTS;
 int N_CONTROL_SAMPLES;
+int SMOOTHING_ARRAY_SIZE;
 std::vector<float> SEGMENT_DISTANCES;
 std::vector<float> STEER_LIMITS;
 std::vector<float> STEER_STDDEVS;
+float *PREV_CURVES;
+int PREV_CURVE_INDEX;
 float DISTANCE_INCREMENT;
 float MAX_SPEED;
 float WHEEL_BASE;

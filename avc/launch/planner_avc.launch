@@ -2,6 +2,7 @@
     <node name="planner_avc" pkg="rr_common" type="planner" output="screen" >
         <param name="N_PATH_SEGMENTS" value="3"/>
         <param name="N_CONTROL_SAMPLES" value="300"/>
+        <param name="SMOOTHING_ARRAY_SIZE" value="8"/>
         <param name="SEGMENT_DISTANCES" value="2 3 3"/>
         <param name="STEER_LIMITS" value="0.35 0.35 0.35"/>
         <param name="STEER_STDDEVS" value="0.22 0.16 0.15"/>
