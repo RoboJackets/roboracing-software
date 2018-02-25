@@ -14,7 +14,7 @@ n_examples_to_load = 1024 # if the number of training examples is below this, lo
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
 epochs = 100
-categories = [-0.3, -0.05, 0, 0.05, 0.3]
+categories = [-0.2, -0.05, 0, 0.05, 0.2]
 
 
 def defineCategory(steering):
@@ -24,7 +24,7 @@ def defineCategory(steering):
     return oneHot
 
 def format_data(data):
-    data2 = np.zeros((len(data),) + input_shape, dtype='float16')
+    data2 = np.zeros((len(data),) + input_shape, dtype='float32')
     for i in range(len(data)):
         data2[i] = cv2.resize(data[i], (input_shape[1], input_shape[0]))
     return data2
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
 
     for epoch in range(epochs):
-        print "\nepoch", epoch+1
+        print "\nbatch", epoch+1
 
         data = ExampleSet()
         sets = [f for f in os.listdir(sys.argv[1]) if '.pkl.lz4' in f]
@@ -77,8 +77,8 @@ if __name__ == '__main__':
         #format our data
         xTrain = format_data([ex.get_image() for ex in data.train])
         xTest = format_data([ex.get_image() for ex in data.test])
-        xTrain = xTrain.astype('float16')
-        xTest  = xTest.astype('float16')
+        xTrain = xTrain.astype('float32')
+        xTest  = xTest.astype('float32')
         xTrain /= 255
         xTest /= 255
 

@@ -30,7 +30,7 @@
         <material>
           <script>
             <uri>model://../materials/iarrccurvytrack.material</uri>
-            <name>Gazebo/iarrcCurvyTrack</name>
+            <name>Gazebo/iarrcCurvy</name>
           </script>
         </material>
       </visual>

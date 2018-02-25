@@ -12,7 +12,7 @@ import os
 from tensorflow import get_default_graph
 
 
-path_to_model = os.path.join(os.path.dirname(__file__), 'nn_2018-01-14.h5')
+path_to_model = os.path.join(os.path.dirname(__file__), 'model_curvy.h5')
 model = load_model(path_to_model)
 tf_graph = get_default_graph()
 

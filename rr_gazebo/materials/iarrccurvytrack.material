@@ -14,7 +14,7 @@ material Gazebo/iarrcCurvy
       {
         texture iarrcCurvy.png
         filtering trilinear
-	    scale 1 1
+        scale 1 1
       }
     }
   }
