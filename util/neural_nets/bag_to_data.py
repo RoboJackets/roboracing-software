@@ -76,4 +76,4 @@ if __name__ == '__main__':
         os.makedirs(sys.argv[1])
 
     for file_path in sys.argv[2:]:
-        convert_bag_file(file_path, sys.argv[1], 1024)
+        convert_bag_file(file_path, sys.argv[1], 256)

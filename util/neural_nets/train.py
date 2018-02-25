@@ -10,11 +10,11 @@ import random
 from example_set import ExampleSet
 
 
-n_examples_to_load = 6000 # if the number of training examples is below this, load more data
+n_examples_to_load = 1024 # if the number of training examples is below this, load more data
 input_shape = (90, 120, 3) # rows, cols, channels
 batch_size = 128
-epochs = 15
-categories = [-0.2, -0.1, 0, 0.1, 0.2]
+epochs = 100
+categories = [-0.2, -0.05, 0, 0.05, 0.2]
 
 
 def defineCategory(steering):
@@ -24,7 +24,7 @@ def defineCategory(steering):
     return oneHot
 
 def format_data(data):
-    data2 = np.zeros((len(data),) + input_shape, dtype='float16')
+    data2 = np.zeros((len(data),) + input_shape, dtype='float32')
     for i in range(len(data)):
         data2[i] = cv2.resize(data[i], (input_shape[1], input_shape[0]))
     return data2
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
 
     for epoch in range(epochs):
-        print "\nepoch", epoch+1
+        print "\nbatch", epoch+1
 
         data = ExampleSet()
         sets = [f for f in os.listdir(sys.argv[1]) if '.pkl.lz4' in f]
@@ -79,14 +79,20 @@ if __name__ == '__main__':
         #format our data
         xTrain = format_data([ex.get_image() for ex in data.train])
         xTest = format_data([ex.get_image() for ex in data.test])
-        xTrain = xTrain.astype('float16')
-        xTest  = xTest.astype('float16')
+        xTrain = xTrain.astype('float32')
+        xTest  = xTest.astype('float32')
         xTrain /= 255
         xTest /= 255
 
         #create output bins
         yTrain = np.array([defineCategory(ex.angle) for ex in data.train])
         yTest = np.array([defineCategory(ex.angle) for ex in data.test])
+
+        for i in range(len(xTrain)):
+            if random.random() < 0.3: # 70-30
+                xTrain[i] = cv2.flip(xTrain[i], 1)
+                yTrain[i] = yTrain[i][::-1]
+            # print(yTrain[i])
 
         cnt = collections.Counter()
         for x,y in zip(xTrain,yTrain):

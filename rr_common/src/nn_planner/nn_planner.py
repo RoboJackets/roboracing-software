@@ -12,7 +12,7 @@ import os
 from tensorflow import get_default_graph
 
 
-path_to_model = os.path.join(os.path.dirname(__file__), 'nn_2018-01-14.h5')
+path_to_model = os.path.join(os.path.dirname(__file__), 'model_curvy.h5')
 model = load_model(path_to_model)
 tf_graph = get_default_graph()
 
@@ -42,6 +42,7 @@ if __name__ == "__main__":
     publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
     rospy.Subscriber('/camera/image_rect', Image, plan)
+    # rospy.Subscriber('/camera/image_raw', Image, plan)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
