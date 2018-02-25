@@ -106,17 +106,16 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
     return costSum;
 }
 
-/*
- * bestCurve: calculated in the callback according to map
- * PREV_CURVES: an array of previous calculated best curves
- * Return: the current bestCurve if PREV_CURVES is not filled; otherwise return the median value
+/**
+ * Member returning the current bestAngle averaged against the median.
+ * Median is calculated based on previous angles, or PREV_STEERING_ANGLES
 */
-float smoothenedCurveMedian(float bestCurve) {
-    PREV_CURVE_INDEX = (PREV_CURVE_INDEX + 1) % SMOOTHING_ARRAY_SIZE;
-    PREV_CURVES[PREV_CURVE_INDEX] = bestCurve;
-    float sortedCurves[SMOOTHING_ARRAY_SIZE] = {*PREV_CURVES};
-    sort(sortedCurves, sortedCurves + SMOOTHING_ARRAY_SIZE); //sorts array of previous curves in ascending order to find median
-    return sortedCurves[SMOOTHING_ARRAY_SIZE / 2] == 0.0 ? bestCurve : sortedCurves[SMOOTHING_ARRAY_SIZE / 2];
+float steeringAngleAverageAgainstMedian(float bestAngle) {
+    PREV_STEERING_ANGLES_INDEX = (PREV_STEERING_ANGLES_INDEX + 1) % SMOOTHING_ARRAY_SIZE;
+    std::vector<float> sortedSteeringAngles(PREV_STEERING_ANGLES);
+    sort(sortedSteeringAngles.begin(), sortedSteeringAngles.end()); //sort array of previous vectors in ascending order to find median
+    PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; // appends the average of the best curve and current median to PREV_STEERING_ANGLES
+    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; //return the average between the calculated steering angle and median value
 }
 
 /*
@@ -277,7 +276,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-    steerMSG->angle = smoothenedCurveMedian(goodControlVectors[bestIndex][0]);
+    steerMSG->angle = steeringAngleAverageAgainstMedian(goodControlVectors[bestIndex][0]);
     speedMSG->speed = steeringToSpeed(steerMSG->angle, STEER_LIMITS[0]);
     steerMSG->header.stamp = ros::Time::now();
     speedMSG->header.stamp = ros::Time::now();
@@ -329,9 +328,6 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    PREV_CURVE_INDEX = 0;
-    PREV_CURVES = new float[SMOOTHING_ARRAY_SIZE];
-
     nhp.param("N_PATH_SEGMENTS", N_PATH_SEGMENTS, 2);
     nhp.param("N_CONTROL_SAMPLES", N_CONTROL_SAMPLES, 200);
     nhp.param("SEGMENT_DISTANCES", segmentDistancesStr, string("3 5"));
@@ -345,7 +341,10 @@ int main(int argc, char** argv) {
     nhp.param("COLLISION_PENALTY", COLLISION_PENALTY, 1000.0f);
     nhp.param("PATH_SIMILARITY_CUTOFF", PATH_SIMILARITY_CUTOFF, 0.05f);
     nhp.param("MAX_RELATIVE_COST", MAX_RELATIVE_COST, 2.0f);
-    nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 8);
+    nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 20);
+
+    PREV_STEERING_ANGLES_INDEX = 0;
+    PREV_STEERING_ANGLES.resize(SMOOTHING_ARRAY_SIZE);
 
     parseFloatArrayStr(segmentDistancesStr, SEGMENT_DISTANCES);
     parseFloatArrayStr(steerLimitsStr, STEER_LIMITS);
