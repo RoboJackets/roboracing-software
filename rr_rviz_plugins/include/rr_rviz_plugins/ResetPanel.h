@@ -19,7 +19,7 @@ public:
 protected:
     QPushButton *reset_btn;
     ros::NodeHandle nh;
-    ros::Publisher reset_pub = nh.advertise<rr_platform::race_reset>("/reset_detected", 0);
+    ros::Publisher reset_pub;
 
 private slots:
     void resetCallback();

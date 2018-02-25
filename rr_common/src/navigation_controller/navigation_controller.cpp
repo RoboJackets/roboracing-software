@@ -119,6 +119,7 @@ int main(int argc, char** argv) {
         steerMsg.angle = steering;
         steerMsg.header.stamp = ros::Time::now();
         steerPub.publish(steerMsg);
+        ROS_INFO("Current state: %d", state);
 
         rate.sleep();
     }
