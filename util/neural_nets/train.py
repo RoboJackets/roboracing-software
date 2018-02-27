@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise, BatchNormalization
 from keras.datasets import mnist
 import cv2
 import collections
