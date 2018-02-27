@@ -8,12 +8,19 @@ from rr_platform.msg import steering as Steering
 from rr_platform.msg import speed as Speed
 import cv2
 import numpy as np
-import os
+import os, sys
 from tensorflow import get_default_graph
 
 
-path_to_model = os.path.join(os.path.dirname(__file__), 'model_curvy.h5')
+if len(sys.argv) < 2:
+    print "Error: specify a model file"
+    sys.exit(-1)
+
+
+path_to_model = os.path.join(os.path.dirname(__file__), sys.argv[1])
 model = load_model(path_to_model)
+input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
+# print "********", input_shape
 tf_graph = get_default_graph()
 
 steering_angle = 0
@@ -25,8 +32,8 @@ def plan(image_message):
     except CvBridgeError as e:
         print e
 
-    X = np.zeros((1,90,120,3))
-    X[0] = cv2.resize(cv_image, (120,90))
+    X = np.zeros((1,) + input_shape)
+    X[0] = cv2.resize(cv_image, (input_shape[1], input_shape[0]))
 
     with tf_graph.as_default():
         Y = model.predict(X, batch_size=1)
@@ -34,7 +41,7 @@ def plan(image_message):
 
     i = np.argmax(Y)
     global steering_angle
-    steering_angle = [-0.25, -0.1, 0, 0.1, 0.25][i]
+    steering_angle = [-0.2, -0.1, 0, 0.1, 0.2][i]
 
 
 if __name__ == "__main__":
@@ -49,7 +56,7 @@ if __name__ == "__main__":
         msg = Steering()
         speed_msg = Speed()
         msg.angle = steering_angle
-        speed_msg.speed = 2 - 3*abs(steering_angle)
+        speed_msg.speed = 1.5 - 2.5*abs(steering_angle)
         publisher.publish(msg)
         speed_publisher.publish(speed_msg)
         rate.sleep()

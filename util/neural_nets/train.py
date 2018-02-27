@@ -10,11 +10,11 @@ import random
 from example_set import ExampleSet
 
 
-n_examples_to_load = 1024 # if the number of training examples is below this, load more data
-input_shape = (90, 120, 3) # rows, cols, channels
-batch_size = 128
+n_examples_to_load = 4096 # if the number of training examples is below this, load more data
+input_shape = (96, 128, 3) # rows, cols, channels
+batch_size = 32
 epochs = 100
-categories = [-0.2, -0.05, 0, 0.05, 0.2]
+categories = [-0.17, -0.05, 0, 0.05, 0.17]
 
 
 def defineCategory(steering):
@@ -35,24 +35,30 @@ if __name__ == '__main__':
         print "Usage: python train.py [data directory] [model output file]"
         sys.exit(1)
 
+    name = sys.argv[2]
+
     model = Sequential()
-    # 120x90
+    # 128 x 96
     model.add(GaussianNoise(0.05, input_shape=input_shape))
-    model.add(Conv2D(30, (3, 3), activation='relu'))
-    # 118x88
-    model.add(MaxPooling2D((2,2)))
-    # 59x44
-    model.add(Conv2D(50, (3, 3), activation='relu'))
-    # 57x42
-    model.add(MaxPooling2D((4, 4)))
-    # 14x10
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2, 2)))
+    # 64 x 48
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2, 2)))
+    # 32 x 24
+    model.add(Conv2D(96, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(96, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2, 2)))
+    # 16 x 12
 
     model.add(Flatten())
-    model.add(Dropout(0.3))
-    model.add(Dense(120, activation='relu'))
     model.add(Dropout(0.1))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(100, activation='relu'))
     model.add(Dense(50, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.4))
     model.add(Dense(len(categories), activation='softmax'))
 
     model.compile(loss=keras.losses.categorical_crossentropy,
@@ -87,7 +93,7 @@ if __name__ == '__main__':
         yTest = np.array([defineCategory(ex.angle) for ex in data.test])
 
         for i in range(len(xTrain)):
-            if random.random() < 0.3: # 70-30
+            if random.random() < 0.4: # 60-40
                 xTrain[i] = cv2.flip(xTrain[i], 1)
                 yTrain[i] = yTrain[i][::-1]
             # print(yTrain[i])
@@ -110,4 +116,7 @@ if __name__ == '__main__':
                   verbose=1,
                   validation_data=(xTest, yTest))
 
-    model.save(sys.argv[2])
+        tmp_name = os.path.join(os.path.dirname(__file__), "model_ckpt.h5")
+        model.save(tmp_name)
+
+    model.save(name)
