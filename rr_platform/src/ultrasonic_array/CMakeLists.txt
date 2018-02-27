@@ -1,0 +1,2 @@
+add_executable(ultrasonic_array ultrasonic_array_to_pcl.cpp)
+target_link_libraries(ultrasonic_array ${catkin_LIBRARIES})
