@@ -9,10 +9,10 @@ import collections
 import random
 import time
 from example_set import ExampleSet
+from params import input_shape
 
 
 n_examples_to_load = 4096 # if the number of training examples is below this, load more data
-input_shape = (96, 128, 3) # rows, cols, channels
 batch_size = 64
 epochs = 10
 categories = [-0.2, -0.05, 0, 0.05, 0.2]
@@ -27,7 +27,7 @@ def defineCategory(steering):
 def format_inputs(examples):
     data2 = np.zeros((len(examples),) + input_shape, dtype='float32')
     for i, ex in enumerate(examples):
-        data2[i] = cv2.resize(ex.get_image(), (input_shape[1], input_shape[0]))
+        data2[i] = ex.get_image()
     return data2
 
 
@@ -41,14 +41,14 @@ if __name__ == '__main__':
     name = sys.argv[2]
 
     model = Sequential()
-    # 128 x 96
+    # 128 x 48
     model.add(GaussianNoise(0.05, input_shape=input_shape))
     model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D((4, 4)))
-    # 32 x 24
+    # 32 x 12
     model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D((2, 2)))
-    # 16 x 12
+    # 16 x 6
 
     model.add(Flatten())
     model.add(Dropout(0.25))
