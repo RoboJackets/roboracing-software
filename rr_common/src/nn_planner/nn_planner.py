@@ -37,11 +37,12 @@ def plan(image_message):
 
     with tf_graph.as_default():
         Y = model.predict(X, batch_size=1)
-        # print '  '.join('%.2f' % y for y in Y.flat)
+        print '  '.join('%.2f' % y for y in Y.flat)
 
     i = np.argmax(Y)
     global steering_angle
-    steering_angle = [-0.2, -0.1, 0, 0.1, 0.2][i]
+    steering_angle = [-0.3, -0.1, 0, 0.1, 0.3][i]
+    # steering_angle *= -1
 
 
 if __name__ == "__main__":
