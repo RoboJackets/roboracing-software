@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
+#include <rr_platform/race_reset.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
 
@@ -9,6 +10,8 @@ const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
 int REQ_FINISH_LINE_CROSSES;
 std::string startSignal;
+std::string resetSignal;
+
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
@@ -70,6 +73,12 @@ void finishLineCB(const std_msgs::Int8::ConstPtr &int_msg) {
     finishLineCrosses = int_msg->data;
 }
 
+void resetCB(const rr_platform::race_reset &reset_msg) {
+    state = WAITING_FOR_START;
+    raceStarted = false;
+    updateState();
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "navigation_controller");
 
@@ -83,12 +92,14 @@ int main(int argc, char** argv) {
 
     nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
     nhp.getParam("startSignal", startSignal);
-    ROS_INFO("req finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
+    nhp.getParam("resetSignal", resetSignal);
+    ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
     auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
     auto finishLineSub = nh.subscribe("/camera/finish_line_crosses", 1, finishLineCB);
+    auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
     steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
@@ -108,6 +119,7 @@ int main(int argc, char** argv) {
         steerMsg.angle = steering;
         steerMsg.header.stamp = ros::Time::now();
         steerPub.publish(steerMsg);
+        ROS_INFO("Current state: %d", state);
 
         rate.sleep();
     }
