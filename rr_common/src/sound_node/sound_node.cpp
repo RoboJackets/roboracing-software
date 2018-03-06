@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
 
     ros::Subscriber sub = nh.subscribe("/start_detected", 1, soundCB);
-    while (ros::ok){
+    while (ros::ok()){
         if (raceStarted && !lastraceStarted) {
             cout << "starting sound" << endl;
             sleep(1);
