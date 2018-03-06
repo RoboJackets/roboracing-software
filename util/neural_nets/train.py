@@ -12,7 +12,7 @@ from example_set import ExampleSet
 from params import input_shape
 
 
-n_examples_to_load = 4096 # if the number of training examples is below this, load more data
+n_examples_to_load = 8000 # if the number of training examples is below this, load more data
 batch_size = 64
 epochs = 10
 categories = [-0.2, -0.05, 0, 0.05, 0.2]
