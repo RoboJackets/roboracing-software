@@ -18,9 +18,6 @@ double planSpeed, speed;
 double planSteering, steering;
 bool raceStarted;
 int finishLineCrosses;
-std_msgs::Bool Reached;
-
-
 
 ros::Time finishTime;
 
