@@ -46,7 +46,7 @@ def plan(image_message):
 
     i = np.argmax(Y)
     global steering_angle
-    steering_angle = [-0.2, -0.05, 0, 0.05, 0.2][i]
+    steering_angle = [-0.3, -0.1, 0, 0.1, 0.3][i]
     # steering_angle *= -1
 
 def plan_rect(image_message):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         msg = Steering()
         speed_msg = Speed()
         msg.angle = steering_angle
-        speed_msg.speed = 1.5 - 0.3*abs(steering_angle)
+        speed_msg.speed = 0.5 - 0.1*abs(steering_angle)
         publisher.publish(msg)
         speed_publisher.publish(speed_msg)
         rate.sleep()
