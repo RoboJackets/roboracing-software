@@ -1,5 +1,6 @@
 <launch>
     <arg name="world" default="worlds/empty.world"/>
+    <arg name="start_pose" default="0 0 0"/>
 
     <param name="/use_sim_time" value="true" />
 
@@ -22,5 +23,6 @@
 
     <node name="sim_controller" pkg="rr_gazebo" type="macaroni_controller" respawn="false" output="screen" />
 
-    <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_macaroni_platform.sh" />
+    <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_macaroni_platform.sh" 
+          args="$(arg start_pose)"/>
 </launch>

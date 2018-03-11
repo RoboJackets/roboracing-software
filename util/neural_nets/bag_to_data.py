@@ -1,10 +1,12 @@
 import rosbag
 import os, sys
 from sensor_msgs.msg import Image
+import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import random
 from example_set import Example, ExampleSet
+from params import input_shape
 
 def save_next_filename(examples, output_dir):
     fname = lambda i: "data%d.pkl.lz4" % i
@@ -28,15 +30,31 @@ def convert_bag_file(bag_file_path, output_dir, examples_per_file):
     iter_obj = iter(bag.read_messages(topics=["/steering"]))
     topic2, msg, t2 = iter_obj.next()
 
-    for topic1, img, t1 in bag.read_messages(topics=['/camera/image_rect']):
+    topics = bag.get_type_and_topic_info()[1].keys()
+    if '/camera/image_rect' in topics:
+        camera_topic = '/camera/image_rect'
+    elif '/camera/image_raw' in topics:
+        camera_topic = '/camera/image_raw'
+    else:
+        print "ERROR: camera topic not recognized"
+        sys.exit(2)
+
+    for topic1, img, t1 in bag.read_messages(topics=[camera_topic]):
         try:
             cv_image = bridge.imgmsg_to_cv2(img, 'bgr8')
+
+            # use lower half of picture
+            halfHeight = cv_image.shape[0] // 2
+            cv_image = cv_image[halfHeight:, :]
+
+            # resize
+            cv_image = cv2.resize(cv_image, (input_shape[1], input_shape[0]))
 
             while (t1 >= t2):
                 try:
                     topic2, msg, t2 = iter_obj.next()
-                except StopIteration, e:
-                    print str(t2) + " " + str(t1)
+                except StopIteration:
+                    print "caught StopIteration for steering message iterator"
                     break
 
             angle = float(str(msg).split()[-1])
@@ -49,7 +67,7 @@ def convert_bag_file(bag_file_path, output_dir, examples_per_file):
             L = examples.test if random.random() < test_proportion else examples.train
             L.append(ex)
 
-        except CvBridgeError, e:
+        except CvBridgeError as e:
             print e
 
     bag.close()
@@ -67,4 +85,4 @@ if __name__ == '__main__':
         os.makedirs(sys.argv[1])
 
     for file_path in sys.argv[2:]:
-        convert_bag_file(file_path, sys.argv[1], 1024)
+        convert_bag_file(file_path, sys.argv[1], 256)

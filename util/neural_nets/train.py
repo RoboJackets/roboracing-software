@@ -2,19 +2,20 @@ import os, sys
 import numpy as np
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise, BatchNormalization
 from keras.datasets import mnist
 import cv2
 import collections
 import random
+import time
 from example_set import ExampleSet
+from params import input_shape
 
 
-n_examples_to_load = 6000 # if the number of training examples is below this, load more data
-input_shape = (90, 120, 3) # rows, cols, channels
-batch_size = 128
-epochs = 15
-categories = [-0.1, -0.05, 0, 0.05, 0.1]
+n_examples_to_load = 8000 # if the number of training examples is below this, load more data
+batch_size = 64
+epochs = 10
+categories = [-0.2, -0.05, 0, 0.05, 0.2]
 
 
 def defineCategory(steering):
@@ -23,10 +24,10 @@ def defineCategory(steering):
     oneHot = [1 if i == category else 0 for i in range(len(categories))]
     return oneHot
 
-def format_data(data):
-    data2 = np.zeros((len(data),) + input_shape, dtype='float16')
-    for i in range(len(data)):
-        data2[i] = cv2.resize(data[i], (input_shape[1], input_shape[0]))
+def format_inputs(examples):
+    data2 = np.zeros((len(examples),) + input_shape, dtype='float32')
+    for i, ex in enumerate(examples):
+        data2[i] = ex.get_image()
     return data2
 
 
@@ -35,66 +36,65 @@ if __name__ == '__main__':
         print "Usage: python train.py [data directory] [model output file]"
         sys.exit(1)
 
+    startTime = time.time()
+
+    name = sys.argv[2]
+
     model = Sequential()
-    # 120x90
+    # 128 x 48
     model.add(GaussianNoise(0.05, input_shape=input_shape))
-    model.add(Conv2D(30, (3, 3), activation='relu'))
-    # 118x88
-    model.add(MaxPooling2D((2,2)))
-    # 59x44
-    model.add(Conv2D(50, (3, 3), activation='relu'))
-    # 57x42
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D((4, 4)))
-    # 14x10
+    # 32 x 12
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2, 2)))
+    # 16 x 6
 
     model.add(Flatten())
-    model.add(Dropout(0.3))
-    model.add(Dense(120, activation='relu'))
-    model.add(Dropout(0.1))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.35))
     model.add(Dense(len(categories), activation='softmax'))
 
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
+    exampleSetDir = sys.argv[1]
+    exampleSetFiles = [f for f in os.listdir(exampleSetDir) if '.pkl.lz4' in f]
+    exampleSetFiles = exampleSetFiles * epochs  # duplicate data [epochs] times
+    random.shuffle(exampleSetFiles)
 
-    for epoch in range(epochs):
-        print "\nepoch", epoch+1
+    while len(exampleSetFiles) > 0:
+        print "\n", len(exampleSetFiles), "training files remaining"
 
         data = ExampleSet()
-        sets = [f for f in os.listdir(sys.argv[1]) if '.pkl.lz4' in f]
-        indices = range(len(sets))
-        random.shuffle(indices)
-        for i in indices:
-            if len(data.train) >= n_examples_to_load:
-                break
-            data.add(ExampleSet.load(os.path.join(sys.argv[1], sets[i])))
+        while len(exampleSetFiles) > 0 and len(data.train) < n_examples_to_load:
+            data.add(ExampleSet.load(os.path.join(exampleSetDir, exampleSetFiles.pop())))
+        random.shuffle(data.train)
 
         #format our data
-        xTrain = format_data([ex.get_image() for ex in data.train])
-        xTest = format_data([ex.get_image() for ex in data.test])
-        xTrain = xTrain.astype('float16')
-        xTest  = xTest.astype('float16')
-        xTrain /= 255
-        xTest /= 255
+        xTrain = format_inputs(data.train)
+        xTest = format_inputs(data.test)
+        xTrain /= 255.0
+        xTest /= 255.0
 
         #create output bins
         yTrain = np.array([defineCategory(ex.angle) for ex in data.train])
         yTest = np.array([defineCategory(ex.angle) for ex in data.test])
 
+        for i in range(len(xTrain)):
+            if random.random() < 0.4: # 40% of images are flipped
+                xTrain[i] = cv2.flip(xTrain[i], 1)
+                yTrain[i] = yTrain[i][::-1]
+            # print(yTrain[i])
+
         cnt = collections.Counter()
-        for x,y in zip(xTrain,yTrain):
+        for y in yTrain:
             i = np.argmax(y)
             cnt[i] += 1
         print "training label counts:", cnt
-
-        cnt = collections.Counter()
-        for x,y in zip(xTest,yTest):
-            i = np.argmax(y)
-            cnt[i] += 1
-        print "testing label counts:", cnt
 
         model.fit(xTrain, yTrain,
                   batch_size=batch_size,
@@ -102,4 +102,10 @@ if __name__ == '__main__':
                   verbose=1,
                   validation_data=(xTest, yTest))
 
-    model.save(sys.argv[2])
+        model.save(name)
+
+    print "elapsed time:", time.time() - startTime
+
+    # print "final validation over all data:"
+    # for fname in os.listdir(exampleSetDir):
+    #     if ".pkl.lz4" in fname:
