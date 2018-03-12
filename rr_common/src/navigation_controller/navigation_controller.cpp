@@ -104,6 +104,8 @@ int main(int argc, char** argv) {
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
     steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
 
+
+
     ros::Rate rate(30.0);
     while(ros::ok()) {
         ros::spinOnce();
