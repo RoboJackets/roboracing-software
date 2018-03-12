@@ -14,10 +14,12 @@ int main(int argc, char **argv) {
 
     ros::init(argc, argv, "sound_node");
     ros::NodeHandle nh;
+    ros::Subscriber sub = nh.subscribe("/start_detected", 1, soundCB);
+
     sound_play::SoundClient sc;
     bool lastraceStarted = false;
 
-    ros::Subscriber sub = nh.subscribe("/start_detected", 1, soundCB);
+
     while (ros::ok()){
 
         if (raceStarted && !lastraceStarted) {
@@ -30,4 +32,5 @@ int main(int argc, char **argv) {
         ros::spinOnce();
     }
     sc.stopAll();
+    return 0;
 }
