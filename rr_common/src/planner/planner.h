@@ -6,7 +6,6 @@
 #include <cstring>
 #include <string>
 #include <random>
-#include <algorithm>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_types.h>

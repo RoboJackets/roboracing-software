@@ -1,4 +1,5 @@
 #include "planner.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -113,9 +114,12 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
 float steeringAngleAverageAgainstMedian(float bestAngle) {
     PREV_STEERING_ANGLES_INDEX = (PREV_STEERING_ANGLES_INDEX + 1) % SMOOTHING_ARRAY_SIZE;
     std::vector<float> sortedSteeringAngles(PREV_STEERING_ANGLES);
-    sort(sortedSteeringAngles.begin(), sortedSteeringAngles.end()); //sort array of previous vectors in ascending order to find median
-    PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; // appends the average of the best curve and current median to PREV_STEERING_ANGLES
-    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; //return the average between the calculated steering angle and median value
+    //sort array of previous vectors in ascending order from start to midpoint to find median
+    std::nth_element (sortedSteeringAngles.begin(), sortedSteeringAngles.begin() + (SMOOTHING_ARRAY_SIZE / 2), sortedSteeringAngles.end());
+    //append the average of the best curve and current median to PREV_STEERING_ANGLES
+    PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2;
+    //return the average between the calculated steering angle and median value
+    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; 
 }
 
 /*
