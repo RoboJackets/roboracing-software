@@ -104,13 +104,7 @@ if __name__ == '__main__':
             epochs = 1,
             verbose = 1,
             validation_data=(xTest, yTest))
-        '''model.fit(xTrain, yTrain,
-                  batch_size=batch_size,
-                  epochs=1,
-                  verbose=1,
-                  validation_data=(xTest, yTest))'''
-
-        model.save(name)
+    model.save(name)
 
     print "elapsed time:", time.time() - startTime
 
