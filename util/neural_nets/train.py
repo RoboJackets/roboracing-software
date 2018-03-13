@@ -4,6 +4,7 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise, BatchNormalization
 from keras.datasets import mnist
+from keras.preprocessing.image import ImageDataGenerator
 import cv2
 import collections
 import random
@@ -65,6 +66,7 @@ if __name__ == '__main__':
     exampleSetFiles = [f for f in os.listdir(exampleSetDir) if '.pkl.lz4' in f]
     exampleSetFiles = exampleSetFiles * epochs  # duplicate data [epochs] times
     random.shuffle(exampleSetFiles)
+    augmented_data_generator = ImageDataGenerator()
 
     while len(exampleSetFiles) > 0:
         print "\n", len(exampleSetFiles), "training files remaining"
@@ -90,17 +92,23 @@ if __name__ == '__main__':
                 yTrain[i] = yTrain[i][::-1]
             # print(yTrain[i])
 
+
         cnt = collections.Counter()
         for y in yTrain:
             i = np.argmax(y)
             cnt[i] += 1
         print "training label counts:", cnt
 
-        model.fit(xTrain, yTrain,
+        augmented_data_generator.fit(xTrain)
+        model.fit_generator(augmented_data_generator.flow(xTrain, yTrain, batch_size = batch_size),
+            epochs = 1,
+            verbose = 1,
+            validation_data=(xTest, yTest))
+        '''model.fit(xTrain, yTrain,
                   batch_size=batch_size,
                   epochs=1,
                   verbose=1,
-                  validation_data=(xTest, yTest))
+                  validation_data=(xTest, yTest))'''
 
         model.save(name)
 
