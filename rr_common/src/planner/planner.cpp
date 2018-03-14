@@ -1,4 +1,5 @@
 #include "planner.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -11,6 +12,7 @@ using namespace std;
  * inOutPose - pose (x,y,theta) that is read and updated
  *      with the new pose
  */
+
 void advanceStep(float steerAngle, Pose2D &inOutPose) {
     float deltaX, deltaY, deltaTheta;
     if (abs(steerAngle) < 1e-3) {
@@ -103,6 +105,21 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
         }
     }
     return costSum;
+}
+
+/**
+ * Member returning the current bestAngle averaged against the median.
+ * Median is calculated based on previous angles, or PREV_STEERING_ANGLES
+*/
+float steeringAngleAverageAgainstMedian(float bestAngle) {
+    PREV_STEERING_ANGLES_INDEX = (PREV_STEERING_ANGLES_INDEX + 1) % SMOOTHING_ARRAY_SIZE;
+    std::vector<float> sortedSteeringAngles(PREV_STEERING_ANGLES);
+    //sort array of previous vectors in ascending order from start to midpoint to find median
+    std::nth_element (sortedSteeringAngles.begin(), sortedSteeringAngles.begin() + (SMOOTHING_ARRAY_SIZE / 2), sortedSteeringAngles.end());
+    //append the average of the best curve and current median to PREV_STEERING_ANGLES
+    PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2;
+    //return the average between the calculated steering angle and median value
+    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; 
 }
 
 /*
@@ -263,7 +280,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-    steerMSG->angle = goodControlVectors[bestIndex][0];
+    steerMSG->angle = steeringAngleAverageAgainstMedian(goodControlVectors[bestIndex][0]);
     speedMSG->speed = steeringToSpeed(steerMSG->angle, STEER_LIMITS[0]);
     steerMSG->header.stamp = ros::Time::now();
     speedMSG->header.stamp = ros::Time::now();
@@ -328,6 +345,10 @@ int main(int argc, char** argv) {
     nhp.param("COLLISION_PENALTY", COLLISION_PENALTY, 1000.0f);
     nhp.param("PATH_SIMILARITY_CUTOFF", PATH_SIMILARITY_CUTOFF, 0.05f);
     nhp.param("MAX_RELATIVE_COST", MAX_RELATIVE_COST, 2.0f);
+    nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 20);
+
+    PREV_STEERING_ANGLES_INDEX = 0;
+    PREV_STEERING_ANGLES.resize(SMOOTHING_ARRAY_SIZE);
 
     parseFloatArrayStr(segmentDistancesStr, SEGMENT_DISTANCES);
     parseFloatArrayStr(steerLimitsStr, STEER_LIMITS);
