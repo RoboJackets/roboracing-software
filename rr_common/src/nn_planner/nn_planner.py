@@ -11,15 +11,10 @@ import numpy as np
 import os, sys
 from tensorflow import get_default_graph
 
+path_to_model = ''
+model = None
+input_shape = None
 
-if len(sys.argv) < 2:
-    print "Error: specify a model file"
-    sys.exit(-1)
-
-
-path_to_model = os.path.join(os.path.dirname(__file__), sys.argv[1])
-model = load_model(path_to_model)
-input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
 # print "********", input_shape
 tf_graph = get_default_graph()
 
@@ -60,6 +55,12 @@ def plan_raw(image_message):
 
 if __name__ == "__main__":
     rospy.init_node('nn_planner')
+
+    path_to_model = os.path.join(os.path.dirname(__file__), rospy.get_param('~model_path'))
+    model = load_model(path_to_model)
+    input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
+
+
     publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
     rospy.Subscriber('/camera/image_rect', Image, plan_rect)
