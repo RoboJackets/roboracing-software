@@ -44,8 +44,6 @@ The following files and folders enable our continuous integration system.
    ```
    rosdep install --from-path src --ignore-src -y
    ```
-4. Install h5py and keras with pip
-    
 5. You should now be able to build the project with `catkin_make`.
 
 ## Simulation
