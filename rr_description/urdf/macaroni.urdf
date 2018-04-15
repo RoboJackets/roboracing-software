@@ -228,13 +228,13 @@
                 </clip>
             </camera>
             <always_on>true</always_on>
-            <update_rate>10</update_rate>
+            <update_rate>30</update_rate>
             <visualize>false</visualize>
             <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
                 <robotNamespace>/</robotNamespace>
                 <baseline>0.1</baseline>
                 <alwaysOn>true</alwaysOn>
-                <updateRate>10.0</updateRate>
+                <updateRate>30.0</updateRate>
                 <cameraName>camera</cameraName>
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>

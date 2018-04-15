@@ -6,19 +6,14 @@ import pynput
 import time
 
 
-speed_limits = (-0.5, 1.5)
-turn_limits = (-0.35, 0.35)
-turn_delta = 0.05
-speed_delta = 0.07
-refresh_rate = 10
 pressed_set = set()
 
 
 def on_key_press(key):
-    if 'char' in dir(key):
+    try:
         pressed_set.add(key.char)
-    
-    elif 'esc' in dir(key) and key.esc:
+
+    if 'esc' in dir(key) and key.esc:
         # ends key listener loop
         return False
 
@@ -33,15 +28,26 @@ if __name__ == '__main__':
     steering_pub = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_pub = rospy.Publisher('/speed', Speed, queue_size=1)
 
+    reverse_speed = rospy.get_param("~reverse_speed")
+    forward_speed = rospy.get_param("~forward_speed")
+    turn_limit = rospy.get_param("~turn_limit")
+    speed_delta = rospy.get_param("~speed_delta")
+    turn_delta = rospy.get_param("~turn_delta")
+    refresh_rate = rospy.get_param("~refresh_rate")
+    speed_decay = rospy.get_param("~speed_decay")
+    turn_decay = rospy.get_param("~turn_decay")
+
     steering_rad = 0.0
     speed_mps = 0.0
 
     rate = rospy.Rate(refresh_rate)
 
     with pynput.keyboard.Listener(on_press=on_key_press,
-            on_release=on_key_release) as kb_listener:
+                                  on_release=on_key_release) as kb_listener:
+
         while not rospy.is_shutdown():
-            if 'a' in pressed_set: 
+
+            if 'a' in pressed_set:
                 steering_rad -= turn_delta
             if 'd' in pressed_set:
                 steering_rad += turn_delta
@@ -50,20 +56,14 @@ if __name__ == '__main__':
             if 's' in pressed_set:
                 speed_mps -= speed_delta
 
-            if speed_mps < speed_limits[0]:
-                speed_mps = speed_limits[0]
-            elif speed_mps > speed_limits[1]: 
-                speed_mps = speed_limits[1]
+            speed_mps = min(max(speed_mps, -abs(reverse_speed)), forward_speed)
 
-            if steering_rad < turn_limits[0]:
-                steering_rad = turn_limits[0]
-            elif steering_rad > turn_limits[1]: 
-                steering_rad = turn_limits[1]
-            
+            steering_rad = min(max(steering_rad, -turn_limit), turn_limit)
+
             if not {'a','d'} & pressed_set: # {turning keys} ^ {pressed keys} is null
-                steering_rad *= 0.85 # steer back to center
+                steering_rad *= turn_decay # steer back to center
             if not {'w','s'} & pressed_set:
-                speed_mps *= 0.95
+                speed_mps *= speed_decay
 
             if abs(steering_rad) < 0.01:
                 steering_rad = 0
