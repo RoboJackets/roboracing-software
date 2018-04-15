@@ -45,7 +45,6 @@
   <run_depend>message_generation</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>sound_play</run_depend>
-  <run_depend>python-keras-pip</run_depend>
-  <run_depend>python-h5py-pip</run_depend>
+  <run_depend>python-h5py</run_depend>
 
 </package>
