@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include <rr_platform/chassis_state.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
 
@@ -10,6 +11,7 @@ ros::Publisher mag_pub;
 /**
  * @note http://stackoverflow.com/a/27511119
  */
+
 std::vector <std::string> split(const std::string &s, char delim) {
     std::stringstream ss(s);
     std::string item;
@@ -21,38 +23,49 @@ std::vector <std::string> split(const std::string &s, char delim) {
 }
 
 void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor_msgs::MagneticField &mag_msg, bool &imu_ready, bool &mag_ready) {
-    const auto tokens = split(line_in, ' ');
+
     imu_ready = false;
     mag_ready = false;
 
-    if(tokens.size() < 9) {
+    if (line.empty()) {
+        return;
+    }
+
+    std::vector <std::string> data = split(line_in, ',');
+
+    if(data.size() < 9){
        return;
     }
 
-    if(tokens[0] == "ax") {
-        imu_msg.linear_acceleration.x = std::atof(tokens[2].c_str());
-        imu_msg.linear_acceleration.y = std::atof(tokens[5].c_str());
-        imu_msg.linear_acceleration.z = std::atof(tokens[8].c_str());
+    if(data[0].compare("accel") == 0) {
+        imu_msg.linear_acceleration.x = std::atof(data[2].c_str());
+        imu_msg.linear_acceleration.y = std::atof(data[3].c_str());
+        imu_msg.linear_acceleration.z = std::atof(data[4].c_str());
     }
-    else if(tokens[0] == "gx") {
-        imu_msg.angular_velocity.x = std::atof(tokens[2].c_str());
-        imu_msg.angular_velocity.y = std::atof(tokens[5].c_str());
-        imu_msg.angular_velocity.z = std::atof(tokens[8].c_str());
+    else if(data[0].compare("gyro") == 0) {
+        imu_msg.angular_velocity.x = std::atof(data[2].c_str());
+        imu_msg.angular_velocity.y = std::atof(data[3].c_str());
+        imu_msg.angular_velocity.z = std::atof(data[4].c_str());
     }
-    else if(tokens[0] == "q0") {
-        imu_msg.orientation.x = std::atof(tokens[2].c_str());
-        imu_msg.orientation.y = std::atof(tokens[5].c_str());
-        imu_msg.orientation.z = std::atof(tokens[8].c_str());
-        imu_msg.orientation.w = std::atof(tokens[11].c_str());
+    else if(data[0].compare("quat") == 0) {
+        imu_msg.orientation.x = std::atof(data[2].c_str());
+        imu_msg.orientation.y = std::atof(data[3].c_str());
+        imu_msg.orientation.z = std::atof(data[4].c_str());
+        imu_msg.orientation.w = std::atof(data[5].c_str());
         imu_ready = true;
     }
-    else if(tokens[0] == "mx") {
-        mag_msg.magnetic_field.x = std::atof(tokens[2].c_str());
-        mag_msg.magnetic_field.y = std::atof(tokens[5].c_str());
-        mag_msg.magnetic_field.z = std::atof(tokens[8].c_str());
+    else if(data[0].compare("mag") == 0) {
+        mag_msg.magnetic_field.x = std::atof(data[2].c_str());
+        mag_msg.magnetic_field.y = std::atof(data[3].c_str());
+        mag_msg.magnetic_field.z = std::atof(data[3].c_str());
         mag_ready = true;
     }
-
+    else if(data[0].compare("axes") == 0) {
+        rr_platform::chassis_state msg;
+        msg.axes_roll = std::atof(data[2].c_str());
+        msg.axes_pitch = std::atof(data[3].c_str());
+        msg.axes_yaw = std::atof(data[3].c_str());
+    }
 }
 
 std::string readLine(boost::asio::serial_port &port) {
@@ -90,7 +103,7 @@ int main(int argc, char **argv) {
     private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB1"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(38400));
+    serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
 
     if(!serial.is_open()) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
