@@ -2,10 +2,9 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
 #include <rr_platform/chassis_state.h>
+#include <SerialPort.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
-#include <termios.h>
-
 
 ros::Publisher imu_pub;
 ros::Publisher mag_pub;
@@ -73,6 +72,9 @@ void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor
 
 
 
+
+/*
+
 std::string readLine(boost::asio::serial_port &port) {
     std::string line = "";
 
@@ -96,6 +98,12 @@ std::string readLine(boost::asio::serial_port &port) {
     }
 }
 
+*/
+
+
+
+
+
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "imu");
@@ -106,20 +114,32 @@ int main(int argc, char **argv) {
     imu_pub = handle.advertise<sensor_msgs::Imu>("/imu/data_raw", 1);
     mag_pub = handle.advertise<sensor_msgs::MagneticField>("/imu/mag", 1);
 
+
+
+
+
+
     // Serial port setup
+    /*
+
     std::string serial_port_name;
     private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
-   
+    */
 
 
+    SerialPort serial;
+    serial.Open("/dev/ttyACM0", 115200);
 
+/*
     if(!serial.is_open()) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
         return 1;
     }
+
+*/
 
     sensor_msgs::Imu imu_msg;
     sensor_msgs::MagneticField mag_msg;
@@ -134,10 +154,15 @@ int main(int argc, char **argv) {
 
     ros::Duration(2.0).sleep();
 
-    while(ros::ok() && serial.is_open()) {
+   // while(ros::ok() && serial.is_open()) {
+    while(ros::ok()) {
         ros::spinOnce();
 
-        auto line_in = readLine(serial);
+        //auto line_in = readLine(serial);
+
+        auto line_in = serial.ReadLine();
+
+
 
         if(!line_in.empty()) {
             parse_message(line_in, imu_msg, mag_msg, imu_ready, mag_ready);
