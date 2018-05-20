@@ -4,6 +4,8 @@
 #include <rr_platform/chassis_state.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
+#include <termios.h>
+
 
 ros::Publisher imu_pub;
 ros::Publisher mag_pub;
@@ -27,7 +29,7 @@ void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor
     imu_ready = false;
     mag_ready = false;
 
-    if (line.empty()) {
+    if (line_in.empty()) {
         return;
     }
 
@@ -68,11 +70,17 @@ void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor
     }
 }
 
+
+
+
 std::string readLine(boost::asio::serial_port &port) {
     std::string line = "";
+
+
     while (true) {
         char in;
         try {
+            int flush = tcflush(port.lowest_layer().native_handle(), TCIOFLUSH);
             boost::asio::read(port, boost::asio::buffer(&in, 1));
         } catch (
                 boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
@@ -100,10 +108,13 @@ int main(int argc, char **argv) {
 
     // Serial port setup
     std::string serial_port_name;
-    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyUSB1"));
+    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
     boost::asio::io_service io_service;
     boost::asio::serial_port serial(io_service, serial_port_name);
     serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
+   
+
+
 
     if(!serial.is_open()) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
