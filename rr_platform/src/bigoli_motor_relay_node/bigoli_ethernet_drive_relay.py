@@ -19,7 +19,7 @@ def speed_callback(speed_msg):
 
 def steering_callback(steering_msg):
     global steering
-    steering = float(steering_msg.angle)
+    steering = float(steering_msg.angle) / 0.3
 
 
 rospy.init_node("bigoli_ethernet_drive_relay")
@@ -35,9 +35,10 @@ rate = rospy.Rate(10)
 
 try:
     while not rospy.is_shutdown():
-        msg_out = bytes(str(speed))
+        msg_out = bytes('%1.4f %1.4f' % (speed, steering))
+        # print "sending", str(msg_out)
         sock.sendall(msg_out)
-        msg_in = str(sock.recv(1024)).split(" ")[:2]
+        msg_in = str(sock.recv(1024)).split(" ")[:3]
         print msg_in
         rate.sleep()
 
