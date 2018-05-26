@@ -12,3 +12,13 @@
 
 # gedit autosave files
 *~
+
+# python bytecode
+*.pyc
+
+#bag files and pickles of bag files
+*.bag
+*.pkl.lz4
+
+# exported neural nets in their default location
+util/neural_nets/*.h5

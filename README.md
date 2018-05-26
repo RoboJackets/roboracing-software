@@ -46,8 +46,13 @@ The following files and folders enable our continuous integration system.
    ```sh
    rosdep install --from-path src --ignore-src -y
    ```
+4. Install keras with :
+   
+   ```
+   pip install keras
+   ```
 
-4. You should now be able to build the project with `catkin_make`.
+5. You should now be able to build the project with `catkin_make`.
 
 ## Simulation
 
