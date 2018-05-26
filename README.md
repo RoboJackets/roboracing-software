@@ -1,6 +1,6 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-<img src="https://lh3.googleusercontent.com/0cJDyJD-12-9vKtZUMvslvm1m2w5WWF__mj_edrEzq3ndi-Gl8Hww96OJjMh_DlIoNeSdyoOzV2q7LsFSR5WRR3l05wzrToRQw29pP5Vi-76HZsuAynt7bi-0vgckzXJ3Nu7A_FZP7C0-efs-7gbflydUGS4QwtrE1An0iwFiFRGiRVu9plkYb-mX2UrFYK2Oc4RBsCvJ7Vkj7B0OrdJWBY5HTf9Me0i2oE79ZOf28UfoWw1hUXjizUjpYyr_jHlfZ2l0KH6l5jQjljhhIfqajAJfxJFUY5ihd57LuYwWSPoRCuNjwwRJ4yrrD-K24Uk8JIHkTqpGYbYyNtnHJ1RJ9uPBiiUuYZA8eYtE8kh1yuK7eRlboeG6a6JPCeaVY4eFkUekpQZKJwyu5D3X7a1mlejqYAmuXgpqHyXcDtioSdkOB3iXn57CMpuQKHSb_9b4bIqPoQa-IO3gW6mAFBkevecNNovnRoO9aqxvt0mI1P7ccayUUVgVCqLsOWCulRMq9zSj_Saqcy-108jRlXjgITjRd9oxaEWZpkTZOa11OyIEjxM9RRR8E5H7gPxvyizM_o_RCdY6vUfbh8RaG_YLhXOU8Pi5FAL7VldACEAady1BWbmu7_FzMYI95ooJvseDX7LA83y0hg5zjaTKpOS3rncqnQ6c1s4aw=w1310-h983-no" style="max-height=400px;">
+<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/buzz_bigoli.jpg" style="max-height=400px;">
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
@@ -47,7 +47,7 @@ The following files and folders enable our continuous integration system.
    rosdep install --from-path src --ignore-src -y
    ```
 4. Install keras with :
-   
+
    ```
    pip install keras
    ```
