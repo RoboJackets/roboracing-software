@@ -252,12 +252,67 @@
                 <Cx>0</Cx>
                 <Cy>0</Cy>
                 <focalLength>0</focalLength>
-                <!--<hackBaseline>0</hackBaseline>-->
             </plugin>
         </sensor>
     </gazebo>
 
     <link name="camera_optical"/>
+
+
+    <link name="ultrasonic_array_base">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_0">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_1">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_2">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_3">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_4">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_5">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_6">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <link name="ultrasonic_7">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
 
 
     <link name="base_footprint">
@@ -355,6 +410,55 @@
         <child link="imu"/>
         <origin xyz="0 0 0.1778" rpy="0 0 0"/>
     </joint>
+
+
+    <joint name="ultrasonic_array_base" type="fixed">
+        <parent link="chassis"/>
+        <child link="ultrasonic_array_base"/>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="ultrasonic_base_to_0" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_0"/>
+        <origin xyz="-0.045 0.108 0" rpy="0 0 1.57"/>
+    </joint>
+    <joint name="ultrasonic_base_to_1" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_1"/>
+        <origin xyz="-0.021 0.07 0" rpy="0 0 0.349"/>
+    </joint>
+    <joint name="ultrasonic_base_to_2" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_2"/>
+        <origin xyz="-0.011 0.027 0" rpy="0 0 0.296"/>
+    </joint>
+    <joint name="ultrasonic_base_to_3" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_3"/>
+        <origin xyz="-0.011 -0.029 0" rpy="0 0 -0.175"/>
+    </joint>
+    <joint name="ultrasonic_base_to_4" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_4"/>
+        <origin xyz="-0.024 -0.075 0" rpy="0 0 -0.349"/>
+    </joint>
+    <joint name="ultrasonic_base_to_5" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_5"/>
+        <origin xyz="-0.045 -0.108 0" rpy="0 0 -1.57"/>
+    </joint>
+    <joint name="ultrasonic_base_to_6" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_6"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    <joint name="ultrasonic_base_to_7" type="fixed">
+        <parent link="ultrasonic_array_base"/>
+        <child link="ultrasonic_7"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
 
     <!--Actuators-->
 
