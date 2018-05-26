@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
     publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
-    rospy.Subscriber('/camera/image_rect', Image, plan_rect)
-    rospy.Subscriber('/camera/image_raw', Image, plan_raw)
+    rospy.Subscriber('/camera/image_rect', Image, plan_rect, buff_size=10**8)
+    rospy.Subscriber('/camera/image_raw', Image, plan_raw, buff_size=10**8)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
