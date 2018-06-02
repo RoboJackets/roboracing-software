@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="rr_common" type="nn_planner.py" name="nn_planner" output="screen" respawn="false">
+    <param name="model_path" type="string" value="model_outdoor0304_2.h5" />
+  </node>
+</launch>
