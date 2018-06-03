@@ -29,6 +29,9 @@
   <build_depend>image_transport</build_depend>
   <build_depend>pcl_ros</build_depend>
   <build_depend>std_msgs</build_depend>
+
+
+
   <build_depend>message_generation</build_depend>
   <build_depend>libusb-1.0</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>

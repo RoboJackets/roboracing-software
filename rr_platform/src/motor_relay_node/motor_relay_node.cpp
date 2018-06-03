@@ -2,6 +2,8 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 #include <rr_platform/chassis_state.h>
+#include <rr_platform/axes.h>
+
 #include <boost/asio.hpp>
 
 double desiredSpeed = 0;

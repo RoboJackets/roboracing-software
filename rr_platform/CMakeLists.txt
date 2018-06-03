@@ -37,6 +37,7 @@ add_message_files(
     race_reset.msg
     camera_pose.msg
     chassis_state.msg
+    axes.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -77,6 +78,8 @@ include_directories(
     ${OpenCV_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIRS}
 )
+
+add_library(rr_serial src/SerialPort.cpp)
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
