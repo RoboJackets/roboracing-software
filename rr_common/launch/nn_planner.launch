@@ -1,5 +1,10 @@
 <launch>
+  <arg name="image_topic" default="camera/image_raw"/>
+  <arg name="is_rectified" default="false"/>
+
   <node pkg="rr_common" type="nn_planner.py" name="nn_planner" output="screen" respawn="false">
     <param name="model_path" type="string" value="model_outdoor0304_2.h5" />
+    <param name="image_topic" type="string" value="$(arg image_topic)"/>
+    <param name="is_rectified" type="bool" value="$(arg is_rectified)"/>
   </node>
 </launch>

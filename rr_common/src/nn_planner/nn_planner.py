@@ -60,11 +60,13 @@ if __name__ == "__main__":
     model = load_model(path_to_model)
     input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
 
+    image_topic = rospy.get_param('~image_topic')
+    is_rectified = rospy.get_param('~is_rectified')
 
     publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
-    rospy.Subscriber('/camera/image_rect', Image, plan_rect, buff_size=10**8)
-    rospy.Subscriber('/camera/image_raw', Image, plan_raw, buff_size=10**8)
+
+    rospy.Subscriber(image_topic, Image, plan_rect if is_rectified else plan_raw, buff_size=10**8)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
