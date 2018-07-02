@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find rr_platform)/launch/sedani_camera.launch"/>
+    <include file="$(find rr_platform)/launch/sedani_motor_relay.launch"/>
+    <include file="$(find rr_platform)/launch/sedani_state_publisher.launch"/>
+</launch>
