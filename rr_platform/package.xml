@@ -52,5 +52,6 @@
   <run_depend>libuvc</run_depend>
   <run_depend>realsense_camera</run_depend>
   <run_depend>librealsense</run_depend>
+  <run_depend>pointgrey_camera_driver</run_depend>
 
 </package>

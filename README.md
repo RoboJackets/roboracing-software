@@ -1,12 +1,12 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/Macaroni.jpg" style="max-height=400px;">
+<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/buzz_bigoli.jpg" style="max-height=400px;">
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
-[![Software Lead](https://img.shields.io/badge/Software%20Lead-Sahit%20Chintalapudi%20-blue.svg)](https://github.com/chsahit)
+[![Software Lead](https://img.shields.io/badge/Software%20Lead-Evan%20Bretl-blue.svg)](https://github.com/ebretl)
 
-[![Project Manager](https://img.shields.io/badge/Project%20Manager-Evan%20Bretl-blue.svg)](https://github.com/ebretl)
+[![Project Manager](https://img.shields.io/badge/Project%20Manager-Varun%20Madabushi-blue.svg)](https://github.com/varunm99)
 
 [![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
 
@@ -14,9 +14,11 @@ This repository contains [ROS](http://ros.org) packages for the [RoboJackets](ht
 
 Most folders in this repository are ROS packages.
 
-**avc**: This package contains intelligence code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
+**avc**: This package contains mission code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
 
-**iarrc**: This package contains intelligence code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
+**iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
+
+**rr_common**: This package contains general-purpose or mission-agnostic intelligence code.
 
 **rr_description**: This package contains URDFs and meshes that describe the platform's layout.
 
@@ -41,11 +43,16 @@ The following files and folders enable our continuous integration system.
 
 3. Install the remaining dependencies with the following command in your catkin workspace folder:
 
-   ```
+   ```sh
    rosdep install --from-path src --ignore-src -y
    ```
-    
-4. You should now be able to build the project with `catkin_make`.
+4. Install keras with :
+
+   ```
+   pip install keras
+   ```
+
+5. You should now be able to build the project with `catkin_make`.
 
 ## Simulation
 

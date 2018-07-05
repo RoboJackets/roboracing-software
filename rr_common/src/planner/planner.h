@@ -20,9 +20,12 @@
 
 int N_PATH_SEGMENTS;
 int N_CONTROL_SAMPLES;
+int SMOOTHING_ARRAY_SIZE;
 std::vector<float> SEGMENT_DISTANCES;
 std::vector<float> STEER_LIMITS;
 std::vector<float> STEER_STDDEVS;
+std::vector<float> PREV_STEERING_ANGLES;
+int PREV_STEERING_ANGLES_INDEX;
 float DISTANCE_INCREMENT;
 float MAX_SPEED;
 float WHEEL_BASE;

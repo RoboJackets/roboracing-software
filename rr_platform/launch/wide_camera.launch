@@ -9,7 +9,7 @@
       <param name="height" value="480"/>
       <param name="video_mode" value="uncompressed"/>
       <param name="frame_rate" value="30"/>
-      <param name="camera_info_url" value="package://rr_platform/launch/GeniusF100_calibration.yaml"/>
+      <param name="camera_info_url" value="package://rr_platform/launch/camera_calibration_GeniusF100.yaml"/>
     </node>
 
 
