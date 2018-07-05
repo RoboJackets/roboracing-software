@@ -85,6 +85,7 @@ add_subdirectory(src/camera)
 add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/mpu9250_imu)
 add_subdirectory(src/ultrasonic_array)
+add_subdirectory(src/sedani_motor_relay_node)
 
 install(PROGRAMS launch/bigoli_camera_dynconfig.sh
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
