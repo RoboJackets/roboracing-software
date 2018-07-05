@@ -78,6 +78,8 @@ include_directories(
     ${EIGEN_INCLUDE_DIRS}
 )
 
+add_library(rr_serial src/SerialPort.cpp)
+
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
 add_subdirectory(src/bigoli_motor_relay_node)
