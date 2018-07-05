@@ -1,3 +1,3 @@
 add_executable(sedani_motor_relay_node sedani_motor_relay_node.cpp)
-target_link_libraries(sedani_motor_relay_node ${catkin_LIBRARIES})
+target_link_libraries(sedani_motor_relay_node ${catkin_LIBRARIES} rr_serial)
 add_dependencies(sedani_motor_relay_node rr_platform_generate_messages_cpp)

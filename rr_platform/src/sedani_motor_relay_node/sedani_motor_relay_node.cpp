@@ -2,7 +2,7 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 #include <rr_platform/chassis_state.h>
-#include <boost/asio.hpp>
+#include <SerialPort.h>
 
 double desiredSpeed = 0;
 double desiredSteer = 0;
@@ -32,13 +32,9 @@ void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
     desiredSteer = msg->angle;
 }
 
-void sendCommand(boost::asio::serial_port &port) {
+void sendCommand(SerialPort &port) {
     std::string message = "$" + std::to_string(desiredSpeed) + ", " + std::to_string(desiredSteer) + "\n";
-    try {
-        boost::asio::write(port, boost::asio::buffer(message.c_str(), message.size()));
-    } catch (boost::system::system_error &err) {
-        ROS_ERROR("%s", err.what());
-    }
+    port.Write(message);
 }
 
 void publishData(const std::string &line) {
@@ -54,36 +50,6 @@ void publishData(const std::string &line) {
     msg.mux_automatic = (data[0] == "1.00" || data[0] == "3.00");
     msg.estop_on = (data[0] == "2.00");
     state_pub.publish(msg);
-}
-
-std::string readLine(boost::asio::serial_port &port) {
-    std::string line = "";
-    bool inLine = false;
-    while (true) {
-        char in;
-        try {
-            boost::asio::read(port, boost::asio::buffer(&in, 1));
-        } catch (
-                boost::exception_detail::clone_impl <boost::exception_detail::error_info_injector<boost::system::system_error>> &err) {
-            ROS_ERROR("Error reading serial port.");
-            ROS_ERROR_STREAM(err.what());
-            return line;
-        } catch (boost::system::system_error &err) {
-            ROS_WARN("Serial port read timed out.");
-            return line;
-        }
-        if (!inLine && in == '$')
-            inLine = true;
-        if(inLine) {
-            if (in == '\n') {
-                return line;
-	    }
-            if (in == '\r') {
-                return line;
-	    }
-            line += in;
-        }
-    }
 }
 
 int main(int argc, char **argv) {
@@ -108,9 +74,12 @@ int main(int argc, char **argv) {
     // Serial port setup
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
-    boost::asio::io_service io_service;
-    boost::asio::serial_port serial(io_service, serial_port_name);
-    serial.set_option(boost::asio::serial_port_base::baud_rate(115200));
+    
+    SerialPort serial_port;
+    if(!serial_port.Open(serial_port_name, 115200)) {
+        ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
+        return 1;
+    }
 
     ROS_INFO("Sedani motor relay node is ready.");
 
@@ -119,7 +88,7 @@ int main(int argc, char **argv) {
 
     ros::Duration(2.0).sleep();
 
-    while (ros::ok() && serial.is_open()) {
+    while (ros::ok()) {
         ros::spinOnce();
         if (desiredSteer != prevAngle || desiredSpeed != prevSpeed) {
             ROS_INFO("Sending command: servo=%f, motor=%f", desiredSteer, desiredSpeed);
@@ -127,12 +96,10 @@ int main(int argc, char **argv) {
 
         prevAngle = desiredSteer;
         prevSpeed = desiredSpeed;
-        sendCommand(serial);
-        publishData(readLine(serial));
+        sendCommand(serial_port);
+        publishData(serial_port.ReadLine());
         rate.sleep();
     }
-
-    serial.close();
 
     ROS_INFO("Shutting down Sedani motor relay node.");
     return 0;
