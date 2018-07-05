@@ -68,6 +68,9 @@ std::string readLine(boost::asio::serial_port &port) {
             ROS_ERROR("Error reading serial port.");
             ROS_ERROR_STREAM(err.what());
             return line;
+        } catch (boost::system::system_error &err) {
+            ROS_WARN("Serial port read timed out.");
+            return line;
         }
         if (!inLine && in == '$')
             inLine = true;

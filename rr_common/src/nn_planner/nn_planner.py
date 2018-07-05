@@ -66,6 +66,8 @@ if __name__ == "__main__":
     publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
 
+    print("Subscribing to " + image_topic)
+
     rospy.Subscriber(image_topic, Image, plan_rect if is_rectified else plan_raw, buff_size=10**8)
 
     rate = rospy.Rate(10)
