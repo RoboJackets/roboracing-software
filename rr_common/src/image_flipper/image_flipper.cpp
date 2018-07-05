@@ -2,24 +2,20 @@
 
 namespace rr_common {
 void image_flipper::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
-    cv_bridge::CvImagePtr cv_ptr;
+    cv_bridge::CvImageConstPtr cv_ptr;
 
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+        cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
     } catch (cv_bridge::Exception &e) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
     }
 
-    cv::Mat input = cv_ptr->image;
-    cv::Mat output;
-    cv::flip(input, output, flip_code);
+    const cv::Mat &input = cv_ptr->image;
+    cv::flip(input, output.image, flip_code);
 
-    sensor_msgs::Image outmsg;
-    cv_ptr->image = output;
-    cv_ptr->encoding = cv_ptr->encoding;
-    cv_ptr->toImageMsg(outmsg);
-    img_pub.publish(outmsg);
+    output.encoding = cv_ptr->encoding;
+    img_pub.publish(output.toImageMsg());
 }
 
 void image_flipper::onInit() {
