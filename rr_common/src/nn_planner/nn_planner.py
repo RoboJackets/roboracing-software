@@ -11,15 +11,8 @@ import numpy as np
 import os, sys
 from tensorflow import get_default_graph
 
-path_to_model = ''
-model = None
-input_shape = None
-
-# print "********", input_shape
-tf_graph = get_default_graph()
 
 steering_angle = 0
-has_rect_message = False
 
 def plan(image_message):
     bridge = CvBridge()
@@ -32,50 +25,50 @@ def plan(image_message):
     halfHeight = cv_image.shape[0] // 2
     cv_image = cv_image[halfHeight:, :]
 
-    X = np.zeros((1,) + input_shape)
-    X[0] = cv2.resize(cv_image, (input_shape[1], input_shape[0]))
+    X = cv2.resize(cv_image, (input_shape[1], input_shape[0]))
+    X = X.astype('float32') / 255.0
 
     with tf_graph.as_default():
-        Y = model.predict(X, batch_size=1)
-        print '  '.join('%.2f' % y for y in Y.flat)
+        Y = model.predict_on_batch(X[np.newaxis]).reshape(-1)
 
-    i = np.argmax(Y)
+    # i = np.argmax(Y)
     global steering_angle
-    steering_angle = [-0.3, -0.1, 0, 0.1, 0.3][i]
-    # steering_angle *= -1
+    steering_angle = np.dot(steer_categories, Y)
 
-def plan_rect(image_message):
-    has_rect_message = True
-    plan(image_message)
-
-def plan_raw(image_message):
-    if not has_rect_message:
-        plan(image_message)
+    print '  '.join('%.2f' % y for y in Y.flat), "->", round(steering_angle,2)
 
 
 if __name__ == "__main__":
+    tf_graph = get_default_graph()
+
     rospy.init_node('nn_planner')
 
-    path_to_model = os.path.join(os.path.dirname(__file__), rospy.get_param('~model_path'))
+    path_to_model = rospy.get_param('~model_path')
     model = load_model(path_to_model)
     input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
 
     image_topic = rospy.get_param('~image_topic')
-    is_rectified = rospy.get_param('~is_rectified')
 
-    publisher = rospy.Publisher('/steering', Steering, queue_size=1)
+    categories_str = rospy.get_param('~steer_categories')
+    half_cats = np.array([float(s) for s in categories_str.split(' ')])
+    steer_categories = np.concatenate([-half_cats[::-1], [0], half_cats])
+    print "[nn_planner] Steering categories:", steer_categories
+
+    steer_publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
 
-    print("Subscribing to " + image_topic)
+    print "[nn_planner] Subscribing to", image_topic
 
-    rospy.Subscriber(image_topic, Image, plan_rect if is_rectified else plan_raw, buff_size=10**8)
+    rospy.Subscriber(image_topic, Image, plan, buff_size=10**8)
 
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(30)
     while not rospy.is_shutdown():
-        msg = Steering()
+        steer_msg = Steering()
+        steer_msg.angle = steering_angle
+        steer_publisher.publish(steer_msg)
+
         speed_msg = Speed()
-        msg.angle = steering_angle
         speed_msg.speed = 0.5 - 0.1*abs(steering_angle)
-        publisher.publish(msg)
         speed_publisher.publish(speed_msg)
+
         rate.sleep()
