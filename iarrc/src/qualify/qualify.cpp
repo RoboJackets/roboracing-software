@@ -32,6 +32,7 @@ void publishSpeed(const float &desiredSpeed) {
     speedMsg.speed = desiredSpeed;
     speedPub.publish(speedMsg);
     ROS_INFO("published");
+
     rr_platform::steering steeringMsg;
     steeringMsg.header.stamp = ros::Time::now();
     steeringMsg.angle = /*-currentYaw * kP*/0;
@@ -39,17 +40,23 @@ void publishSpeed(const float &desiredSpeed) {
 }
 
 int main(int argc, char* argv[]) {
+    
     ros::init(argc, argv, "qualify");
     ros::NodeHandle nh;
+
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
     steeringPub = nh.advertise<rr_platform::steering>("/steering", 1);
+
     ros::Subscriber chassisSub = nh.subscribe("/chassis_state", 1, chassisCB);
     ros::Subscriber imuSub = nh.subscribe("/imu/data_raw", 1, imuCallback);
+
     while (!go && ros::ok()) {
         ros::spinOnce();
     }
+
     publishSpeed(2.0);
     ros::Duration(5).sleep();
     publishSpeed(0.0);
+   
     return 0;
 }
