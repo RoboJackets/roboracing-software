@@ -17,6 +17,6 @@ train_profiles = {
     ),
     "drag": Config(
         epochs=20,
-        categories=[0.05]
+        categories=[0.03]
     )
 }
