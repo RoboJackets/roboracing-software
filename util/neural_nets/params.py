@@ -12,8 +12,12 @@ class Config(object):
 
 train_profiles = {
     "circuit": Config(
+        epochs=30,
+        categories=[0.2, 0.35]
+    ),
+    "circuit_3cat": Config(
         epochs=20,
-        categories=[0.05, 0.2]
+        categories=[0.2]
     ),
     "drag": Config(
         epochs=20,
