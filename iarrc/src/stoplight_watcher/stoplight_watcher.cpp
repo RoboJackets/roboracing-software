@@ -11,10 +11,10 @@
 #include <opencv2/opencv.hpp>
 
 #define HIST_FRAMES 8     // Number of frames to keep in history
-#define LIGHT_DIST_PIX 60 // Pixels between the center of red and green lights
+#define LIGHT_DIST_PIX 100 // Pixels between the center of red and green lights
 #define MAXSUMRESULTSRED2GREEN 2000 // experimental value of the max of the 2d traffic light filter
 #define TRIGGERPERCENTAGE 1.0 // The percentage an event must be from experimental, accounting for noise, to trigger
-#define LIGHT_SIZE_PIX 50 // The width or height of the observable stoplight light halo
+#define LIGHT_SIZE_PIX 100 // The width or height of the observable stoplight light halo
 
 using namespace cv;
 using namespace std;
@@ -36,10 +36,10 @@ std_msgs::Bool green;
 // This lasts for a few frames, then the red light turns off
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Intialize variables
-    if(green.data) {
-    bool_pub.publish(green);
-    return; // do not to all this computing if the signal has already been seen and go broadcast
-    }
+    // if(green.data) {
+    // bool_pub.publish(green);
+    // return; // do not to all this computing if the signal has already been seen and go broadcast
+    // }
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat circlesImg, circlesImgRed, circlesImgGreen;
