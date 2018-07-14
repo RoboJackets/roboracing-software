@@ -1,7 +1,7 @@
 <launch>
     <include file="$(find rr_common)/launch/nn_planner.launch">
         <arg name="image_topic" value="camera/image_color_rect_flipped"/>
-        <arg name="categories" default="0.05"/>
+        <arg name="categories" default="0.1"/>
         <arg name="model_path" default="$(find iarrc)/nn_models/model_drag_1.h5"/>
     </include>
 </launch>

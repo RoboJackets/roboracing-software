@@ -54,6 +54,8 @@ if __name__ == "__main__":
     steer_categories = np.concatenate([-half_cats[::-1], [0], half_cats])
     print "[nn_planner] Steering categories:", steer_categories
 
+    # steer_publisher = rospy.Publisher('/plan/steering', Steering, queue_size=1)
+    # speed_publisher = rospy.Publisher('/plan/speed', Speed, queue_size=1)
     steer_publisher = rospy.Publisher('/steering', Steering, queue_size=1)
     speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
 
@@ -68,7 +70,7 @@ if __name__ == "__main__":
         steer_publisher.publish(steer_msg)
 
         speed_msg = Speed()
-        speed_msg.speed = 0.5 - 0.1*abs(steering_angle)
+        speed_msg.speed = 0.75 - 0.1*abs(steering_angle)
         speed_publisher.publish(speed_msg)
 
         rate.sleep()
