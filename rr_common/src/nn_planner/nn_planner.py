@@ -48,16 +48,18 @@ if __name__ == "__main__":
     input_shape = model.get_layer(index=0).get_input_shape_at(0)[1:]
 
     image_topic = rospy.get_param('~image_topic')
+    speed_topic = rospy.get_param('~speed_topic')
+    steer_topic = rospy.get_param('~steer_topic')
+    speed_straight = rospy.get_param('~speed_straight')
+    speed_turn_prop = rospy.get_param('~speed_turn_prop')
 
     categories_str = rospy.get_param('~steer_categories')
     half_cats = np.array([float(s) for s in categories_str.split(' ')])
     steer_categories = np.concatenate([-half_cats[::-1], [0], half_cats])
     print "[nn_planner] Steering categories:", steer_categories
 
-    # steer_publisher = rospy.Publisher('/plan/steering', Steering, queue_size=1)
-    # speed_publisher = rospy.Publisher('/plan/speed', Speed, queue_size=1)
-    steer_publisher = rospy.Publisher('/steering', Steering, queue_size=1)
-    speed_publisher = rospy.Publisher('/speed', Speed, queue_size=1)
+    steer_publisher = rospy.Publisher(steer_topic, Steering, queue_size=1)
+    speed_publisher = rospy.Publisher(speed_topic, Speed, queue_size=1)
 
     print "[nn_planner] Subscribing to", image_topic
 
@@ -70,7 +72,7 @@ if __name__ == "__main__":
         steer_publisher.publish(steer_msg)
 
         speed_msg = Speed()
-        speed_msg.speed = 0.75 - 0.1*abs(steering_angle)
+        speed_msg.speed = speed_straight - speed_turn_prop*abs(steering_angle)
         speed_publisher.publish(speed_msg)
 
         rate.sleep()
