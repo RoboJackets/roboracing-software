@@ -82,17 +82,21 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
 
-    Rect ROI(0,270,640,50);
+    // Rect ROI(0,0,640,50);s
 
-    frame = frame(ROI);
+    // frame = frame(ROI);
 
     auto count = countNonZero(frame);
+    // ROS_INFO_STREAM("count - " << to_string(count));
+
 
     auto width = getWidth(frame);
+    // ROS_INFO_STREAM("width - " << to_string(width));
 
-    if(state == LOW && count > 1000 && width > 240) {
+
+    if(state == LOW && count > 3000 && width > 600) {
         state = HIGH;
-    } else if(state == HIGH && count < 1000) {
+    } else if(state == HIGH && count < 3000) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
