@@ -6,6 +6,6 @@
         <arg name="speed_topic" value="/plan/speed"/>
         <arg name="steer_topic" value="/plan/steering"/>
         <arg name="speed_straight" value="0.75"/>
-        <arg name="speed_turn_prop" value="0.15"/>
+        <arg name="speed_turn_prop" value="0.5"/>
     </include>
 </launch>
