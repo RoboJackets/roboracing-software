@@ -37,7 +37,7 @@
 
   <run_depend>laser_geometry</run_depend>
   <run_depend>sick_tim</run_depend>
-  <run_depend>ros-kinetic-rplidar-ros</run_depend>
+  <run_depend>rplidar_ros</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
