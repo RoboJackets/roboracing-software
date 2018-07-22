@@ -2,8 +2,8 @@
 <launch>
     <include file="$(find iarrc)/launch/nn_planner_drag.launch"/>
 
-    <include file="$(find iarrc)/launch/color_detector_standalone.launch"/>
-    <include file="$(find iarrc)/launch/race_end_detector.launch"/>
+    <!-- <include file="$(find iarrc)/launch/color_detector_standalone.launch"/> -->
+    <!-- <include file="$(find iarrc)/launch/race_end_detector.launch"/> -->
     <include file="$(find iarrc)/launch/stoplight_watcher.launch"/>
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
