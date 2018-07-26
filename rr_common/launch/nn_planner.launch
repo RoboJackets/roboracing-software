@@ -1,19 +1,5 @@
 <launch>
-  <arg name="image_topic" default="camera/image_raw"/>
-  <arg name="categories" default="0.1 0.3"/>
-  <arg name="model_path" default="$(find rr_common)/nn_models/model_outdoor0304_2.h5"/>
-  <arg name="speed_topic" default="/speed"/>
-  <arg name="steer_topic" default="/steering"/>
-  <arg name="speed_straight" default="1.0"/>
-  <arg name="speed_turn_prop" default="0.2"/>
-
   <node pkg="rr_common" type="nn_planner.py" name="nn_planner" output="screen" respawn="false">
-    <param name="model_path" type="string" value="$(arg model_path)" />
-    <param name="image_topic" type="string" value="$(arg image_topic)"/>
-    <param name="steer_categories" type="string" value="$(arg categories)"/>
-    <param name="speed_topic" type="string" value="$(arg speed_topic)"/>
-    <param name="steer_topic" type="string" value="$(arg steer_topic)"/>
-    <param name="speed_straight" type="double" value="$(arg speed_straight)"/>
-    <param name="speed_turn_prop" type="double" value="$(arg speed_turn_prop)"/>
+    <param name="model_path" type="string" value="model_outdoor0304_2.h5" />
   </node>
 </launch>

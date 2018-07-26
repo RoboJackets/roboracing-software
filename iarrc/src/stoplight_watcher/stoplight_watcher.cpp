@@ -12,8 +12,8 @@
 
 #define HIST_FRAMES 5     // Number of frames to keep in history
 #define LIGHT_DIST_PIX 35 // Pixels between the center of red and green lights
-#define MAXSUMRESULTSRED2GREEN 1500 // experimental value of the max of the 2d traffic light filter
-#define TRIGGERPERCENTAGE 1.0 // The percentage an event must be from experimental, accounting for noise, to trigger
+#define MAXSUMRESULTSRED2GREEN 600 // experimental value of the max of the 2d traffic light filter
+#define TRIGGERPERCENTAGE .85 // The percentage an event must be from experimental, accounting for noise, to trigger
 #define LIGHT_SIZE_PIX 35 // The width or height of the observable stoplight light halo
 
 using namespace cv;
@@ -37,8 +37,8 @@ std_msgs::Bool green;
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Intialize variables
     if(green.data) {
-        bool_pub.publish(green);
-        return; // do not to all this computing if the signal has already been seen and go broadcast
+    bool_pub.publish(green);
+    return; // do not to all this computing if the signal has already been seen and go broadcast
     }
 
     cv_bridge::CvImagePtr cv_ptr;

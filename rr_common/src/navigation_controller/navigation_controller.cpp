@@ -46,7 +46,7 @@ void updateState() {
             break;
         case FINISHED:
             //ROS_INFO("finished");
-            if( (ros::Time::now() - finishTime) > ros::Duration(0.5)) {
+            if( (ros::Time::now() - finishTime) > ros::Duration(0.65)) {
                 speed = 0.0;
                 steering = 0.0;
             }

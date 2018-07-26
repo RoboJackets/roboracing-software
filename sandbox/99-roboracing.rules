@@ -10,5 +10,3 @@ KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="954373133343517061C0", SY
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="5533033393035151F070", SYMLINK+="arduino_steer"
 
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="754313433343514041C1", SYMLINK+="arduino_iarrc"
-
-KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="9206", ATTRS{idVendor}=="1b4f", SYMLINK+="arduino_sedani"

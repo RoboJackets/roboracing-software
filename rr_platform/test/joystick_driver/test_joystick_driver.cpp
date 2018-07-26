@@ -66,7 +66,7 @@ TEST_F(JoystickDriverTestSuite, FullForward)  {
     joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0}; //8 axes
     joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //11 buttons
     joy_msg.axes[angle_axis] = 0.0;
-    joy_msg.axes[speed_axis] = -1.0;
+    joy_msg.axes[speed_axis] = 1.0;
     joy_pub.publish(joy_msg);
 
     while(!speed_received || !steering_received) {

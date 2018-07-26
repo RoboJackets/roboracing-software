@@ -93,4 +93,5 @@ void finish_detector::onInit() {
 
 }
 }
-PLUGINLIB_EXPORT_CLASS(avc::finish_detector, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(avc::finish_detector, nodelet::Nodelet
+)

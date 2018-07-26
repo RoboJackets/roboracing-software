@@ -1,7 +1,7 @@
 <library path="lib/librr_common">
-    <class name="rr_common/image_flipper" type="rr_common::image_flipper" base_class_type="nodelet::Nodelet">
+    <class name="rr_common/finish_detector" type="rr_common::finish_detector" base_class_type="nodelet::Nodelet">
         <description>
-            Flips images.
+            Detects a (finish) line of arbitrary color
         </description>
     </class>
 </library>
