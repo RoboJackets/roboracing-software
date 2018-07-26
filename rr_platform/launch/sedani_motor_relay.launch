@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="rr_platform" type="sedani_motor_relay_node" name="sedani_motor_relay_node" output="screen" respawn="false">
+    <param name="speed_topic" type="string" value="/speed" />
+    <param name="steering_topic" type="string" value="/steering" />
+    <param name="serial_port" type="string" value="/dev/arduino_sedani" />
+  </node>
+</launch>

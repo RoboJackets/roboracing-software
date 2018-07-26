@@ -57,14 +57,14 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
     Mat frame;
     Mat output;
-    
+
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     } catch (cv_bridge::Exception& e) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
     }
-    
+
     frame = cv_ptr->image;
 
     for(int r = 0; r < frame.rows; r++) {
@@ -82,21 +82,25 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
 
-    Rect ROI(0,270,640,50);
+    // Rect ROI(0,0,640,50);
 
-    frame = frame(ROI);
+    // frame = frame(ROI);
 
     auto count = countNonZero(frame);
+    // ROS_INFO_STREAM("count - " << to_string(count));
+
 
     auto width = getWidth(frame);
+    // ROS_INFO_STREAM("width - " << to_string(width));
 
-    if(state == LOW && count > 1000 && width > 240) {
+
+    if(state == LOW && count > 4000 && width > 850) {
         state = HIGH;
-    } else if(state == HIGH && count < 1000) {
+    } else if(state == HIGH && count < 4000) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
-    ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
+        ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
     }
 
     sensor_msgs::Image outmsg;
@@ -107,7 +111,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-    
+
     init(argc, argv, "speed_controller");
 
     NodeHandle nh;
@@ -127,7 +131,7 @@ int main(int argc, char** argv) {
         std_msgs::Int8 intmsg;
         intmsg.data = number_of_crosses;
         crosses_pub.publish(intmsg);
-   
+
         spinOnce();
         rate.sleep();
     }
