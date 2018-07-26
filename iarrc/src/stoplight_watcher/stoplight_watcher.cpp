@@ -36,10 +36,10 @@ std_msgs::Bool green;
 // This lasts for a few frames, then the red light turns off
 void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
     // Intialize variables
-    // if(green.data) {
-    // bool_pub.publish(green);
-    // return; // do not to all this computing if the signal has already been seen and go broadcast
-    // }
+    if(green.data) {
+        bool_pub.publish(green);
+        return; // do not to all this computing if the signal has already been seen and go broadcast
+    }
 
     cv_bridge::CvImagePtr cv_ptr;
     Mat circlesImg, circlesImgRed, circlesImgGreen;
@@ -94,10 +94,8 @@ void ImageCB(const sensor_msgs::Image::ConstPtr& msg) {
 
     double minResult, maxResult;
     minMaxLoc(centerLightChangeness, &minResult, &maxResult);
-    ROS_INFO_STREAM("maxResult " << maxResult);
     if (maxResult > TRIGGERPERCENTAGE * MAXSUMRESULTSRED2GREEN) {
         green.data = true;
-        ROS_INFO_STREAM("STARTING!!!!!");
     }
 
     bool_pub.publish(green);
