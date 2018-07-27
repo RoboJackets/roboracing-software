@@ -12,4 +12,3 @@
         <param name="resetSignal" type="string" value="/reset_detected"/>
     </node>
 </launch>
-
