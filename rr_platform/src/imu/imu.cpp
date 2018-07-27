@@ -25,49 +25,51 @@ std::vector <std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-void parse_message(const std::string &line_in, sensor_msgs::Imu &imu_msg, sensor_msgs::MagneticField &mag_msg, rr_platform::axes &axes_msg, bool &imu_ready, bool &mag_ready, bool &axes_ready){
-
-    imu_ready = false;
-    mag_ready = false;
-    axes_ready = false;
-
-
-    if (line_in.empty()) {
-        return;
-    }
-
+bool set_imu(const std::string &line_in, sensor_msgs::Imu &imu_msg){
     std::vector <std::string> data = split(line_in, ',');
-
     if(data[0] == "ax"){
         imu_msg.linear_acceleration.x = std::atof(data[1].c_str());
         imu_msg.linear_acceleration.y = std::atof(data[2].c_str());
         imu_msg.linear_acceleration.z = std::atof(data[3].c_str());
-    }
-    else if(data[0] == "gx") {
+    }else if(data[0] == "gx") {
         imu_msg.angular_velocity.x = std::atof(data[1].c_str());
         imu_msg.angular_velocity.y = std::atof(data[2].c_str());
         imu_msg.angular_velocity.z = std::atof(data[3].c_str());
-    }
-    else if(data[0] == "q0") {
+    }else if(data[0] == "q0") {
         imu_msg.orientation.x = std::atof(data[1].c_str());
         imu_msg.orientation.y =std::atof(data[2].c_str());
         imu_msg.orientation.z = std::atof(data[3].c_str());
         imu_msg.orientation.w = std::atof(data[4].c_str());
-        imu_ready = true;
+        return true;
+    }else{
+        return false;
     }
-    else if(data[0] == "mx") {
+}
+
+bool set_mag(const std::string &line_in, sensor_msgs::MagneticField &mag_msg){
+    std::vector <std::string> data = split(line_in, ',');
+    if(data[0] == "mx") {
         mag_msg.magnetic_field.x = std::atof(data[1].c_str());
         mag_msg.magnetic_field.y = std::atof(data[2].c_str());
         mag_msg.magnetic_field.z = std::atof(data[3].c_str());
-        mag_ready = true;
+        return true;
+    }else{
+        return false;
     }
-    else if(data[0] == "axes") {
+}
+
+bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
+    std::vector <std::string> data = split(line_in, ',');
+    if(data[0] == "axes") {
         axes_msg.roll = std::atof(data[1].c_str());
         axes_msg.pitch = std::atof(data[2].c_str());
         axes_msg.yaw = std::atof(data[3].c_str());
-        axes_ready = true;
+        return true;
+    }else{
+        return false;
     }
 }
+
 
 
 int main(int argc, char **argv) {
@@ -91,18 +93,12 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-
     sensor_msgs::Imu imu_msg;
     sensor_msgs::MagneticField mag_msg;
     rr_platform::axes axes_msg;
 
     imu_msg.header.frame_id = "imu";
     mag_msg.header.frame_id = "mag";
-
-    bool imu_ready = false;
-    bool mag_ready = false;
-    bool axes_ready = false;
-
 
     ROS_INFO("IMU Ready.");
 
@@ -112,22 +108,20 @@ int main(int argc, char **argv) {
         ros::spinOnce();
 
         auto line_in = serial_port.ReadLine();
-
         if(!line_in.empty()) {
-
-            parse_message(line_in, imu_msg, mag_msg, axes_msg, imu_ready, mag_ready, axes_ready);
-
-            if(imu_ready) {
+            if(set_imu(line_in, imu_msg)) {
                 sensor_msgs::Imu publishable_copy = imu_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 imu_pub.publish(publishable_copy);
             }
-            if(mag_ready) {
+
+            if(set_mag(line_in, mag_msg)) {
                 sensor_msgs::MagneticField publishable_copy = mag_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 mag_pub.publish(publishable_copy);
             }
-            if(axes_ready){
+
+            if(set_axes(line_in, axes_msg)){
                 rr_platform::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 axes_pub.publish(publishable_copy);
