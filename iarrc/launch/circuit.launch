@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
+    <include file="$(find iarrc)/launch/nn_planner_circuit.launch"/>
+
     <include file="$(find iarrc)/launch/color_detector_standalone.launch"/>
-    <include file="$(find iarrc)/launch/ol_reliable.launch"/>
     <include file="$(find iarrc)/launch/race_end_detector.launch"/>
     <include file="$(find iarrc)/launch/stoplight_watcher.launch"/>
-    <node name="navigation_controller" pkg="iarrc" type="navigation_controller" output="screen">
+
+    <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
         <param name="req_finish_line_crosses" type="int" value="3"/>
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
     </node>
 </launch>
- 

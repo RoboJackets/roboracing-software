@@ -1,24 +1,20 @@
 import os, sys
+import math
 import numpy as np
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, GaussianNoise, BatchNormalization
-# from keras.datasets import mnist
-# from keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, \
+                         GaussianNoise, BatchNormalization
 import cv2
 import collections
 import random
 import time
 from example_set import ExampleSet
-from params import input_shape
+from params import input_shape, train_profiles
 
 
 n_examples_to_load = 8000 # if the number of training examples is below this, load more data
 batch_size = 32
-epochs = 10
-
-categories = [0.05, 0.2]
-categories = [-x for x in reversed(categories)] + [0] + categories
 
 
 def defineCategory(steering):
@@ -59,15 +55,21 @@ def make_model():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print "Usage: python train.py [data directory] [model output file]"
+    if len(sys.argv) < 4:
+        print "Usage: python train.py [data directory] [model output file] {%s}" \
+                % ', '.join(train_profiles.keys())
         sys.exit(1)
 
     startTime = time.time()
 
-    name = sys.argv[2]
+    model_path = sys.argv[2]
+
+    config = train_profiles[sys.argv[3]]
+    epochs = config.epochs
+    categories = config.categories
 
     model = make_model()
+    model.summary()
 
     exampleSetDir = sys.argv[1]
     exampleSetFiles_const = tuple(f for f in os.listdir(exampleSetDir) if '.pkl.lz4' in f)
@@ -86,7 +88,8 @@ if __name__ == '__main__':
     print "training label counts:", cnt
 
     def batch_generator(isValidation = False):
-        for epoch in range(epochs):
+        gen_epochs = 1 if isValidation else epochs
+        for epoch in range(gen_epochs):
             exampleSetFiles = list(exampleSetFiles_const)
             random.shuffle(exampleSetFiles)
 
@@ -114,13 +117,18 @@ if __name__ == '__main__':
                     ys = labels[i: i + batch_size]
                     yield (xs, ys)
 
+    try:
+        n_minibatches = int(math.ceil(float(n_training_examples) / batch_size))
+        model.fit_generator(batch_generator(),
+                            steps_per_epoch=n_minibatches,
+                            epochs=epochs,
+                            verbose=1)
+        print "elapsed time:", time.time() - startTime
 
-    model.fit_generator(batch_generator(), steps_per_epoch=n_training_examples//batch_size + 1,
-                        epochs=epochs, verbose=1)
+        n_minibatches = int(math.ceil(float(n_test_examples) / batch_size))
+        loss, acc = model.evaluate_generator(batch_generator(True), steps=n_minibatches)
+        print "validation loss:", loss, "| validation accuracy:", acc
 
-    model.save(name)
-
-    loss, acc = model.evaluate_generator(batch_generator(True), steps=n_test_examples//batch_size + 1)
-    print "validation loss:", loss, "| validation accuracy:", acc
-
-    print "elapsed time:", time.time() - startTime
+    finally:
+        model.save(model_path)
+        print "\nsaved model to", model_path

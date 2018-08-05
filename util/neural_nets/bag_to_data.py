@@ -22,22 +22,35 @@ def save_next_filename(examples, output_dir):
 def convert_bag_file(bag_file_path, output_dir, examples_per_file):
     print "Processing bag file:", bag_file_path
 
-    test_proportion = 0.3
+    test_proportion = 0.05
 
     examples = ExampleSet()
     bridge = CvBridge()
     bag = rosbag.Bag(bag_file_path)
-    iter_obj = iter(bag.read_messages(topics=["/steering"]))
-    topic2, msg, t2 = iter_obj.next()
 
     topics = bag.get_type_and_topic_info()[1].keys()
-    if '/camera/image_rect' in topics:
+    if '/camera/image_color_rect_flipped' in topics:
+        camera_topic = '/camera/image_color_rect_flipped'
+    elif '/camera/image_rect' in topics:
         camera_topic = '/camera/image_rect'
     elif '/camera/image_raw' in topics:
         camera_topic = '/camera/image_raw'
     else:
         print "ERROR: camera topic not recognized"
         sys.exit(2)
+
+    if "/chassis_state" in topics:
+        steering_topic = '/chassis_state'
+        steering_msg_parse_idx = -3
+    elif "/steering" in topics:
+        steering_topic = '/steering'
+        steering_msg_parse_idx = -1
+    else:
+        print "ERROR: steering topic not recognized"
+        sys.exit(2)
+
+    iter_obj = iter(bag.read_messages(topics=[steering_topic]))
+    topic2, msg, t2 = iter_obj.next()
 
     for topic1, img, t1 in bag.read_messages(topics=[camera_topic]):
         try:
@@ -57,7 +70,7 @@ def convert_bag_file(bag_file_path, output_dir, examples_per_file):
                     print "caught StopIteration for steering message iterator"
                     break
 
-            angle = float(str(msg).split()[-1])
+            angle = float(str(msg).split()[steering_msg_parse_idx])
             ex = Example(cv_image, angle)
 
             if len(examples.train) >= examples_per_file:
