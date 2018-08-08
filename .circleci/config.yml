@@ -3,7 +3,7 @@ defaults: &dir
 
 defaults: &image
   docker:
-    -image: osrf/ros:melodic-desktop-full
+    - image: osrf/ros:melodic-desktop-full
 
 defaults: &install_deps
   run: source /opt/ros/kinetic/setup.sh && catkin init
@@ -89,4 +89,6 @@ workflows:
   build_and_test:
     jobs:
       - compile
-      - test
+      - test:
+          requires:
+            - compile
