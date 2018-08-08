@@ -33,7 +33,6 @@
   <build_depend>libusb-1.0</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>
   <build_depend>libuvc_camera</build_depend>
-  <build_depend>libuvc</build_depend>
 
   <run_depend>laser_geometry</run_depend>
   <run_depend>sick_tim</run_depend>
@@ -49,9 +48,7 @@
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>libuvc_camera</run_depend>
-  <run_depend>libuvc</run_depend>
   <run_depend>realsense_camera</run_depend>
-  <run_depend>librealsense</run_depend>
   <run_depend>pointgrey_camera_driver</run_depend>
 
 </package>
