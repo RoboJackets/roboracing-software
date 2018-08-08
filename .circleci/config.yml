@@ -6,8 +6,8 @@ defaults: &image
     - image: osrf/ros:melodic-desktop-full
 
 defaults: &install_deps
-  run: source /opt/ros/kinetic/setup.sh && catkin init
-  run: source /opt/ros/kinetic/setup.sh && rosdep install -iy --from-paths ./src
+  run: source /opt/ros/melodic/setup.sh && catkin init
+  run: source /opt/ros/melodic/setup.sh && rosdep install -iy --from-paths ./src
 
 defaults: &save_src_cache
   save_cache:
@@ -67,7 +67,7 @@ jobs:
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
-      - run: source /opt/ros/kinetic/setup.sh && catkin_make
+      - run: source /opt/ros/melodic/setup.sh && catkin_make
       - <<: *save_compile_cache
       - <<: *save_workspace
   test:
@@ -81,7 +81,7 @@ jobs:
       - <<: *install_deps
       - <<: *load_workspace
       - <<: *load_test_cache
-      - run: source /opt/ros/kinetic/setup.sh && catkin_make run_tests
+      - run: source /opt/ros/melodic/setup.sh && catkin_make run_tests
       - <<: *save_test_cache
 
 workflows:
