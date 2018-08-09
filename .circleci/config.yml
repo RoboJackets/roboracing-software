@@ -66,7 +66,7 @@ jobs:
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
-      - run: catkin_make -j2
+      - run: source /opt/ros/melodic/setup.sh && catkin_make -j2
       - <<: *save_compile_cache
       - <<: *save_workspace
   test:
@@ -80,7 +80,7 @@ jobs:
       - <<: *install_deps
       - <<: *load_workspace
       - <<: *load_test_cache
-      - run: catkin_make run_tests
+      - run: source /opt/ros/melodic/setup.sh && catkin_make run_tests
       - <<: *save_test_cache
 
 workflows:
