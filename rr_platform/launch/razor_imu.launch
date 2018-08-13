@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <launch>
-    <node name="imu" pkg="rr_platform" type="imu" output="screen">
+    <node name="razor_imu" pkg="rr_platform" type="razor_imu" output="screen">
         <param name="serial_port" value="/dev/ttyACM0"/>
     </node>
 </launch>
