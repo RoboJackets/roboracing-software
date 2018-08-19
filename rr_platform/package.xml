@@ -48,7 +48,7 @@
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>libuvc_camera</run_depend>
-  <run_depend>realsense_camera</run_depend>
+  <run_depend>realsense2_camera</run_depend>
   <run_depend>pointgrey_camera_driver</run_depend>
 
 </package>
