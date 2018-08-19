@@ -75,7 +75,9 @@ bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
     }
 }
 
+
 /*
+
 bool set_axes(sensor_msgs::Imu &imu_msg, rr_platform::axes &axes_msg){
    
     tf::Quaternion q(imu_msg.orientation.x, imu_msg.orientation.y, imu_msg.orientation.z, imu_msg.orientation.w);
@@ -92,7 +94,6 @@ bool set_axes(sensor_msgs::Imu &imu_msg, rr_platform::axes &axes_msg){
     return true;
 }
 */
-
 
 
 int main(int argc, char **argv) {
@@ -132,6 +133,7 @@ int main(int argc, char **argv) {
 
         auto line_in = serial_port.ReadLine();
         if(!line_in.empty()) {
+
             if(set_imu(line_in, imu_msg)) {
                 sensor_msgs::Imu publishable_copy = imu_msg;
                 publishable_copy.header.stamp = ros::Time::now();
@@ -145,8 +147,8 @@ int main(int argc, char **argv) {
             }
 
 
-            /*
             
+            /*
             if(set_axes(imu_msg, axes_msg)){
                 rr_platform::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
@@ -156,15 +158,16 @@ int main(int argc, char **argv) {
             */
             
             
+
+
+            
             if(set_axes(line_in, axes_msg)){
                 rr_platform::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 axes_pub.publish(publishable_copy);
             }
-
+        
             
-
-
 
         }
     }
