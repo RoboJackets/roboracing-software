@@ -32,6 +32,8 @@ protected:
     int height = 200;
     int width = 200;
     int maxSpeed = 3;
+    int widgetWidth;
+    int widgetHeight;
 
     double wheelAngle = 0;	
     void paintEvent(QPaintEvent* event) override;
