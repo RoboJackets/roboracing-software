@@ -28,7 +28,7 @@ double dt = 0;
 double integral = 0;
 double derivative; 
 
-double control_output; 
+double control_output = 0; 
  
 
 bool go = false;
@@ -44,6 +44,7 @@ void imuCallback(const rr_platform::axesConstPtr& msg) {
     auto currentYaw = tf::getYaw(tf_quat);
     */
 
+
     if(!straightYawSet){
         straightYaw = msg->yaw;
         straightYawSet = true; 
@@ -52,15 +53,19 @@ void imuCallback(const rr_platform::axesConstPtr& msg) {
     currentYaw = msg->yaw;
 
     time_now = msg->header.stamp;
-    time_prior = time_now;
-    dt = time_now.toSec() - time_prior.toSec(); 
+    dt = time_now.toSec() - time_prior;
+    time_prior = time_now.toSec();
+    
+
     
     error = straightYaw - currentYaw;
-    error_prior = error; 
 
     integral = integral + error*dt; 
     derivative = (error - error_prior)/dt; 
     control_output = kP*error + kI*integral + kD*derivative;  
+
+    error_prior = error; 
+
 
     ROS_INFO_STREAM(currentYaw);
 }
