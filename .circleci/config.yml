@@ -6,7 +6,7 @@ defaults: &image
     - image: robojackets/roboracing-baseimage:latest
 
 defaults: &install_deps
-  run: rosdep update && rosdep install -iy --from-paths ./src --skip-keys='realsense2_camera pointgrey_camera_driver libuvc_camera'
+  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='realsense2_camera pointgrey_camera_driver libuvc_camera'
 
 defaults: &save_src_cache
   save_cache:
