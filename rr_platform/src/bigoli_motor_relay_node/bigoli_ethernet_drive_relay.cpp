@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    string speedTopic = nhp.param(string("topic"), string("/speed"));
-    auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
+    //string speedTopic = nhp.param(string("topic"), string("/speed"));
+    //auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
 
     //SUBSCRIBE HERE #TODO
 
@@ -42,16 +42,20 @@ int main(int argc, char** argv) {
     ros::Duration(2.0).sleep();
 
     //TCP client setup
-    /*@Note https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/tutorial/tutdaytime1.html */
+    /*@Note https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/tutorial/tutdaytime1.html
+      this code changed based on the version of boost being used by ROS. Look at the updated
+      tutorial by following link and change as need be.
+    */
     ROS_INFO_STREAM("Trying to connect to TCP Host");
 
-    string serverName = "192.168.2.1"; //#TODO ip
-    string serviceName = "7"; //#TODO port
-    boost::asio::io_context io_context;
-    tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints = resolver.resolve(serverName, serviceName);
-    tcp::socket socket(io_context);
-    boost::asio::connect(socket, endpoints);
+    string serverName = "192.168.2.2"; //ip #TODO ip .. is magic number
+    string serviceName = "7"; //port #TODO port .. is magic
+    boost::asio::io_service io_service;
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(serverName, serviceName);
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    tcp::socket socket(io_service);
+    boost::asio::connect(socket, endpoint_iterator);
 
     //CONNECTION NOW OPEN, READY TO READ FROM
     ROS_INFO_STREAM("Connected to TCP Host!");
@@ -63,18 +67,22 @@ int main(int argc, char** argv) {
         boost::array<char, 128> buf;
         boost::system::error_code error;
 
+        //write data to MBED
+        string message = "1,2,3,4";
+        boost::asio::write(socket, boost::asio::buffer(message), error); //#TODO: error check????
+
         //read data from MBED
         size_t len = socket.read_some(boost::asio::buffer(buf), error);
-        if (error == boost::asio::error::eof) {
+std::string reading(buf.begin(), buf.end()); //#TODO remove debug line
+ROS_INFO_STREAM(reading); //#TODO: remove debug line
+        if (error == boost::asio::error::eof) { //#TODO THIS ERROR GET OUT OF HERE MAY NEED TO CHANGE as recieving nothing = dead
+          ROS_INFO_STREAM("TCP Connection closed: Disconnecting");
           break; // Connection closed cleanly by peer
         }
         else if (error) {
+          ROS_INFO_STREAM("TCP ERROR HAS OCCURRED: Disconnecting");
           throw boost::system::system_error(error); // Some other error
         }
-
-        //write data to MBED
-        string message = "Hello,world";
-        boost::asio::write(socket, boost::asio::buffer(message), error); //#TODO: error check????
 
 
         rate.sleep();
