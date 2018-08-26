@@ -11,7 +11,6 @@
   So don't fear if it breaks, just fix the things by checking the links to examples given.
 */
 
-
 using namespace std;
 using boost::asio::ip::tcp;
 
@@ -21,6 +20,8 @@ double steeringAngle = 0.0;
 double maxAngleMsg;
 const double maxOutput = 1.0;  //#TODO: magic # to launch param
 
+std::shared_ptr<tcp::socket> currentSocket;
+
 void speedCallback(const rr_platform::speed::ConstPtr &msg) {
     speed = msg->speed;
 }
@@ -29,12 +30,12 @@ void steerCallback(const rr_platform::steering::ConstPtr &msg) {
     steeringAngle = msg->angle / maxAngleMsg * maxOutput;
 }
 
-string readMessage(tcp::socket socket) {
+string readMessage() {
   //read data from TCP connection
   boost::array<char, 128> buf;
   boost::system::error_code error;
 
-  size_t len = socket.read_some(boost::asio::buffer(buf), error);
+  size_t len = currentSocket->read_some(boost::asio::buffer(buf), error);
   string reading(buf.begin(), buf.end()); //convert buffer into useable string
 
   if (error == boost::asio::error::eof) { //#TODO THIS ERROR GET OUT OF HERE MAY NEED TO CHANGE as recieving nothing = dead
@@ -48,12 +49,12 @@ string readMessage(tcp::socket socket) {
   return reading;
 }
 
-void sendMessage(tcp::socket socket, string message) {
+void sendMessage(string message) {
   boost::array<char, 128> buf;
   boost::system::error_code error;
 
   //write data to TCP connection
-  boost::asio::write(socket, boost::asio::buffer(message), error); //#TODO: error check????
+  boost::asio::write(*currentSocket, boost::asio::buffer(message), error); //#TODO: error check????
 }
 
 string buildMessage(double message, double pid_p, double pid_i, double pid_d) {
@@ -110,8 +111,8 @@ int main(int argc, char** argv) {
     tcp::resolver resolver(io_service);
     tcp::resolver::query query(serverName, serviceName);
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    tcp::socket socket(io_service);
-    boost::asio::connect(socket, endpoint_iterator);
+    currentSocket = make_shared<tcp::socket>(io_service); //used to allow us to pass socket to functions
+    boost::asio::connect(*currentSocket, endpoint_iterator);
 
 
     //CONNECTION NOW OPEN, READY TO JAM
@@ -127,10 +128,10 @@ int main(int argc, char** argv) {
         //write data to MBED
         //Send Motor Command
         string speedCommand = buildMessage(speed, speed_pid_p, speed_pid_i, speed_pid_d);
-        sendMessage(socket, speedCommand);
+        sendMessage(speedCommand);
         //Send Steering Command
         string steeringCommand = buildMessage(steeringAngle, steering_pid_p, steering_pid_i, steering_pid_d);
-        sendMessage(socket, steeringCommand);
+        sendMessage(steeringCommand);
 
         //read data from MBED
         //string response = readMessage(socket)
