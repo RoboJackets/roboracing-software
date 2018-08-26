@@ -2,11 +2,7 @@
 #include <QVBoxLayout>
 #include <pluginlib/class_list_macros.h>
 
-
-
 namespace rr_rviz_plugins {
-
-
 
 SpeedometerPanel::SpeedometerPanel(QWidget *parent)
   : rviz::Panel(parent) 
@@ -30,39 +26,25 @@ void SpeedometerPanel::paintEvent(QPaintEvent* event)
 {
  QPainter painter(this);
 
-widgetWidth = painter.viewport().width()/2;
+ widgetWidth = painter.viewport().width()/2;
 
  painter.drawLine(width,height, widgetWidth/2 + 70, widgetWidth/2 + 70);
  painter.drawArc(70,70,widgetWidth,widgetWidth,0,5760/2);
- //painter.drawLine(0+60,270,480,270);
-
 
  for (float i = 0; i <= 3; i += 0.5) {
     tickMarkGenerator(painter, i);
  }
 
-
-
-
-
- //painter.drawArc(70,400,400,400,0,5760);
  painter.drawArc(70,widgetWidth,widgetWidth,widgetWidth,0,5760);
- //painter.drawLine(270+100*cos(wheelAngle + 3.14159265/3), 600-100*sin(wheelAngle + 3.14159265/3), 270+200*cos(wheelAngle + 3.14159265/3), 600-200*sin(wheelAngle + 3.14159265/3));
- //painter.drawLine(270+100*cos(wheelAngle + 2 * 3.14159265/3), 600-100*sin(wheelAngle + 2 * 3.14159265/3), 270+200*cos(wheelAngle + 2 * 3.14159265/3), 600-200*sin(wheelAngle + 2 * 3.14159265/3));
- painter.drawLine(widgetWidth/2 + 70 + (widgetWidth/4)*cos(wheelAngle + 3.14159265/3), widgetWidth*1.5-(widgetWidth/4)*sin(wheelAngle + 3.14159265/3), widgetWidth/2+70+(widgetWidth/2)*cos(wheelAngle + 3.14159265/3), widgetWidth*1.5-(widgetWidth/2)*sin(wheelAngle + 3.14159265/3));
+ painter.drawLine(widgetWidth/2 + 70 + (widgetWidth/4)*cos(wheelAngle + 3.14159265/3), widgetWidth*1.5-(widgetWidth/4)*sin(wheelAngle + 3.14159265/3), widgetWidth/2+70+(widgetWidth/2)*cos(wheelAngle +   3.14159265/3), widgetWidth*1.5-(widgetWidth/2)*sin(wheelAngle + 3.14159265/3));
  painter.drawLine(widgetWidth/2+70+(widgetWidth/4)*cos(wheelAngle + 2 * 3.14159265/3), widgetWidth*1.5-(widgetWidth/4)*sin(wheelAngle + 2 * 3.14159265/3), widgetWidth/2+70+(widgetWidth/2)*cos(wheelAngle + 2 * 3.14159265/3), widgetWidth*1.5-(widgetWidth/2)*sin(wheelAngle + 2 * 3.14159265/3));
 }
 
-
-
 void SpeedometerPanel::tickMarkGenerator(QPainter &painter, float speeds) {
     float speed = 3.1415 - (speeds/3) * 3.1415;
-    
-    //painter.drawLine(cos(speed) * 210 + 270, 270 - sin(speed) * 210,cos(speed) * 190 + 270, 270 - sin(speed) * 190);
 
     painter.drawLine(cos(speed) * (widgetWidth/2 + widgetWidth/40) + widgetWidth/2 + 70, widgetWidth/2 + 70 - sin(speed) * (widgetWidth/2 + widgetWidth/40),cos(speed) * (widgetWidth/2 - widgetWidth/40) + widgetWidth/2 + 70, widgetWidth/2 + 70 - sin(speed) * (widgetWidth/2 - widgetWidth/40));
     
-    //painter.drawText(cos(speed) * 225 - 10 + 270, 270 - sin(speed) * 225, QString::number(speeds,'g',1));
     painter.drawText(cos(speed) * (widgetWidth/2 + widgetWidth/8) - widgetWidth/40 + widgetWidth/2 + 70, widgetWidth/2 + 70 - sin(speed) * (widgetWidth/2 + widgetWidth/8), QString::number(speeds,'g',2));
 
 }
@@ -72,16 +54,12 @@ void SpeedometerPanel::chassis_callback(const rr_platform::chassis_stateConstPtr
     auto text = std::to_string(msg->speed_mps) + " m/s (actual)";
     
     speedlabel->setText(text.c_str());
-
     
     double angle = ((msg->speed_mps)/maxSpeed)*3.14159256;
-    //width = 60+210-(200*cos(angle));
-    //height = 60+210-200*sin(angle);
+
     width = widgetWidth/2 + 70 - (widgetWidth/2)* cos(angle);
     height = widgetWidth/2 + 70 - (widgetWidth/2)* sin(angle);
-   
-    
-    	
+   	
     update();
 }
 
@@ -90,8 +68,6 @@ void SpeedometerPanel::steering_callback(const rr_platform::steeringConstPtr &ms
    wheelAngle = msg->angle;
    update();
 }
-
-
 
 }
 
