@@ -45,20 +45,69 @@ void advanceStep(float steerAngle, Pose2D &inOutPose) {
  *      actual state is x=0, y=0, theta=0
  * kdtree - FLANN index constructed from the obstacles map
  */
-float getCostAtPose(Pose2D &pose, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-    pcl::PointXYZ searchPoint(pose.x, pose.y, 0);
-    vector<int> pointIdxRadiusSearch(1);
-    vector<float> pointRadiusSquaredDistance(1);
-    int nResults = kdtree.nearestKSearch(searchPoint, 1, pointIdxRadiusSearch,
-                                         pointRadiusSquaredDistance);
+float distAtPose(const Pose2D &pose, const pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
+    double robotCenterX = (robot_collision_box.lengthFront - robot_collision_box.lengthBack) / 2.;
+    double robotCenterY = (robot_collision_box.widthLeft - robot_collision_box.widthRight) / 2.;
+    double searchX = pose.x + robotCenterX * cos(pose.theta);
+    double searchY = pose.y + robotCenterY * sin(pose.theta);
 
-    float dist = sqrt(pointRadiusSquaredDistance[0]);
-    if(nResults == 0) { //no obstacles in sight
+    double halfLength = (robot_collision_box.lengthFront + robot_collision_box.lengthBack) / 2.;
+    double halfWidth = (robot_collision_box.lengthFront + robot_collision_box.lengthBack) / 2.;
+    double farthestPointOnRobot = sqrt(halfLength*halfLength + halfWidth*halfWidth);
+
+    pcl::PointXYZ searchPoint(searchX, searchY, 0);
+    vector<int> pointIdxs;
+    vector<float> squaredDistances;
+    int nResults = kdtree.radiusSearch(searchPoint, OBSTACLE_SEARCH_RADIUS, pointIdxs,
+                                       squaredDistances);
+    // ROS_INFO_STREAM("nResults = " << nResults);
+
+    if (nResults == 0) { //no obstacles in sight
         return 0;
-    } else if(dist < COLLISION_RADIUS) { //collision
-        return COLLISION_PENALTY;
     } else {
-        return (1.0 / dist);
+        const double cosTheta = cos(pose.theta);
+        const double sinTheta = sin(pose.theta);
+
+        // convert each point to robot reference frame and check collision and distances
+        double minDist = 1000.0;
+        for (int i : pointIdxs) {
+            const auto& point = kdtree.getInputCloud()->at(i);
+            const double tmpX = point.x - pose.x - robotCenterX;
+            const double tmpY = point.y - pose.y - robotCenterY;
+            const double x = cosTheta * tmpX - sinTheta * tmpY - robotCenterX;
+            const double y = sinTheta * tmpX + cosTheta * tmpY - robotCenterY;
+            // ROS_INFO("pose %.3f, %.3f, %.3f  before: %.3f, %.3f  after: %.3f, %.3f", pose.x, pose.y,
+            //          pose.theta, point.x, point.y, x, y);
+
+            // collisions
+            if (abs(x) <= halfLength && abs(y) <= halfWidth) {
+                return -1;
+            }
+
+            // find distance, in several cases
+            double dist;
+            if (abs(x) > halfLength) {
+                // not alongside the robot
+                if (abs(y) > halfWidth) {
+                    // closest to a corner
+                    double cornerX = halfLength * ((x < 0) ? -1 : 1);
+                    double cornerY = halfWidth * ((y < 0) ? -1 : 1);
+                    double dx = x - cornerX;
+                    double dy = y - cornerY;
+                    dist = sqrt(dx*dx + dy*dy);
+                } else {
+                    // directly in front of or behind robot
+                    dist = abs(x) - halfLength;
+                }
+            } else {
+                // directly to the side of the robot
+                dist = abs(y) - halfWidth;
+            }
+            minDist = min(minDist, dist);
+        }
+
+        // ROS_INFO_STREAM("minDist = " << minDist);
+        return minDist;
     }
 }
 
@@ -72,7 +121,7 @@ float getCostAtPose(Pose2D &pose, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
  * maxSteering - the limit of the car's steering ability
  */
 inline float steeringToSpeed(float steering, float maxSteering) {
-    return MAX_SPEED * cos(steering * 1.4706 / maxSteering);
+    return MAX_SPEED * cos(steering * 1.2 / maxSteering);
 }
 
 /*
@@ -101,7 +150,14 @@ float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXY
             dist += DISTANCE_INCREMENT)
         {
             advanceStep(steering, pose);
-            costSum += getCostAtPose(pose, kdtree) / pow(speed, 2);
+
+            float obsDist = distAtPose(pose, kdtree);
+            if (obsDist < 0) {
+                costSum += COLLISION_PENALTY;
+            } else {
+                double expectedDist = 2.0;
+                costSum += 1.0 / (0.5 * obsDist / expectedDist + 2 * speed / MAX_SPEED);
+            }
         }
     }
     return costSum;
@@ -119,7 +175,7 @@ float steeringAngleAverageAgainstMedian(float bestAngle) {
     //append the average of the best curve and current median to PREV_STEERING_ANGLES
     PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2;
     //return the average between the calculated steering angle and median value
-    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; 
+    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2;
 }
 
 /*
@@ -230,7 +286,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         return;
     }
 
-    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree(false);
     kdtree.setInputCloud(cloud);
 
     vector<control_vector> controlVectors(N_CONTROL_SAMPLES);
@@ -247,17 +303,23 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         costs[i] = cost;
     }
 
+    // ROS_INFO_STREAM("min cost: " << *min_element(costs.begin(), costs.end()));
+
     vector<control_vector> goodControlVectors;
     vector<float> goodCosts;
     for(int i = 0; i < N_CONTROL_SAMPLES; i++) {
-        if(costs[i] < bestCost * MAX_RELATIVE_COST) {
+        if(costs[i] <= bestCost * MAX_RELATIVE_COST) {
             goodControlVectors.push_back(controlVectors[i]);
             goodCosts.push_back(costs[i]);
         }
     }
 
-    vector<int> localMinimaIndices;
+    if (goodControlVectors.size() == 0) {
+        ROS_WARN("Planner: no good control vectors found");
+        return;
+    }
 
+    vector<int> localMinimaIndices;
     getLocalMinima(goodControlVectors, goodCosts, localMinimaIndices);
 
     // TODO implement smart path selection. For now, choose the straighest path
@@ -275,8 +337,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
     }
 
-    /*ROS_INFO("Planner found %d local minima. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestIndex]);*/
+    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
+             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -341,11 +403,15 @@ int main(int argc, char** argv) {
     nhp.param("DISTANCE_INCREMENT", DISTANCE_INCREMENT, 0.2f);
     nhp.param("MAX_SPEED", MAX_SPEED, 0.5f);
     nhp.param("WHEEL_BASE", WHEEL_BASE, 0.37f); //TODO get from tf tree
-    nhp.param("COLLISION_RADIUS", COLLISION_RADIUS, 0.3f);
+    nhp.param("COLLISION_DIST_FRONT", robot_collision_box.lengthFront, 0.3f);
+    nhp.param("COLLISION_DIST_BACK", robot_collision_box.lengthBack, 0.3f);
+    nhp.param("COLLISION_DIST_SIDE", robot_collision_box.widthLeft, 0.3f);
+    robot_collision_box.widthRight = robot_collision_box.widthLeft;
     nhp.param("COLLISION_PENALTY", COLLISION_PENALTY, 1000.0f);
     nhp.param("PATH_SIMILARITY_CUTOFF", PATH_SIMILARITY_CUTOFF, 0.05f);
     nhp.param("MAX_RELATIVE_COST", MAX_RELATIVE_COST, 2.0f);
     nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 20);
+    nhp.param("OBSTACLE_SEARCH_RADIUS", OBSTACLE_SEARCH_RADIUS, 2.0f);
 
     PREV_STEERING_ANGLES_INDEX = 0;
     PREV_STEERING_ANGLES.resize(SMOOTHING_ARRAY_SIZE);

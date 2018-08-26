@@ -29,10 +29,10 @@ int PREV_STEERING_ANGLES_INDEX;
 float DISTANCE_INCREMENT;
 float MAX_SPEED;
 float WHEEL_BASE;
-float COLLISION_RADIUS;
 float COLLISION_PENALTY;
 float PATH_SIMILARITY_CUTOFF;
 float MAX_RELATIVE_COST;
+float OBSTACLE_SEARCH_RADIUS;
 
 std::vector<std::normal_distribution<float> > steering_gaussians;
 std::mt19937 rand_gen;
@@ -46,8 +46,16 @@ struct Pose2D {
     float theta;
 };
 
+struct CollisionBox {
+    float lengthFront;  // distance from origin to front edge
+    float lengthBack;  // ditto for back edge, etc.
+    float widthLeft;
+    float widthRight;
+};
+CollisionBox robot_collision_box;
+
 void advanceStep(float steerAngle, Pose2D &inOutPose);
-float getCostAtPose(Pose2D &pose, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
+float getCostAtPose(const Pose2D &pose, const pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
 inline float steeringToSpeed(float steering, float maxSteering);
 float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
 float steeringSample(int stage);
