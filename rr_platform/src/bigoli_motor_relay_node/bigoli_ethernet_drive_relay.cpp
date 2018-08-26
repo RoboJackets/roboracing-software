@@ -57,10 +57,10 @@ void sendMessage(string message) {
   boost::asio::write(*currentSocket, boost::asio::buffer(message), error); //#TODO: error check????
 }
 
-string buildMessage(double message, double pid_p, double pid_i, double pid_d) {
-  //combines strings into one useful message #TODO: comma seperated or space or ?
+string buildInitMessage(double pid_p, double pid_i, double pid_d) {
+  //combines PID into useful message; # means init message
   stringstream ss;
-  ss << "$" << message << "," << pid_p << "," << pid_i << "," << pid_d;
+  ss << "#" << " " << pid_p << " " << pid_i << " " << pid_d;
   string command;
   ss >> command;
 
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
 
 
     // wait for microcontroller to start
-    ros::Duration(2.0).sleep();
+    ros::Duration(2.0).sleep(); //#TODO: do we need this anymore?
 
     //TCP client setup
     /*@Note https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/tutorial/tutdaytime1.html
@@ -118,7 +118,15 @@ int main(int argc, char** argv) {
     //CONNECTION NOW OPEN, READY TO JAM
     ROS_INFO_STREAM("Connected to TCP Host");
 
-    ros::Rate rate(10); //#TODO set this value to a good rate time
+    //send initialization message (PIDs)
+    string initMessage = buildInitMessage(speed_pid_p, speed_pid_i, speed_pid_d) + " " +
+        buildInitMessage(steering_pid_p, steering_pid_i, steering_pid_d);
+
+    sendMessage(initMessage);
+    ROS_INFO_STREAM("Sent initialization PID: " + initMessage);
+
+
+    ros::Rate rate(10); //#TODO set this value to a good rate time/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 
@@ -126,15 +134,15 @@ int main(int argc, char** argv) {
         boost::system::error_code error;
 
         //write data to MBED
-        //Send Motor Command
-        string speedCommand = buildMessage(speed, speed_pid_p, speed_pid_i, speed_pid_d);
-        sendMessage(speedCommand);
-        //Send Steering Command
-        string steeringCommand = buildMessage(steeringAngle, steering_pid_p, steering_pid_i, steering_pid_d);
-        sendMessage(steeringCommand);
+        //Send Motor Command and Steering Command (lead by a $)
+        stringstream s;
+        s << "$" << speed << " " << steeringAngle;
+        string command;
+        s >> command;
+        sendMessage(command);
 
         //read data from MBED
-        //string response = readMessage(socket)
+        string response = readMessage(); //#TODO: make this useful data
 
 
         rate.sleep();
