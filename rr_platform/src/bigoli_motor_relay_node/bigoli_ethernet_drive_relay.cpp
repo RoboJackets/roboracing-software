@@ -16,15 +16,56 @@ using namespace std;
 using boost::asio::ip::tcp;
 
 double speed = 0.0;
-double steering = 0.0;
+double steeringAngle = 0.0;
+
+double maxAngleMsg;
+const double maxOutput = 1.0;  //#TODO: magic # to launch param
 
 void speedCallback(const rr_platform::speed::ConstPtr &msg) {
     speed = msg->speed;
 }
 
-void steeringCallback(const rr_platform::steering::ConstPtr &msg) {
-    steering = msg->angle;
+void steerCallback(const rr_platform::steering::ConstPtr &msg) {
+    steeringAngle = msg->angle / maxAngleMsg * maxOutput;
 }
+
+string readMessage(tcp::socket socket) {
+  //read data from TCP connection
+  boost::array<char, 128> buf;
+  boost::system::error_code error;
+
+  size_t len = socket.read_some(boost::asio::buffer(buf), error);
+  string reading(buf.begin(), buf.end()); //convert buffer into useable string
+
+  if (error == boost::asio::error::eof) { //#TODO THIS ERROR GET OUT OF HERE MAY NEED TO CHANGE as recieving nothing = dead
+    // Connection closed cleanly by peer
+    ROS_INFO_STREAM("TCP Connection closed by peer: Disconnecting"); //#TODO: not sure what to do or just leave it orr.
+  } else if (error) {
+    ROS_ERROR_STREAM("TCP ERROR: Disconnecting");
+    throw boost::system::system_error(error); // Some other error
+  }
+
+  return reading;
+}
+
+void sendMessage(tcp::socket socket, string message) {
+  boost::array<char, 128> buf;
+  boost::system::error_code error;
+
+  //write data to TCP connection
+  boost::asio::write(socket, boost::asio::buffer(message), error); //#TODO: error check????
+}
+
+string buildMessage(double message, double pid_p, double pid_i, double pid_d) {
+  //combines strings into one useful message #TODO: comma seperated or space or ?
+  stringstream ss;
+  ss << "$" << message << "," << pid_p << "," << pid_i << "," << pid_d;
+  string command;
+  ss >> command;
+
+  return command;
+}
+
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "bigoli_ethernet_drive_relay");
@@ -32,19 +73,34 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    //string speedTopic = nhp.param(string("topic"), string("/speed"));
-    //auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
+    //Setup speed info
+    string speedTopic = nhp.param(string("speedTopic"), string("/speed"));
+    auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
 
-    //SUBSCRIBE HERE #TODO
+    float speed_pid_p = nhp.param(string("speed_pid_p"), 0.0);
+    float speed_pid_i = nhp.param(string("speed_pid_i"), 0.0);
+    float speed_pid_d = nhp.param(string("speed_pid_d"), 0.0);
+
+    //Setup steering info
+    string steerTopic = nhp.param(string("steeringTopic"), string("/steering"));
+    auto steerSub = nh.subscribe(steerTopic, 1, steerCallback);
+
+    maxAngleMsg = nhp.param(string("max_angle_msg_in"), 1.0);
+
+    float steering_pid_p = nhp.param(string("steering_pid_p"), 0.0);
+    float steering_pid_i = nhp.param(string("steering_pid_i"), 0.0);
+    float steering_pid_d = nhp.param(string("steering_pid_d"), 0.0);
 
 
-    // wait for microcontroller to start #TODO need this?
+
+    // wait for microcontroller to start
     ros::Duration(2.0).sleep();
 
     //TCP client setup
     /*@Note https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/tutorial/tutdaytime1.html
-      this code changed based on the version of boost being used by ROS. Look at the updated
-      tutorial by following link and change as need be.
+      this code changed based on the version of boost being used by ROS.
+      Currently from 1.58 to 1.68 that looks like using io_context instead of io_service
+      Look at the updated tutorial by following link and change as need be.
     */
     ROS_INFO_STREAM("Trying to connect to TCP Host");
 
@@ -57,10 +113,11 @@ int main(int argc, char** argv) {
     tcp::socket socket(io_service);
     boost::asio::connect(socket, endpoint_iterator);
 
-    //CONNECTION NOW OPEN, READY TO READ FROM
-    ROS_INFO_STREAM("Connected to TCP Host!");
 
-    ros::Rate rate(10); //#TODO set rate time
+    //CONNECTION NOW OPEN, READY TO JAM
+    ROS_INFO_STREAM("Connected to TCP Host");
+
+    ros::Rate rate(10); //#TODO set this value to a good rate time
     while(ros::ok()) {
         ros::spinOnce();
 
@@ -68,21 +125,15 @@ int main(int argc, char** argv) {
         boost::system::error_code error;
 
         //write data to MBED
-        string message = "1,2,3,4";
-        boost::asio::write(socket, boost::asio::buffer(message), error); //#TODO: error check????
+        //Send Motor Command
+        string speedCommand = buildMessage(speed, speed_pid_p, speed_pid_i, speed_pid_d);
+        sendMessage(socket, speedCommand);
+        //Send Steering Command
+        string steeringCommand = buildMessage(steeringAngle, steering_pid_p, steering_pid_i, steering_pid_d);
+        sendMessage(socket, steeringCommand);
 
         //read data from MBED
-        size_t len = socket.read_some(boost::asio::buffer(buf), error);
-std::string reading(buf.begin(), buf.end()); //#TODO remove debug line
-ROS_INFO_STREAM(reading); //#TODO: remove debug line
-        if (error == boost::asio::error::eof) { //#TODO THIS ERROR GET OUT OF HERE MAY NEED TO CHANGE as recieving nothing = dead
-          ROS_INFO_STREAM("TCP Connection closed: Disconnecting");
-          break; // Connection closed cleanly by peer
-        }
-        else if (error) {
-          ROS_INFO_STREAM("TCP ERROR HAS OCCURRED: Disconnecting");
-          throw boost::system::system_error(error); // Some other error
-        }
+        //string response = readMessage(socket)
 
 
         rate.sleep();
