@@ -1,0 +1,12 @@
+<launch>
+    <node pkg="rr_platform" type="bigoli_ethernet_drive_relay" name="drive_relay" output="screen" respawn="false">
+	<param name="ip_address" value="196."/
+        <param name="tcp_port" value="7"/>
+	<param name="speed_pid_p" value="0.15"/>
+        <param name="speed_pid_i" value="0.0"/>
+        <param name="speed_pid_d" value="0.5"/>
+        <param name="steering_pid_p" value="0.15"/>
+        <param name="steering_pid_i" value="0.0"/>
+        <param name="steering_pid_d" value="0.5"/>
+    </node>
+</launch>

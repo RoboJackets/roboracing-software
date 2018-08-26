@@ -92,6 +92,10 @@ int main(int argc, char** argv) {
     float steering_pid_i = nhp.param(string("steering_pid_i"), 0.0);
     float steering_pid_d = nhp.param(string("steering_pid_d"), 0.0);
 
+    //IP address and port
+    string serverName = nhp.param(string("ip_address"), "192.168.2.2"); //#TODO: magic # and below
+    string serviceName = nhp.param(string("tcp_port"), "7");
+
 
 
     // wait for microcontroller to start
@@ -105,8 +109,6 @@ int main(int argc, char** argv) {
     */
     ROS_INFO_STREAM("Trying to connect to TCP Host");
 
-    string serverName = "192.168.2.2"; //ip #TODO ip .. is magic number
-    string serviceName = "7"; //port #TODO port .. is magic
     boost::asio::io_service io_service;
     tcp::resolver resolver(io_service);
     tcp::resolver::query query(serverName, serviceName);
@@ -118,7 +120,7 @@ int main(int argc, char** argv) {
     //CONNECTION NOW OPEN, READY TO JAM
     ROS_INFO_STREAM("Connected to TCP Host");
 
-    //send initialization message (PIDs)
+    //send initialization message (PIDs) //accel, deccel, steering #TODO: deccel pids
     string initMessage = buildInitMessage(speed_pid_p, speed_pid_i, speed_pid_d) + " " +
         buildInitMessage(steering_pid_p, steering_pid_i, steering_pid_d);
 
