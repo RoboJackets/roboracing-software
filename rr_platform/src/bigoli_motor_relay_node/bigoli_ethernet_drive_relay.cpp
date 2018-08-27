@@ -93,8 +93,8 @@ int main(int argc, char** argv) {
     float steering_pid_d = nhp.param(string("steering_pid_d"), 0.0);
 
     //IP address and port
-    string serverName = nhp.param(string("ip_address"), "192.168.2.2"); //#TODO: magic # and below
-    string serviceName = nhp.param(string("tcp_port"), "7");
+    string serverName = nhp.param(string("ip_address"), string("192.168.2.2")); //#TODO: magic # and below
+    string serviceName = nhp.param(string("tcp_port"), string("7"));
 
 
 
