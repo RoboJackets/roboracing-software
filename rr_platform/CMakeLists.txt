@@ -91,5 +91,6 @@ add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
 
 install(PROGRAMS launch/bigoli_camera_dynconfig.sh
+        PROGRAMS launch/sedani_camera_dynconfig.sh
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

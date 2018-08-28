@@ -51,6 +51,6 @@
     <remap from="image_flipped" to="camera/image_color_rect_flipped"/>
   </node>
   
- 
+  <node pkg="rr_platform" type="sedani_camera_dynconfig.sh" name="dynamic_configurator"/>
   
 </launch>
