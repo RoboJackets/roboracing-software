@@ -14,6 +14,14 @@
 using namespace std;
 using boost::asio::ip::tcp;
 
+struct PIDConst {
+  float p;
+  float i;
+  float d;
+};
+
+struct PIDConst accelDrivePID, decelDrivePID, steeringPID;
+
 double speed = 0.0;
 double steeringAngle = 0.0;
 
@@ -27,7 +35,7 @@ void speedCallback(const rr_platform::speed::ConstPtr &msg) {
 }
 
 void steerCallback(const rr_platform::steering::ConstPtr &msg) {
-    steeringAngle = msg->angle / maxAngleMsg * maxOutput;
+    steeringAngle = msg->angle / maxAngleMsg * maxOutput; //#TODO: should this calculation still done? Taken from old relay
 }
 
 string readMessage() {
@@ -57,10 +65,10 @@ void sendMessage(string message) {
   boost::asio::write(*currentSocket, boost::asio::buffer(message), error); //#TODO: error check????
 }
 
-string buildInitMessage(double pid_p, double pid_i, double pid_d) {
-  //combines PID into useful message; # means init message
+string buildPIDMessage(struct PIDConst pid) {
+  //combines PID into useful message
   stringstream ss;
-  ss << "#" << " " << pid_p << " " << pid_i << " " << pid_d;
+  ss << " " << pid.p << " " << pid.i << " " << pid.d;
   string command;
   ss >> command;
 
@@ -78,9 +86,14 @@ int main(int argc, char** argv) {
     string speedTopic = nhp.param(string("speedTopic"), string("/speed"));
     auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
 
-    float speed_pid_p = nhp.param(string("speed_pid_p"), 0.0);
-    float speed_pid_i = nhp.param(string("speed_pid_i"), 0.0);
-    float speed_pid_d = nhp.param(string("speed_pid_d"), 0.0);
+    //accel PID #TODO: CHANGE NAME
+    accelDrivePID.p = nhp.param(string("accel_pid_p"), 0.0);
+    accelDrivePID.i = nhp.param(string("accel_pid_i"), 0.0);
+    accelDrivePID.d = nhp.param(string("accel_pid_d"), 0.0);
+    //decel PID #TODO: launch file params ALSO make PID struct to handle better?????
+    decelDrivePID.p = nhp.param(string("decel_pid_p"), 0.0);
+    decelDrivePID.i = nhp.param(string("decel_pid_i"), 0.0);
+    decelDrivePID.d = nhp.param(string("decel_pid_d"), 0.0);
 
     //Setup steering info
     string steerTopic = nhp.param(string("steeringTopic"), string("/steering"));
@@ -88,9 +101,9 @@ int main(int argc, char** argv) {
 
     maxAngleMsg = nhp.param(string("max_angle_msg_in"), 1.0);
 
-    float steering_pid_p = nhp.param(string("steering_pid_p"), 0.0);
-    float steering_pid_i = nhp.param(string("steering_pid_i"), 0.0);
-    float steering_pid_d = nhp.param(string("steering_pid_d"), 0.0);
+    steeringPID.p = nhp.param(string("steering_pid_p"), 0.0);
+    steeringPID.i = nhp.param(string("steering_pid_i"), 0.0);
+    steeringPID.d = nhp.param(string("steering_pid_d"), 0.0);
 
     //IP address and port
     string serverName = nhp.param(string("ip_address"), string("192.168.2.2")); //#TODO: magic # and below
@@ -121,8 +134,10 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("Connected to TCP Host");
 
     //send initialization message (PIDs) //accel, deccel, steering #TODO: deccel pids
-    string initMessage = buildInitMessage(speed_pid_p, speed_pid_i, speed_pid_d) + " " +
-        buildInitMessage(steering_pid_p, steering_pid_i, steering_pid_d);
+    //combines PID into useful message; # means init message 
+    string initMessage = "#" + buildPIDMessage(accelDrivePID) +
+          " " + buildPIDMessage(decelDrivePID) +
+          " " + buildPIDMessage(steeringPID);
 
     sendMessage(initMessage);
     ROS_INFO_STREAM("Sent initialization PID: " + initMessage);
