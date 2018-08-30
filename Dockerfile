@@ -16,5 +16,5 @@ COPY . ./src/roboracing-software
 
 # Install all ROS dependencies that can automatically be installed
 # We're ignoring rosdep keys that are only required for interacting with hardware
-#RUN /bin/bash -c "source /opt/ros/melodic/setup.bash && rosdep install -iy --from-paths ./src  --skip-keys='realsense_camera pointgrey_camera_driver libuvc_camera'"
-RUN /bin/bash -c "rosdep install -iy --from-paths ./src  --skip-keys='realsense_camera pointgrey_camera_driver libuvc_camera'"
+#RUN /bin/bash -c "source /opt/ros/melodic/setup.bash && rosdep install -iy --from-paths ./src  --skip-keys='realsense2_camera pointgrey_camera_driver libuvc_camera'"
+RUN /bin/bash -c "rosdep install -iy --from-paths ./src  --skip-keys='realsense2_camera pointgrey_camera_driver libuvc_camera'"
