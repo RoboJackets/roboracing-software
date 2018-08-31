@@ -360,9 +360,9 @@ int main(int argc, char** argv) {
     rand_gen = mt19937(std::random_device{}());
 
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
-    path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
+    path_pub = nh.advertise<nav_msgs::Path>("/plan/path", 1);
 
     ROS_INFO("planner initialized");
 
