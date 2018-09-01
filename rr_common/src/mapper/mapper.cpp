@@ -9,6 +9,11 @@
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 typedef pcl::PointCloud<pcl::PointXYZ> cloud_t;
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr_t;
 
@@ -79,54 +84,76 @@ int main(int argc, char** argv) {
 
     tf::TransformListener tfListener;
 
+    ROS_INFO("starting mapper main loop");
+
     ros::Rate rate(refreshRate);
     while(ros::ok()) {
         ros::spinOnce();
+
+        ROS_INFO("mapper main loop iteration");
 
         if(needsUpdating) {
 
             combo_cloud->clear();
             combo_cloud_filtered->clear();
 
-            for(const auto& partial_pair : partials) {
+            cout << "partials length = " << partials.size() << endl;
+
+            //for(const auto& partial_pair : partials) {
+            {
+                cout << "new loop" << endl;
+                cout << "processing new data on " << "/scan/pointcloud" << endl;//partial_pair.first << endl;
+
                 // grab the reference to the sensor message from the map
-                auto& msg = partial_pair.second;
+                auto& msg = partials["/scan/pointcloud"];//partial_pair.second;
                 if(msg->width == 0) continue;
 
                 // convert from message to pcl pointcloud
+                cout << "convert from message to pointcloud" << endl;
                 pcl::PCLPointCloud2 pcl_pc2;
                 pcl_conversions::toPCL(*msg, pcl_pc2);
                 cloud_t partialCloud;
                 pcl::fromPCLPointCloud2(pcl_pc2, partialCloud);
 
                 // frame transform
+                cout << "frame transform" << endl;
                 cloud_ptr_t transformed(new cloud_t);
                 tfListener.waitForTransform(msg->header.frame_id, combinedFrame, ros::Time(0), ros::Duration(0.1));
                 pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
 
                 // filter by z axis height
-                cloud_t filtered;
-                filterPass.setInputCloud(transformed);
-                filterPass.filter(filtered);
+                //cout << "filter by height" << endl;
+                //cloud_t filtered;
+                //filterPass.setInputCloud(transformed);
+                //filterPass.filter(filtered);
 
-                *(combo_cloud) += filtered;
+                cout << "append to combo cloud" << endl;
+                //*(combo_cloud) += filtered;
+                cout << "appended to combo cloud successfully" << endl;
             }
 
             // make 2D
-            for(auto& pt : *combo_cloud) {
+            cout << "starting make 2d" << endl;
+            //ros::Duration(1.0).sleep();
+            for(auto& pt : combo_cloud->points) {
+                cout << "accessing point" << endl;
                 pt.z = 0;
+                cout << "set z axis to 0" << endl;
             }
 
             // reduce number of points using a grid
+            cout << "reduce number of points" << endl;
             cloud_ptr_t tmpFiltered(new cloud_t);
             filterVG.setInputCloud(combo_cloud);
             filterVG.filter(*tmpFiltered);
 
             // filter statistical outliers
+            ROS_INFO("filter outliers");
             filterOutliers.setInputCloud(tmpFiltered);
             filterOutliers.filter(*combo_cloud_filtered);
 
             // convert back to message
+            ROS_INFO("convert back to message");
             pcl::PCLPointCloud2 combo_pc2;
             pcl::toPCLPointCloud2(*combo_cloud_filtered, combo_pc2);
             sensor_msgs::PointCloud2 msg;
