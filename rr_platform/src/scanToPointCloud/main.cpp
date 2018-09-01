@@ -24,7 +24,7 @@ void scanCallback(const sensor_msgs::LaserScanConstPtr &msg) {
     for(auto iter = cloud_pc->begin(); iter != cloud_pc->end();) {
         auto point = *iter;
         auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
-        if(distance < 1.0) {
+        if(distance < 0.3) {
             iter = cloud_pc->erase(iter);
         } else {
             iter++;

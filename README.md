@@ -30,10 +30,8 @@ Most folders in this repository are ROS packages.
 
 The following files and folders enable our continuous integration system.
 
-* external
-* util
-* circle.yml
-* config.docif
+* .circleci
+* Dockerfile
 
 ## Installation
 

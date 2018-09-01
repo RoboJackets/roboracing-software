@@ -2,6 +2,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <std_msgs/Bool.h>
+#include <numeric>
 
 using namespace std;
 using namespace ros;

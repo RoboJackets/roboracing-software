@@ -9,12 +9,13 @@
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 
+using std::cout;
+using std::endl;
+
 typedef pcl::PointCloud<pcl::PointXYZ> cloud_t;
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr_t;
 
-std::map<std::string,sensor_msgs::PointCloud2ConstPtr> partials;
-cloud_ptr_t combo_cloud;
-cloud_ptr_t combo_cloud_filtered;
+std::map<std::string, sensor_msgs::PointCloud2ConstPtr> partials;
 bool needsUpdating = false;
 
 void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
@@ -41,8 +42,12 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
 
-    combo_cloud.reset(new cloud_t);
-    combo_cloud_filtered.reset(new cloud_t);
+    cloud_ptr_t combo_cloud(new cloud_t);
+    cloud_ptr_t combo_cloud_filtered(new cloud_t);
+    cloud_ptr_t transformed(new cloud_t);
+    cloud_ptr_t filtered_pass(new cloud_t);
+    cloud_ptr_t filtered_vg(new cloud_t);
+    cloud_ptr_t filtered_stat(new cloud_t);
 
     std::string sourceList = nh_private.param("sources", std::string());
     std::string publishName = nh_private.param("destination", std::string("/map"));
@@ -79,6 +84,8 @@ int main(int argc, char** argv) {
 
     tf::TransformListener tfListener;
 
+    ROS_INFO("starting mapper main loop");
+
     ros::Rate rate(refreshRate);
     while(ros::ok()) {
         ros::spinOnce();
@@ -100,37 +107,38 @@ int main(int argc, char** argv) {
                 pcl::fromPCLPointCloud2(pcl_pc2, partialCloud);
 
                 // frame transform
-                cloud_ptr_t transformed(new cloud_t);
+                transformed->clear();
                 tfListener.waitForTransform(msg->header.frame_id, combinedFrame, ros::Time(0), ros::Duration(0.1));
                 pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
 
                 // filter by z axis height
-                cloud_t filtered;
+                filtered_pass->clear();
                 filterPass.setInputCloud(transformed);
-                filterPass.filter(filtered);
+                filterPass.filter(*filtered_pass);
 
-                *(combo_cloud) += filtered;
+                *(combo_cloud) += *filtered_pass;
             }
 
             // make 2D
-            for(auto& pt : *combo_cloud) {
+            for(auto& pt : combo_cloud->points) {
                 pt.z = 0;
             }
 
             // reduce number of points using a grid
-            cloud_ptr_t tmpFiltered(new cloud_t);
+            filtered_vg->clear();
             filterVG.setInputCloud(combo_cloud);
-            filterVG.filter(*tmpFiltered);
+            filterVG.filter(*filtered_vg);
 
             // filter statistical outliers
-            filterOutliers.setInputCloud(tmpFiltered);
-            filterOutliers.filter(*combo_cloud_filtered);
+            filtered_pass->clear();
+            filterOutliers.setInputCloud(filtered_vg);
+            filterOutliers.filter(*filtered_pass);
 
             // convert back to message
             pcl::PCLPointCloud2 combo_pc2;
-            pcl::toPCLPointCloud2(*combo_cloud_filtered, combo_pc2);
+            pcl::toPCLPointCloud2(*filtered_pass, combo_pc2);
             sensor_msgs::PointCloud2 msg;
-            pcl_conversions::fromPCL(combo_pc2,msg);
+            pcl_conversions::fromPCL(combo_pc2, msg);
 
             msg.header.frame_id = combinedFrame;
             msg.header.stamp = ros::Time::now();

@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find avc)/launch/avc.launch"/>
+    <include file="$(find rr_platform)/launch/bigoli_platform.launch"/>
+
+    <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="2"/>
+        <param name="startSignal" type="string" value="/start_detected"/>
+        <param name="resetSignal" type="string" value="/reset_detected"/>
+    </node>
+
+    <include file="$(find avc)/launch/mapper.launch"/>
+    <include file="$(find avc)/launch/planner_bigoli.launch"/>
+    
     <include file="$(find avc)/launch/start_detector.launch"/>
     <include file="$(find avc)/launch/finish_detector.launch"/>
-    <include file="$(find rr_platform)/launch/bigoli_platform.launch"/>
 </launch>

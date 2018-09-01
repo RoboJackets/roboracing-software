@@ -217,6 +217,18 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+
+    // remove points that cause a collision at t=0
+    for(auto iter = cloud->begin(); iter != cloud->end();) {
+        auto& point = *iter;
+        auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
+        if(distance < COLLISION_RADIUS) {
+            iter = cloud->erase(iter);
+        } else {
+            iter++;
+        }
+    }
+
     if (cloud->empty()) {
         ROS_WARN("environment map pointcloud is empty");
         rr_platform::speedPtr speedMSG(new rr_platform::speed);
@@ -275,8 +287,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
     }
 
-    /*ROS_INFO("Planner found %d local minima. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestIndex]);*/
+    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
+             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -359,10 +371,12 @@ int main(int argc, char** argv) {
     }
     rand_gen = mt19937(std::random_device{}());
 
+    tfListener.reset(new tf::TransformListener);
+
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
-    path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
+    path_pub = nh.advertise<nav_msgs::Path>("/plan/path", 1);
 
     ROS_INFO("planner initialized");
 

@@ -82,16 +82,9 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
     cvtColor(frame, frame, CV_BGR2GRAY);
 
-    // Rect ROI(0,0,640,50);
-
-    // frame = frame(ROI);
-
     auto count = countNonZero(frame);
-    // ROS_INFO_STREAM("count - " << to_string(count));
-
 
     auto width = getWidth(frame);
-    // ROS_INFO_STREAM("width - " << to_string(width));
 
 
     if(state == LOW && count > 4000 && width > 850) {

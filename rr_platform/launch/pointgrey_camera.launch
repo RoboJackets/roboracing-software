@@ -2,7 +2,6 @@
   <arg name="nodelet_manager_launched" default="0" />
   <arg name="serial" default="0" />
   <arg name="enable_trigger" default="false"/>
-  <arg name="upside_down" default="false"/>
   
   <!-- nodelet manager process -->
   <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager"  output="screen" args="manager" unless="$(arg nodelet_manager_launched)" />
