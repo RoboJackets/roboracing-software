@@ -3,7 +3,7 @@
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
-    <!--<include file="$(find avc)/launch/mapper.launch"/>-->
+    <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner_macaroni.launch"/>
 
     <!-- <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">

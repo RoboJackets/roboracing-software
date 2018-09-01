@@ -8,6 +8,7 @@
         <param name="resetSignal" type="string" value="/reset_detected"/>
     </node>
 
+    <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner_bigoli.launch"/>
     
     <include file="$(find avc)/launch/start_detector.launch"/>

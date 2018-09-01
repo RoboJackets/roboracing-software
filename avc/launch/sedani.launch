@@ -5,5 +5,6 @@
 
     <include file="$(find rr_platform)/launch/sedani.launch"/>
 
+    <include file="$(find avc)/launch/mapper.launch"/>
     <include file="$(find avc)/launch/planner_sedani.launch"/>
 </launch>

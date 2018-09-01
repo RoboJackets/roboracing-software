@@ -6,7 +6,7 @@
         <param name="SEGMENT_DISTANCES" value="2 3 3"/>
         <param name="STEER_LIMITS" value="0.35 0.35 0.35"/>
         <param name="STEER_STDDEVS" value="0.22 0.16 0.15"/>
-        <param name="INPUT_CLOUD_TOPIC" value="/scan/pointcloud"/>
+        <param name="INPUT_CLOUD_TOPIC" value="/current_obstacles"/>
         <param name="MAX_SPEED" value="2.0"/>
         <param name="PATH_SIMILARITY_CUTOFF" value="0.20"/>
         <param name="MAX_RELATIVE_COST" value="7.0"/>

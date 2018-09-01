@@ -218,14 +218,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
 
-    ROS_INFO("***** frame transform");
-    pcl::PointCloud<pcl::PointXYZ> transformed;
-    ROS_INFO_STREAM(map->header.frame_id);
-    tfListener->waitForTransform(map->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(0.1));
-    pcl_ros::transformPointCloud("/base_footprint", *cloud, transformed, *tfListener);
-
-    *cloud = transformed;
-
+    // remove points that cause a collision at t=0
     for(auto iter = cloud->begin(); iter != cloud->end();) {
         auto& point = *iter;
         auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
