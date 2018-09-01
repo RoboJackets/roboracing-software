@@ -402,7 +402,7 @@
     <joint name="lidar_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser"/>
-        <origin xyz="0.46 0 0.14" rpy="0 0 -3.1415"/>
+        <origin xyz="0.46 0 0.14" rpy="0 0 3.14159"/>
     </joint>
 
     <joint name="imu" type="fixed">

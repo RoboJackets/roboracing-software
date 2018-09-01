@@ -217,6 +217,25 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+
+    ROS_INFO("***** frame transform");
+    pcl::PointCloud<pcl::PointXYZ> transformed;
+    ROS_INFO_STREAM(map->header.frame_id);
+    tfListener->waitForTransform(map->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(0.1));
+    pcl_ros::transformPointCloud("/base_footprint", *cloud, transformed, *tfListener);
+
+    *cloud = transformed;
+
+    for(auto iter = cloud->begin(); iter != cloud->end();) {
+        auto& point = *iter;
+        auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
+        if(distance < COLLISION_RADIUS) {
+            iter = cloud->erase(iter);
+        } else {
+            iter++;
+        }
+    }
+
     if (cloud->empty()) {
         ROS_WARN("environment map pointcloud is empty");
         rr_platform::speedPtr speedMSG(new rr_platform::speed);
@@ -275,8 +294,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         }
     }
 
-    /*ROS_INFO("Planner found %d local minima. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestIndex]);*/
+    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
+             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
 
     rr_platform::speedPtr speedMSG(new rr_platform::speed);
     rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -358,6 +377,8 @@ int main(int argc, char** argv) {
         steering_gaussians.push_back(normal_distribution<float>(0, STEER_STDDEVS[i]));
     }
     rand_gen = mt19937(std::random_device{}());
+
+    tfListener.reset(new tf::TransformListener);
 
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
     speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);

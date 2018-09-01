@@ -37,6 +37,7 @@ float MAX_RELATIVE_COST;
 std::vector<std::normal_distribution<float> > steering_gaussians;
 std::mt19937 rand_gen;
 ros::Publisher speed_pub, steer_pub, path_pub;
+std::unique_ptr<tf::TransformListener> tfListener;
 
 typedef std::vector<float> control_vector;
 
