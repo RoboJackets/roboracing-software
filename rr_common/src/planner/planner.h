@@ -1,67 +1,115 @@
 #ifndef RR_COMMON_PLANNER_H
 #define RR_COMMON_PLANNER_H
 
-#include <ros/ros.h>
-#include <cmath>
-#include <cstring>
 #include <string>
 #include <random>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/conversions.h>
-#include <pcl_ros/transforms.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <nav_msgs/Path.h>
-#include <geometry_msgs/PoseStamped.h>
-#include "flann/flann.hpp"
 
-int N_PATH_SEGMENTS;
-int N_CONTROL_SAMPLES;
-int SMOOTHING_ARRAY_SIZE;
-std::vector<float> SEGMENT_DISTANCES;
-std::vector<float> STEER_LIMITS;
-std::vector<float> STEER_STDDEVS;
-std::vector<float> PREV_STEERING_ANGLES;
-int PREV_STEERING_ANGLES_INDEX;
-float DISTANCE_INCREMENT;
-float MAX_SPEED;
-float WHEEL_BASE;
-float COLLISION_PENALTY;
-float PATH_SIMILARITY_CUTOFF;
-float MAX_RELATIVE_COST;
-float OBSTACLE_SEARCH_RADIUS;
+namespace rr {
+namespace planning {
 
-std::vector<std::normal_distribution<float> > steering_gaussians;
-std::mt19937 rand_gen;
-ros::Publisher speed_pub, steer_pub, path_pub;
-std::unique_ptr<tf::TransformListener> tfListener;
+using KdTreeMap = pcl::KdTreeFLANN<pcl::PointXYZ>;
 
-typedef std::vector<float> control_vector;
+struct Pose {
+  double x;
+  double y;
+  double theta;
+};
 
-struct Pose2D {
-    float x;
-    float y;
-    float theta;
+struct PathPoint {
+  Pose pose;
+  double steer;
+  double speed;
+};
+
+struct PlannedPath {
+  std::vector<double> control;  // input to a path
+  std::vector<PathPoint> path;  // results of path rollout
+  double cost;  // result of applying cost function
 };
 
 struct CollisionBox {
-    float lengthFront;  // distance from origin to front edge
-    float lengthBack;  // ditto for back edge, etc.
-    float widthLeft;
-    float widthRight;
+  double lengthFront;  // distance from origin to front edge
+  double lengthBack;  // ditto for back edge, etc.
+  double widthLeft;
+  double widthRight;
 };
-CollisionBox robot_collision_box;
 
-void advanceStep(float steerAngle, Pose2D &inOutPose);
-float getCostAtPose(const Pose2D &pose, const pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
-inline float steeringToSpeed(float steering, float maxSteering);
-float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
-float steeringSample(int stage);
-void getLocalMinima(const std::vector<control_vector>&, const std::vector<float>&, std::vector<int>&);
-void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map);
-void parseFloatArrayStr(std::string &arrayAsString, std::vector<float> &floats);
+class Planner
+{
+public:
+
+  struct Params {
+    int n_path_segments;
+    int n_control_samples;
+    int smoothing_array_size;
+    double distance_increment;
+    double max_speed;
+    double wheel_base;
+    double path_similarity_cutoff;
+    double max_relative_cost;
+    double obstacle_search_radius;
+    std::vector<double> segment_distances;
+    std::vector<double> steer_limits;
+    std::vector<double> steer_stddevs;
+    CollisionBox collision_box;
+  };
+
+
+  Planner(const Params &params);
+
+  ~Planner() = default;
+
+  PlannedPath Plan(const KdTreeMap &kd_tree_map);
+
+private:
+
+  double SampleSteering(int stage);
+
+  double SteeringToSpeed(double steer_angle);
+
+  /*
+   * StepKinematics: calculate one distance-step of "simulated"
+   * vehicle motion. Bicycle-model steering trig happens here.
+   * Params:
+   * steer_angle - steering angle in radians centered at 0
+   * pose - (x,y,theta)
+   */
+  Pose StepKinematics(const Pose &pose, double steer_angle);
+
+  std::vector<PathPoint> RollOutPath(const std::vector<double> &control);
+
+  /*
+   * GetCollisionDistance: calculate the shortest distance from any part of the robot to any
+   * point in the map.
+   * Params:
+   * - pose - Future pose relative to current pose. The robot's initial state is (0, 0, 0)
+   * - kdtree - nearest-neighbors-searchable map
+   * Returns:
+   * - bool, collision detected
+   * - double, clearing distance to nearest obstacle
+   */
+  std::tuple<bool, double> GetCollisionDistance(const Pose &pose, const KdTreeMap &kd_tree_map);
+
+  std::tuple<bool, double> GetCost(const std::vector<double> &control, const KdTreeMap &kd_tree_map);
+
+  std::vector<int> GetLocalMinima(const std::vector<PlannedPath> &paths);
+
+
+  // algorithm parameters
+  const Params params;
+
+  // mutable state
+  std::vector<double> prev_steering_angles_;
+  int prev_steering_angles_index_;
+
+  std::vector<std::normal_distribution<double>> steering_gaussians_;
+  std::mt19937 rand_gen_;
+};
+
+
+}  // namespace planning
+}  // namespace rr
 
 #endif //RR_COMMON_PLANNER_H

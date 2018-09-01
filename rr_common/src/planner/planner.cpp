@@ -1,114 +1,118 @@
 #include "planner.h"
 #include <algorithm>
+#include <cmath>
 
-using namespace std;
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/transforms.h>
+#include <geometry_msgs/PoseStamped.h>
+#include "flann/flann.hpp"
 
-/*
- * advanceStep: calculate one distance-step of "simulated"
- * vehicle motion. Undocumented Ackermann steering trig is
- * grandfathered in.
- * Params:
- * steerAngle - steering angle in radians centered at 0
- * inOutPose - pose (x,y,theta) that is read and updated
- *      with the new pose
- */
+namespace rr {
+namespace planning {
 
-void advanceStep(float steerAngle, Pose2D &inOutPose) {
-    float deltaX, deltaY, deltaTheta;
-    if (abs(steerAngle) < 1e-3) {
-        deltaX = DISTANCE_INCREMENT;
-        deltaY = 0;
-        deltaTheta = 0;
-    } else {
-        float turnRadius = WHEEL_BASE / sin(abs(steerAngle));
-        float tempTheta = DISTANCE_INCREMENT / turnRadius;
-        deltaX = turnRadius * cos(M_PI / 2 - tempTheta);
-        if (steerAngle < 0) {
-            deltaY = turnRadius - turnRadius * sin(M_PI / 2 - tempTheta);
-        } else {
-            deltaY = -(turnRadius - turnRadius * sin(M_PI / 2 - tempTheta));
-        }
-        deltaTheta = DISTANCE_INCREMENT / WHEEL_BASE * sin(-steerAngle);
-    }
+Planner::Planner(const Params& params_ext) : params(params_ext) {
+  prev_steering_angles_.resize(params.smoothing_array_size, 0);
+  prev_steering_angles_index_ = 0;
 
-    inOutPose.x += deltaX * cos(inOutPose.theta) - deltaY * sin(inOutPose.theta);
-    inOutPose.y += deltaX * sin(inOutPose.theta) + deltaY * cos(inOutPose.theta);
-    inOutPose.theta += deltaTheta;
+  for(double d : params.steer_stddevs) {
+    steering_gaussians_.emplace_back(0, d);
+  }
+  rand_gen_ = std::mt19937(std::random_device{}());
 }
 
-/*
- * getCostAtPose: calculate the cost of being in a certain position
- * relative to obstacles. Cost = 1 / d where d is the distance to the
- * nearest detected obstacle.
- * Params:
- * pose - relative (x,y,theta) for a possible future pose. The robot's
- *      actual state is x=0, y=0, theta=0
- * kdtree - FLANN index constructed from the obstacles map
- */
-float distAtPose(const Pose2D &pose, const pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-    double robotCenterX = (robot_collision_box.lengthFront - robot_collision_box.lengthBack) / 2.;
-    double robotCenterY = (robot_collision_box.widthLeft - robot_collision_box.widthRight) / 2.;
-    double searchX = pose.x + robotCenterX * cos(pose.theta);
-    double searchY = pose.y + robotCenterY * sin(pose.theta);
+Pose Planner::StepKinematics(const Pose &pose, double steer_angle) {
+  float deltaX, deltaY, deltaTheta;
 
-    double halfLength = (robot_collision_box.lengthFront + robot_collision_box.lengthBack) / 2.;
-    double halfWidth = (robot_collision_box.lengthFront + robot_collision_box.lengthBack) / 2.;
-    double farthestPointOnRobot = sqrt(halfLength*halfLength + halfWidth*halfWidth);
-
-    pcl::PointXYZ searchPoint(searchX, searchY, 0);
-    vector<int> pointIdxs;
-    vector<float> squaredDistances;
-    int nResults = kdtree.radiusSearch(searchPoint, OBSTACLE_SEARCH_RADIUS, pointIdxs,
-                                       squaredDistances);
-    // ROS_INFO_STREAM("nResults = " << nResults);
-
-    if (nResults == 0) { //no obstacles in sight
-        return 0;
+  if (abs(steer_angle) < 1e-3) {
+    deltaX = params.distance_increment;
+    deltaY = 0;
+    deltaTheta = 0;
+  } else {
+    float turnRadius = params.wheel_base / sin(abs(steer_angle));
+    float tempTheta = params.distance_increment / turnRadius;
+    deltaX = turnRadius * cos(M_PI / 2 - tempTheta);
+    if (steer_angle < 0) {
+        deltaY = turnRadius - turnRadius * sin(M_PI / 2 - tempTheta);
     } else {
-        const double cosTheta = cos(pose.theta);
-        const double sinTheta = sin(pose.theta);
-
-        // convert each point to robot reference frame and check collision and distances
-        double minDist = 1000.0;
-        for (int i : pointIdxs) {
-            const auto& point = kdtree.getInputCloud()->at(i);
-            const double tmpX = point.x - pose.x - robotCenterX;
-            const double tmpY = point.y - pose.y - robotCenterY;
-            const double x = cosTheta * tmpX - sinTheta * tmpY - robotCenterX;
-            const double y = sinTheta * tmpX + cosTheta * tmpY - robotCenterY;
-            // ROS_INFO("pose %.3f, %.3f, %.3f  before: %.3f, %.3f  after: %.3f, %.3f", pose.x, pose.y,
-            //          pose.theta, point.x, point.y, x, y);
-
-            // collisions
-            if (abs(x) <= halfLength && abs(y) <= halfWidth) {
-                return -1;
-            }
-
-            // find distance, in several cases
-            double dist;
-            if (abs(x) > halfLength) {
-                // not alongside the robot
-                if (abs(y) > halfWidth) {
-                    // closest to a corner
-                    double cornerX = halfLength * ((x < 0) ? -1 : 1);
-                    double cornerY = halfWidth * ((y < 0) ? -1 : 1);
-                    double dx = x - cornerX;
-                    double dy = y - cornerY;
-                    dist = sqrt(dx*dx + dy*dy);
-                } else {
-                    // directly in front of or behind robot
-                    dist = abs(x) - halfLength;
-                }
-            } else {
-                // directly to the side of the robot
-                dist = abs(y) - halfWidth;
-            }
-            minDist = min(minDist, dist);
-        }
-
-        // ROS_INFO_STREAM("minDist = " << minDist);
-        return minDist;
+        deltaY = -(turnRadius - turnRadius * sin(M_PI / 2 - tempTheta));
     }
+    deltaTheta = params.distance_increment / params.wheel_base * sin(-steer_angle);
+  }
+
+  Pose out;
+  out.x = pose.x + deltaX * cos(pose.theta) - deltaY * sin(pose.theta);
+  out.y = pose.y + deltaX * sin(pose.theta) + deltaY * cos(pose.theta);
+  out.theta = pose.theta + deltaTheta;
+  return out;
+}
+
+std::tuple<bool, double> Plannner::GetCollisionDistance(const Pose &pose, 
+                                                        const KdTreeMap &kd_tree_map) {
+  double robotCenterX = (params.robot_collision.lengthFront - params.robot_collision.lengthBack) / 2.;
+  double robotCenterY = (params.robot_collision.widthLeft - params.robot_collision.widthRight) / 2.;
+  double searchX = pose.x + robotCenterX * cos(pose.theta);
+  double searchY = pose.y + robotCenterY * sin(pose.theta);
+
+  double halfLength = (params.robot_collision.lengthFront + params.robot_collision.lengthBack) / 2.;
+  double halfWidth = (params.robot_collision.lengthFront + params.robot_collision.lengthBack) / 2.;
+  double farthestPointOnRobot = sqrt(halfLength*halfLength + halfWidth*halfWidth);
+
+  pcl::PointXYZ searchPoint(searchX, searchY, 0);
+  vector<int> pointIdxs;
+  vector<double> squaredDistances;
+  int nResults = kd_tree_map.radiusSearch(searchPoint, OBSTACLE_SEARCH_RADIUS, pointIdxs,
+                                          squaredDistances);
+  // ROS_INFO_STREAM("nResults = " << nResults);
+
+  if (nResults == 0) { //no obstacles in sight
+    return 0;
+  } else {
+    const double cosTheta = cos(pose.theta);
+    const double sinTheta = sin(pose.theta);
+
+    // convert each point to robot reference frame and check collision and distances
+    double minDist = 1000.0;
+    for (int i : pointIdxs) {
+      const auto& point = kdtree.getInputCloud()->at(i);
+      const double tmpX = point.x - pose.x - robotCenterX;
+      const double tmpY = point.y - pose.y - robotCenterY;
+      const double x = cosTheta * tmpX - sinTheta * tmpY - robotCenterX;
+      const double y = sinTheta * tmpX + cosTheta * tmpY - robotCenterY;
+      // ROS_INFO("pose %.3f, %.3f, %.3f  before: %.3f, %.3f  after: %.3f, %.3f", pose.x, pose.y,
+      //          pose.theta, point.x, point.y, x, y);
+
+      // collisions
+      if (abs(x) <= halfLength && abs(y) <= halfWidth) {
+        return -1;
+      }
+
+      // find distance, in several cases
+      double dist;
+      if (abs(x) > halfLength) {
+        // not alongside the robot
+        if (abs(y) > halfWidth) {
+          // closest to a corner
+          double cornerX = halfLength * ((x < 0) ? -1 : 1);
+          double cornerY = halfWidth * ((y < 0) ? -1 : 1);
+          double dx = x - cornerX;
+          double dy = y - cornerY;
+          dist = sqrt(dx*dx + dy*dy);
+        } else {
+          // directly in front of or behind robot
+          dist = abs(x) - halfLength;
+        }
+      } else {
+        // directly to the side of the robot
+        dist = abs(y) - halfWidth;
+      }
+      minDist = min(minDist, dist);
+    }
+
+    // ROS_INFO_STREAM("minDist = " << minDist);
+    return minDist;
+  }
 }
 
 /*
@@ -120,8 +124,8 @@ float distAtPose(const Pose2D &pose, const pcl::KdTreeFLANN<pcl::PointXYZ> &kdtr
  * steering - proposed steering value to publish
  * maxSteering - the limit of the car's steering ability
  */
-inline float steeringToSpeed(float steering, float maxSteering) {
-    return MAX_SPEED * cos(steering * 1.2 / maxSteering);
+double Planner::SteeringToSpeed(double steer_angle);
+    return params.max_speed * cos(steer_angle * 1.2 / maxSteering);
 }
 
 /*
@@ -413,24 +417,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    nhp.param("N_PATH_SEGMENTS", N_PATH_SEGMENTS, 2);
-    nhp.param("N_CONTROL_SAMPLES", N_CONTROL_SAMPLES, 200);
-    nhp.param("SEGMENT_DISTANCES", segmentDistancesStr, string("3 5"));
-    nhp.param("STEER_LIMITS", steerLimitsStr, string("0.4 0.4"));
-    nhp.param("STEER_STDDEVS", steerStdDevsStr, string("0.2 0.2"));
-    nhp.param("INPUT_CLOUD_TOPIC", obstacleCloudTopic, string("/map"));
-    nhp.param("DISTANCE_INCREMENT", DISTANCE_INCREMENT, 0.2f);
-    nhp.param("MAX_SPEED", MAX_SPEED, 0.5f);
-    nhp.param("WHEEL_BASE", WHEEL_BASE, 0.37f); //TODO get from tf tree
-    nhp.param("COLLISION_DIST_FRONT", robot_collision_box.lengthFront, 0.3f);
-    nhp.param("COLLISION_DIST_BACK", robot_collision_box.lengthBack, 0.3f);
-    nhp.param("COLLISION_DIST_SIDE", robot_collision_box.widthLeft, 0.3f);
-    robot_collision_box.widthRight = robot_collision_box.widthLeft;
-    nhp.param("COLLISION_PENALTY", COLLISION_PENALTY, 1000.0f);
-    nhp.param("PATH_SIMILARITY_CUTOFF", PATH_SIMILARITY_CUTOFF, 0.05f);
-    nhp.param("MAX_RELATIVE_COST", MAX_RELATIVE_COST, 2.0f);
-    nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 20);
-    nhp.param("OBSTACLE_SEARCH_RADIUS", OBSTACLE_SEARCH_RADIUS, 2.0f);
+
 
     PREV_STEERING_ANGLES_INDEX = 0;
     PREV_STEERING_ANGLES.resize(SMOOTHING_ARRAY_SIZE);
@@ -444,15 +431,4 @@ int main(int argc, char** argv) {
     }
     rand_gen = mt19937(std::random_device{}());
 
-    tfListener.reset(new tf::TransformListener);
-
-    auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
-    path_pub = nh.advertise<nav_msgs::Path>("/plan/path", 1);
-
-    ROS_INFO("planner initialized");
-
-    ros::spin();
-    return 0;
 }
