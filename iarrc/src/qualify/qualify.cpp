@@ -22,7 +22,7 @@ const double kD = 0;
 double error = 0; 
 double error_prior = 0;
 
-ros::Time time_prior;  // used to calculate integration interval
+double time_prior = 0;  // used to calculate integration interval
 ros::Time time_now; 
 double dt = 0; 
 double integral = 0;
@@ -53,8 +53,11 @@ void imuCallback(const rr_platform::axesConstPtr& msg) {
     currentYaw = msg->yaw;
 
     time_now = msg->header.stamp;
+
     dt = time_now.toSec() - time_prior;
+
     time_prior = time_now.toSec();
+    
     
 
     
