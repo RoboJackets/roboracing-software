@@ -5,8 +5,8 @@
         <param name="refresh_rate" value="15"/>
         <param name="combined_frame" value="base_footprint"/>
 
-        <param name="ground_threshold" value="0.1"/>
-        <param name="outlier_neighbors" value="4"/>
-        <param name="outlier_threshold" value="0.5"/>
+        <param name="ground_threshold" value="0"/>
+        <param name="outlier_neighbors" value="1"/>
+        <param name="outlier_threshold" value="100.0"/>
     </node>
 </launch>
