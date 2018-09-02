@@ -52,11 +52,11 @@ std::tuple<bool, double> Plannner::GetCollisionDistance(const Pose &pose,
                                                         const KdTreeMap &kd_tree_map) {
   double robotCenterX = (params.robot_collision.lengthFront - params.robot_collision.lengthBack) / 2.;
   double robotCenterY = (params.robot_collision.widthLeft - params.robot_collision.widthRight) / 2.;
-  double searchX = pose.x + robotCenterX * cos(pose.theta);
-  double searchY = pose.y + robotCenterY * sin(pose.theta);
+  double searchX = pose.x + robotCenterX * cos(pose.theta) - robotCenterY * sin(pose.theta);
+  double searchY = pose.y + robotCenterX * sin(pose.theta) + robotCenterY * cos(pose.theta);
 
   double halfLength = (params.robot_collision.lengthFront + params.robot_collision.lengthBack) / 2.;
-  double halfWidth = (params.robot_collision.lengthFront + params.robot_collision.lengthBack) / 2.;
+  double halfWidth = (params.robot_collision.widthLeft + params.robot_collision.widthRight) / 2.;
   double farthestPointOnRobot = sqrt(halfLength*halfLength + halfWidth*halfWidth);
 
   pcl::PointXYZ searchPoint(searchX, searchY, 0);
