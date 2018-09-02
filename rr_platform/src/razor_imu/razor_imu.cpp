@@ -6,10 +6,12 @@
 #include <SerialPort.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
+#include <tf/transform_datatypes.h>
 
 ros::Publisher imu_pub;
 ros::Publisher mag_pub;
 ros::Publisher axes_pub;
+const double PI = 3.141592653589793238463;
 
 /**
  * @note http://stackoverflow.com/a/27511119
@@ -24,6 +26,7 @@ std::vector <std::string> split(const std::string &s, char delim) {
     }
     return elems;
 }
+
 
 bool set_imu(const std::string &line_in, sensor_msgs::Imu &imu_msg){
     std::vector <std::string> data = split(line_in, ',');
@@ -58,6 +61,8 @@ bool set_mag(const std::string &line_in, sensor_msgs::MagneticField &mag_msg){
     }
 }
 
+
+
 bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
     std::vector <std::string> data = split(line_in, ',');
     if(data[0] == "axes") {
@@ -70,6 +75,25 @@ bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
     }
 }
 
+
+/*
+
+bool set_axes(sensor_msgs::Imu &imu_msg, rr_platform::axes &axes_msg){
+   
+    tf::Quaternion q(imu_msg.orientation.x, imu_msg.orientation.y, imu_msg.orientation.z, imu_msg.orientation.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getEulerYPR(roll, pitch, yaw);
+    
+    axes_msg.roll = roll; 
+    axes_msg.pitch = pitch;
+    axes_msg.yaw = yaw;
+
+    //ROS_INFO_STREAM(yaw);
+
+    return true;
+}
+*/
 
 
 int main(int argc, char **argv) {
@@ -109,6 +133,7 @@ int main(int argc, char **argv) {
 
         auto line_in = serial_port.ReadLine();
         if(!line_in.empty()) {
+
             if(set_imu(line_in, imu_msg)) {
                 sensor_msgs::Imu publishable_copy = imu_msg;
                 publishable_copy.header.stamp = ros::Time::now();
@@ -121,11 +146,29 @@ int main(int argc, char **argv) {
                 mag_pub.publish(publishable_copy);
             }
 
+
+            
+            /*
+            if(set_axes(imu_msg, axes_msg)){
+                rr_platform::axes publishable_copy = axes_msg;
+                publishable_copy.header.stamp = ros::Time::now();
+                axes_pub.publish(publishable_copy);
+            }
+            
+            */
+            
+            
+
+
+            
             if(set_axes(line_in, axes_msg)){
                 rr_platform::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 axes_pub.publish(publishable_copy);
             }
+        
+            
+
         }
     }
 
