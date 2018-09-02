@@ -8,7 +8,7 @@
 
 /*@NOTE THIS CODE USES BOOST 1.58 as it is the version currently installed with ROS.
   If that changes, this code will need to be updated as such!
-  So don't fear if it breaks, just fix the things by checking the links to examples given.
+  So don't fear if it breaks, just fix the things by checking the links below to examples given.
 */
 
 using namespace std;
@@ -26,7 +26,7 @@ double speed = 0.0;
 double steeringAngle = 0.0;
 
 double maxAngleMsg;
-const double maxOutput = 1.0;  //#TODO: magic # to launch param
+const double maxOutput = 1.0;  //#TODO: magic # to launch param maybe???
 
 std::shared_ptr<tcp::socket> currentSocket;
 
@@ -46,9 +46,9 @@ string readMessage() {
   size_t len = currentSocket->read_some(boost::asio::buffer(buf), error);
   string reading(buf.begin(), buf.end()); //convert buffer into useable string
 
-  if (error == boost::asio::error::eof) { //#TODO THIS ERROR GET OUT OF HERE MAY NEED TO CHANGE as recieving nothing = dead
+  if (error == boost::asio::error::eof) {
     // Connection closed cleanly by peer
-    ROS_INFO_STREAM("TCP Connection closed by peer: Disconnecting"); //#TODO: not sure what to do or just leave it orr.
+    ROS_INFO_STREAM("TCP Connection closed by peer: Disconnecting");
   } else if (error) {
     ROS_ERROR_STREAM("TCP ERROR: Disconnecting");
     throw boost::system::system_error(error); // Some other error
@@ -83,14 +83,19 @@ int main(int argc, char** argv) {
     string speedTopic = nhp.param(string("speedTopic"), string("/speed"));
     auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
 
-    //accel PID #TODO: CHANGE NAME
+    //accel PID
     accelDrivePID.p = nhp.param(string("accel_pid_p"), 0.0);
     accelDrivePID.i = nhp.param(string("accel_pid_i"), 0.0);
     accelDrivePID.d = nhp.param(string("accel_pid_d"), 0.0);
-    //decel PID #TODO: launch file params ALSO make PID struct to handle better?????
+    //decel PID
     decelDrivePID.p = nhp.param(string("decel_pid_p"), 0.0);
     decelDrivePID.i = nhp.param(string("decel_pid_i"), 0.0);
     decelDrivePID.d = nhp.param(string("decel_pid_d"), 0.0);
+
+    //Steering PID
+    steeringPID.p = nhp.param(string("steering_pid_p"), 0.0);
+    steeringPID.i = nhp.param(string("steering_pid_i"), 0.0);
+    steeringPID.d = nhp.param(string("steering_pid_d"), 0.0);
 
     //Setup steering info
     string steerTopic = nhp.param(string("steeringTopic"), string("/steering"));
@@ -98,18 +103,14 @@ int main(int argc, char** argv) {
 
     maxAngleMsg = nhp.param(string("max_angle_msg_in"), 1.0);
 
-    steeringPID.p = nhp.param(string("steering_pid_p"), 0.0);
-    steeringPID.i = nhp.param(string("steering_pid_i"), 0.0);
-    steeringPID.d = nhp.param(string("steering_pid_d"), 0.0);
-
     //IP address and port
-    string serverName = nhp.param(string("ip_address"), string("192.168.2.2")); //#TODO: magic # and below
+    string serverName = nhp.param(string("ip_address"), string("192.168.2.2"));
     string serviceName = nhp.param(string("tcp_port"), string("7"));
 
 
 
     // wait for microcontroller to start
-    ros::Duration(2.0).sleep(); //#TODO: do we need this anymore?
+//    ros::Duration(2.0).sleep(); //#TODO: do we need this anymore? Doesn't seem like it but may be safe
 
     //TCP client setup
     /*@Note https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/tutorial/tutdaytime1.html
@@ -117,9 +118,9 @@ int main(int argc, char** argv) {
       Currently from 1.58 to 1.68 that looks like using io_context instead of io_service
       Look at the updated tutorial by following link and change as need be.
     */
-    ROS_INFO_STREAM("Trying to connect to TCP Host");
+    ROS_INFO_STREAM("Trying to connect to TCP Host at " + serverName + " port: " + serviceName);
 
-    boost::asio::io_service io_service;
+    boost::asio::io_service io_service; //@NOTE: in later versions of boost, this may have a name change
     tcp::resolver resolver(io_service);
     tcp::resolver::query query(serverName, serviceName);
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
@@ -140,7 +141,7 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("Sent PID: " + pidMessage);
 
 
-    ros::Rate rate(10); //#TODO set this value to a good rate time/ do we need this?
+    ros::Rate rate(10); //#TODO set this value to a good rate time (10hz seems good)/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 

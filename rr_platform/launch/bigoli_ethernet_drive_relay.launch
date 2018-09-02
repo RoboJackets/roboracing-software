@@ -1,16 +1,16 @@
 <launch>
     <node pkg="rr_platform" type="bigoli_ethernet_drive_relay" name="drive_relay" output="screen" respawn="false">
-	<param name="ip_address" value="192.168.2.2"/
+        <param name="ip_address" value="192.168.2.2"/>
         <param name="tcp_port" value="7"/>
-	<param name="accel_pid_p" value="0.15"/>
+        <param name="accel_pid_p" value="0.0"/>
         <param name="accel_pid_i" value="0.0"/>
-        <param name="accel_pid_d" value="0.5"/>
-	<param name="decel_pid_p" value="0.15"/>
+        <param name="accel_pid_d" value="0.0"/>
+        <param name="decel_pid_p" value="0.0"/>
         <param name="decel_pid_i" value="0.0"/>
-        <param name="decel_pid_d" value="0.5"/>
-        <param name="steering_pid_p" value="0.15"/>
+        <param name="decel_pid_d" value="0.0"/>
+        <param name="steering_pid_p" value="0.0"/>
         <param name="steering_pid_i" value="0.0"/>
-        <param name="steering_pid_d" value="0.5"/>
-	<param name="max_angle_msg_in" value="1.0"/>
+        <param name="steering_pid_d" value="0.0"/>
+        <param name="max_angle_msg_in" value="1.0"/>
     </node>
 </launch>
