@@ -67,10 +67,7 @@ void sendMessage(string message) {
 
 string buildPIDMessage(struct PIDConst pid) {
   //combines PID into useful message
-  stringstream ss;
-  ss << " " << pid.p << " " << pid.i << " " << pid.d;
-  string command;
-  ss >> command;
+  string command = to_string(pid.p) + " " + to_string(pid.i) + " " + to_string(pid.d);
 
   return command;
 }
@@ -133,33 +130,28 @@ int main(int argc, char** argv) {
     //CONNECTION NOW OPEN, READY TO JAM
     ROS_INFO_STREAM("Connected to TCP Host");
 
-    //send initialization message (PIDs) //accel, deccel, steering #TODO: deccel pids
-    //combines PID into useful message; # means init message 
-    string initMessage = "#" + buildPIDMessage(accelDrivePID) +
+    //send initialization message (PIDs) in order: accel, deccel, steering
+    //combines PID into useful message; # means init message; EX: # p i d p i d p i d
+    string pidMessage = "#" + buildPIDMessage(accelDrivePID) +
           " " + buildPIDMessage(decelDrivePID) +
           " " + buildPIDMessage(steeringPID);
 
-    sendMessage(initMessage);
-    ROS_INFO_STREAM("Sent initialization PID: " + initMessage);
+    sendMessage(pidMessage);
+    ROS_INFO_STREAM("Sent PID: " + pidMessage);
 
 
     ros::Rate rate(10); //#TODO set this value to a good rate time/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 
-        boost::array<char, 128> buf;
-        boost::system::error_code error;
-
         //write data to MBED
-        //Send Motor Command and Steering Command (lead by a $)
-        stringstream s;
-        s << "$" << speed << " " << steeringAngle;
-        string command;
-        s >> command;
+        //Send Motor Command and Steering Command. EX: $speed steeringAngle
+        string command = "$" + to_string(speed) + " " + to_string(steeringAngle); //#TODO: the firmware may need to be clearing the buffer properly
         sendMessage(command);
 
         //read data from MBED
         string response = readMessage(); //#TODO: make this useful data
+        ROS_INFO_STREAM("RESPONSE: " + response); //debug
 
 
         rate.sleep();
