@@ -60,7 +60,6 @@ jobs:
     <<: *dir
     <<: *image
     steps:
-      - run: apt update && apt search protobuf
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
