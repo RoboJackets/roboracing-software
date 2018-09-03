@@ -14,5 +14,6 @@
         <arg name="collision_dist_side" value="0.15"/>
         <arg name="steer_limit" value="0.3"/>
         <arg name="input_cloud_topic" value="/current_obstacles"/>
+        <arg name="smoothing_array_size" value="3"/>
     </include>
 </launch>

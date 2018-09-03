@@ -19,6 +19,7 @@
         <arg name="collision_dist_side" value="0.4"/>
         <arg name="steer_limit" value="0.25"/>
         <arg name="input_cloud_topic" value="/current_obstacles"/>
+        <arg name="smoothing_array_size" value="3"/>
     </include>
     
     <include file="$(find avc)/launch/start_detector.launch"/>

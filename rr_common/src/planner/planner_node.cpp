@@ -20,12 +20,24 @@ ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 ros::Publisher path_pub;
 
+rr::planning::CollisionBox collision_box;
+
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::PCLPointCloud2 pcl_pc2;
   pcl_conversions::toPCL(*map, pcl_pc2);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+
+  for(auto iter = cloud->begin(); iter != cloud->end();) {
+    auto& point = *iter;
+    if (point.x < collision_box.length_front && point.x > -collision_box.length_back
+        && point.y < collision_box.width_left && point.y > -collision_box.width_right) {
+      iter = cloud->erase(iter);
+    } else {
+      iter++;
+    }
+  }
 
   if (cloud->empty()) {
     // Do not publish new commands
@@ -92,6 +104,8 @@ int main(int argc, char** argv)
   nhp.getParam("collision_dist_back", params.collision_box.length_back);
   nhp.getParam("collision_dist_side", params.collision_box.width_left);
   params.collision_box.width_right = params.collision_box.width_left;
+
+  collision_box = params.collision_box;
 
   nhp.getParam("n_path_segments", params.n_path_segments);
   params.segment_distances = getDoubleListParam(nhp, "segment_distances", ' ');

@@ -7,6 +7,7 @@
     <arg name="steer_limit"/>
     <arg name="input_cloud_topic"/>
     <arg name="max_speed"/>
+    <arg name="smoothing_array_size"/>
 
     <node name="planner" pkg="rr_common" type="planner" output="screen">
         <param name="wheel_base" type="double" value="$(arg wheel_base)"/>
@@ -29,7 +30,7 @@
         <param name="n_control_samples" type="int" value="300"/>
         <param name="distance_increment" type="double" value="0.1"/>
 
-        <param name="smoothing_array_size" type="int" value="3"/>
+        <param name="smoothing_array_size" type="int" value="$(arg smoothing_array_size)"/>
         <param name="max_speed" type="double" value="$(arg max_speed)"/>
 
         <param name="input_cloud_topic" type="string" value="$(arg input_cloud_topic)"/>
