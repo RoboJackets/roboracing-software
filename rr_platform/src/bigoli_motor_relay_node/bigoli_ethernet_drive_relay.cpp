@@ -48,7 +48,7 @@ string readMessage() {
 
   if (error == boost::asio::error::eof) {
     // Connection closed cleanly by peer
-    ROS_INFO_STREAM("TCP Connection closed by peer: Disconnecting");
+    ROS_ERROR_STREAM("TCP Connection closed by peer: Disconnecting");
   } else if (error) {
     ROS_ERROR_STREAM("TCP ERROR: Disconnecting");
     throw boost::system::system_error(error); // Some other error
@@ -139,21 +139,29 @@ int main(int argc, char** argv) {
 
     sendMessage(pidMessage);
     ROS_INFO_STREAM("Sent PID: " + pidMessage);
-
+    string response = readMessage(); //Should say PID Received //#TODO: have a check for correct responses?
 
     ros::Rate rate(10); //#TODO set this value to a good rate time (10hz seems good)/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 
-        //write data to MBED
-        //Send Motor Command and Steering Command. EX: $speed steeringAngle
-        string command = "$" + to_string(speed) + " " + to_string(steeringAngle); //#TODO: the firmware may need to be clearing the buffer properly
-        sendMessage(command);
+        if (response.at(0) == '@') {
+          /*sometimes readMessage returns blank, unknown cause #TODO
+           *This if keep us from sending unused data that backs up and causes delays
+           *Using the @ symbols also gives us handy status check info too
+           */
+          ROS_INFO_STREAM("RESPONSE: " + response);
+
+          //write data to MBED
+          //Send Motor Command and Steering Command. EX: $speed steeringAngle
+          string command = "$" + to_string(speed) + " " + to_string(steeringAngle); //#TODO: the firmware may need to be clearing the buffer properly
+          sendMessage(command);
+          ROS_INFO_STREAM("SENT:" + command);
+          response = ""; //clear for next check
+        }
 
         //read data from MBED
-        string response = readMessage(); //#TODO: make this useful data
-        ROS_INFO_STREAM("RESPONSE: " + response); //debug
-
+        response = readMessage(); //#TODO: make this useful data
 
         rate.sleep();
     }
