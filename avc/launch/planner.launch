@@ -1,0 +1,37 @@
+<launch>
+    <arg name="wheel_base"/>
+    <arg name="lateral_accel"/>
+    <arg name="collision_dist_front"/>
+    <arg name="collision_dist_back"/>
+    <arg name="collision_dist_side"/>
+    <arg name="steer_limit"/>
+    <arg name="input_cloud_topic"/>
+    <arg name="max_speed"/>
+
+    <node name="planner" pkg="rr_common" type="planner" output="screen">
+        <param name="wheel_base" type="double" value="$(arg wheel_base)"/>
+        <param name="lateral_accel" type="double" value="$(arg lateral_accel)"/>
+        <param name="collision_dist_front" type="double" value="$(arg collision_dist_front)"/>
+        <param name="collision_dist_back" type="double" value="$(arg collision_dist_back)"/>
+        <param name="collision_dist_side" type="double" value="$(arg collision_dist_side)"/>
+
+        <param name="n_path_segments" type="int" value="2"/>
+        <param name="segment_distances" type="string" value="3 4"/>
+        <param name="steer_limits" type="string" value="$(arg steer_limit) $(arg steer_limit)"/>
+        <param name="steer_stddevs" type="string" value="$(eval ' '.join([str(float(steer_limit) * 0.7)] * 2))"/>
+
+        <param name="obstacle_search_radius" type="double" value="3"/>
+        <param name="path_similarity_cutoff" type="double" value="0.2"/>
+        <param name="max_relative_cost" type="double" value="10"/>
+        <param name="k_dist" type="double" value="0.1"/>
+        <param name="k_speed" type="double" value="1"/>
+
+        <param name="n_control_samples" type="int" value="300"/>
+        <param name="distance_increment" type="double" value="0.1"/>
+
+        <param name="smoothing_array_size" type="int" value="3"/>
+        <param name="max_speed" type="double" value="$(arg max_speed)"/>
+
+        <param name="input_cloud_topic" type="string" value="$(arg input_cloud_topic)"/>
+    </node>
+</launch>
