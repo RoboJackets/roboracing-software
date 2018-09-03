@@ -18,13 +18,13 @@
         <param name="n_path_segments" type="int" value="2"/>
         <param name="segment_distances" type="string" value="3 4"/>
         <param name="steer_limits" type="string" value="$(arg steer_limit) $(arg steer_limit)"/>
-        <param name="steer_stddevs" type="string" value="$(eval ' '.join([str(float(steer_limit) * 0.7)] * 2))"/>
+        <param name="steer_stddevs" type="string" value="$(eval ' '.join([str(float(steer_limit) * 0.6)] * 2))"/>
 
         <param name="obstacle_search_radius" type="double" value="3"/>
         <param name="path_similarity_cutoff" type="double" value="0.2"/>
-        <param name="max_relative_cost" type="double" value="10"/>
-        <param name="k_dist" type="double" value="0.1"/>
-        <param name="k_speed" type="double" value="1"/>
+        <param name="max_relative_cost" type="double" value="5"/>
+        <param name="k_dist" type="double" value="0.001"/>
+        <param name="k_speed" type="double" value="0.002"/>
 
         <param name="n_control_samples" type="int" value="300"/>
         <param name="distance_increment" type="double" value="0.1"/>
