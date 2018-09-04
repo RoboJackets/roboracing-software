@@ -1,385 +1,355 @@
 #include "planner.h"
+
 #include <algorithm>
+#include <cmath>
+#include <iostream>
 
-using namespace std;
+#include <flann/flann.hpp>
 
-/*
- * advanceStep: calculate one distance-step of "simulated"
- * vehicle motion. Undocumented Ackermann steering trig is
- * grandfathered in.
- * Params:
- * steerAngle - steering angle in radians centered at 0
- * inOutPose - pose (x,y,theta) that is read and updated
- *      with the new pose
- */
+namespace rr {
+namespace planning {
 
-void advanceStep(float steerAngle, Pose2D &inOutPose) {
-    float deltaX, deltaY, deltaTheta;
-    if (abs(steerAngle) < 1e-3) {
-        deltaX = DISTANCE_INCREMENT;
-        deltaY = 0;
-        deltaTheta = 0;
+Planner::Planner(const Params& params_ext) : params(params_ext) {
+  prev_steering_angles_.resize(params.smoothing_array_size, 0);
+  prev_steering_angles_index_ = 0;
+
+  for(double d : params.steer_stddevs) {
+    steering_gaussians_.emplace_back(0, d);
+    // std::cout << "new steering guassian, d = " << d << std::endl;
+    // std::cout << "d = " << steering_gaussians_.back().stddev() << std::endl;
+  }
+  rand_gen_ = std::mt19937(std::random_device{}());
+}
+
+Pose Planner::StepKinematics(const Pose& pose, double steer_angle) {
+  double deltaX, deltaY, deltaTheta;
+
+  if (abs(steer_angle) < 1e-3) {
+    deltaX = params.distance_increment;
+    deltaY = 0;
+    deltaTheta = 0;
+  } else {
+    double turnRadius = params.wheel_base / sin(abs(steer_angle));
+    double tempTheta = params.distance_increment / turnRadius;
+    deltaX = turnRadius * cos(M_PI / 2 - tempTheta);
+    if (steer_angle < 0) {
+        deltaY = turnRadius - turnRadius * sin(M_PI / 2 - tempTheta);
     } else {
-        float turnRadius = WHEEL_BASE / sin(abs(steerAngle));
-        float tempTheta = DISTANCE_INCREMENT / turnRadius;
-        deltaX = turnRadius * cos(M_PI / 2 - tempTheta);
-        if (steerAngle < 0) {
-            deltaY = turnRadius - turnRadius * sin(M_PI / 2 - tempTheta);
+        deltaY = -(turnRadius - turnRadius * sin(M_PI / 2 - tempTheta));
+    }
+    deltaTheta = params.distance_increment / params.wheel_base * sin(-steer_angle);
+  }
+
+  Pose out;
+  out.x = pose.x + deltaX * cos(pose.theta) - deltaY * sin(pose.theta);
+  out.y = pose.y + deltaX * sin(pose.theta) + deltaY * cos(pose.theta);
+  out.theta = pose.theta + deltaTheta;
+  return out;
+}
+
+std::tuple<bool, double> Planner::GetCollisionDistance(const Pose& pose, 
+                                                        const KdTreeMap& kd_tree_map) {
+  double cosTheta = std::cos(pose.theta);
+  double sinTheta = std::sin(pose.theta);
+
+  double robotCenterX = (params.collision_box.length_front - params.collision_box.length_back) / 2.;
+  double robotCenterY = (params.collision_box.width_left - params.collision_box.width_right) / 2.;
+  double searchX = pose.x + robotCenterX * cosTheta - robotCenterY * sinTheta;
+  double searchY = pose.y + robotCenterX * sinTheta + robotCenterY * cosTheta;
+
+  double halfLength = (params.collision_box.length_front + params.collision_box.length_back) / 2.;
+  double halfWidth = (params.collision_box.width_left + params.collision_box.width_right) / 2.;
+  double farthestPointOnRobot = std::sqrt(halfLength*halfLength + halfWidth*halfWidth);
+
+  pcl::PointXYZ searchPoint(searchX, searchY, 0);
+  std::vector<int> pointIdxs;
+  std::vector<float> squaredDistances;
+  int nResults = kd_tree_map.radiusSearch(searchPoint, params.obstacle_search_radius, pointIdxs,
+                                          squaredDistances);
+
+  bool collision = false;
+  double min_dist = params.obstacle_search_radius;
+  if (nResults > 0) {
+    // convert each point to robot reference frame and check collision and distances
+    const auto& cloud = *(kd_tree_map.getInputCloud());
+    for (int i : pointIdxs) {
+      const auto& point = cloud[i];
+
+      // note that this is inverse kinematics here. We have origin -> robot but want robot -> origin
+      double offsetX = point.x - searchX;
+      double offsetY = point.y - searchY;
+      double x =  cosTheta * offsetX + sinTheta * offsetY;
+      double y = -sinTheta * offsetX + cosTheta * offsetY;
+      // std::cout << "pose " << pose.x << ", " << pose.y << ", " << pose.theta << "  "
+      //           << "before " << point.x << ", " << point.y << "  "
+      //           << "after " << x << ", " << y << std::endl;
+
+      // collisions
+      if (std::abs(x) <= halfLength && std::abs(y) <= halfWidth) {
+        collision = true;
+        break;
+      }
+
+      // find distance, in several cases
+      double dist;
+      if (std::abs(x) > halfLength) {
+        // not alongside the robot
+        if (std::abs(y) > halfWidth) {
+          // closest to a corner
+          double cornerX = halfLength * ((x < 0) ? -1 : 1);
+          double cornerY = halfWidth * ((y < 0) ? -1 : 1);
+          double dx = x - cornerX;
+          double dy = y - cornerY;
+          dist = std::sqrt(dx*dx + dy*dy);
         } else {
-            deltaY = -(turnRadius - turnRadius * sin(M_PI / 2 - tempTheta));
+          // directly in front of or behind robot
+          dist = std::abs(x) - halfLength;
         }
-        deltaTheta = DISTANCE_INCREMENT / WHEEL_BASE * sin(-steerAngle);
+      } else {
+        // directly to the side of the robot
+        dist = std::abs(y) - halfWidth;
+      }
+      min_dist = std::min(min_dist, dist);
     }
+  }
 
-    inOutPose.x += deltaX * cos(inOutPose.theta) - deltaY * sin(inOutPose.theta);
-    inOutPose.y += deltaX * sin(inOutPose.theta) + deltaY * cos(inOutPose.theta);
-    inOutPose.theta += deltaTheta;
+  return std::make_tuple(collision, min_dist);
 }
 
-/*
- * getCostAtPose: calculate the cost of being in a certain position
- * relative to obstacles. Cost = 1 / d where d is the distance to the
- * nearest detected obstacle.
- * Params:
- * pose - relative (x,y,theta) for a possible future pose. The robot's
- *      actual state is x=0, y=0, theta=0
- * kdtree - FLANN index constructed from the obstacles map
- */
-float getCostAtPose(Pose2D &pose, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-    pcl::PointXYZ searchPoint(pose.x, pose.y, 0);
-    vector<int> pointIdxRadiusSearch(1);
-    vector<float> pointRadiusSquaredDistance(1);
-    int nResults = kdtree.nearestKSearch(searchPoint, 1, pointIdxRadiusSearch,
-                                         pointRadiusSquaredDistance);
+double Planner::SampleSteering(int stage) {
+  double angle;
+  do {
+    // std::cout << "get gaussian" << std::endl;
+    auto& gaussian = steering_gaussians_[stage];
+    // std::cout << "read rand: " << rand_gen_() << std::endl;
+    // std::cout << "get angle. mean = " << gaussian.mean() << " stddev = " << gaussian.stddev() << std::endl;
+    angle = gaussian(rand_gen_);
+    // std::cout << "angle = " << angle << std::endl;
+  } while (std::abs(angle) > params.steer_limits[stage]);
 
-    float dist = sqrt(pointRadiusSquaredDistance[0]);
-    if(nResults == 0) { //no obstacles in sight
-        return 0;
-    } else if(dist < COLLISION_RADIUS) { //collision
-        return COLLISION_PENALTY;
-    } else {
-        return (1.0 / dist);
+  return angle;
+}
+
+double Planner::SteeringToSpeed(double steer_angle) {
+  steer_angle = std::abs(steer_angle);
+  double out;
+  if (steer_angle < 1e-3) {
+    out = params.max_speed;
+  } else {
+    double vRaw = std::sqrt(params.lateral_accel * params.wheel_base / std::sin(steer_angle));
+    out = std::min(vRaw, params.max_speed);
+  }
+  return out;
+}
+
+std::vector<PathPoint> Planner::RollOutPath(const std::vector<double>& control) {
+  if(control.size() != params.n_path_segments) {
+    std::cout << "[Planner] Warning: control vector of dimension " << control.size() 
+              << " does not match " << params.n_path_segments << " path segments" << std::endl;
+  }
+
+  std::vector<PathPoint> path_points;
+  path_points.emplace_back(Pose{0, 0, 0}, control[0], SteeringToSpeed(control[0]));
+
+  for (int segment = 0; segment < params.n_path_segments; segment++) {
+    double steer = control[segment];
+    double speed = SteeringToSpeed(steer);
+    const double& seg_dist = params.segment_distances[segment];
+    for (double dist = 0.0; dist < seg_dist; dist += params.distance_increment) {
+      const Pose& last_pose = path_points.back().pose;
+      path_points.emplace_back(StepKinematics(last_pose, steer), steer, SteeringToSpeed(steer));
     }
+  }
+
+  return path_points;
 }
 
-/*
- * steeringToSpeed: Calculate a desired speed from a steering angle.
- * There is no physics here, I just eyeballed something intuitive. See
- * https://www.desmos.com/calculator/suy8y1ylf0
- * TODO utilize a more useful vehicle model
- * Params:
- * steering - proposed steering value to publish
- * maxSteering - the limit of the car's steering ability
- */
-inline float steeringToSpeed(float steering, float maxSteering) {
-    return MAX_SPEED * cos(steering * 1.4706 / maxSteering);
-}
-
-/*
- * aggregateCost: roll out a trajectory through the world using a
- * given control_vector and calculate the total cost of that path.
- * Cost = sum(pos_cost / speed for each position)
- * Params:
- * controlVector - vector of dimension N_PATH_SEGMENTS with a steering
- *      value for each stage/dimension
- * kdtree - FLANN index constructed from the obstacles map
- */
-float aggregateCost(control_vector &controlVector, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-    if(controlVector.size() != N_PATH_SEGMENTS) {
-        ROS_ERROR("control vector of dimension %d does not match %d path segments",
-                  (int)controlVector.size(), N_PATH_SEGMENTS);
+std::tuple<bool, double> Planner::GetCost(const std::vector<PathPoint>& path, 
+                                          const KdTreeMap& kd_tree_map) {
+  double denominator = 0;
+  bool is_collision;
+  double dist;
+  for(const auto& path_point : path) {
+    std::tie(is_collision, dist) = GetCollisionDistance(path_point.pose, kd_tree_map);
+    if (is_collision) {
+      break;
     }
-
-    Pose2D pose{0,0,0};
-    float costSum = 0.0;
-
-    for(int segmentIdx = 0; segmentIdx < N_PATH_SEGMENTS; segmentIdx++) {
-        float steering = controlVector[segmentIdx];
-        float speed = steeringToSpeed(steering, STEER_LIMITS[segmentIdx]);
-        for(float dist = 0.0;
-            dist < SEGMENT_DISTANCES[segmentIdx];
-            dist += DISTANCE_INCREMENT)
-        {
-            advanceStep(steering, pose);
-            costSum += getCostAtPose(pose, kdtree) / pow(speed, 2);
-        }
-    }
-    return costSum;
+    denominator += params.k_dist * dist + params.k_speed * path_point.speed;
+  }
+  return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-/**
- * Member returning the current bestAngle averaged against the median.
- * Median is calculated based on previous angles, or PREV_STEERING_ANGLES
-*/
-float steeringAngleAverageAgainstMedian(float bestAngle) {
-    PREV_STEERING_ANGLES_INDEX = (PREV_STEERING_ANGLES_INDEX + 1) % SMOOTHING_ARRAY_SIZE;
-    std::vector<float> sortedSteeringAngles(PREV_STEERING_ANGLES);
-    //sort array of previous vectors in ascending order from start to midpoint to find median
-    std::nth_element (sortedSteeringAngles.begin(), sortedSteeringAngles.begin() + (SMOOTHING_ARRAY_SIZE / 2), sortedSteeringAngles.end());
-    //append the average of the best curve and current median to PREV_STEERING_ANGLES
-    PREV_STEERING_ANGLES[PREV_STEERING_ANGLES_INDEX] = (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2;
-    //return the average between the calculated steering angle and median value
-    return (sortedSteeringAngles[SMOOTHING_ARRAY_SIZE / 2] + bestAngle) / 2; 
-}
+std::vector<int> Planner::GetLocalMinima(
+    const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
+  // std::cout << "start GetLocalMinima" << std::endl;
 
-/*
- * steeringSample: get a random steering value from a normal
- * distribution. Each path stage has a potentially different bell
- * curve. If the value is out of bounds, try again
- * Params:
- * stage - the path stage or control vector dimension
- */
-float steeringSample(int stage) {
-    while(true) {
-        float raw = steering_gaussians[stage](rand_gen);
-        if(raw >= -STEER_LIMITS[stage] && raw <= STEER_LIMITS[stage])
-            return raw;
-    }
-}
+  std::vector<int> local_minima_indices;
+  int n_samples = plans.size();
 
-/*
- * getLocalMinima: The new "clustering" function. Given a set of
- * control vectors, find local minima and return their indices
- * in the input matrix.
- * Params:
- * controlVectors - list of lists of steering values of length
- *      N_PATH_SEGMENTS
- * costs - list of costs associated with each control_vector at the
- *      same indices
- * localMinimaIndices - output parameter which holds the indices
- *      of control_vectors with locally minimal costs
- */
-void getLocalMinima(const vector<control_vector> &controlVectors,
-                    const vector<float> &costs,
-                    vector<int> &localMinimaIndices)
-{
-    int nSamples = controlVectors.size();
+  if (n_samples > 0) {
+    // std::cout << "2.1 n_samples = " << n_samples << std::endl;
 
     // fill flann-format sample matrix
-    float sampleArray[nSamples * N_PATH_SEGMENTS];
-    for(int i = 0; i < nSamples; i++) {
-        for(int j = 0; j < N_PATH_SEGMENTS; j++) {
-            sampleArray[i * N_PATH_SEGMENTS + j] = controlVectors[i][j];
-        }
+    double sampleArray[n_samples * params.n_path_segments];
+    for(int i = 0; i < n_samples; i++) {
+      for(int j = 0; j < params.n_path_segments; j++) {
+        sampleArray[i * params.n_path_segments + j] = plans[i].get().control[j];
+        // std::cout << "sampleArray[" << i * params.n_path_segments + j << "] = " 
+        //           << plans[i].get().control[j] << std::endl;
+      }
     }
-    flann::Matrix<float> samples(sampleArray, nSamples, N_PATH_SEGMENTS);
+    flann::Matrix<double> samples(sampleArray, n_samples, params.n_path_segments);
 
     // construct FLANN index (nearest neighbors preprocessing)
-    flann::Index<flann::L1<float>> flannIndex(samples, flann::KDTreeSingleIndexParams());
+    // TODO determine if L1 (Manhattan) or L2 (Euclidean) distance is more useful here
+    flann::Index<flann::L1<double>> flannIndex(samples, flann::KDTreeSingleIndexParams());
     flannIndex.buildIndex();
 
     // Initialize group membership list
-    vector<bool> sampleKnownStatus(nSamples);
-    fill_n(sampleKnownStatus.begin(), nSamples, false);
+    std::vector<bool> samples_known_status(n_samples, false);
 
     // initialize input/output parameters for radius searches
-    flann::Matrix<int> indices(new int[nSamples], 1, nSamples);
-    flann::Matrix<float> dists(new float[nSamples], 1, nSamples);
-    flann::Matrix<float> query(new float[N_PATH_SEGMENTS], 1, N_PATH_SEGMENTS);
+    flann::Matrix<int> indices(new int[n_samples], 1, n_samples);
+    flann::Matrix<double> dists(new double[n_samples], 1, n_samples);
+    flann::Matrix<double> query(new double[params.n_path_segments], 1, params.n_path_segments);
     flann::SearchParams searchParams(1);
-    const float searchRadius = PATH_SIMILARITY_CUTOFF;
+    const double& searchRadius = params.path_similarity_cutoff;
 
-    for(int i = 0; i < nSamples; i++) {
-        if(sampleKnownStatus[i]) continue;
+    for (int i = 0; i < n_samples; i++) {
+      if (samples_known_status[i]) {
+        continue;
+      }
 
-        // perform radius search
-        for(int d = 0; d < N_PATH_SEGMENTS; d++) {
-            query[0][d] = samples[i][d];
+      // perform radius search
+      for(int d = 0; d < params.n_path_segments; d++) {
+        query[0][d] = samples[i][d];
+      }
+      int n_neighbors = flannIndex.radiusSearch(query, indices, dists,
+                                               searchRadius, searchParams);
+
+      // std::cout << "2.5" << std::endl;
+
+      // Iterate through neighbors, tracking if lower costs exist.
+      // Any neighbors in radius that have higher costs are not local minima.
+      // i is the query, j is a neighbor
+      bool any_better_in_area = false;
+      for (int j = 0; j < n_neighbors; j++) {
+        int found_index = indices[0][j];
+
+        if (found_index == i) {  //handle index of query later
+          continue;
         }
-        int nNeighbors = flannIndex.radiusSearch(query, indices, dists,
-                                                 searchRadius, searchParams);
 
-        // Iterate through neighbors, tracking if lower costs exist.
-        // Any neighbors in radius that have higher costs are not local minima.
-        bool anyBetterInArea = false;
-        for(int j = 0; j < nNeighbors; j++) {
-            int foundIndex = indices[0][j];
-            if(foundIndex != i) { //handle index of query later
-                if(costs[foundIndex] < costs[i]) {
-                    anyBetterInArea = true;
-                } else {
-                    sampleKnownStatus[foundIndex] = true; //known not minimum
-                }
-            }
-        }
-
-        sampleKnownStatus[i] = true;
-        if(!anyBetterInArea) {
-            // includes regions with only one point
-            localMinimaIndices.push_back(i);
-        }
-    }
-}
-
-
-void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl_conversions::toPCL(*map, pcl_pc2);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
-    pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
-
-    // remove points that cause a collision at t=0
-    for(auto iter = cloud->begin(); iter != cloud->end();) {
-        auto& point = *iter;
-        auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
-        if(distance < COLLISION_RADIUS) {
-            iter = cloud->erase(iter);
+        if (plans[found_index].get().cost < plans[i].get().cost) {
+          any_better_in_area = true;
         } else {
-            iter++;
+          samples_known_status[found_index] = true;  // known not minimum
         }
+      }
+
+      samples_known_status[i] = true;
+      if(!any_better_in_area) {
+        // includes regions with only one point
+        local_minima_indices.push_back(i);
+      }
     }
+  }
 
-    if (cloud->empty()) {
-        ROS_WARN("environment map pointcloud is empty");
-        rr_platform::speedPtr speedMSG(new rr_platform::speed);
-        rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-        speedMSG->speed = MAX_SPEED / 4; //proceed with caution; E-Kill if necessary
-        steerMSG->angle = 0;
-        steerMSG->header.stamp = ros::Time::now();
-        speedMSG->header.stamp = ros::Time::now();
-        speed_pub.publish(speedMSG);
-        steer_pub.publish(steerMSG);
-        return;
-    }
-
-    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    kdtree.setInputCloud(cloud);
-
-    vector<control_vector> controlVectors(N_CONTROL_SAMPLES);
-    vector<float> costs(N_CONTROL_SAMPLES);
-
-    float bestCost = 1e10;
-    for(int i = 0; i < N_CONTROL_SAMPLES; i++) {
-        for(int stage = 0; stage < N_PATH_SEGMENTS; stage++) {
-            controlVectors[i].push_back(steeringSample(stage));
-        }
-        float cost = aggregateCost(controlVectors[i], kdtree);
-        if(cost < bestCost)
-            bestCost = cost;
-        costs[i] = cost;
-    }
-
-    vector<control_vector> goodControlVectors;
-    vector<float> goodCosts;
-    for(int i = 0; i < N_CONTROL_SAMPLES; i++) {
-        if(costs[i] < bestCost * MAX_RELATIVE_COST) {
-            goodControlVectors.push_back(controlVectors[i]);
-            goodCosts.push_back(costs[i]);
-        }
-    }
-
-    vector<int> localMinimaIndices;
-
-    getLocalMinima(goodControlVectors, goodCosts, localMinimaIndices);
-
-    // TODO implement smart path selection. For now, choose the straighest path
-    int bestIndex = -1;
-    float bestCurviness = 0;
-    for(int i : localMinimaIndices) {
-        float curviness = 0; // square of euclidean distance from zero turning
-        for(auto x : goodControlVectors[i]) {
-            curviness += x*x;
-        }
-        // cout << "i = " << i << ", curviness = " << curviness << endl;
-        if(bestIndex == -1 || curviness < bestCurviness) {
-            bestIndex = i;
-            bestCurviness = curviness;
-        }
-    }
-
-    ROS_INFO("Planner found %d local minima. Best cost is %.3f",
-             (int)localMinimaIndices.size(), goodCosts[bestIndex]);
-
-    rr_platform::speedPtr speedMSG(new rr_platform::speed);
-    rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-    steerMSG->angle = steeringAngleAverageAgainstMedian(goodControlVectors[bestIndex][0]);
-    speedMSG->speed = steeringToSpeed(steerMSG->angle, STEER_LIMITS[0]);
-    steerMSG->header.stamp = ros::Time::now();
-    speedMSG->header.stamp = ros::Time::now();
-    speed_pub.publish(speedMSG);
-    steer_pub.publish(steerMSG);
-
-    if(path_pub.getNumSubscribers() > 0) {
-        nav_msgs::Path pathMsg;
-        Pose2D pose{0,0,0};
-        control_vector &controlVector = goodControlVectors[bestIndex];
-        for(int segmentIdx = 0; segmentIdx < N_PATH_SEGMENTS; segmentIdx++) {
-            float steering = controlVector[segmentIdx];
-            float speed = steeringToSpeed(steering, STEER_LIMITS[segmentIdx]);
-            for(float dist = 0.0;
-                dist < SEGMENT_DISTANCES[segmentIdx];
-                dist += DISTANCE_INCREMENT)
-            {
-                advanceStep(steering, pose);
-                geometry_msgs::PoseStamped ps;
-                ps.pose.position.x = pose.x;
-                ps.pose.position.y = pose.y;
-                pathMsg.poses.push_back(ps);
-            }
-        }
-        pathMsg.header.frame_id = "base_footprint";
-        path_pub.publish(pathMsg);
-    }
+  // std::cout << "end GetLocalMinima" << std::endl;
+  return local_minima_indices;
 }
 
-void parseFloatArrayStr(string &arrayAsString, vector<float> &floats) {
-    char s[arrayAsString.size()];
-    strcpy(s, arrayAsString.c_str());
-    char* token = strtok(s, " ,");
-    while(token != NULL) {
-        floats.push_back(stof(string(token)));
-        token = strtok(NULL, " ,");
-    }
+double Planner::FilterOutput(double this_steer) {
+  // update circular buffer
+  prev_steering_angles_[prev_steering_angles_index_] = this_steer;
+  prev_steering_angles_index_ = (prev_steering_angles_index_ + 1) % params.smoothing_array_size;
+
+  // sort array of previous vectors in ascending order from start to midpoint to find median
+  auto angles = prev_steering_angles_;  // make a fresh copy
+  int median_index = params.smoothing_array_size / 2;
+  std::nth_element(angles.begin(), angles.begin() + median_index, angles.end());
+  const double& median = angles[median_index];
+
+  return median;
 }
 
+PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
 
-int main(int argc, char** argv) {
-    ros::init(argc, argv, "planner");
+  // allocate planned paths
+  std::vector<PlannedPath> plans;
 
-    string obstacleCloudTopic;
-    string segmentDistancesStr;
-    string steerLimitsStr;
-    string steerStdDevsStr;
+  // fill planned paths and determine best cost
+  double best_cost = 1e10;
+  for (int i = 0; i < params.n_control_samples; i++) {
+    plans.emplace_back();
+    auto& plan = plans.back();
 
-    ros::NodeHandle nh;
-    ros::NodeHandle nhp("~");
-
-    nhp.param("N_PATH_SEGMENTS", N_PATH_SEGMENTS, 2);
-    nhp.param("N_CONTROL_SAMPLES", N_CONTROL_SAMPLES, 200);
-    nhp.param("SEGMENT_DISTANCES", segmentDistancesStr, string("3 5"));
-    nhp.param("STEER_LIMITS", steerLimitsStr, string("0.4 0.4"));
-    nhp.param("STEER_STDDEVS", steerStdDevsStr, string("0.2 0.2"));
-    nhp.param("INPUT_CLOUD_TOPIC", obstacleCloudTopic, string("/map"));
-    nhp.param("DISTANCE_INCREMENT", DISTANCE_INCREMENT, 0.2f);
-    nhp.param("MAX_SPEED", MAX_SPEED, 0.5f);
-    nhp.param("WHEEL_BASE", WHEEL_BASE, 0.37f); //TODO get from tf tree
-    nhp.param("COLLISION_RADIUS", COLLISION_RADIUS, 0.3f);
-    nhp.param("COLLISION_PENALTY", COLLISION_PENALTY, 1000.0f);
-    nhp.param("PATH_SIMILARITY_CUTOFF", PATH_SIMILARITY_CUTOFF, 0.05f);
-    nhp.param("MAX_RELATIVE_COST", MAX_RELATIVE_COST, 2.0f);
-    nhp.param("SMOOTHING_ARRAY_SIZE", SMOOTHING_ARRAY_SIZE, 20);
-
-    PREV_STEERING_ANGLES_INDEX = 0;
-    PREV_STEERING_ANGLES.resize(SMOOTHING_ARRAY_SIZE);
-
-    parseFloatArrayStr(segmentDistancesStr, SEGMENT_DISTANCES);
-    parseFloatArrayStr(steerLimitsStr, STEER_LIMITS);
-    parseFloatArrayStr(steerStdDevsStr, STEER_STDDEVS);
-
-    for(int i = 0; i < N_PATH_SEGMENTS; i++) {
-        steering_gaussians.push_back(normal_distribution<float>(0, STEER_STDDEVS[i]));
+    for (int stage = 0; stage < params.n_path_segments; stage++) {
+      plan.control.push_back(SampleSteering(stage));
     }
-    rand_gen = mt19937(std::random_device{}());
 
-    tfListener.reset(new tf::TransformListener);
+    plan.path = RollOutPath(plan.control);
 
-    auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
-    path_pub = nh.advertise<nav_msgs::Path>("/plan/path", 1);
+    bool collision;
+    std::tie(collision, plan.cost) = GetCost(plan.path, kd_tree_map);
 
-    ROS_INFO("planner initialized");
+    if (collision) {
+      plans.pop_back();
+      continue;
+    }
 
-    ros::spin();
-    return 0;
+    best_cost = std::min(best_cost, plan.cost);
+  }
+
+  std::vector<std::reference_wrapper<PlannedPath>> good_plans;
+
+  // filter by cost (compared to best cost)
+  for (auto& plan : plans) {
+    if (plan.cost <= best_cost * params.max_relative_cost) {
+      good_plans.push_back(std::ref(plan));
+    }
+  }
+
+  if (good_plans.size() < 2) {
+    std::cout << "[Planner] Warning: found " << good_plans.size() << " good paths" << std::endl;
+  }
+
+  PlannedPath fallback_plan;
+  fallback_plan.control = {0, 0};
+  fallback_plan.path = RollOutPath(fallback_plan.control);
+  for (auto& path_point : fallback_plan.path) path_point.speed = 0;
+  fallback_plan.cost = 0;
+
+  if (good_plans.empty()) {
+    std::cout << "[Planner] Using fallback plan" << std::endl;
+    good_plans.push_back(std::ref(fallback_plan));
+  }
+
+  auto local_minima_indices = GetLocalMinima(good_plans);
+
+  // TODO implement smarter path selection. For now, choose the straighest path
+  int best_index = -1;
+  double best_curviness = 0;
+  for (int i : local_minima_indices) {
+    double curviness = 0; // square of euclidean distance from zero turning
+    for (auto x : good_plans[i].get().control) {
+      curviness += x*x;
+    }
+
+    // cout << "i = " << i << ", curviness = " << curviness << endl;
+    if(best_index == -1 || curviness < best_curviness) {
+      best_index = i;
+      best_curviness = curviness;
+    }
+  }
+
+  PlannedPath& best_plan = good_plans[best_index];
+
+  std::cout << "Planner found " << local_minima_indices.size() << " local minima. "
+            << "Best cost is " << best_plan.cost << std::endl;
+
+  return best_plan;
 }
+
+}  // namespace planning
+}  // namespace rr
