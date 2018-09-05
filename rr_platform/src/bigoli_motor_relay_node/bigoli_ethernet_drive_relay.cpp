@@ -35,7 +35,7 @@ void speedCallback(const rr_platform::speed::ConstPtr &msg) {
 }
 
 void steerCallback(const rr_platform::steering::ConstPtr &msg) {
-    steeringAngle = msg->angle / maxAngleMsg * maxOutput; //#TODO: should this calculation still done? Taken from old relay
+    steeringAngle = msg->angle / maxAngleMsg * maxOutput; // Taken from old relay
 }
 
 string readMessage() {
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("Sent PID: " + pidMessage);
     string response = readMessage(); //Should say PID Received //#TODO: have a check for correct responses?
 
-    ros::Rate rate(10); //#TODO set this value to a good rate time (10hz seems good)/ do we need this?
+    ros::Rate rate(50); //#TODO set this value to a good rate time (10hz seems good)/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 
