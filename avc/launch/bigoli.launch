@@ -24,4 +24,6 @@
     
     <include file="$(find avc)/launch/start_detector.launch"/>
     <include file="$(find avc)/launch/finish_detector.launch"/>
+    <include file="$(find rr_common)/launch/sound_node.launch"/>
 </launch>
+
