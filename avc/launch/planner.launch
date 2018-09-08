@@ -8,6 +8,10 @@
     <arg name="input_cloud_topic"/>
     <arg name="max_speed"/>
     <arg name="smoothing_array_size"/>
+    <arg name="left_dist_weight"/>
+    <arg name="right_dist_weight"/>
+    <arg name="obs_dist_slow_thresh"/>
+    <arg name="obs_dist_slow_ratio"/>
 
     <node name="planner" pkg="rr_common" type="planner" output="screen">
         <param name="wheel_base" type="double" value="$(arg wheel_base)"/>
@@ -32,6 +36,11 @@
 
         <param name="smoothing_array_size" type="int" value="$(arg smoothing_array_size)"/>
         <param name="max_speed" type="double" value="$(arg max_speed)"/>
+
+        <param name="left_dist_weight" type="double" value="$(arg left_dist_weight)"/>
+        <param name="right_dist_weight" type="double" value="$(arg right_dist_weight)"/>
+        <param name="obs_dist_slow_thresh" type="double" value="$(arg obs_dist_slow_thresh)"/>
+        <param name="obs_dist_slow_ratio" type="double" value="$(arg obs_dist_slow_ratio)"/>
 
         <param name="input_cloud_topic" type="string" value="$(arg input_cloud_topic)"/>
     </node>

@@ -17,5 +17,9 @@
         <arg name="steer_limit" value="0.42"/>
         <arg name="input_cloud_topic" value="/current_obstacles"/>
         <arg name="smoothing_array_size" value="1"/>
+        <arg name="left_dist_weight" value="1.5"/>
+        <arg name="right_dist_weight" value="1"/>
+        <arg name="obs_dist_slow_thresh" value="0.3"/>
+        <arg name="obs_dist_slow_ratio" value="0.4"/>
     </include>
 </launch>

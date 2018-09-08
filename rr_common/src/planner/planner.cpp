@@ -48,7 +48,7 @@ Pose Planner::StepKinematics(const Pose& pose, double steer_angle) {
 }
 
 std::tuple<bool, double> Planner::GetCollisionDistance(const Pose& pose, 
-                                                        const KdTreeMap& kd_tree_map) {
+                                                       const KdTreeMap& kd_tree_map) {
   double cosTheta = std::cos(pose.theta);
   double sinTheta = std::sin(pose.theta);
 
@@ -80,14 +80,18 @@ std::tuple<bool, double> Planner::GetCollisionDistance(const Pose& pose,
       double offsetY = point.y - searchY;
       double x =  cosTheta * offsetX + sinTheta * offsetY;
       double y = -sinTheta * offsetX + cosTheta * offsetY;
-      // std::cout << "pose " << pose.x << ", " << pose.y << ", " << pose.theta << "  "
-      //           << "before " << point.x << ", " << point.y << "  "
-      //           << "after " << x << ", " << y << std::endl;
 
       // collisions
       if (std::abs(x) <= halfLength && std::abs(y) <= halfWidth) {
         collision = true;
         break;
+      }
+
+      // sketchy-ass left/right distance voodoo
+      if (y > 0) {
+        y /= params.left_dist_weight;
+      } else {
+        y /= params.right_dist_weight;
       }
 
       // find distance, in several cases
@@ -119,12 +123,8 @@ std::tuple<bool, double> Planner::GetCollisionDistance(const Pose& pose,
 double Planner::SampleSteering(int stage) {
   double angle;
   do {
-    // std::cout << "get gaussian" << std::endl;
     auto& gaussian = steering_gaussians_[stage];
-    // std::cout << "read rand: " << rand_gen_() << std::endl;
-    // std::cout << "get angle. mean = " << gaussian.mean() << " stddev = " << gaussian.stddev() << std::endl;
     angle = gaussian(rand_gen_);
-    // std::cout << "angle = " << angle << std::endl;
   } while (std::abs(angle) > params.steer_limits[stage]);
 
   return angle;
@@ -132,6 +132,7 @@ double Planner::SampleSteering(int stage) {
 
 double Planner::SteeringToSpeed(double steer_angle) {
   steer_angle = std::abs(steer_angle);
+
   double out;
   if (steer_angle < 1e-3) {
     out = params.max_speed;
@@ -187,8 +188,6 @@ std::vector<int> Planner::GetLocalMinima(
   int n_samples = plans.size();
 
   if (n_samples > 0) {
-    // std::cout << "2.1 n_samples = " << n_samples << std::endl;
-
     // fill flann-format sample matrix
     double sampleArray[n_samples * params.n_path_segments];
     for(int i = 0; i < n_samples; i++) {
@@ -226,8 +225,6 @@ std::vector<int> Planner::GetLocalMinima(
       }
       int n_neighbors = flannIndex.radiusSearch(query, indices, dists,
                                                searchRadius, searchParams);
-
-      // std::cout << "2.5" << std::endl;
 
       // Iterate through neighbors, tracking if lower costs exist.
       // Any neighbors in radius that have higher costs are not local minima.
@@ -315,9 +312,12 @@ PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
   }
 
   PlannedPath fallback_plan;
-  fallback_plan.control = {0, 0};
+  double backwards_steer = params.steer_limits[0] * 0.3;
+  fallback_plan.control = {backwards_steer, backwards_steer};
   fallback_plan.path = RollOutPath(fallback_plan.control);
-  for (auto& path_point : fallback_plan.path) path_point.speed = 0;
+  for (auto& path_point : fallback_plan.path) {
+    path_point.speed = -0.3;
+  }
   fallback_plan.cost = 0;
 
   if (good_plans.empty()) {
@@ -344,6 +344,20 @@ PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
   }
 
   PlannedPath& best_plan = good_plans[best_index];
+
+  bool is_collision;
+  double dist;
+  double min_dist = 10000;
+  for (const auto& path_point : best_plan.path) {
+    std::tie(is_collision, dist) = GetCollisionDistance(path_point.pose, kd_tree_map);
+    if (dist < min_dist) {
+      min_dist = dist;
+    }
+  }
+
+  if (min_dist < params.obs_dist_slow_thresh) {
+    best_plan.path[0].speed *= params.obs_dist_slow_ratio;
+  }
 
   std::cout << "Planner found " << local_minima_indices.size() << " local minima. "
             << "Best cost is " << best_plan.cost << std::endl;

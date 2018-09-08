@@ -124,6 +124,11 @@ int main(int argc, char** argv)
   nhp.getParam("smoothing_array_size", params.smoothing_array_size);
   nhp.getParam("max_speed", params.max_speed);
 
+  nhp.getParam("left_dist_weight", params.left_dist_weight);
+  nhp.getParam("right_dist_weight", params.right_dist_weight);
+  nhp.getParam("obs_dist_slow_thresh", params.obs_dist_slow_thresh);
+  nhp.getParam("obs_dist_slow_ratio", params.obs_dist_slow_ratio);
+
   std::string obstacle_cloud_topic;
   nhp.getParam("input_cloud_topic", obstacle_cloud_topic);
 

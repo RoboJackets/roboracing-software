@@ -74,6 +74,12 @@ public:
     // control
     int smoothing_array_size;
     double max_speed;
+
+    // comp experimental things
+    double left_dist_weight;
+    double right_dist_weight;
+    double obs_dist_slow_thresh;
+    double obs_dist_slow_ratio;
   };
 
 
