@@ -26,8 +26,7 @@
         <arg name="obs_dist_slow_ratio" value="1.0"/>
     </include>
     
-    <include file="$(find avc)/launch/start_detector.launch"/>
+    <include file="$(find avc)/launch/start_detector_standalone.launch"/>
     <include file="$(find avc)/launch/finish_detector.launch"/>
     <include file="$(find rr_common)/launch/sound_node.launch"/>
 </launch>
-
