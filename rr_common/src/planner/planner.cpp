@@ -6,6 +6,8 @@
 
 #include <flann/flann.hpp>
 
+double last_speed = 0;
+
 namespace rr {
 namespace planning {
 
@@ -312,7 +314,7 @@ PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
   }
 
   PlannedPath fallback_plan;
-  double backwards_steer = params.steer_limits[0] * 0.3;
+  double backwards_steer = -params.steer_limits[0] * 0.3;
   fallback_plan.control = {backwards_steer, backwards_steer};
   fallback_plan.path = RollOutPath(fallback_plan.control);
   for (auto& path_point : fallback_plan.path) {
@@ -358,6 +360,14 @@ PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
   if (min_dist < params.obs_dist_slow_thresh) {
     best_plan.path[0].speed *= params.obs_dist_slow_ratio;
   }
+
+  double this_speed = best_plan.path[0].speed;
+
+  if (last_speed > 0 && this_speed < 0) {
+    best_plan.path[0].speed = last_speed;
+  }
+
+  last_speed = this_speed;
 
   std::cout << "Planner found " << local_minima_indices.size() << " local minima. "
             << "Best cost is " << best_plan.cost << std::endl;

@@ -31,7 +31,7 @@
         <param name="k_dist" type="double" value="0.001"/>
         <param name="k_speed" type="double" value="0.002"/>
 
-        <param name="n_control_samples" type="int" value="300"/>
+        <param name="n_control_samples" type="int" value="400"/>
         <param name="distance_increment" type="double" value="0.1"/>
 
         <param name="smoothing_array_size" type="int" value="$(arg smoothing_array_size)"/>

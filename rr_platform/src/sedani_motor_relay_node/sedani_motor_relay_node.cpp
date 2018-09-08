@@ -96,8 +96,11 @@ int main(int argc, char **argv) {
 
         prevAngle = desiredSteer;
         prevSpeed = desiredSpeed;
+
         sendCommand(serial_port);
-        publishData(serial_port.ReadLine());
+
+        auto ret = serial_port.ReadLine();
+        ROS_INFO_STREAM("motor relay received " << ret);
         rate.sleep();
     }
 
