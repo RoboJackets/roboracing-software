@@ -44,6 +44,7 @@ The following files and folders enable our continuous integration system.
    ```sh
    rosdep install --from-path src --ignore-src -y
    ```
+
 4. Install keras with :
 
    ```
@@ -51,6 +52,8 @@ The following files and folders enable our continuous integration system.
    ```
 
 5. You should now be able to build the project with `catkin_make`.
+
+Some packages may have to be installed from source. For example, if sick_tim cannot be found, then search the error and find the ROS wiki page http://wiki.ros.org/sick_tim. Find the link to the source git repo and clone that into catkin_ws/src.
 
 ## Simulation
 
