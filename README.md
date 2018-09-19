@@ -50,7 +50,7 @@ The following files and folders enable our continuous integration system.
 5. Install python dependencies (for Python 2) which are not in ROS:
 
    ```
-   sudo -H pip install keras tensorflow numpy pynput matplotlib
+   pip install keras tensorflow numpy pynput matplotlib
    ```
 
 6. Install librealsense following the instructions at https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
