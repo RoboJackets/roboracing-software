@@ -45,15 +45,18 @@ The following files and folders enable our continuous integration system.
    rosdep install --from-path src --ignore-src -y
    ```
 
+	- Some packages may have to be installed from source. For example, if realsesnse2_camera cannot be found, then search the error and find the ROS wiki page http://wiki.ros.org/realsense2_camera. Find the link to the source git repo and clone that into catkin_ws/src.
+
 4. Install keras with :
 
    ```
    pip install keras
    ```
 
-5. You should now be able to build the project with `catkin_make`.
+5. Install librealsense following the instructions at https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
 
-Some packages may have to be installed from source. For example, if sick_tim cannot be found, then search the error and find the ROS wiki page http://wiki.ros.org/sick_tim. Find the link to the source git repo and clone that into catkin_ws/src.
+6. You should now be able to build the project by running `catkin_make` in the catkin_ws directory.
+
 
 ## Simulation
 
