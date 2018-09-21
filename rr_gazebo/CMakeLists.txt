@@ -10,10 +10,12 @@ find_package( catkin REQUIRED COMPONENTS
         rr_platform
 )
 
-# Fix Protobuf include if needed
+# Try to find Protobuf and fix if needed
+include(FindProtobuf)
+find_package(Protobuf)
 if(NOT Protobuf_INCLUDE_DIR)
-	set(Protobuf_INCLUDE_DIR /usr/include/)
-endif(NOT Protobuf_INCLUDE_DIR)
+        set(Protobuf_INCLUDE_DIR /usr/include/)
+endif()
 
 find_package(gazebo REQUIRED)
 
