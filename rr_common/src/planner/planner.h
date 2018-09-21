@@ -87,12 +87,15 @@ public:
 
   ~Planner() = default;
 
+  /*
+   * Plan: given a map of the world, find the best path through it
+   */
   PlannedPath Plan(const KdTreeMap& kd_tree_map);
 
 private:
 
   /*
-   * steeringSample: get a random steering value from a normal
+   * SampleSteering: get a random steering value from a normal
    * distribution. Each path stage has a potentially different bell
    * curve. If the value is out of bounds, try again
    * Params:
