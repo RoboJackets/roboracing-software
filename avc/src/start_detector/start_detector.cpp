@@ -2,9 +2,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <std_msgs/Bool.h>
-#include <sensor_msgs/Image.h>
 #include <numeric>
-#include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace ros;
@@ -114,8 +112,6 @@ void start_detector::onInit() {
     pnh.param("param2", param2, 25);
     pnh.param("minSize", minSize, 50);
     pnh.param("maxSize", maxSize, 150);
-
-    // pnh.param("sumThreshold", sumThreshold, 10000);
 
     img_sub = it.subscribe("/camera_wide/image_raw", 1, &start_detector::ImageCB, this);
     start_pub = nh.advertise<std_msgs::Bool>("/start_detected", 1);
