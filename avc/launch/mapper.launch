@@ -8,5 +8,6 @@
         <param name="ground_threshold" value="0"/>
         <param name="outlier_neighbors" value="1"/>
         <param name="outlier_threshold" value="100.0"/>
+        <param name="vg_filter_size" value="0.05"/> <!-- used 0.1 at AVC 2018 -->
     </node>
 </launch>

@@ -9,11 +9,9 @@
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 
-using std::cout;
-using std::endl;
 
-typedef pcl::PointCloud<pcl::PointXYZ> cloud_t;
-typedef pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr_t;
+using cloud_t = pcl::PointCloud<pcl::PointXYZ>;
+using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
 std::map<std::string, sensor_msgs::PointCloud2ConstPtr> partials;
 bool needsUpdating = false;
@@ -56,6 +54,7 @@ int main(int argc, char** argv) {
     float groundThreshold = nh_private.param("ground_threshold", 0.05);
     float outlierThreshold = nh_private.param("outlier_threshold", 2.0);
     int outlierNeighbors = nh_private.param("outlier_neighbors", 1);
+    float vgFilterSize = nh_private.param("vg_filter_size", 0.05);
 
     auto topics = split(sourceList, ',');
 
@@ -70,7 +69,7 @@ int main(int argc, char** argv) {
 
     // set up point reduction filter
     pcl::VoxelGrid<pcl::PointXYZ> filterVG;
-    filterVG.setLeafSize(0.1f, 0.1f, 0.1f);
+    filterVG.setLeafSize(vgFilterSize, vgFilterSize, vgFilterSize);
 
     // set up z axis value filter (supposed to take out ground)
     pcl::PassThrough<pcl::PointXYZ> filterPass;
