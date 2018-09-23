@@ -6,6 +6,13 @@
             Example panel for getting started
         </description>
     </class>
+    <class name="rr_rviz_plugins/SpeedometerPanel"
+           type="rr_rviz_plugins::SpeedometerPanel"
+           base_class_type="rviz::Panel">
+        <description>
+            Example panel for getting started
+        </description>
+    </class>
     <class name="rr_rviz_plugins/ResetPanel"
            type="rr_rviz_plugins::ResetPanel"
            base_class_type="rviz::Panel">
