@@ -56,6 +56,7 @@ void SpeedometerPanel::chassis_callback(const rr_platform::chassis_stateConstPtr
     speedlabel->setText(text.c_str());
     
     double angle = ((msg->speed_mps)/maxSpeed)*3.14159256;
+    wheelAngle = msg->steer_rad;
 
     width = widgetWidth/2 + 70 - (widgetWidth/2)* cos(angle);
     height = widgetWidth/2 + 70 - (widgetWidth/2)* sin(angle);
@@ -65,7 +66,8 @@ void SpeedometerPanel::chassis_callback(const rr_platform::chassis_stateConstPtr
 
 
 void SpeedometerPanel::steering_callback(const rr_platform::steeringConstPtr &msg) {
-   wheelAngle = msg->angle;
+   //this is the old wheel angle from steering topic (to make this work just change name to wheelAngle and remove the wheelAngle assignment on the chassis_callback
+   double oldWheelAngle = msg->angle;
    update();
 }
 
