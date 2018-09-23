@@ -26,9 +26,9 @@ double speed = 0.0;
 double steeringAngle = 0.0;
 
 double maxAngleMsg;
-const double maxOutput = 1.0;  //#TODO: magic # to launch param maybe???
+const double maxOutput = 1.0;
 
-std::shared_ptr<tcp::socket> currentSocket;
+std::unique_ptr<tcp::socket> currentSocket;
 
 void speedCallback(const rr_platform::speed::ConstPtr &msg) {
     speed = msg->speed;
@@ -65,7 +65,7 @@ void sendMessage(string message) {
   boost::asio::write(*currentSocket, boost::asio::buffer(message), error); //#TODO: error check????
 }
 
-string buildPIDMessage(struct PIDConst pid) {
+string buildPIDMessage(const PIDConst& pid) {
   //combines PID into useful message
   string command = to_string(pid.p) + " " + to_string(pid.i) + " " + to_string(pid.d);
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
     tcp::resolver resolver(io_service);
     tcp::resolver::query query(serverName, serviceName);
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    currentSocket = make_shared<tcp::socket>(io_service); //used to allow us to pass socket to functions
+    currentSocket = make_unique<tcp::socket>(io_service); //used to allow us to pass socket to functions
     boost::asio::connect(*currentSocket, endpoint_iterator);
 
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("Sent PID: " + pidMessage);
     string response = readMessage(); //Should say PID Received //#TODO: have a check for correct responses?
 
-    ros::Rate rate(50); //#TODO set this value to a good rate time (10hz seems good)/ do we need this?
+    ros::Rate rate(50); //#TODO set this value to a good rate time (50hz seems good)/ do we need this?
     while(ros::ok()) {
         ros::spinOnce();
 
