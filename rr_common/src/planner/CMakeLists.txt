@@ -1,10 +1,6 @@
-add_library(planner planner.cpp planner.h)
-# target_
-
-add_executable(planner-bin planner_node.cpp)
-target_link_libraries(planner-bin planner ${catkin_LIBRARIES})
-add_dependencies(planner-bin rr_platform_generate_messages_cpp)
-set_target_properties(planner-bin PROPERTIES OUTPUT_NAME planner)
+add_executable(planner planner_node.cpp planner.cpp planner.h)
+target_link_libraries(planner ${catkin_LIBRARIES})
+add_dependencies(planner rr_platform_generate_messages_cpp)
 
 catkin_install_python(
         PROGRAMS planner_plotter.py
