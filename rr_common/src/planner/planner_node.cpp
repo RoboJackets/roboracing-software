@@ -11,16 +11,14 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 
-#include "planner.h"
+#include "random_sample_planner.h"
 
 
-std::unique_ptr<rr::planning::Planner> planner;
+std::unique_ptr<rr::Planner> planner;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 ros::Publisher path_pub;
-
-rr::planning::CollisionBox collision_box;
 
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
@@ -132,7 +130,7 @@ int main(int argc, char** argv)
   std::string obstacle_cloud_topic;
   nhp.getParam("input_cloud_topic", obstacle_cloud_topic);
 
-  planner.reset(new rr::planning::Planner(params));
+  planner.reset(new rr::RandomSamplePlanner(params));
 
   auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
   speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);

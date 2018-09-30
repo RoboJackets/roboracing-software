@@ -1,4 +1,4 @@
-#include "planner.h"
+#include "random_sample_planner.h"
 
 #include <algorithm>
 #include <cmath>
@@ -9,21 +9,18 @@
 double last_speed = 0;
 
 namespace rr {
-namespace planning {
 
-Planner::Planner(const Params& params_ext) : params(params_ext) {
+RandomSamplePlanner::RandomSamplePlanner(const Params& params_ext) : params(params_ext) {
   prev_steering_angles_.resize(params.smoothing_array_size, 0);
   prev_steering_angles_index_ = 0;
 
-  for(double d : params.steer_stddevs) {
+  for (double d : params.steer_stddevs) {
     steering_gaussians_.emplace_back(0, d);
-    // std::cout << "new steering guassian, d = " << d << std::endl;
-    // std::cout << "d = " << steering_gaussians_.back().stddev() << std::endl;
   }
   rand_gen_ = std::mt19937(std::random_device{}());
 }
 
-Pose Planner::StepKinematics(const Pose& pose, double steer_angle) {
+Pose RandomSamplePlanner::StepKinematics(const Pose& pose, double steer_angle) {
   double deltaX, deltaY, deltaTheta;
 
   if (abs(steer_angle) < 1e-3) {
@@ -49,80 +46,9 @@ Pose Planner::StepKinematics(const Pose& pose, double steer_angle) {
   return out;
 }
 
-std::tuple<bool, double> Planner::GetCollisionDistance(const Pose& pose, 
-                                                       const KdTreeMap& kd_tree_map) {
-  double cosTheta = std::cos(pose.theta);
-  double sinTheta = std::sin(pose.theta);
 
-  double robotCenterX = (params.collision_box.length_front - params.collision_box.length_back) / 2.;
-  double robotCenterY = (params.collision_box.width_left - params.collision_box.width_right) / 2.;
-  double searchX = pose.x + robotCenterX * cosTheta - robotCenterY * sinTheta;
-  double searchY = pose.y + robotCenterX * sinTheta + robotCenterY * cosTheta;
 
-  double halfLength = (params.collision_box.length_front + params.collision_box.length_back) / 2.;
-  double halfWidth = (params.collision_box.width_left + params.collision_box.width_right) / 2.;
-  double farthestPointOnRobot = std::sqrt(halfLength*halfLength + halfWidth*halfWidth);
-
-  pcl::PointXYZ searchPoint(searchX, searchY, 0);
-  std::vector<int> pointIdxs;
-  std::vector<float> squaredDistances;
-  int nResults = kd_tree_map.radiusSearch(searchPoint, params.obstacle_search_radius, pointIdxs,
-                                          squaredDistances);
-
-  bool collision = false;
-  double min_dist = params.obstacle_search_radius;
-  if (nResults > 0) {
-    // convert each point to robot reference frame and check collision and distances
-    const auto& cloud = *(kd_tree_map.getInputCloud());
-    for (int i : pointIdxs) {
-      const auto& point = cloud[i];
-
-      // note that this is inverse kinematics here. We have origin -> robot but want robot -> origin
-      double offsetX = point.x - searchX;
-      double offsetY = point.y - searchY;
-      double x =  cosTheta * offsetX + sinTheta * offsetY;
-      double y = -sinTheta * offsetX + cosTheta * offsetY;
-
-      // collisions
-      if (std::abs(x) <= halfLength && std::abs(y) <= halfWidth) {
-        collision = true;
-        break;
-      }
-
-      // sketchy-ass left/right distance voodoo
-      if (y > 0) {
-        y /= params.left_dist_weight;
-      } else {
-        y /= params.right_dist_weight;
-      }
-
-      // find distance, in several cases
-      double dist;
-      if (std::abs(x) > halfLength) {
-        // not alongside the robot
-        if (std::abs(y) > halfWidth) {
-          // closest to a corner
-          double cornerX = halfLength * ((x < 0) ? -1 : 1);
-          double cornerY = halfWidth * ((y < 0) ? -1 : 1);
-          double dx = x - cornerX;
-          double dy = y - cornerY;
-          dist = std::sqrt(dx*dx + dy*dy);
-        } else {
-          // directly in front of or behind robot
-          dist = std::abs(x) - halfLength;
-        }
-      } else {
-        // directly to the side of the robot
-        dist = std::abs(y) - halfWidth;
-      }
-      min_dist = std::min(min_dist, dist);
-    }
-  }
-
-  return std::make_tuple(collision, min_dist);
-}
-
-double Planner::SampleSteering(int stage) {
+double RandomSamplePlanner::SampleSteering(int stage) {
   double angle;
   do {
     auto& gaussian = steering_gaussians_[stage];
@@ -132,7 +58,7 @@ double Planner::SampleSteering(int stage) {
   return angle;
 }
 
-double Planner::SteeringToSpeed(double steer_angle) {
+double RandomSamplePlanner::SteeringToSpeed(double steer_angle) {
   steer_angle = std::abs(steer_angle);
 
   double out;
@@ -145,7 +71,7 @@ double Planner::SteeringToSpeed(double steer_angle) {
   return out;
 }
 
-std::vector<PathPoint> Planner::RollOutPath(const std::vector<double>& control) {
+std::vector<PathPoint> RandomSamplePlanner::RollOutPath(const std::vector<double>& control) {
   if(control.size() != params.n_path_segments) {
     std::cout << "[Planner] Warning: control vector of dimension " << control.size() 
               << " does not match " << params.n_path_segments << " path segments" << std::endl;
@@ -167,7 +93,7 @@ std::vector<PathPoint> Planner::RollOutPath(const std::vector<double>& control) 
   return path_points;
 }
 
-std::tuple<bool, double> Planner::GetCost(const std::vector<PathPoint>& path, 
+std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoint>& path,
                                           const KdTreeMap& kd_tree_map) {
   double denominator = 0;
   bool is_collision;
@@ -182,12 +108,12 @@ std::tuple<bool, double> Planner::GetCost(const std::vector<PathPoint>& path,
   return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-std::vector<int> Planner::GetLocalMinima(
-    const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
+std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<PlannedPath>& plans,
+                                         const std::vector<bool>& mask) {
   // std::cout << "start GetLocalMinima" << std::endl;
 
   std::vector<int> local_minima_indices;
-  int n_samples = plans.size();
+  int n_samples = count(mask.begin(), mask.end(), true);
 
   if (n_samples > 0) {
     // fill flann-format sample matrix
@@ -258,7 +184,7 @@ std::vector<int> Planner::GetLocalMinima(
   return local_minima_indices;
 }
 
-double Planner::FilterOutput(double this_steer) {
+double RandomSamplePlanner::FilterOutput(double this_steer) {
   // update circular buffer
   prev_steering_angles_[prev_steering_angles_index_] = this_steer;
   prev_steering_angles_index_ = (prev_steering_angles_index_ + 1) % params.smoothing_array_size;
@@ -272,7 +198,7 @@ double Planner::FilterOutput(double this_steer) {
   return median;
 }
 
-PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
+PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
 
   // allocate planned paths
   std::vector<PlannedPath> plans;
@@ -375,5 +301,4 @@ PlannedPath Planner::Plan(const KdTreeMap& kd_tree_map) {
   return best_plan;
 }
 
-}  // namespace planning
 }  // namespace rr
