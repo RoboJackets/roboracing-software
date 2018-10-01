@@ -12,6 +12,8 @@ class DistanceChecker {
   DistanceChecker(double length_front, double length_back, double width_left,
                   double width_right, double obstacle_search_radius);
 
+  DistanceChecker();
+
   /*
    * Calculate the shortest distance from any part of the robot to any point 
    * in the map. Pose is future relative to current/origin (0,0,0)
@@ -22,8 +24,7 @@ class DistanceChecker {
   std::tuple<bool, double> GetCollisionDistance(const Pose& pose, 
                                                 const KdTreeMap& kd_tree_map);
 
-  std::tuple<bool, double> GetCollisionDistance(const Pose& pose, 
-                                                const pcl::PointXYZ& point);
+  bool GetCollision(const pcl::PointXYZ& relative_point);
 
  private:
   const double length_front_;  // distance from origin to front edge

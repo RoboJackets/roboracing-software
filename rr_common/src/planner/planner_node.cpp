@@ -15,6 +15,7 @@
 
 
 std::unique_ptr<rr::Planner> planner;
+std::unique_ptr<rr::DistanceChecker> distance_checker;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
@@ -27,13 +28,11 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
 
-  for(auto iter = cloud->begin(); iter != cloud->end();) {
-    auto& point = *iter;
-    if (point.x < collision_box.length_front && point.x > -collision_box.length_back
-        && point.y < collision_box.width_left && point.y > -collision_box.width_right) {
-      iter = cloud->erase(iter);
+  for(auto point_it = cloud->begin(); point_it != cloud->end();) {
+    if (distance_checker->GetCollision(*point_it)) {
+      point_it = cloud->erase(point_it);
     } else {
-      iter++;
+      point_it++;
     }
   }
 
@@ -46,7 +45,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloud);
 
-  rr::planning::PlannedPath plan = planner->Plan(kdtree);
+  rr::PlannedPath plan = planner->Plan(kdtree);
 
   rr_platform::speedPtr speedMSG(new rr_platform::speed);
   rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -72,7 +71,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   }
 }
 
-std::vector<double> getDoubleListParam(const ros::NodeHandle& nhp, const std::string& name, char delim) {
+std::vector<double> getDoubleListParam(const ros::NodeHandle& nhp,
+                                       const std::string& name, char delim) {
   std::string listAsString;
   nhp.getParam(name, listAsString);
 
@@ -94,43 +94,49 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   ros::NodeHandle nhp("~");
 
-  rr::planning::Planner::Params params;
+  rr::RandomSamplePlanner::Params params;
 
-  nhp.getParam("wheel_base", params.wheel_base);
-  nhp.getParam("lateral_accel", params.lateral_accel);
-  nhp.getParam("collision_dist_front", params.collision_box.length_front);
-  nhp.getParam("collision_dist_back", params.collision_box.length_back);
-  nhp.getParam("collision_dist_side", params.collision_box.width_left);
-  params.collision_box.width_right = params.collision_box.width_left;
+  double length_front, length_back, width_left, width_right,
+      obs_search_rad;
+  nhp.getParam("collision_dist_front", length_front);
+  nhp.getParam("collision_dist_back", length_back);
+  nhp.getParam("collision_dist_side", width_left);
+  width_right = width_left;
+  nhp.getParam("obstacle_search_radius", obs_search_rad);
 
-  collision_box = params.collision_box;
+  distance_checker.reset(new rr::DistanceChecker(
+      length_front, length_back, width_left, width_right, obs_search_rad));
+
+  double wheel_base, lateral_accel, distance_increment, max_speed;
+  nhp.getParam("wheel_base", wheel_base);
+  nhp.getParam("lateral_accel", lateral_accel);
+  nhp.getParam("distance_increment", distance_increment);
+  nhp.getParam("max_speed", max_speed);
+  auto segment_distances = getDoubleListParam(nhp, "segment_distances", ' ');
+
+  rr::BicycleModel model(wheel_base, lateral_accel, distance_increment,
+      max_speed, segment_distances);
 
   nhp.getParam("n_path_segments", params.n_path_segments);
-  params.segment_distances = getDoubleListParam(nhp, "segment_distances", ' ');
   params.steer_limits = getDoubleListParam(nhp, "steer_limits", ' ');
   params.steer_stddevs = getDoubleListParam(nhp, "steer_stddevs", ' ');
 
-  nhp.getParam("obstacle_search_radius", params.obstacle_search_radius);
   nhp.getParam("path_similarity_cutoff", params.path_similarity_cutoff);
   nhp.getParam("max_relative_cost", params.max_relative_cost);
   nhp.getParam("k_dist", params.k_dist);
   nhp.getParam("k_speed", params.k_speed);
 
   nhp.getParam("n_control_samples", params.n_control_samples);
-  nhp.getParam("distance_increment", params.distance_increment);
 
   nhp.getParam("smoothing_array_size", params.smoothing_array_size);
-  nhp.getParam("max_speed", params.max_speed);
 
-  nhp.getParam("left_dist_weight", params.left_dist_weight);
-  nhp.getParam("right_dist_weight", params.right_dist_weight);
   nhp.getParam("obs_dist_slow_thresh", params.obs_dist_slow_thresh);
   nhp.getParam("obs_dist_slow_ratio", params.obs_dist_slow_ratio);
 
   std::string obstacle_cloud_topic;
   nhp.getParam("input_cloud_topic", obstacle_cloud_topic);
 
-  planner.reset(new rr::RandomSamplePlanner(params));
+  planner.reset(new rr::RandomSamplePlanner(*distance_checker, model, params));
 
   auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
   speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);

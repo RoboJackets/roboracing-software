@@ -10,7 +10,10 @@ double last_speed = 0;
 
 namespace rr {
 
-RandomSamplePlanner::RandomSamplePlanner(const Params& params_ext) : params(params_ext) {
+RandomSamplePlanner::RandomSamplePlanner(
+    const DistanceChecker& distance_checker, const BicycleModel& model,
+    const Params& params_ext)
+      : distance_checker_(distance_checker), params(params_ext), model_(model) {
   prev_steering_angles_.resize(params.smoothing_array_size, 0);
   prev_steering_angles_index_ = 0;
 
@@ -19,34 +22,6 @@ RandomSamplePlanner::RandomSamplePlanner(const Params& params_ext) : params(para
   }
   rand_gen_ = std::mt19937(std::random_device{}());
 }
-
-Pose RandomSamplePlanner::StepKinematics(const Pose& pose, double steer_angle) {
-  double deltaX, deltaY, deltaTheta;
-
-  if (abs(steer_angle) < 1e-3) {
-    deltaX = params.distance_increment;
-    deltaY = 0;
-    deltaTheta = 0;
-  } else {
-    double turnRadius = params.wheel_base / sin(abs(steer_angle));
-    double tempTheta = params.distance_increment / turnRadius;
-    deltaX = turnRadius * cos(M_PI / 2 - tempTheta);
-    if (steer_angle < 0) {
-        deltaY = turnRadius - turnRadius * sin(M_PI / 2 - tempTheta);
-    } else {
-        deltaY = -(turnRadius - turnRadius * sin(M_PI / 2 - tempTheta));
-    }
-    deltaTheta = params.distance_increment / params.wheel_base * sin(-steer_angle);
-  }
-
-  Pose out;
-  out.x = pose.x + deltaX * cos(pose.theta) - deltaY * sin(pose.theta);
-  out.y = pose.y + deltaX * sin(pose.theta) + deltaY * cos(pose.theta);
-  out.theta = pose.theta + deltaTheta;
-  return out;
-}
-
-
 
 double RandomSamplePlanner::SampleSteering(int stage) {
   double angle;
@@ -58,48 +33,15 @@ double RandomSamplePlanner::SampleSteering(int stage) {
   return angle;
 }
 
-double RandomSamplePlanner::SteeringToSpeed(double steer_angle) {
-  steer_angle = std::abs(steer_angle);
-
-  double out;
-  if (steer_angle < 1e-3) {
-    out = params.max_speed;
-  } else {
-    double vRaw = std::sqrt(params.lateral_accel * params.wheel_base / std::sin(steer_angle));
-    out = std::min(vRaw, params.max_speed);
-  }
-  return out;
-}
-
-std::vector<PathPoint> RandomSamplePlanner::RollOutPath(const std::vector<double>& control) {
-  if(control.size() != params.n_path_segments) {
-    std::cout << "[Planner] Warning: control vector of dimension " << control.size() 
-              << " does not match " << params.n_path_segments << " path segments" << std::endl;
-  }
-
-  std::vector<PathPoint> path_points;
-  path_points.emplace_back(Pose{0, 0, 0}, control[0], SteeringToSpeed(control[0]));
-
-  for (int segment = 0; segment < params.n_path_segments; segment++) {
-    double steer = control[segment];
-    double speed = SteeringToSpeed(steer);
-    const double& seg_dist = params.segment_distances[segment];
-    for (double dist = 0.0; dist < seg_dist; dist += params.distance_increment) {
-      const Pose& last_pose = path_points.back().pose;
-      path_points.emplace_back(StepKinematics(last_pose, steer), steer, SteeringToSpeed(steer));
-    }
-  }
-
-  return path_points;
-}
-
-std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoint>& path,
-                                          const KdTreeMap& kd_tree_map) {
+std::tuple<bool, double> RandomSamplePlanner::GetCost(
+    const std::vector<PathPoint>& path, const KdTreeMap& kd_tree_map) {
   double denominator = 0;
   bool is_collision;
   double dist;
   for(const auto& path_point : path) {
-    std::tie(is_collision, dist) = GetCollisionDistance(path_point.pose, kd_tree_map);
+    std::tie(is_collision, dist)
+        = distance_checker_.GetCollisionDistance(path_point.pose, kd_tree_map);
+
     if (is_collision) {
       break;
     }
@@ -108,28 +50,30 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
   return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<PlannedPath>& plans,
-                                         const std::vector<bool>& mask) {
+std::vector<int> RandomSamplePlanner::GetLocalMinima(
+    const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
   // std::cout << "start GetLocalMinima" << std::endl;
 
   std::vector<int> local_minima_indices;
-  int n_samples = count(mask.begin(), mask.end(), true);
+  auto n_samples = plans.size();
+  auto n_path_segments = plans[0].get().control.size();
 
   if (n_samples > 0) {
     // fill flann-format sample matrix
-    double sampleArray[n_samples * params.n_path_segments];
+    double sampleArray[n_samples * n_path_segments];
     for(int i = 0; i < n_samples; i++) {
-      for(int j = 0; j < params.n_path_segments; j++) {
-        sampleArray[i * params.n_path_segments + j] = plans[i].get().control[j];
-        // std::cout << "sampleArray[" << i * params.n_path_segments + j << "] = " 
-        //           << plans[i].get().control[j] << std::endl;
+      for(int j = 0; j < n_path_segments; j++) {
+        sampleArray[i * n_path_segments + j] = plans[i].get().control[j];
+        // std::cout << "sampleArray[" << i * params.n_path_segments + j
+        //           << "] = " << plans[i].get().control[j] << std::endl;
       }
     }
-    flann::Matrix<double> samples(sampleArray, n_samples, params.n_path_segments);
+    flann::Matrix<double> samples(sampleArray, n_samples, n_path_segments);
 
     // construct FLANN index (nearest neighbors preprocessing)
-    // TODO determine if L1 (Manhattan) or L2 (Euclidean) distance is more useful here
-    flann::Index<flann::L1<double>> flannIndex(samples, flann::KDTreeSingleIndexParams());
+    auto index_params = flann::KDTreeSingleIndexParams();
+    // TODO determine if L1 (Manhattan) or L2 (Euclidean) distance is better
+    flann::Index<flann::L1<double>> flannIndex(samples, index_params);
     flannIndex.buildIndex();
 
     // Initialize group membership list
@@ -138,7 +82,7 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<PlannedPa
     // initialize input/output parameters for radius searches
     flann::Matrix<int> indices(new int[n_samples], 1, n_samples);
     flann::Matrix<double> dists(new double[n_samples], 1, n_samples);
-    flann::Matrix<double> query(new double[params.n_path_segments], 1, params.n_path_segments);
+    flann::Matrix<double> ctrl(new double[n_path_segments], 1, n_path_segments);
     flann::SearchParams searchParams(1);
     const double& searchRadius = params.path_similarity_cutoff;
 
@@ -148,11 +92,11 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<PlannedPa
       }
 
       // perform radius search
-      for(int d = 0; d < params.n_path_segments; d++) {
-        query[0][d] = samples[i][d];
+      for(int d = 0; d < n_path_segments; d++) {
+        ctrl[0][d] = samples[i][d];
       }
-      int n_neighbors = flannIndex.radiusSearch(query, indices, dists,
-                                               searchRadius, searchParams);
+      int n_neighbors = flannIndex.radiusSearch(ctrl, indices, dists,
+                                                searchRadius, searchParams);
 
       // Iterate through neighbors, tracking if lower costs exist.
       // Any neighbors in radius that have higher costs are not local minima.
@@ -213,7 +157,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
       plan.control.push_back(SampleSteering(stage));
     }
 
-    plan.path = RollOutPath(plan.control);
+    plan.path = model_.RollOutPath(plan.control);
 
     bool collision;
     std::tie(collision, plan.cost) = GetCost(plan.path, kd_tree_map);
@@ -242,7 +186,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   PlannedPath fallback_plan;
   double backwards_steer = -params.steer_limits[0] * 0.3;
   fallback_plan.control = {backwards_steer, backwards_steer};
-  fallback_plan.path = RollOutPath(fallback_plan.control);
+  fallback_plan.path = model_.RollOutPath(fallback_plan.control);
   for (auto& path_point : fallback_plan.path) {
     path_point.speed = -0.3;
   }
@@ -277,7 +221,9 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   double dist;
   double min_dist = 10000;
   for (const auto& path_point : best_plan.path) {
-    std::tie(is_collision, dist) = GetCollisionDistance(path_point.pose, kd_tree_map);
+    std::tie(is_collision, dist)
+        = distance_checker_.GetCollisionDistance(path_point.pose, kd_tree_map);
+
     if (dist < min_dist) {
       min_dist = dist;
     }

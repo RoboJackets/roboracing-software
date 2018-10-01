@@ -9,9 +9,11 @@ namespace rr {
 
 class BicycleModel {
  public:
-  KinematicBicycleModel(double wheel_base, double max_lateral_accel, 
-                        int n_path_segments, 
-                        const std::vector<double>& segment_distances);
+  BicycleModel(double wheel_base, double max_lateral_accel,
+               double distance_increment, double max_speed,
+               const std::vector<double>& segment_distances);
+
+  BicycleModel() = default;
 
   /*
    * RollOutPath: roll out a trajectory through the world.
@@ -42,8 +44,9 @@ class BicycleModel {
 
   double wheel_base_;
   double max_lateral_accel_;
-  int n_path_segments_;
   std::vector<double> segment_distances_;
+  double distance_increment_;
+  double max_speed_;
 };
 
 }  // namespace rr

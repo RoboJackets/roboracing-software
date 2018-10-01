@@ -5,17 +5,20 @@
 #include <tuple>
 #include <vector>
 
+#include "planner.h"
 #include "planner_types.h"
+#include "distance_checker.h"
+#include "bicycle_model.h"
 
 namespace rr {
 
-
-class RandomSamplePlanner
+class RandomSamplePlanner : public Planner
 {
 public:
 
   struct Params {
     // path generation
+    int n_path_segments;
     std::vector<double> steer_limits;
     std::vector<double> steer_stddevs;
 
@@ -32,7 +35,6 @@ public:
 
     // control
     int smoothing_array_size;
-    double max_speed;
 
     // comp experimental things
     double obs_dist_slow_thresh;
@@ -40,7 +42,8 @@ public:
   };
 
 
-  RandomSamplePlanner(const Params& params);
+  RandomSamplePlanner(const DistanceChecker&, const BicycleModel&,
+                      const Params&);
 
   ~RandomSamplePlanner() = default;
 
@@ -83,8 +86,8 @@ private:
    * Return:
    * list of indices of selected paths
    */
-  std::vector<int> GetLocalMinima(const std::vector<PlannedPath>& plans,
-                                  const std::vector<bool>& mask);
+  std::vector<int> GetLocalMinima(
+      const std::vector<std::reference_wrapper<PlannedPath>>& plans);
 
   /* 
    * FilterOutput: Apply a filter to the outputs of this planner over time
@@ -94,6 +97,9 @@ private:
 
   // algorithm parameters
   const Params params;
+
+  DistanceChecker distance_checker_;
+  BicycleModel model_;
 
   // mutable state
   std::vector<double> prev_steering_angles_;

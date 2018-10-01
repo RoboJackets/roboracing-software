@@ -11,6 +11,9 @@ DistanceChecker::DistanceChecker(double length_front, double length_back,
     width_right_(width_right),
     obstacle_search_radius_(obstacle_search_radius) {}
 
+DistanceChecker::DistanceChecker()
+  : DistanceChecker(0, 0, 0, 0, 0) {}
+
 std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
     const KdTreeMap& kd_tree_map) {
   double cosTheta = std::cos(pose.theta);
@@ -78,11 +81,11 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
   return std::make_tuple(collision, min_dist - cornerDist);
 }
 
-std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
-    const pcl::PointXYZ& point) {
-
+bool DistanceChecker::GetCollision(const pcl::PointXYZ& relative_point) {
+  return (relative_point.x < length_front_)
+      && (relative_point.x > -length_back_)
+      && (relative_point.y < width_left_)
+      && (relative_point.y > -width_right_);
 }
 
 }  // namespace rr
-
-#endif  // RR_COMMON_DISTANCE_CHECKER_H
