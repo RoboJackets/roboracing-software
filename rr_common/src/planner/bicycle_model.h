@@ -9,8 +9,7 @@ namespace rr {
 
 class BicycleModel {
  public:
-  BicycleModel(double wheel_base, double max_lateral_accel,
-               double distance_increment, double max_speed,
+  BicycleModel(double wheel_base, double max_lateral_accel, double distance_increment, double max_speed,
                const std::vector<double>& segment_distances);
 
   BicycleModel() = default;
