@@ -3,7 +3,11 @@
 namespace rr {
 
 AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel& m, const Params& p)
-  : distance_checker_(c), model_(m), params(p) {}
+  : distance_checker_(c), model_(m), params(p) {
+  last_path_ = std::make_shared<rr::PlannedPath>();
+  last_path_->control = {0, 0};
+  last_path_->path = model_.RollOutPath(last_path_->control);
+}
 
 std::vector<double> AnnealingPlanner::SampleControls(const std::vector<double>& last, unsigned int t) {
   std::vector<double> out = last;  // copy
@@ -24,7 +28,8 @@ std::tuple<bool, double> AnnealingPlanner::GetCost(const std::vector<PathPoint>&
   double cost = 0;
   bool collision = false;
 
-  for (auto it = path.begin(); it != path.end(); ++it) {
+  auto last_it = last_path_->path.begin();
+  for (auto it = path.begin(); it != path.end(); ++it, ++last_it) {
     auto [collision_here, dist] = distance_checker_.GetCollisionDistance(it->pose, kd_tree_map);
 
     if (collision_here) {
@@ -32,7 +37,11 @@ std::tuple<bool, double> AnnealingPlanner::GetCost(const std::vector<PathPoint>&
       cost += params.collision_penalty * (path.end() - it);
       break;
     } else {
-      cost -= (params.k_dist * dist + params.k_speed * it->speed);
+      double dx = it->pose.x - last_it->pose.x;
+      double dy = it->pose.y - last_it->pose.y;
+      double similarity = std::sqrt(dx*dx + dy*dy);
+      cost += params.k_similarity * similarity;
+      cost -= (params.k_dist * std::log(1.0 + dist) + params.k_speed * it->speed);
     }
   }
 
@@ -57,6 +66,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     }
   }
 
+  last_path_ = best_path;
   return *best_path;
 }
 

@@ -129,6 +129,7 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
 
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
+  params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
   params.max_steering = getParamAssert<double>(nhp, "max_steering");
 
@@ -184,13 +185,14 @@ int main(int argc, char** argv)
 
   ros::Rate rate(10);
   while (ros::ok()) {
-//    ROS_INFO_STREAM(static_cast<bool>(last_map_msg));
     if (last_map_msg) {
       processMap(last_map_msg);
     }
 
     ros::spinOnce();
     rate.sleep();
+
+    ROS_INFO_STREAM(rate.cycleTime());
   }
 
   return 0;

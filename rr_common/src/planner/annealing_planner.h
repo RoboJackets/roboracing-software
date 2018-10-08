@@ -23,6 +23,7 @@ public:
     std::vector<double> temperature_end;
     double k_dist;
     double k_speed;
+    double k_similarity;
     double collision_penalty;
     double max_steering;
   };
@@ -59,6 +60,8 @@ private:
 
   std::normal_distribution<double> steering_gaussian_;
   std::mt19937 rand_gen_;
+
+  std::shared_ptr<PlannedPath> last_path_;
 };
 
 }  // namespace rr

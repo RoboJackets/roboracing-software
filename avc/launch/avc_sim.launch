@@ -26,7 +26,8 @@
 
         <param name="annealing_steps" value="300"/>
         <param name="k_dist" value="1"/>
-        <param name="k_speed" value="20"/>
+        <param name="k_speed" value="5"/>
+        <param name="k_similarity" value="0.2"/>
         <param name="collision_penalty" value="100"/>
 
         <param name="input_cloud_topic" value="/current_obstacles"/>
