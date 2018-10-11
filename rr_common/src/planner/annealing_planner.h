@@ -19,13 +19,15 @@ public:
   struct Params {
     unsigned int n_path_segments;
     unsigned int annealing_steps;
-    std::vector<double> temperature_start;
-    std::vector<double> temperature_end;
+    double temperature_start;
+    double temperature_end;
     double k_dist;
     double k_speed;
     double k_similarity;
+    double k_final_pose;
     double collision_penalty;
     double max_steering;
+    double acceptance_scale;
   };
 
   AnnealingPlanner(const DistanceChecker&, const BicycleModel&, const Params&);
@@ -40,6 +42,8 @@ public:
 private:
 
   std::vector<double> SampleControls(const std::vector<double>& last, unsigned int t);
+
+  double GetTemperature(unsigned int t);
 
   /*
    * GetCost: calculate the total cost of a path.
@@ -59,9 +63,11 @@ private:
   BicycleModel model_;
 
   std::normal_distribution<double> steering_gaussian_;
+  std::uniform_real_distribution<double> uniform_01_;
   std::mt19937 rand_gen_;
 
-  std::shared_ptr<PlannedPath> last_path_;
+  unsigned int last_path_idx_;
+  std::vector<PlannedPath> path_pool_;
 };
 
 }  // namespace rr

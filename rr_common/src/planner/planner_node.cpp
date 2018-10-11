@@ -52,6 +52,8 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
 
   rr::PlannedPath plan = planner->Plan(kdtree);
 
+  ROS_INFO_STREAM("Best path cost is " << plan.cost);
+
   rr_platform::speedPtr speedMSG(new rr_platform::speed);
   rr_platform::steeringPtr steerMSG(new rr_platform::steering);
   steerMSG->angle = plan.path[0].steer;
@@ -130,11 +132,13 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
   params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
+  params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
   params.max_steering = getParamAssert<double>(nhp, "max_steering");
+  params.acceptance_scale = getParamAssert<double>(nhp, "acceptance_scale");
 
-  params.temperature_start = getDoubleListParam(nhp, "temperature_start", ' ');
-  params.temperature_end = getDoubleListParam(nhp, "temperature_end", ' ');
+  params.temperature_start = getParamAssert<double>(nhp, "temperature_start");
+  params.temperature_end = getParamAssert<double>(nhp, "temperature_end");
 
   return params;
 }
