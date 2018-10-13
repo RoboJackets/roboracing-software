@@ -1,0 +1,3 @@
+add_executable(iarrc_histogram_detector histogram_detector.cpp)
+target_link_libraries(histogram_detector ${catkin_LIBRARIES})
+add_dependencies(qualify rr_platform_generate_messages_cpp)
