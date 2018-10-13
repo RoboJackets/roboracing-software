@@ -1,0 +1,17 @@
+<launch>
+  <node name="histogram_detector" pkg="iarrc" type="histogram_detector" output="screen">
+        <param name="rectangle_x" type="int" value="500" />
+	<param name="rectangle_y" type="int" value="520" />
+	<param name="rectangle_width" type="int" value="200" />
+	<param name="rectangle_height" type="int" value="100" />
+	
+	<param name="hsv_select" type="int" value="0" />
+	<param name="bins" type="int" value="255" />
+
+	<param name="threshold" type="int" value="20" />
+
+	<param name="threshold_only" type="bool" value="true" />
+	<param name="threshold_only_value" type="int" value="200" />
+
+  </node>
+</launch>
