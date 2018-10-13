@@ -14,6 +14,7 @@ int threshold = 10;
 
 int threshold_only_value = 200;
 bool threshold_only = false;
+bool invert = false;
 
 int rectangle_x = 500;
 int rectangle_y = 520;
@@ -69,13 +70,16 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
 
 		//morphology to to close up holes
-		auto kernel0 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(7,7));
+		auto kernel0 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(3,3));
 		cv::morphologyEx(output,output,cv::MORPH_CLOSE,kernel0);
-		//auto kernel1 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(3,3));
-		//cv::morphologyEx(output, output, cv::MORPH_OPEN,kernal1);
+
 
 		//make white the lines
-		cv::bitwise_not(output,output);
+		if (invert){
+			cv::bitwise_not(output,output);
+			auto kernel1 = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(5,5));
+			cv::morphologyEx(output, output, cv::MORPH_OPEN,kernel1);
+		}
 
 	} else {
 		//straight up value based thresholding
@@ -139,6 +143,8 @@ int main(int argc, char** argv) {
 	nhp.param("rectangle_y", rectangle_y, 520);
 	nhp.param("rectangle_width", rectangle_width, 200);
 	nhp.param("rectangle_height", rectangle_height, 100);
+
+	nhp.param("invert", invert, true);
 
 	nhp.param("threshold_only", threshold_only, false);
 	nhp.param("threshold_only_value", threshold_only_value, 200);
