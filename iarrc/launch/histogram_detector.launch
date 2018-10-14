@@ -11,8 +11,8 @@
 
 	<param name="threshold" type="int" value="20" />
 
-	<param name="threshold_only" type="bool" value="false" />
-	<param name="threshold_only_value" type="int" value="200" />
+	<param name="threshold_only" type="bool" value="true" />
+	<param name="threshold_only_value" type="int" value="220" />
 
   </node>
 </launch>
