@@ -8,6 +8,7 @@ namespace avc {
 class start_detector : public nodelet::Nodelet {
 private:
     ros::Publisher start_pub;
+    ros::Publisher debug_pub;
     image_transport::Subscriber img_sub;
 
     cv::Scalar red_low;

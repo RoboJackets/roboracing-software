@@ -1,20 +1,20 @@
 <launch>
-        <node pkg="nodelet" type="nodelet" name="start_detector" args="load avc/start_detector camera/camera_mono_nodelet_manager" output="screen">
-        <param name="red_low_r" value="20.0"/> <!--V-->
-        <param name="red_high_r" value="150.0"/>
+    <group ns="camera_wide">
+        <node pkg="nodelet" type="nodelet" name="start_detector" args="load avc/start_detector /camera_wide/camera_wide_nodelet_manager" output="screen">
+            <param name="red_low_r" value="20.0"/> <!--V-->
+            <param name="red_high_r" value="150.0"/>
 
-        <param name="red_low_g" value="45.0"/> <!-- S -->
-        <param name="red_high_g" value="255.0"/>
+            <param name="red_low_g" value="45.0"/> <!-- S -->
+            <param name="red_high_g" value="255.0"/>
 
-        <param name="red_low_b" value="40.0"/> <!-- H -->
-        <param name="red_high_b" value="80.0"/>
+            <param name="red_low_b" value="40.0"/> <!-- H -->
+            <param name="red_high_b" value="80.0"/>
 
             <param name="minSize" value="15"/>
-        <param name="maxSize" value="100"/>
-        <param name="param1" value="10"/>
-        <param name="param2" value="15"/>
-        <param name="minDist" value="10"/>
-
-        
-    </node>
+            <param name="maxSize" value="100"/>
+            <param name="param1" value="10"/>
+            <param name="param2" value="15"/>
+            <param name="minDist" value="10"/>      
+        </node>
+    </group>
 </launch>
