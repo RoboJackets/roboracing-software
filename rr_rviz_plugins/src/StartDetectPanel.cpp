@@ -19,7 +19,9 @@ StartDetectPanel::StartDetectPanel(QWidget *parent)
     /* Initialize our subscriber to listen to the /speed topic.
     * Note the use of boost::bind, which allows us to give the callback a pointer to our UI label.
     */
-    // speed_subscriber = handle.subscribe<rr_platform::speed>("/speed", 1, boost::bind(&StartDetectPanel::speed_callback, this, _1, label));
+    speed_subscriber = handle.subscribe<rr_platform::speed>("/speed", 1, boost::bind(&StartDetectPanel::speed_callback, this, _1, label));
+
+    // StartDetect_subscriber = handle.subscribe<std_msgs::Bool>();
 
     /* Use QT layouts to add widgets to the panel.
     * Here, we're using a VBox layout, which allows us to stack all of our widgets vertically.
@@ -32,11 +34,13 @@ StartDetectPanel::StartDetectPanel(QWidget *parent)
 void StartDetectPanel::speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label) {
     // Create the new contents of the label based on the speed message.
     //auto text = std::to_string(msg->speed) + " m/s";
+
     if ((msg->speed) > 0) {
-        auto text = "GO!"
+        label->setText("GO!");
+    } else {
+        label->setText("Wait");
     }
     // Set the contents of the label.
-    label->setText(text.c_str());
 }
 
 //void StartDetectPanel::paintEvent(QPaintEvent *event)  {
