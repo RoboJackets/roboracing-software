@@ -29,7 +29,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     //Bounds the y-dimension
     pcl::PassThrough<pcl::PointXYZ> passLimitY;
-    passLimitY.setInputCloud (cloud);
+    passLimitY.setInputCloud (cloud_filtered);
     passLimitY.setFilterFieldName ("y");
     passLimitY.setFilterLimits (MIN_Y, MAX_Y);
     passLimitY.filter (*cloud_filtered);
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    nhp.param("MIN_X", MIN_X, 0.0f); //At Least 0
+    nhp.param("MIN_X", MIN_X, 0.3f); //At Least 0
     nhp.param("MAX_X", MAX_X, 5.0f);
     nhp.param("GOAL_X", GOAL_X, 2.0f);
     nhp.param("GOAL_SIZE", GOAL_SIZE, 0.2f); //Positive
