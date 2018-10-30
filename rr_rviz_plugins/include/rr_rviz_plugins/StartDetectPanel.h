@@ -5,6 +5,7 @@
 #include <rviz/panel.h>
 #include <rr_platform/speed.h>
 #include <QLabel>
+#include <std_msgs/Bool.h>
 
 /*
  * All of our panels need to be under the rr_rviz_plugins namespace.
@@ -32,14 +33,15 @@ protected:
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
      * the lifetime of the widget.
      */
-    ros::Subscriber speed_subscriber;
+    // ros::Subscriber speed_subscriber;
+    ros::Subscriber startDetect_subscriber;
 
     /**
      * Declare any ROS callbacks you need here. Be sure to create a parameter for any UI elements you need to update.
      * @param msg The ROS message that triggers this callback.
      * @param label A QT label whose text we will update based on the message contents.
      */
-    void speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label);
+    void start_callback(const std_msgs::BoolConstPtr &msg, QLabel *label);
 
     /**
      * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
