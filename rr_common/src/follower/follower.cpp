@@ -42,6 +42,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
           minX = point.x;
         }
     }
+
+    //Uncomment to make car go GOAL_X from the closest object
     //avgX = minx;
 
     if(cloud_filtered->points.size() != 0) { //computes the average distance away
@@ -78,7 +80,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    nhp.param("MIN_X", MIN_X, 0.3f); //At Least 0
+    nhp.param("MIN_X", MIN_X, 0.3f); //At least to the front of the car
     nhp.param("MAX_X", MAX_X, 5.0f);
     nhp.param("GOAL_X", GOAL_X, 2.0f);
     nhp.param("GOAL_SIZE", GOAL_SIZE, 0.2f); //Positive
