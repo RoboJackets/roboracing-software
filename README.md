@@ -14,9 +14,9 @@ This repository contains [ROS](http://ros.org) packages for the [RoboJackets](ht
 
 Most folders in this repository are ROS packages.
 
-**avc**: This package contains mission code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
+**rr_avc**: This package contains mission code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
 
-**iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
+**rr_iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
 
 **rr_common**: This package contains general-purpose or mission-agnostic intelligence code.
 
@@ -68,7 +68,7 @@ roslaunch rr_gazebo macaroni_avc.launch
 ```
 Then, the following command will start our race AI and drive the car around the track:
 ```
-roslaunch avc avc.launch
+roslaunch rr_avc avc_sim.launch
 ```
 Alternatively, you can control the car manually with a USB gamepad with this command:
 ```
