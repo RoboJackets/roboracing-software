@@ -11,12 +11,12 @@
 #include <rr_platform/steering.h>
 #include "flann/flann.hpp"
 
-float MIN_X;
-float MAX_X;
-float GOAL_X;
-float GOAL_SIZE;
-float MIN_Y;
-float MAX_Y;
+float MIN_FRONT_VISION;
+float MAX_FRONT_VISION;
+float GOAL_DIST;
+float GOAL_MARGIN_OF_ERR;
+float MIN_SIDE_VISION;
+float MAX_SIDE_VISION;
 float FOLLOWER_SPEED;
 
 ros::Publisher speed_pub, steer_pub;
