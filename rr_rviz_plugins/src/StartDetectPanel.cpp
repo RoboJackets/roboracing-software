@@ -35,12 +35,6 @@ void StartDetectPanel::start_callback(const std_msgs::BoolConstPtr &msg, QLabel 
     // Create the new contents of the label based on the speed message.
     //auto text = std::to_string(msg->speed) + " m/s";
 
-    // if ((msg->speed) > 0) {
-    //     label->setText("GO!");
-    // } else {
-    //     label->setText("Wait");
-    // }
-
     if(msg->data) {
         label->setText("GO!");
     } else {
@@ -49,9 +43,17 @@ void StartDetectPanel::start_callback(const std_msgs::BoolConstPtr &msg, QLabel 
     // Set the contents of the label.
 }
 
-//void StartDetectPanel::paintEvent(QPaintEvent *event)  {
-//
-//}
+void StartDetectPanel::paintEvent(QPaintEvent *event)  {
+    QColor background;
+    // QColor crosshair;
+    if( isEnabled() ) {
+      background = Qt::white;
+      // crosshair = Qt::black;
+    } else {
+      background = Qt::lightGray;
+      // crosshair = Qt::darkGray;
+    }
+}
 
 }
 

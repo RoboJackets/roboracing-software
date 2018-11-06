@@ -42,6 +42,7 @@ protected:
      * @param label A QT label whose text we will update based on the message contents.
      */
     void start_callback(const std_msgs::BoolConstPtr &msg, QLabel *label);
+    void paintEvent(QPaintEvent *event);
 
     /**
      * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
