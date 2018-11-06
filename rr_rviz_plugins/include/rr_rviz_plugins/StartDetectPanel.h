@@ -33,7 +33,7 @@ protected:
      * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
      * the lifetime of the widget.
      */
-    // ros::Subscriber speed_subscriber;
+    // ros::Subscriber startDetect_subscriber;
     ros::Subscriber startDetect_subscriber;
 
     /**
@@ -42,13 +42,6 @@ protected:
      * @param label A QT label whose text we will update based on the message contents.
      */
     void start_callback(const std_msgs::BoolConstPtr &msg, QLabel *label);
-    void paintEvent(QPaintEvent *event);
-
-    /**
-     * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
-     * You can find out more about this method here: http://doc.qt.io/qt-5/qwidget.html#paintEvent
-     */
-//    void paintEvent(QPaintEvent *event) override;
 
 };
 
