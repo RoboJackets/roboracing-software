@@ -14,7 +14,7 @@ StartDetectPanel::StartDetectPanel(QWidget *parent)
     ros::NodeHandle handle;
 
     // Initialize a label for displaying some data
-    QLabel *label = new QLabel("Wait");
+    QLabel *label = new QLabel("Never Been Detected, (Not Publishing)");
 
     /* Initialize our subscriber to listen to the /speed topic.
     * Note the use of boost::bind, which allows us to give the callback a pointer to our UI label.
@@ -36,23 +36,23 @@ void StartDetectPanel::start_callback(const std_msgs::BoolConstPtr &msg, QLabel 
     //auto text = std::to_string(msg->speed) + " m/s";
 
     if(msg->data) {
-        label->setText("GO!");
+        label->setText("Publishing & Detected");
     } else {
-        label->setText("Wait");
+        label->setText("Publishing, Not Detected");
     }
     // Set the contents of the label.
 }
 
 void StartDetectPanel::paintEvent(QPaintEvent *event)  {
-    QColor background;
-    // QColor crosshair;
-    if( isEnabled() ) {
-      background = Qt::white;
-      // crosshair = Qt::black;
-    } else {
-      background = Qt::lightGray;
-      // crosshair = Qt::darkGray;
-    }
+    // QColor background;
+    // // QColor crosshair;
+    // if( isEnabled() ) {
+    //   background = Qt::white;
+    //   // crosshair = Qt::black;
+    // } else {
+    //   background = Qt::lightGray;
+    //   // crosshair = Qt::darkGray;
+    // }
 }
 
 }
