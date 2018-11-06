@@ -1,0 +1,6 @@
+<launch>
+  <node name="stoplight_watcher" pkg="iarrc" type="stoplight_watcher" output="screen">
+      <param name="stoplight_topic" type="string" value="/start_detected" />
+      <param name="img_topic" type="string" value="/camera/image_color_rect_flipped" />
+  </node>
+</launch>
