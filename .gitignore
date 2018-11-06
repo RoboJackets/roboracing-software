@@ -22,3 +22,5 @@
 
 # exported neural nets in their default location
 util/neural_nets/*.h5
+
+util/semantic_segmentation/data/
