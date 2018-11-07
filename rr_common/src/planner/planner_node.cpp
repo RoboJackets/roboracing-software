@@ -131,8 +131,9 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
 
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
-  params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
+//  params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
   params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
+  params.backwards_penalty = getParamAssert<double>(nhp, "backwards_penalty");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
   params.max_steering = getParamAssert<double>(nhp, "max_steering");
   params.acceptance_scale = getParamAssert<double>(nhp, "acceptance_scale");
@@ -162,9 +163,10 @@ int main(int argc, char** argv)
   auto lateral_accel = getParamAssert<double>(nhp, "lateral_accel");
   auto distance_increment = getParamAssert<double>(nhp, "distance_increment");
   auto max_speed = getParamAssert<double>(nhp, "max_speed");
+  auto steering_speed = getParamAssert<double>(nhp, "steering_speed");
   auto segment_distances = getDoubleListParam(nhp, "segment_distances", ' ');
 
-  rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, segment_distances);
+  rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, steering_speed, segment_distances);
 
   auto obstacle_cloud_topic = getParamAssert<std::string>(nhp, "input_cloud_topic");
   auto planner_type = getParamAssert<std::string>(nhp, "planner_type");
@@ -196,7 +198,7 @@ int main(int argc, char** argv)
     ros::spinOnce();
     rate.sleep();
 
-    ROS_INFO_STREAM(rate.cycleTime());
+    ROS_INFO_STREAM("Planner took " << rate.cycleTime() << " seconds");
   }
 
   return 0;

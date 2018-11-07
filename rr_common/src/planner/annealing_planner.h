@@ -2,7 +2,6 @@
 #define RR_COMMON_ANNEALING_PLANNER_H
 
 #include <random>
-#include <tuple>
 #include <vector>
 
 #include "planner.h"
@@ -17,17 +16,18 @@ class AnnealingPlanner : public Planner
 public:
 
   struct Params {
-    unsigned int n_path_segments;
-    unsigned int annealing_steps;
-    double temperature_start;
+    unsigned int n_path_segments;  // number of segments in a path
+    unsigned int annealing_steps;  // number of timesteps to run simulated annealing
+    double temperature_start;  // temperature parameter starts high and decreases
     double temperature_end;
-    double k_dist;
-    double k_speed;
-    double k_similarity;
-    double k_final_pose;
-    double collision_penalty;
-    double max_steering;
-    double acceptance_scale;
+    double k_dist;  // importance of distance in cost function
+    double k_speed;  // importance of speed/straightness in cost fn
+//    double k_similarity;  // importance of matching previous path in cost fn
+    double k_final_pose;  // importance of final position in cost function
+    double backwards_penalty;
+    double collision_penalty;  // cost fn penalty for a collision
+    double acceptance_scale;  // strictness for accepting bad paths
+    double max_steering;  // max steering angle output
   };
 
   AnnealingPlanner(const DistanceChecker&, const BicycleModel&, const Params&);
@@ -55,7 +55,7 @@ private:
    * bool - collision detected
    * double - cost
    */
-  std::tuple<bool, double> GetCost(const std::vector<PathPoint>& path, const KdTreeMap& kd_tree_map);
+  double GetCost(const PlannedPath& path, const KdTreeMap& kd_tree_map);
 
   const Params params;
 

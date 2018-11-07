@@ -3,10 +3,10 @@
 namespace rr {
 
 BicycleModel::BicycleModel(double wheel_base, double max_lateral_accel,
-             double distance_increment, double max_speed,
+             double distance_increment, double max_speed, double max_steer_rate,
              const std::vector<double>& segment_distances)
     : wheel_base_(wheel_base), max_lateral_accel_(max_lateral_accel),
-      distance_increment_(distance_increment),
+      distance_increment_(distance_increment), max_steer_rate_(max_steer_rate),
       segment_distances_(segment_distances), max_speed_(max_speed) {}
 
 std::vector<PathPoint> BicycleModel::RollOutPath(
@@ -17,13 +17,24 @@ std::vector<PathPoint> BicycleModel::RollOutPath(
   double begin_speed = SteeringToSpeed(control[0]);
   path_points.emplace_back(Pose{0, 0, 0}, control[0], begin_speed);
 
+  double real_steer = 0;
+
   for (int segment = 0; segment < n_path_segments; segment++) {
-    double steer = control[segment];
-    double speed = SteeringToSpeed(steer);
+    double ideal_steer = control[segment];
+    double speed = SteeringToSpeed(real_steer);
     const double& seg_dist = segment_distances_[segment];
+
+    double dt = distance_increment_ / speed;
+    double max_steer_change = max_steer_rate_ * dt;
+
+//    std::cout << "dt = " << dt << ", max_steer_change = " << max_steer_change << std::endl;
+
     for (double dist = 0.0; dist < seg_dist; dist += distance_increment_) {
       const Pose& last_pose = path_points.back().pose;
-      path_points.emplace_back(StepKinematics(last_pose, steer), steer, speed);
+      path_points.emplace_back(StepKinematics(last_pose, real_steer), ideal_steer, speed);
+
+      double ideal_steer_update = ideal_steer - real_steer;
+      real_steer += std::min(std::max(-max_steer_change, ideal_steer_update), max_steer_change);
     }
   }
 

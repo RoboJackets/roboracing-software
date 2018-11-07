@@ -32,6 +32,7 @@ struct PathPoint {
 struct PlannedPath {
   std::vector<double> control;  // input to a path
   std::vector<PathPoint> path;  // results of path rollout
+  std::vector<double> dists;  // results of collision checking
   double cost;  // result of applying cost function
 };
 
