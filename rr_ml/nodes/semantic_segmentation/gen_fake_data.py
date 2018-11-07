@@ -36,11 +36,11 @@ for n in range(n_imgs):
 
     img = (img + np.random.randint(-50, 50, img.shape)).astype(np.uint8)
 
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    if not os.path.exists("fake_data"):
+        os.makedirs("fake_data")
 
-    cv2.imwrite("data/test_img_%d.png" % n, img)
-    cv2.imwrite("data/test_label_%d.png" % n, label)
+    cv2.imwrite("fake_data/test_img_%d.png" % n, img)
+    cv2.imwrite("fake_data/test_label_%d.png" % n, label)
 
     # cv2.imshow("data", img)
     # cv2.imshow("label", label * 50)

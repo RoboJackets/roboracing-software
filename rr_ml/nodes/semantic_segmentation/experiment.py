@@ -30,22 +30,22 @@ def make_model():
 
     pool1 = keras.layers.MaxPooling2D(pool_size=2)(conv1)
 
-    conv2 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(pool1)
+    conv2 = keras.layers.Conv2D(24, 3, activation='relu', padding='same')(pool1)
     conv2 = keras.layers.Dropout(0.2)(conv2)
-    conv2 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(conv2)
+    conv2 = keras.layers.Conv2D(24, 3, activation='relu', padding='same')(conv2)
 
     pool2 = keras.layers.MaxPooling2D(pool_size=2)(conv2)
 
-    conv3 = keras.layers.Conv2D(64, 3, activation='relu', padding='same')(pool2)
+    conv3 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(pool2)
     conv3 = keras.layers.Dropout(0.2)(conv3)
-    conv3 = keras.layers.Conv2D(64, 3, activation='relu', padding='same')(conv3)
+    conv3 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(conv3)
 
     up1 = keras.layers.UpSampling2D(size=2)(conv3)
     up1 = keras.layers.Concatenate(axis=3)([up1, conv2])
 
-    conv4 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(up1)
+    conv4 = keras.layers.Conv2D(24, 3, activation='relu', padding='same')(up1)
     conv4 = keras.layers.Dropout(0.2)(conv4)
-    conv4 = keras.layers.Conv2D(32, 3, activation='relu', padding='same')(conv4)
+    conv4 = keras.layers.Conv2D(24, 3, activation='relu', padding='same')(conv4)
 
     up2 = keras.layers.UpSampling2D(size=2)(conv4)
     up2 = keras.layers.Concatenate(axis=3)([up2, conv1])
@@ -107,22 +107,22 @@ def data_gen_wrapper(input_files, label_files, epochs):
 
 
 def output_to_image(y):
-    colors = [(0,0,0), (255,0,0), (0,255,0)]
+    colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0)]
+    my = np.argmax(y, axis=1)
     img = np.ndarray((in_height, in_width, 3), dtype=np.uint8)
-    for r in range(in_height):
-        for c in range(in_width):
-            categories = y[r * in_width + c]
-            i = np.argmax(categories)
-            # print(categories)
-            img[r, c] = colors[i]
+    for i, color in enumerate(colors):
+        mask = (my == i).reshape(img.shape[:2])
+        img[mask] = color
     return img
 
 
 def main():
-    data_dir = osp.join(osp.split(__file__)[0], "data")
+    data_dir = osp.join(osp.split(__file__)[0], "fake_data")
 
     input_files = sorted(glob.glob(osp.join(data_dir, "test_img_*.png")))
     label_files = sorted(glob.glob(osp.join(data_dir, "test_label_*.png")))
+
+    model_path = osp.join(osp.split(__file__)[0], "fake_data_unet_model.h5")
 
     files = list(zip(input_files, label_files))
     random.shuffle(files)
@@ -134,8 +134,8 @@ def main():
     validate_input_files, validate_label_files = zip(*validate_files)
 
     try:
-        model = keras.models.load_model("model.h5")
-        print "loaded model model.h5 from disk"
+        model = keras.models.load_model(model_path)
+        print "loaded model from disk"
     except:
         model = make_model()
         model.compile(loss="categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
@@ -152,13 +152,12 @@ def main():
                             steps_per_epoch=len(training_files) // batch_size, epochs=n_epochs,
                             verbose=1, max_queue_size=5)
 
-        keras.models.save_model(model, "model.h5")
-        print "saved model.h5 to disk"
+        keras.models.save_model(model, model_path)
+        print "saved to disk"
 
-    loss, accuracy = model.evaluate_generator(data_gen(validate_input_files, validate_label_files),
-                                              steps=len(validate_files) // batch_size, verbose=1)
-
-    print "loss", loss, "accuracy", accuracy
+        loss, accuracy = model.evaluate_generator(data_gen(validate_input_files, validate_label_files),
+                                                  steps=len(validate_files) // batch_size, verbose=1)
+        print "loss", loss, "accuracy", accuracy
 
     scores = []
     pred_times = []
@@ -170,14 +169,11 @@ def main():
         t_pred = time.time() - t_pred_0
         pred_times.append(t_pred)
 
-        right = total = 0
-        for a, b in zip(y, y_):
-            ma = np.argmax(a)
-            mb = np.argmax(b)
-            if ma > 0 or mb > 0:
-                total += 1
-                if ma == mb:
-                    right += 1
+        my = np.argmax(y, axis=1)
+        my_ = np.argmax(y_, axis=1)
+        mask = np.logical_or((my != 0), (my_ != 0))
+        total = np.sum(mask)
+        right = np.sum(np.equal(my, my_)[mask])
 
         scores.append(float(right) / total)
 
@@ -188,7 +184,3 @@ def main():
 
     print "avg IOU =", sum(scores) / len(scores)
     print "avg prediction time", sum(pred_times) / len(pred_times)
-
-
-if __name__ == '__main__':
-    main()

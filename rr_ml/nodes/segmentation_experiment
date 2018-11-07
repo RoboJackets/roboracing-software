@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+from semantic_segmentation import experiment
+
+if __name__ == '__main__':
+    experiment.main()
