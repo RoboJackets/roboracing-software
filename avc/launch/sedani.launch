@@ -18,13 +18,14 @@
 
         <param name="wheel_base" value="0.485"/>
         <param name="lateral_accel" value="0.5"/>
-        <param name="distance_increment" value="0.1"/>
         <param name="max_speed" value="0.5"/>
         <param name="max_steering" value="0.4"/>
         <param name="steering_speed" value="0.3"/>
 
+        <param name="distance_increment" value="0.1"/>
+        <param name="segment_sections" value="$(eval ' '.join(['6'] * n_path_segments))"/>
+
         <param name="n_path_segments" value="$(arg n_path_segments)"/>
-        <param name="segment_distances" value="$(eval ' '.join(['0.6'] * n_path_segments))"/>
         <param name="temperature_start" value="0.25"/>
         <param name="temperature_end" value="0.01"/>
 

@@ -8,30 +8,34 @@ AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel&
   for (int i = 0; i < params.annealing_steps; i++) {
     rr::PlannedPath& path = path_pool_.emplace_back();
     path.control = std::vector<double>(params.n_path_segments, 0);
-    path.path = model_.RollOutPath(path.control);
+    model_.RollOutPath(path.path, path.control);
     path.dists = std::vector<double>(path.path.size(), 0.0);
     path.cost = std::numeric_limits<double>::max();
   }
   last_path_idx_ = 0;
+  max_path_length_ = path_pool_[0].path.back().pose.x;
 }
 
-std::vector<double> AnnealingPlanner::SampleControls(const std::vector<double>& last, unsigned int t) {
-  std::vector<double> out = last;  // copy
-
-  for (double& x : out) {
+void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vector<double>& source,
+                                      unsigned int t) {
+  auto it_ctrl = ctrl.begin();
+  auto it_source = source.begin();
+  for (; it_ctrl != ctrl.end(); ++it_ctrl, ++it_source) {
     double stddev = GetTemperature(t);
-    x += steering_gaussian_(rand_gen_) * stddev;
-    if (std::abs(x) > params.max_steering) {
-      x = std::copysign(params.max_steering, x);
+    *it_ctrl = *it_source + steering_gaussian_(rand_gen_) * stddev;
+    if (std::abs(*it_ctrl) > params.max_steering) {
+      *it_ctrl = std::copysign(params.max_steering, *it_ctrl);
     }
   }
-
-  return out;
 }
 
 double AnnealingPlanner::GetTemperature(unsigned int t) {
-  double progress = static_cast<double>(t) / params.annealing_steps;
-  return params.temperature_end * progress + params.temperature_start * (1.0 - progress);
+//  double progress = static_cast<double>(t) / params.annealing_steps;
+//  return params.temperature_end * progress + params.temperature_start * (1.0 - progress);
+  static const double K = std::log(params.temperature_end / params.temperature_start)
+                          / params.annealing_steps;
+
+  return params.temperature_start * std::exp(K * t);
 }
 
 double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMap& kd_tree_map) {
@@ -54,14 +58,13 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMa
 //      cost += params.k_similarity * deviation;
       cost -= params.k_dist * std::log(std::max(0.01, dist));
       cost -= params.k_speed * path[i].speed;
-      if (std::abs(path[i].pose.theta) > 3.14159 * 0.5) {
-        cost += params.backwards_penalty;
-      }
+      cost += std::abs(path[i].pose.theta) * params.backwards_penalty;
     }
   }
 
-  double final_d = std::sqrt(std::pow(path.back().pose.x, 2) + std::pow(path.back().pose.y, 2));
-  cost -= params.k_final_pose * final_d;
+//  double final_d = std::sqrt(std::pow(path.back().pose.x, 2) + std::pow(path.back().pose.y, 2));
+  double dd = max_path_length_ - path.back().pose.x;
+  cost += params.k_final_pose * dd * dd;
 
   return cost;
 }
@@ -70,6 +73,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
   path_pool_[0] = path_pool_[last_path_idx_];
 
   unsigned int best_idx = 0;
+  unsigned int state_idx = 0;
   bool collision = false;
   double dist = 0;
 
@@ -83,9 +87,10 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     auto& path = path_pool_[t];
 
     if (t > 0) {
-      path.control = SampleControls(path.control, t);
-      path.path = model_.RollOutPath(path.control);
+      SampleControls(path.control, path_pool_[state_idx].control, t);
     }
+
+    model_.RollOutPath(path.path, path.control);
 
     // Check collisions and adjust path speeds based on distance to obstacles
     bool has_been_too_close = false;
@@ -103,22 +108,29 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
 
     all_colliding &= has_collided;
 
-    path.cost = GetCost(path, kd_tree_map);
-    double dcost = path.cost - path_pool_[best_idx].cost;
+    double cost = GetCost(path, kd_tree_map);
+    path.cost = cost;
+    double dcost = cost - path_pool_[state_idx].cost;
     double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
-    // std::cout << "p_accept = " << p_accept << std::endl;
 
     if (uniform_01_(rand_gen_) < p_accept) {
+      state_idx = t;
+//      std::cout << "new state cost " << path.cost << ", t = " << t
+//      << ", p = " << p_accept << ", T = " << GetTemperature(t) << std::endl;
+    }
+
+    if (path.cost < path_pool_[best_idx].cost) {
       best_idx = t;
+//      std::cout << "new best cost " << path.cost << std::endl;
     }
   }
 
   if (all_colliding) {
-    auto& best = path_pool_[best_idx];
-    std::fill(best.control.begin(), best.control.end(), 0);
-    best.path = model_.RollOutPath(best.control);
-    std::for_each(best.path.begin(), best.path.end(), [](PathPoint& p) { p.speed = -0.5; });
     std::cout << "[Planner] no valid paths found" << std::endl;
+    rr::PlannedPath& best = path_pool_[best_idx];
+    std::fill(best.control.begin(), best.control.end(), 0);
+    model_.RollOutPath(best.path, best.control);
+    std::for_each(best.path.begin(), best.path.end(), [](PathPoint& p) { p.speed = -0.5; });
   }
 
   last_path_idx_ = best_idx;

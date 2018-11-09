@@ -52,6 +52,7 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
       // collisions
       if (std::abs(x) <= halfLength && std::abs(y) <= halfWidth) {
         collision = true;
+        min_dist = 0;
         break;
       }
 
@@ -78,7 +79,7 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
     }
   }
 
-  return std::make_tuple(collision, min_dist - cornerDist);
+  return std::make_tuple(collision, min_dist);
 }
 
 bool DistanceChecker::GetCollision(const pcl::PointXYZ& relative_point) {

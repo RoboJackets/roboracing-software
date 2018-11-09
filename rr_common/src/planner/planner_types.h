@@ -19,6 +19,11 @@ struct Pose {
   Pose() : x(0), y(0), theta(0) {}
 };
 
+std::ostream& operator<<(std::ostream& out, const Pose& p) {
+  return out << "Pose(" << p.x << ", " << p.y << ", " << p.theta << ")";
+}
+
+
 struct PathPoint {
   Pose pose;
   double steer;
@@ -28,6 +33,11 @@ struct PathPoint {
     : pose(pose), steer(steer), speed(speed) {}
   PathPoint() : pose(), steer(0), speed(0) {}
 };
+
+std::ostream& operator<<(std::ostream& out, const PathPoint& p) {
+  return out << "PathPoint(" << p.pose << ", " << p.steer << ", " << p.speed << ")";
+}
+
 
 struct PlannedPath {
   std::vector<double> control;  // input to a path

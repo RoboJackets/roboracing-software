@@ -157,7 +157,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
       plan.control.push_back(SampleSteering(stage));
     }
 
-    plan.path = model_.RollOutPath(plan.control);
+    model_.RollOutPath(plan.path, plan.control);
 
     bool collision;
     std::tie(collision, plan.cost) = GetCost(plan.path, kd_tree_map);
@@ -186,7 +186,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   PlannedPath fallback_plan;
   double backwards_steer = -params.steer_limits[0] * 0.3;
   fallback_plan.control = {backwards_steer, backwards_steer};
-  fallback_plan.path = model_.RollOutPath(fallback_plan.control);
+  model_.RollOutPath(fallback_plan.path, fallback_plan.control);
   for (auto& path_point : fallback_plan.path) {
     path_point.speed = -0.3;
   }

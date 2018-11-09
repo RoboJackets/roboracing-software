@@ -41,7 +41,8 @@ public:
 
 private:
 
-  std::vector<double> SampleControls(const std::vector<double>& last, unsigned int t);
+  void SampleControls(std::vector<double>& ctrl, const std::vector<double>& source,
+                      unsigned int t);
 
   double GetTemperature(unsigned int t);
 
@@ -68,6 +69,8 @@ private:
 
   unsigned int last_path_idx_;
   std::vector<PlannedPath> path_pool_;
+
+  double max_path_length_;
 };
 
 }  // namespace rr

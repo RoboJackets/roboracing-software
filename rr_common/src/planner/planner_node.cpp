@@ -21,10 +21,12 @@ ros::Publisher steer_pub;
 ros::Publisher path_pub;
 
 sensor_msgs::PointCloud2ConstPtr last_map_msg;
+bool is_new_msg;
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 //  ROS_INFO_STREAM("mapCallback");
   last_map_msg = map;
+  is_new_msg = true;
 }
 
 void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
@@ -88,14 +90,15 @@ T getParamAssert(const ros::NodeHandle& nhp, const std::string& name) {
   return out;
 }
 
-std::vector<double> getDoubleListParam(const ros::NodeHandle& nhp, const std::string& name, char delim) {
+template <typename T>
+std::vector<T> getNumericListParam(const ros::NodeHandle& nhp, const std::string& name, char delim) {
   auto listAsString = getParamAssert<std::string>(nhp, name);
-  std::vector<double> out;
+  std::vector<T> out;
 
   std::stringstream ss(listAsString);
   std::string s;
   while (std::getline(ss, s, delim)) {
-    out.push_back(std::stod(s));
+    out.push_back(static_cast<T>(std::stod(s)));
   }
 
   return out;
@@ -105,8 +108,8 @@ rr::RandomSamplePlanner::Params getRandomSampleParams(const ros::NodeHandle& nhp
   rr::RandomSamplePlanner::Params params;
 
   params.n_path_segments = getParamAssert<int>(nhp, "n_path_segments");
-  params.steer_limits = getDoubleListParam(nhp, "steer_limits", ' ');
-  params.steer_stddevs = getDoubleListParam(nhp, "steer_stddevs", ' ');
+  params.steer_limits = getNumericListParam<double>(nhp, "steer_limits", ' ');
+  params.steer_stddevs = getNumericListParam<double>(nhp, "steer_stddevs", ' ');
 
   params.path_similarity_cutoff = getParamAssert<double>(nhp, "path_similarity_cutoff");
   params.max_relative_cost = getParamAssert<double>(nhp, "max_relative_cost");
@@ -153,20 +156,19 @@ int main(int argc, char** argv)
 
   auto l_front = getParamAssert<double>(nhp, "collision_dist_front");
   auto l_back = getParamAssert<double>(nhp, "collision_dist_back");
-  auto w_left = getParamAssert<double>(nhp, "collision_dist_side");
-  auto w_right = w_left;
+  auto w_side = getParamAssert<double>(nhp, "collision_dist_side");
   auto obs_search_rad = getParamAssert<double>(nhp, "obstacle_search_radius");
 
-  distance_checker = std::make_unique<rr::DistanceChecker>(l_front, l_back, w_left, w_right, obs_search_rad);
+  distance_checker = std::make_unique<rr::DistanceChecker>(l_front, l_back, w_side, w_side, obs_search_rad);
 
   auto wheel_base = getParamAssert<double>(nhp, "wheel_base");
   auto lateral_accel = getParamAssert<double>(nhp, "lateral_accel");
   auto distance_increment = getParamAssert<double>(nhp, "distance_increment");
   auto max_speed = getParamAssert<double>(nhp, "max_speed");
   auto steering_speed = getParamAssert<double>(nhp, "steering_speed");
-  auto segment_distances = getDoubleListParam(nhp, "segment_distances", ' ');
+  auto segment_sections = getNumericListParam<int>(nhp, "segment_sections", ' ');
 
-  rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, steering_speed, segment_distances);
+  rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, steering_speed, segment_sections);
 
   auto obstacle_cloud_topic = getParamAssert<std::string>(nhp, "input_cloud_topic");
   auto planner_type = getParamAssert<std::string>(nhp, "planner_type");
@@ -189,9 +191,10 @@ int main(int argc, char** argv)
 
   ROS_INFO("Planner initialized");
 
-  ros::Rate rate(10);
+  ros::Rate rate(30);
+  is_new_msg = false;
   while (ros::ok()) {
-    if (last_map_msg) {
+    if (is_new_msg) {
       processMap(last_map_msg);
     }
 

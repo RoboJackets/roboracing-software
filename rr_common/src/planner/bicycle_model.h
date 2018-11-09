@@ -10,7 +10,7 @@ namespace rr {
 class BicycleModel {
  public:
   BicycleModel(double wheel_base, double max_lateral_accel, double distance_increment, double max_speed,
-               double max_steer_rate, const std::vector<double>& segment_distances);
+               double max_steer_rate, const std::vector<int>& segment_sections);
 
   BicycleModel() = default;
 
@@ -19,7 +19,7 @@ class BicycleModel {
    * Params:
    * control - vector with a steering value for each path segment
    */
-  std::vector<PathPoint> RollOutPath(const std::vector<double>& control);
+  void RollOutPath(std::vector<PathPoint>& path_points, const std::vector<double>& control);
 
  private:
   /*
@@ -38,12 +38,12 @@ class BicycleModel {
    * steer_angle - steering angle in radians centered at 0
    * pose - initial (x,y,theta)
    */
-  Pose StepKinematics(const Pose& pose, double steer_angle);
+  void StepKinematics(Pose& pose, const Pose& last_pose, double steer_angle);
 
 
   double wheel_base_;
   double max_lateral_accel_;
-  std::vector<double> segment_distances_;
+  std::vector<int> segment_sections_;
   double distance_increment_;
   double max_speed_;
   double max_steer_rate_;
