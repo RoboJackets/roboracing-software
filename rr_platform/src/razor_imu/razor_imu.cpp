@@ -71,7 +71,6 @@ bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
 }
 
 
-
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "imu");
@@ -109,6 +108,7 @@ int main(int argc, char **argv) {
 
         auto line_in = serial_port.ReadLine();
         if(!line_in.empty()) {
+
             if(set_imu(line_in, imu_msg)) {
                 sensor_msgs::Imu publishable_copy = imu_msg;
                 publishable_copy.header.stamp = ros::Time::now();

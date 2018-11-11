@@ -39,18 +39,24 @@ The following files and folders enable our continuous integration system.
 
 2. Clone this repo into the _src_ directory of your catkin workspace.
 
-3. Install the remaining dependencies with the following command in your catkin workspace folder:
+3. Also clone https://github.com/intel-ros/realsense and https://github.com/ros-drivers/pointgrey_camera_driver into the same _src_ directory
+
+4. Install the remaining dependencies with the following command in your catkin workspace folder:
 
    ```sh
    rosdep install --from-path src --ignore-src -y
    ```
-4. Install keras with :
+
+5. Install python dependencies (for Python 2) which are not in ROS:
 
    ```
-   pip install keras
+   pip install keras tensorflow numpy pynput matplotlib
    ```
 
-5. You should now be able to build the project with `catkin_make`.
+6. Install librealsense following the instructions at https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
+
+7. You should now be able to build the project by running `catkin_make` in the catkin_ws directory.
+
 
 ## Simulation
 

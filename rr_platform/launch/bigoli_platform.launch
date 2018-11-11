@@ -1,9 +1,12 @@
 <launch>
     <!--<include file="$(find rr_platform)/launch/bigoli_camera.launch"/>-->
     <include file="$(find rr_platform)/launch/wide_camera.launch"/>
-    <include file="$(find rr_platform)/launch/bigoli_state_publisher.launch"/>
-    <include file="$(find rr_platform)/launch/bigoli_drive_relay.launch"/>
-    <include file="$(find rr_platform)/launch/bigoli_steer_relay.launch"/>
     <include file="$(find rr_platform)/launch/logitech_camera.launch"/>
+
     <include file="$(find rr_platform)/launch/bigoli_lidar.launch"/>
+
+    <include file="$(find rr_platform)/launch/bigoli_state_publisher.launch"/>
+
+    <include file="$(find rr_platform)/launch/bigoli_ethernet_drive_relay.launch"/>
+    
 </launch>

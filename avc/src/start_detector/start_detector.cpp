@@ -25,10 +25,11 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
 
     Mat blurredImage;
-    GaussianBlur(frameHSV, blurredImage, Size{21, 21}, 15);
+    GaussianBlur(frameHSV, blurredImage, Size{11, 11}, 7);
 
     Mat redMask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
     inRange(blurredImage, red_low, red_high, redMask);
+
     Mat redImage;
     blurredImage.copyTo(redImage, redMask);
     Mat gray;
@@ -36,8 +37,15 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
     threshold(gray, gray, 10, 255, 0);
 
+    ROS_INFO_STREAM("gray pixel count nonzero " << countNonZero(gray));
+
     vector<Vec3f> circles;
     HoughCircles(gray, circles, CV_HOUGH_GRADIENT, dp, minDist, param1, param2, minSize, maxSize);
+
+    ROS_INFO_STREAM("circles count " << circles.size());
+
+    Mat mask = Mat::zeros(redImage.rows, redImage.cols, CV_8UC3);
+    threshold(redImage, mask, 1, 255, THRESH_BINARY);
 
     if (circles.size() != 0) {
         int maxSum = 0, maxX = 0, maxY = 0, maxR = 0;
@@ -45,6 +53,7 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
             Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
             Mat circleMask = Mat::zeros(gray.rows, gray.cols, CV_8U);
             circle(circleMask, center, circles[i][2], Scalar(255, 255, 255), -1);
+            circle(mask, center, circles[i][2], Scalar(0, 0, 255), 1);
             Mat circleImage;
             gray.copyTo(circleImage, circleMask);
             int imgSum = countNonZero(circleImage);
@@ -55,6 +64,7 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
             }
             maxSum = max(maxSum, imgSum);
         }
+
         auto areaPercentage = static_cast<double>(maxSum) / (3.14*maxR*maxR);
         detection_ring_buffer.push_back(areaPercentage);
         detection_ring_buffer.erase(detection_ring_buffer.begin());
@@ -69,6 +79,9 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
         start.data = false;
         start_pub.publish(start);
     }
+
+    mask.copyTo(cv_ptr->image);
+    debug_pub.publish(cv_ptr->toImageMsg());
 }
 
 void start_detector::onInit() {
@@ -100,10 +113,9 @@ void start_detector::onInit() {
     pnh.param("minSize", minSize, 50);
     pnh.param("maxSize", maxSize, 150);
 
-    pnh.param("sumThreshold", sumThreshold, 10000);
-
     img_sub = it.subscribe("/camera_wide/image_raw", 1, &start_detector::ImageCB, this);
     start_pub = nh.advertise<std_msgs::Bool>("/start_detected", 1);
+    debug_pub = nh.advertise<sensor_msgs::Image>("/start_detected/debug_img", 1);
 
     detection_ring_buffer.resize(10);
 
