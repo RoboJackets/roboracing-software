@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="roboracing_software"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="roboracing_software">
+				<Option output="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/roboracing_software" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/include/avc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/color_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/finish_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/start_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include/iarrc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/color_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/image_flipper"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/planner"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include/avc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include/rr_rviz_plugins"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 roboracing_software"/>
+					<CompileFile command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="roboracing_software/fast">
+				<Option output="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/roboracing_software" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/include/avc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/color_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/finish_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/start_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include/iarrc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/color_detector"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/image_flipper"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/planner"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include/avc"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include"/>
+					<Add directory="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include/rr_rviz_plugins"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 roboracing_software/fast"/>
+					<CompileFile command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j2 -f &quot;/home/robojackets/catkin_ws/src/roboracing-software/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/include/avc/constants.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/include/avc/image_utils.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/color_detector/color_detector_avc.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/color_detector/color_detector_avc.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/finish_detector/finish_detector.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/finish_detector/finish_detector.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/obstacle_history/obstacle_history.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/start_detector/start_detector.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/avc/src/start_detector/start_detector.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include/iarrc/constants.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/include/iarrc/image_utils.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/color_detector/color_detector.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/color_detector/color_detector.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/finish_line_watcher/finish_line_watcher.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/ol_reliable/ol_reliable.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/qualify/qualify.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/iarrc/src/stoplight_watcher/stoplight_watcher.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/image_flipper/image_flipper.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/image_flipper/image_flipper.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/image_pcl_converter/image_pcl_converter.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/mapper/mapper.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/navigation_controller/navigation_controller.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/planner/planner.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/planner/planner.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_common/src/sound_node/sound_node.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_gazebo/nodes/macaroni_controller.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include/SerialPort.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include/avc/constants.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/include/avc/image_utils.hpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/SerialPort.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/bigoli_motor_relay_node/bigoli_drive_relay.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/bigoli_motor_relay_node/bigoli_steer_relay.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/camera/calibration_tester.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/camera/image_transform.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/camera/trigger_calibration.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/joystick_driver/joystick_driver.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/motor_relay_node/motor_relay_node.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/razor_imu/razor_imu.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/scanToPointCloud/main.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/sedani_motor_relay_node/sedani_motor_relay_node.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/src/ultrasonic_array/ultrasonic_array_to_pcl.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/test/joystick_driver/test_joystick_driver.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_platform/test/scanToPointCloud/test_scanToPointCloud.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include/rr_rviz_plugins/ExamplePanel.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/include/rr_rviz_plugins/ResetPanel.h">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/src/ExamplePanel.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/rr_rviz_plugins/src/ResetPanel.cpp">
+			<Option target="roboracing_software"/>
+		</Unit>
+		<Unit filename="/home/robojackets/catkin_ws/src/roboracing-software/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

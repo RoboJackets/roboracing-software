@@ -1,4 +1,6 @@
 <launch>
     <node pkg="sick_tim" type="sick_tim551_2050001" name="lidar" output="screen" />
-    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" >
+    	<param name="min_point_dist" type="int" value="0.5"/>//do I need to add the type as an int
+    </node>
 </launch>

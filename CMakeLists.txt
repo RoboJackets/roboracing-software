@@ -1,0 +1,68 @@
+cmake_minimum_required(VERSION 3.12)
+project(roboracing_software)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(avc/include)
+include_directories(avc/include/avc)
+include_directories(avc/src/color_detector)
+include_directories(avc/src/finish_detector)
+include_directories(avc/src/start_detector)
+include_directories(iarrc/include)
+include_directories(iarrc/include/iarrc)
+include_directories(iarrc/src/color_detector)
+include_directories(rr_common/src/image_flipper)
+include_directories(rr_common/src/planner)
+include_directories(rr_platform/include)
+include_directories(rr_platform/include/avc)
+include_directories(rr_rviz_plugins/include)
+include_directories(rr_rviz_plugins/include/rr_rviz_plugins)
+
+add_executable(roboracing_software
+        avc/include/avc/constants.hpp
+        avc/include/avc/image_utils.hpp
+        avc/src/color_detector/color_detector_avc.cpp
+        avc/src/color_detector/color_detector_avc.h
+        avc/src/finish_detector/finish_detector.cpp
+        avc/src/finish_detector/finish_detector.h
+        avc/src/obstacle_history/obstacle_history.cpp
+        avc/src/start_detector/start_detector.cpp
+        avc/src/start_detector/start_detector.h
+        iarrc/include/iarrc/constants.hpp
+        iarrc/include/iarrc/image_utils.hpp
+        iarrc/src/color_detector/color_detector.cpp
+        iarrc/src/color_detector/color_detector.h
+        iarrc/src/finish_line_watcher/finish_line_watcher.cpp
+        iarrc/src/ol_reliable/ol_reliable.cpp
+        iarrc/src/qualify/qualify.cpp
+        iarrc/src/stoplight_watcher/stoplight_watcher.cpp
+        rr_common/src/image_flipper/image_flipper.cpp
+        rr_common/src/image_flipper/image_flipper.h
+        rr_common/src/image_pcl_converter/image_pcl_converter.cpp
+        rr_common/src/mapper/mapper.cpp
+        rr_common/src/navigation_controller/navigation_controller.cpp
+        rr_common/src/planner/planner.cpp
+        rr_common/src/planner/planner.h
+        rr_common/src/sound_node/sound_node.cpp
+        rr_gazebo/nodes/macaroni_controller.cpp
+        rr_platform/include/avc/constants.hpp
+        rr_platform/include/avc/image_utils.hpp
+        rr_platform/include/SerialPort.h
+        rr_platform/src/bigoli_motor_relay_node/bigoli_drive_relay.cpp
+        rr_platform/src/bigoli_motor_relay_node/bigoli_steer_relay.cpp
+        rr_platform/src/camera/calibration_tester.cpp
+        rr_platform/src/camera/image_transform.cpp
+        rr_platform/src/camera/trigger_calibration.cpp
+        rr_platform/src/joystick_driver/joystick_driver.cpp
+        rr_platform/src/motor_relay_node/motor_relay_node.cpp
+        rr_platform/src/razor_imu/razor_imu.cpp
+        rr_platform/src/scanToPointCloud/main.cpp
+        rr_platform/src/sedani_motor_relay_node/sedani_motor_relay_node.cpp
+        rr_platform/src/ultrasonic_array/ultrasonic_array_to_pcl.cpp
+        rr_platform/src/SerialPort.cpp
+        rr_platform/test/joystick_driver/test_joystick_driver.cpp
+        rr_platform/test/scanToPointCloud/test_scanToPointCloud.cpp
+        rr_rviz_plugins/include/rr_rviz_plugins/ExamplePanel.h
+        rr_rviz_plugins/include/rr_rviz_plugins/ResetPanel.h
+        rr_rviz_plugins/src/ExamplePanel.cpp
+        rr_rviz_plugins/src/ResetPanel.cpp)
