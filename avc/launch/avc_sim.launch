@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
+    <arg name="valgrind" default="false"/>
+
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
@@ -7,8 +9,11 @@
 
 
     <arg name="n_path_segments" value="6"/>
+    <arg name="valgrind_prefix" value="valgrind --tool=callgrind --callgrind-out-file='callgrind.avc_sim'"/>
 
-    <node pkg="rr_common" type="planner" name="planner" output="screen">
+    <node pkg="rr_common" type="planner" name="planner" output="screen"
+            launch-prefix="$(eval valgrind_prefix if valgrind else '')">
+
         <param name="planner_type" value="annealing"/>
 
         <param name="collision_dist_front" value="0.3"/>
@@ -29,7 +34,7 @@
         <param name="distance_increment" value="0.1"/>
         <param name="segment_sections" value="$(eval ' '.join(['10'] * n_path_segments))"/>
 
-        <param name="annealing_steps" value="200"/>
+        <param name="annealing_steps" value="300"/>
         <param name="k_dist" value="1"/>
         <param name="k_speed" value="1"/>
         <!--<param name="k_similarity" value="0"/>-->

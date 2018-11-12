@@ -154,12 +154,17 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   ros::NodeHandle nhp("~");
 
-  auto l_front = getParamAssert<double>(nhp, "collision_dist_front");
-  auto l_back = getParamAssert<double>(nhp, "collision_dist_back");
-  auto w_side = getParamAssert<double>(nhp, "collision_dist_side");
-  auto obs_search_rad = getParamAssert<double>(nhp, "obstacle_search_radius");
+  rr::CenteredBox box;
+  box.length_front = getParamAssert<double>(nhp, "collision_dist_front");
+  box.length_back = getParamAssert<double>(nhp, "collision_dist_back");
+  box.width_left = box.width_right = getParamAssert<double>(nhp, "collision_dist_side");
 
-  distance_checker = std::make_unique<rr::DistanceChecker>(l_front, l_back, w_side, w_side, obs_search_rad);
+  rr::CenteredBox map_dimensions;
+  map_dimensions.length_front = 7;
+  map_dimensions.length_back = 5;
+  map_dimensions.width_right = map_dimensions.width_left = 6;
+
+  distance_checker = std::make_unique<rr::DistanceChecker>(box, map_dimensions);
 
   auto wheel_base = getParamAssert<double>(nhp, "wheel_base");
   auto lateral_accel = getParamAssert<double>(nhp, "lateral_accel");

@@ -46,6 +46,14 @@ struct PlannedPath {
   double cost;  // result of applying cost function
 };
 
+
+struct CenteredBox {
+  double length_front;  // distance from origin to front edge
+  double length_back;  // ditto for back edge, etc.
+  double width_left;
+  double width_right;
+};
+
 }  // namespace rr
 
 #endif  // RR_COMMON_PLANNER_TYPES_H

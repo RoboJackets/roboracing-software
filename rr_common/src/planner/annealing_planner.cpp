@@ -82,6 +82,8 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     path.control = best_prev_control;
   });
 
+  distance_checker_.SetMap(*kd_tree_map.input_);
+
   bool all_colliding = true;
   for (unsigned int t = 0; t < params.annealing_steps; t++) {
     auto& path = path_pool_[t];
@@ -96,7 +98,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     bool has_been_too_close = false;
     bool has_collided = false;
     for (int i = static_cast<int>(path.path.size()) - 1; i >= 0; i--) {
-      std::tie(collision, dist) = distance_checker_.GetCollisionDistance(path.path[i].pose, kd_tree_map);
+      std::tie(collision, dist) = distance_checker_.GetCollisionDistance(path.path[i].pose);
       has_collided |= collision;
       path.dists[i] = dist;
 

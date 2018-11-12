@@ -2,55 +2,192 @@
 
 namespace rr {
 
-DistanceChecker::DistanceChecker(double length_front, double length_back,
-                                 double width_left, double width_right,
-                                 double obstacle_search_radius)
-  : length_front_(length_front),
-    length_back_(length_back),
-    width_left_(width_left),
-    width_right_(width_right),
-    obstacle_search_radius_(obstacle_search_radius) {}
+DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_size)
+  : hitbox_(box), map_size_(map_size), cache_resolution_(10.0)
+{
+  cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
+  cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
+  cache_rows_ = cache_rows_front_ + cache_rows_back_;
+  cache_cols_left_ = static_cast<int>(map_size_.width_left * cache_resolution_);
+  cache_cols_right_ = static_cast<int>(map_size_.width_right * cache_resolution_);
+  cache_cols_ = cache_cols_left_ + cache_cols_right_;
 
-DistanceChecker::DistanceChecker()
-  : DistanceChecker(0, 0, 0, 0, 0) {}
+  auto cache_size = static_cast<size_t>(cache_rows_ * cache_cols_);
+  cache_.resize(cache_size);
+  cache_visited_.resize(cache_size);
+  for (int i = 0; i < static_cast<int>(cache_size); i++) {
+    cache_[i].location = GetPointFromIndex(i);
+    cache_[i].might_hit_points.clear();
+    cache_[i].nearest_point = nullptr;
+    cache_visited_[i] = false;
+  }
 
-std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
-    const KdTreeMap& kd_tree_map) {
-  double cosTheta = std::cos(pose.theta);
-  double sinTheta = std::sin(pose.theta);
+  double half_length = (hitbox_.length_front + hitbox_.length_back) / 2.;
+  double half_width = (hitbox_.width_left + hitbox_.width_right) / 2.;
+  hitbox_corner_dist_ = std::sqrt(half_length * half_length + half_width * half_width);
+}
 
-  double robotCenterX = (length_front_ - length_back_) / 2.;
-  double robotCenterY = (width_left_ - width_right_) / 2.;
-  double searchX = pose.x + robotCenterX * cosTheta - robotCenterY * sinTheta;
-  double searchY = pose.y + robotCenterX * sinTheta + robotCenterY * cosTheta;
 
-  double halfLength = (length_front_ + length_back_) / 2.;
-  double halfWidth = (width_left_ + width_right_) / 2.;
-  double cornerDist = std::sqrt(halfLength*halfLength + halfWidth*halfWidth);
+int DistanceChecker::GetCacheIndex(double x, double y) {
+  int r = static_cast<int>(x * cache_resolution_) + cache_rows_back_;
+//  std::cout << "r = " << r << std::endl;
+  if (r < 0 || r >= cache_rows_) {
+    return -1;
+  }
 
-  pcl::PointXYZ searchPoint(searchX, searchY, 0);
-  std::vector<int> pointIdxs;
-  std::vector<float> squaredDistances;
-  int nResults = kd_tree_map.radiusSearch(searchPoint, obstacle_search_radius_,
-                                          pointIdxs, squaredDistances);
+  int c = static_cast<int>(y * cache_resolution_) + cache_cols_right_;
+//  std::cout << "c = " << c << std::endl;
+  if (c < 0 || c > cache_cols_) {
+    return -1;
+  }
+
+  return r * cache_cols_ + c;
+}
+
+
+DistanceChecker::Point DistanceChecker::GetPointFromIndex(int i) {
+  int r = i / cache_cols_;
+  int c = i % cache_cols_;
+
+  Point out;
+  out.x = (r - cache_rows_back_ + 0.5) / cache_resolution_;
+  out.y = (c - cache_cols_right_ + 0.5) / cache_resolution_;
+  return out;
+}
+
+
+double DistanceChecker::Dist(const Point& p1, const Point& p2) {
+  double dx = p1.x - p2.x;
+  double dy = p1.y - p2.y;
+  return std::sqrt(dx * dx + dy * dy);
+}
+
+
+void DistanceChecker::SetMap(const pcl::PointCloud<Point>& pointcloud) {
+  for (CacheEntry& v : cache_) {
+    v.might_hit_points.clear();
+    v.nearest_point = nullptr;
+  }
+
+  auto& updates = cache_updates_;
+  auto& visited = cache_visited_;
+
+  updates.clear();
+  std::fill(visited.begin(), visited.end(), false);
+
+  for (const Point& p : pointcloud.points) {
+    int i = GetCacheIndex(p.x, p.y);
+    if (i < 0) {
+      continue;
+    }
+
+    cache_[i].might_hit_points.push_back(&p);
+    cache_[i].nearest_point = &p;
+//    std::cout << "setmap init " << i << std::endl;
+    visited[i] = true;
+
+    int r = i / cache_cols_;
+    int c = i % cache_cols_;
+    for (int dr = -1; dr <= 1; dr++) {
+      for (int dc = -1; dc <= 1; dc++) {
+        if (r + dr < 0 || r + dr >= cache_rows_  || c + dc < 0 || c + dc >= cache_cols_) {
+          continue;
+        }
+
+        int j = i + dr * cache_cols_ + dc;
+        if (!visited[j]) {
+          updates.emplace_back(j);
+          cache_[j].parent = cache_.data() + i;
+          visited[j] = true;
+        }
+      }
+    }
+  }
+
+  while (!updates.empty()) {
+    int j = updates.front();
+    updates.pop_front();
+
+//    std::cout << "setmap update " << i << " -> " << j << std::endl;
+
+    CacheEntry& entry = cache_[j];
+    const CacheEntry& parent = *entry.parent;
+
+    size_t size_start = entry.might_hit_points.size();
+    const Point* nearest_point_start = entry.nearest_point;
+
+    if (entry.nearest_point == nullptr) {
+      entry.nearest_point = parent.nearest_point;
+    }
+
+    for (const Point* p : parent.might_hit_points) {
+      double d = Dist(*p, entry.location);
+      if (d < hitbox_corner_dist_ * 2) {
+        entry.might_hit_points.push_back(p);
+      }
+    }
+
+    if (entry.might_hit_points.size() != size_start || entry.nearest_point != nearest_point_start) {
+      int r = j / cache_cols_;
+      int c = j % cache_cols_;
+      for (int dr = -1; dr <= 1; dr++) {
+        for (int dc = -1; dc <= 1; dc++) {
+          if (r + dr < 0 || r + dr >= cache_rows_  || c + dc < 0 || c + dc >= cache_cols_) {
+            continue;
+          }
+
+          int k = j + dr * cache_cols_ + dc;
+          if (!visited[k]) {
+            updates.emplace_back(k);
+            cache_[k].parent = &entry;
+            visited[k] = true;
+          }
+        }
+      }
+    }
+  }
+}
+
+std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose) {
+  double cos_th = std::cos(pose.theta);
+  double sin_th = std::sin(pose.theta);
+
+  double center_x = (hitbox_.length_front - hitbox_.length_back) / 2.;
+  double center_y = (hitbox_.width_left - hitbox_.width_right) / 2.;
+  double search_x = pose.x + center_x * cos_th - center_y * sin_th;
+  double search_y = pose.y + center_x * sin_th + center_y * cos_th;
+
+  double half_length = (hitbox_.length_front + hitbox_.length_back) / 2.;
+  double half_width = (hitbox_.width_left + hitbox_.width_right) / 2.;
+
+  int i = GetCacheIndex(pose.x, pose.y);
+//  std::cout << "cache index is " << i << std::endl;
 
   bool collision = false;
-  double min_dist = obstacle_search_radius_;
-  if (nResults > 0) {
-    // convert each point to robot reference frame and distances
-    const auto& cloud = *(kd_tree_map.getInputCloud());
-    for (int i : pointIdxs) {
-      const auto& point = cloud[i];
+  double min_dist = 1000;
+
+  if (i >= 0) {
+    CacheEntry& entry = cache_[i];
+
+    if (entry.nearest_point != nullptr) {
+      entry.might_hit_points.push_back(entry.nearest_point);
+    }
+//    std::cout << "cache entry " << i << " has " << entry.might_hit_points.size() << std::endl;
+
+    for (const Point *p_ptr : entry.might_hit_points) {
+      const Point &point = *p_ptr;
+
+//      std::cout << "trying " << point << std::endl;
 
       // note that this is inverse kinematics here. We have origin -> robot but
       // want robot -> origin
-      double offsetX = point.x - searchX;
-      double offsetY = point.y - searchY;
-      double x =  cosTheta * offsetX + sinTheta * offsetY;
-      double y = -sinTheta * offsetX + cosTheta * offsetY;
+      double offsetX = point.x - search_x;
+      double offsetY = point.y - search_y;
+      double x = cos_th * offsetX + sin_th * offsetY;
+      double y = -sin_th * offsetX + cos_th * offsetY;
 
       // collisions
-      if (std::abs(x) <= halfLength && std::abs(y) <= halfWidth) {
+      if (std::abs(x) <= half_length && std::abs(y) <= half_width) {
         collision = true;
         min_dist = 0;
         break;
@@ -58,35 +195,39 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose,
 
       // find distance, in several cases
       double dist;
-      if (std::abs(x) > halfLength) {
+      if (std::abs(x) > half_length) {
         // not alongside the robot
-        if (std::abs(y) > halfWidth) {
+        if (std::abs(y) > half_width) {
           // closest to a corner
-          double cornerX = halfLength * ((x < 0) ? -1 : 1);
-          double cornerY = halfWidth * ((y < 0) ? -1 : 1);
+          double cornerX = half_length * ((x < 0) ? -1 : 1);
+          double cornerY = half_width * ((y < 0) ? -1 : 1);
           double dx = x - cornerX;
           double dy = y - cornerY;
-          dist = std::sqrt(dx*dx + dy*dy);
+          dist = std::sqrt(dx * dx + dy * dy);
         } else {
           // directly in front of or behind robot
-          dist = std::abs(x) - halfLength;
+          dist = std::abs(x) - half_length;
         }
       } else {
         // directly to the side of the robot
-        dist = std::abs(y) - halfWidth;
+        dist = std::abs(y) - half_width;
       }
       min_dist = std::min(min_dist, dist);
+    }
+
+    if (entry.nearest_point != nullptr) {
+      entry.might_hit_points.pop_back();
     }
   }
 
   return std::make_tuple(collision, min_dist);
 }
 
-bool DistanceChecker::GetCollision(const pcl::PointXYZ& relative_point) {
-  return (relative_point.x < length_front_)
-      && (relative_point.x > -length_back_)
-      && (relative_point.y < width_left_)
-      && (relative_point.y > -width_right_);
+bool DistanceChecker::GetCollision(const Point& relative_point) {
+  return (relative_point.x < hitbox_.length_front)
+      && (relative_point.x > -hitbox_.length_back)
+      && (relative_point.y < hitbox_.width_left)
+      && (relative_point.y > -hitbox_.width_right);
 }
 
 }  // namespace rr

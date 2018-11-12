@@ -40,7 +40,7 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(
   double dist;
   for(const auto& path_point : path) {
     std::tie(is_collision, dist)
-        = distance_checker_.GetCollisionDistance(path_point.pose, kd_tree_map);
+        = distance_checker_.GetCollisionDistance(path_point.pose);
 
     if (is_collision) {
       break;
@@ -147,6 +147,8 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   // allocate planned paths
   std::vector<PlannedPath> plans;
 
+  distance_checker_.SetMap(*kd_tree_map.input_);
+
   // fill planned paths and determine best cost
   double best_cost = 1e10;
   for (int i = 0; i < params.n_control_samples; i++) {
@@ -222,7 +224,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   double min_dist = 10000;
   for (const auto& path_point : best_plan.path) {
     std::tie(is_collision, dist)
-        = distance_checker_.GetCollisionDistance(path_point.pose, kd_tree_map);
+        = distance_checker_.GetCollisionDistance(path_point.pose);
 
     if (dist < min_dist) {
       min_dist = dist;
