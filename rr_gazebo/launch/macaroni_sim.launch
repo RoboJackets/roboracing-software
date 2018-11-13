@@ -14,6 +14,7 @@
     <include file="$(find rr_platform)/launch/macaroni_state_publisher.launch"/>
 
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" />
+        <param name="min_point_dist" type="double" value="0.5"/>
 
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
