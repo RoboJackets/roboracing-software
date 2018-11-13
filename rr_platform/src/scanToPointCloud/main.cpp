@@ -45,9 +45,8 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
     
-    nhp.param("min_point_dist", filtering_distance, double(1.0));//why am i assinging it a value here at all? Do the launch files 
-    //parameters override it 
-
+    nhp.param("min_point_dist", filtering_distance, double(1.0));
+    
     auto scan_sub = nh.subscribe("scan", 1, scanCallback);
 
     pc_pub = nh.advertise<sensor_msgs::PointCloud2>("scan/pointcloud", 1);

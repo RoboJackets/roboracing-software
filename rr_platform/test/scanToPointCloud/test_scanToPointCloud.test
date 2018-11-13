@@ -1,5 +1,5 @@
 <launch>
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen" respawn="false"/>
-    	<param name="min_point_dist" type="int" value="0.5"/>
+    	<param name="min_point_dist" type="double" value="0.5"/>
     <test test-name="test_scanToPointCloud" pkg="rr_platform" type="test_scanToPointCloud"/>
 </launch>
