@@ -133,6 +133,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     std::fill(best.control.begin(), best.control.end(), 0);
     model_.RollOutPath(best.path, best.control);
     std::for_each(best.path.begin(), best.path.end(), [](PathPoint& p) { p.speed = -0.5; });
+    best.all_collide = 1;
   }
 
   last_path_idx_ = best_idx;

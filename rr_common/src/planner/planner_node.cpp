@@ -23,6 +23,9 @@ ros::Publisher path_pub;
 sensor_msgs::PointCloud2ConstPtr last_map_msg;
 bool is_new_msg;
 
+ros::Time last_impasse;
+bool is_backing_up;
+
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 //  ROS_INFO_STREAM("mapCallback");
   last_map_msg = map;
@@ -52,9 +55,26 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloud);
 
+  if (is_backing_up) {
+      ros::Duration duration = ros::Time::now() - last_impasse;
+      double deltaT = duration.toSec();
+      if (deltaT >= 5) {
+          ROS_INFO_STREAM("Done backing up");
+          is_backing_up = false;
+      } else {
+          return;
+      }
+  }
+
   rr::PlannedPath plan = planner->Plan(kdtree);
 
   ROS_INFO_STREAM("Best path cost is " << plan.cost);
+
+  if (plan.all_collide) {
+      ROS_INFO_STREAM("Determined that all paths would collide, backing up for 5s");
+      last_impasse = ros::Time::now();
+      is_backing_up = true;
+  }
 
   rr_platform::speedPtr speedMSG(new rr_platform::speed);
   rr_platform::steeringPtr steerMSG(new rr_platform::steering);
@@ -67,7 +87,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
 
   if(path_pub.getNumSubscribers() > 0) {
     nav_msgs::Path pathMsg;
-    
+
     for (auto path_point : plan.path) {
       geometry_msgs::PoseStamped ps;
       ps.pose.position.x = path_point.pose.x;
