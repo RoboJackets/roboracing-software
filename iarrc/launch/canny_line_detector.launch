@@ -1,0 +1,8 @@
+<launch>
+  <node name="canny_line_detector" pkg="iarrc" type="canny_line_detector" output="screen">
+        <param name="line_threshold" type="int" value="24" />
+	      <param name="dilating_kernel" type="int" value="15" />
+	      <param name="contour_rect_extent" type="double" value="0.3" />
+
+  </node>
+</launch>
