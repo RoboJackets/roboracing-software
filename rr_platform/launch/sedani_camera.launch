@@ -1,6 +1,6 @@
 <launch>
-	<include file="$(find rr_platform)/launch/pointgrey_camera.launch" >
-		<arg name="serial" value="18064461" />
-	</include>
+    <include file="$(find rr_platform)/launch/pointgrey_camera.launch" >
+        <arg name="serial" value="18064461" />
+    </include>
 
 </launch>

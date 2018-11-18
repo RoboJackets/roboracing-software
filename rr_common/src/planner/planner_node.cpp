@@ -58,7 +58,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
 
   rr_platform::speedPtr speedMSG(new rr_platform::speed);
   rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-  steerMSG->angle = plan.path[0].steer;
+  steerMSG->angle = plan.path[0].steer * 1.1;
   speedMSG->speed = plan.path[0].speed;
   steerMSG->header.stamp = ros::Time::now();
   speedMSG->header.stamp = ros::Time::now();
