@@ -6,14 +6,14 @@ import cv2
 import numpy as np
 
 
-if "-n" in sys.argv:
-    i = sys.argv.index("-n")
-    n_imgs = int(sys.argv[i + 1])
-else:
-    n_imgs = 100
+assert "-n" in sys.argv
+i = sys.argv.index("-n")
+n_imgs = int(sys.argv[i + 1])
 
 
 DIR = os.path.dirname(__file__)
+data_dir = os.path.join(DIR, "../../data/segmentation/test_circles")
+
 
 colors = [(100, 100, 100), (90, 100, 110), (100, 110, 90)]
 n_categories = len(colors)
@@ -56,14 +56,8 @@ for n in range(n_imgs):
     global_noise_mat = np.ones(img.shape, dtype=np.int16) * np.random.randint(*global_noise_range)
     img = (img + local_noise_mat + global_noise_mat).astype(np.uint8)
 
-    data_dir = os.path.join(DIR, "fake_data")
-
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
-    cv2.imwrite(os.path.join(data_dir, "test_img_%d.png" % n), img)
-    cv2.imwrite(os.path.join(data_dir, "test_label_%d.png" % n), label)
-
-    # cv2.imshow("data", img)
-    # cv2.imshow("label", label * 50)
-    # cv2.waitKey(0)
+    cv2.imwrite(os.path.join(data_dir, "input_%d.png" % n), img)
+    np.save(os.path.join(data_dir, "label_%d.npy" % n), label)

@@ -66,11 +66,11 @@ def main():
 
     startTime = time.time()
 
-    model_path = rospy.get_param("~model_output_path", None)
-    exampleSetDir = rospy.get_param("~example_set_dir", None)
-    epochs = int(rospy.get_param("~epochs", None))
+    model_path = rospy.get_param("~model_output_path")
+    exampleSetDir = rospy.get_param("~example_set_dir")
+    epochs = int(rospy.get_param("~epochs"))
 
-    categories = rospy.get_param("~positive_nonzero_categories", None)
+    categories = rospy.get_param("~positive_nonzero_categories")
     categories = string.strip(categories).split(" ")
     categories = [float(x) for x in categories]
     categories = expand_categories(categories)

@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find rr_ml)/launch/label_folder.launch">
+        <arg name="input_dir" value="$(find rr_ml)/data/segmentation/iarrc_lines"/>
+        <arg name="output_dir" value="$(find rr_ml)/data/segmentation/iarrc_lines"/>
+        <arg name="config_file" value="$(find rr_ml)/labelme_config/iarrc.config"/>
+    </include>
+</launch>

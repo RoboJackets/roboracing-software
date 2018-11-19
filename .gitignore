@@ -1,4 +1,6 @@
 */CMakeFiles/*
+cmake-build-debug/*
+*/cmake-build-debug/*
 
 # Clion project files
 */*.idea
@@ -16,11 +18,8 @@
 # python bytecode
 *.pyc
 
-#bag files and pickles of bag files
+# bag files
 *.bag
-*.pkl.lz4
 
 # ML training data
-rr_ml/exported_data/*
-
-util/semantic_segmentation/data/
+rr_ml/data/*

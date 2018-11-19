@@ -1,0 +1,15 @@
+<launch>
+    <arg name="extract_directory"/>
+    <arg name="image_format" default=".png"/>
+    <arg name="bag_file"/>
+    <arg name="image_topic"/>
+    <arg name="num_images" default="-1"/>
+
+    <node pkg="rr_ml" type="bag_image_extractor" name="bag_image_extractor" output="screen">
+        <param name="image_dir" value="$(arg extract_directory)"/>
+        <param name="image_format" value="$(arg image_format)"/>
+        <param name="bag_file" value="$(arg bag_file)"/>
+        <param name="image_topic" value="$(arg image_topic)"/>
+        <param name="num_images" type="int" value="$(arg num_images)"/>
+    </node>
+</launch>

@@ -7,7 +7,7 @@
     <node pkg="rr_ml" type="train_e2e" name="train_e2e" output="screen">
         <param name="epochs" value="$(arg epochs)"/>
         <param name="positive_nonzero_categories" type="str" value="$(arg categories)"/>
-        <param name="example_set_dir" value="$(find rr_ml)/exported_data/end_to_end/$(arg dataset)"/>
+        <param name="example_set_dir" value="$(find rr_ml)/data/end_to_end/$(arg dataset)"/>
         <param name="model_output_path" value="$(find rr_ml)/models/end_to_end/$(arg model).h5"/>
     </node>
 </launch>
