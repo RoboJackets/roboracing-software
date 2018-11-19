@@ -1,0 +1,12 @@
+<launch>
+    <arg name="model"/>
+    <arg name="dataset"/>
+    <arg name="epochs" default="20"/>
+
+    <include file="$(find rr_ml)/launch/train_e2e.launch">
+        <arg name="model_name" value="$(arg model)"/>
+        <arg name="dataset" value="$(arg dataset)"/>
+        <arg name="categories" value="0.03"/>
+        <arg name="epochs" value="$(arg epochs)"/>
+    </include>
+</launch>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+    <name>rr_ml</name>
+    <version>0.0.0</version>
+    <description>Tools for creating datasets, </description>
+
+    <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
+
+    <license>MIT</license>
+
+    <url type="website">http://robojackets.org</url>
+    <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+    <url type="website">http://www.github.com/robojackets/roboracing-software</url>
+
+    <author email="evanbretl4@gmail.com">Evan Bretl</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>rospy</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>rr_platform</build_depend>
+    <build_depend>cv_bridge</build_depend>
+
+    <run_depend>rospy</run_depend>
+    <!--<run_depend>message_runtime</run_depend>-->
+    <run_depend>std_msgs</run_depend>
+    <run_depend>rr_platform</run_depend>
+    <run_depend>cv_bridge</run_depend>
+</package>

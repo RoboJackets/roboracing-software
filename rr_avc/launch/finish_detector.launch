@@ -1,0 +1,3 @@
+<launch>
+        <node pkg="nodelet" type="nodelet" name="finish_detector" args="load rr_avc/finish_detector camera/camera_mono_nodelet_manager"/>
+</launch>
