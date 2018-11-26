@@ -199,14 +199,6 @@
     </gazebo>
 
 
-    <link name="camera_base">
-        <inertial> <!--Null inertia-->
-            <mass value="0.001"/>
-            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
-        </inertial>
-    </link>
-
-
     <link name="camera">
         <inertial> <!--Null inertia-->
             <mass value="0.001"/>
@@ -379,18 +371,10 @@
         <axis xyz="0 1 0"/>
     </joint>
 
-    <joint name="cam_chassis_height" type="fixed">
+    <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
-        <child link="camera_base"/>
-        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
-    </joint>
-
-    <joint name="camera_tilt" type="fixed">
-        <parent link="camera_base"/>
         <child link="camera"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="0 1 0"/>
-        <limit lower="0" upper="3.14" effort="1000.0" velocity="1000.0"/>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
     </joint>
 
     <joint name="camera_optical_joint" type="fixed">

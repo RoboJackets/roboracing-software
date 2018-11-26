@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<package>
+  <name>rr_avc</name>
+  <version>0.0.0</version>
+  <description>The avc package</description>
+
+  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
+  <maintainer email="chsahit@gmail.com">Sahit Chintalapudi</maintainer>
+  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
+
+
+
+  <license>MIT</license>
+
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+  <url type="website">http://www.github.com/robojackets/roboracing-software</url>
+
+
+  <author email="justinyzheng@gmail.com">Justin Zheng</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>rr_platform</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>laser_geometry</build_depend>
+  <build_depend>nodelet</build_depend>
+  <build_depend>image_transport</build_depend>
+
+
+  <run_depend>laser_geometry</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>rr_platform</run_depend>
+  <run_depend>laser_geometry</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>message_generation</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>nodelet</run_depend>
+
+  <export>
+      <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
+  </export>
+</package>

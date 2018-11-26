@@ -1,0 +1,3 @@
+add_executable(obstacle_history obstacle_history.cpp)
+target_link_libraries(obstacle_history ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+add_dependencies(obstacle_history rr_platform_generate_messages_cpp)
