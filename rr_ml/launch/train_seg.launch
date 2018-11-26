@@ -5,7 +5,7 @@
     <arg name="validate_only" default="false"/>
     <arg name="visualize_validation" default="false"/>
 
-    <node pkg="rr_ml" type="train_seg" name="train_seg" output="screen">
+    <node pkg="rr_ml" type="train_seg" name="train_seg" output="screen" required="true">
         <param name="epochs" value="$(arg epochs)"/>
         <param name="data_dir" value="$(find rr_ml)/data/segmentation/$(arg dataset)"/>
         <param name="model_path" value="$(find rr_ml)/models/segmentation/$(arg model).h5"/>
