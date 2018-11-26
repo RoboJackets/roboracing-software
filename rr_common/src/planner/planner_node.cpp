@@ -24,7 +24,6 @@ sensor_msgs::PointCloud2ConstPtr last_map_msg;
 bool is_new_msg;
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
-//  ROS_INFO_STREAM("mapCallback");
   last_map_msg = map;
   is_new_msg = true;
 }
@@ -134,7 +133,6 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
 
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
-//  params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
   params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
   params.backwards_penalty = getParamAssert<double>(nhp, "backwards_penalty");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");

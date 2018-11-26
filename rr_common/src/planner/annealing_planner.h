@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "planner.h"
-#include "planner_types.h"
+#include "planner_types.hpp"
 #include "distance_checker.h"
 #include "bicycle_model.h"
 
@@ -22,7 +22,6 @@ public:
     double temperature_end;
     double k_dist;  // importance of distance in cost function
     double k_speed;  // importance of speed/straightness in cost fn
-//    double k_similarity;  // importance of matching previous path in cost fn
     double k_final_pose;  // importance of final position in cost function
     double backwards_penalty;
     double collision_penalty;  // cost fn penalty for a collision
@@ -47,14 +46,12 @@ private:
   double GetTemperature(unsigned int t);
 
   /*
-   * GetCost: calculate the total cost of a path.
-   * TODO document cost function here
+   * GetCost: calculate the total cost of a path
    * Params:
-   * path - list of (pose, steering, speed) tuples
-   * kdtree - nearest-neighbors-searchable map
+   *  path - list of (pose, steering, speed) tuples
+   *  kd_tree_map - nearest-neighbors-searchable map
    * Returns:
-   * bool - collision detected
-   * double - cost
+   *  cost of the path
    */
   double GetCost(const PlannedPath& path, const KdTreeMap& kd_tree_map);
 

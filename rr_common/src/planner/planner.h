@@ -1,7 +1,7 @@
 #ifndef RR_COMMON_PLANNER_H
 #define RR_COMMON_PLANNER_H
 
-#include "planner_types.h"
+#include "planner_types.hpp"
 
 namespace rr {
 

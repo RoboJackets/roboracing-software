@@ -1,4 +1,4 @@
-set(planner_hdrs distance_checker.h bicycle_model.h planner.h planner_types.h
+set(planner_hdrs distance_checker.h bicycle_model.h planner.h planner_types.hpp
                  random_sample_planner.h annealing_planner.h)
 
 add_library(distance_checker distance_checker.cpp ${planner_hdrs})
