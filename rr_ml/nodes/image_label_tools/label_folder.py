@@ -26,4 +26,5 @@ def main():
         f = osp.splitext(img_name)[0]
         label_path = osp.join(label_dir, f + ".npy")
 
-        util.label_image(img_path, label_path, cfg_file)
+        if not os.path.exists(label_path):
+            util.label_image(img_path, label_path, cfg_file)

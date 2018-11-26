@@ -3,7 +3,7 @@
     <arg name="output_dir"/>
     <arg name="config_file"/>
 
-    <node pkg="rr_ml" type="label_folder" name="label_folder" output="screen">
+    <node pkg="rr_ml" type="label_folder" name="label_folder" output="screen" required="true">
         <param name="image_dir" value="$(arg input_dir)"/>
         <param name="label_dir" value="$(arg output_dir)"/>
         <param name="config_file" value="$(arg config_file)"/>

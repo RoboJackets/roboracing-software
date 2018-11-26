@@ -5,7 +5,7 @@
     <arg name="image_topic"/>
     <arg name="num_images" default="-1"/>
 
-    <node pkg="rr_ml" type="bag_image_extractor" name="bag_image_extractor" output="screen">
+    <node pkg="rr_ml" type="bag_image_extractor" name="bag_image_extractor" output="screen" required="true">
         <param name="image_dir" value="$(arg extract_directory)"/>
         <param name="image_format" value="$(arg image_format)"/>
         <param name="bag_file" value="$(arg bag_file)"/>
