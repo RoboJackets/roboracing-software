@@ -13,7 +13,7 @@ from . import model_utils
 osp = os.path
 K = keras.backend
 
-batch_size = 5
+batch_size = 8
 
 
 def data_gen(helper, input_files, label_files):
@@ -37,22 +37,33 @@ def data_gen(helper, input_files, label_files):
         yield inputs, labels
 
 
-def data_gen_wrapper(helper, input_files, label_files, epochs):
-    for epoch in range(epochs):
-        for x in data_gen(helper, input_files, label_files):
-            yield x
+def data_gen_wrapper(helper, input_files, label_files, epochs, cached=False):
+    if cached:
+        cache = list(data_gen(helper, input_files, label_files))
+        print "cached training data"
+        for epoch in range(epochs):
+            random.shuffle(cache)
+            for x in cache:
+                yield x
+    else:
+        for epoch in range(epochs):
+            for x in data_gen(helper, input_files, label_files):
+                yield x
 
 
-def weighted_focal_loss(gamma, non_background_weight):
+def weighted_focal_loss(gamma, class_imbalance):
     def loss(target, output):
-        weights = [non_background_weight] * K.int_shape(output)[-1]
+        weights = [class_imbalance ** 0.5] * K.int_shape(output)[-1]
         weights[0] = 1
         weights = K.constant(weights)
 
         output /= K.sum(output, axis=-1, keepdims=True)
         eps = K.epsilon()
         output = K.clip(output, eps, 1. - eps)
-        return -K.sum(K.pow(1. - output, gamma) * target * K.log(output) * weights, axis=-1)
+
+        focal_loss_pos = -target * K.log(output) * K.pow(1. - output, gamma) * weights
+        focal_loss_neg = (target - 1.) * K.log(1. - output) * K.pow(output, gamma) * (1. / weights)
+        return K.sum(focal_loss_pos + focal_loss_neg, axis=-1)
     return loss
 
 
@@ -79,11 +90,11 @@ def main(acceptable_image_formats):
 
     files = list(zip(input_files, label_files))
     random.shuffle(files)
-    # split = int(len(input_files) * 0.75)
-    # training_files = files[:split]
-    # validate_files = files[split:]
-    training_files = files[:]
-    validate_files = files[:]
+    split = int(len(input_files) * 0.75)
+    training_files = files[:split]
+    validate_files = files[split:]
+    # training_files = files[:]
+    # validate_files = files[:]
 
     training_input_files, training_label_files = zip(*training_files)
     validate_input_files, validate_label_files = zip(*validate_files)
@@ -97,14 +108,21 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(loss=weighted_focal_loss(2, 30), optimizer='adam', metrics=['accuracy', max_output_non_background])
+    model.compile(loss=weighted_focal_loss(3, 100), optimizer='adam', metrics=['accuracy', max_output_non_background])
     time.sleep(2.0)
     model.summary()
 
     if not validate_only:
-        model.fit_generator(data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs),
-                            steps_per_epoch=len(training_files) // batch_size, epochs=n_epochs, verbose=1,
-                            max_queue_size=5)
+        starting_weights = model.get_weights()
+        print "warming up optimizer..."
+        warmup_length = 20
+        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, warmup_length, cached=True)
+        model.fit_generator(data, steps_per_epoch=warmup_length, epochs=1, verbose=1)
+        print "done warming up"
+        model.set_weights(starting_weights)
+
+        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs, cached=True)
+        model.fit_generator(data, steps_per_epoch=len(training_files) // batch_size, epochs=n_epochs, verbose=1)
 
         if not osp.exists(osp.dirname(model_path)):
             os.makedirs(osp.dirname(model_path))
