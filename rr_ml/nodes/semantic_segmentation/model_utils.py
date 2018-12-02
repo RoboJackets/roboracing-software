@@ -57,10 +57,13 @@ class UNetModelUtils(object):
         model = keras.Model(inputs=input_layer, outputs=conv7)
         return model
 
+    def prepare_input(self, raw_img):
+        img = raw_img.astype(np.float32) / 255.0
+        return cv2.resize(img, (self.in_width, self.in_height))
+
     def load_input(self, fname):
         img = cv2.imread(fname)
-        img = img.astype(np.float32) / 255.0
-        return cv2.resize(img, (self.in_width, self.in_height))
+        return self.prepare_input(img)
 
     def load_label(self, fname):
         img = np.load(fname)
@@ -73,14 +76,20 @@ class UNetModelUtils(object):
         # return label_img_rsz.reshape(-1, self.n_classes)
         return label_img_rsz
 
-    def prediction_to_image(self, y):
-        colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
+    def prediction_image_bgr8(self, y):
+        colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)]
         my = np.argmax(y, axis=-1)
         img = np.ndarray((self.in_height, self.in_width, 3), dtype=np.uint8)
         for i, color in enumerate(colors):
             mask = (my == i).reshape(img.shape[:2])
             img[mask] = color
         return img
+
+    def prediction_image_mono8(self, y):
+        output_img = np.zeros(shape=(self.in_height, self.in_width), dtype=np.uint8)
+        argmax_img = np.argmax(y, axis=-1)
+        output_img[argmax_img > 0] = 255
+        return output_img
 
 
 def IOU_score(y1, y2):
@@ -91,12 +100,3 @@ def IOU_score(y1, y2):
     total = np.sum(mask)
     right = np.sum(np.equal(argmax_img1, argmax_img2)[mask])
     return float(right) / total
-
-
-# def metric_max_uncommon(y_true, y_pred):
-#     K = keras.backend
-#     start = K.zeros_like(K.shape(y_pred))
-#     size = K.shape(y_pred)
-#     start[-1] = 1
-#     size[-1] -= 1
-#     return K.max(K.slice(y_pred, start, size))

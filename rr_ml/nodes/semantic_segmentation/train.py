@@ -7,6 +7,7 @@ import cv2
 import keras
 import numpy as np
 import rospy
+import tensorflow as tf
 
 from . import model_utils
 
@@ -14,6 +15,9 @@ osp = os.path
 K = keras.backend
 
 batch_size = 8
+
+load_cache = dict()
+max_load_cache_entries = 5000
 
 
 def data_gen(helper, input_files, label_files):
@@ -30,25 +34,43 @@ def data_gen(helper, input_files, label_files):
         labels = np.zeros((batch_size,) + example_label.shape, dtype=np.float32)
 
         for n in range(batch_size):
-            inputs[n] = helper.load_input(input_files[b + n])
-            labels[n] = helper.load_label(label_files[b + n])
+            f_in = input_files[b + n]
+            if f_in in load_cache:
+                ipt = load_cache[f_in]
+            else:
+                ipt = helper.load_input(f_in)
+                if len(load_cache) < max_load_cache_entries:
+                    load_cache[f_in] = ipt
+
+            f_lbl = label_files[b + n]
+            if f_lbl in load_cache:
+                lbl = load_cache[f_lbl]
+            else:
+                lbl = helper.load_label(f_lbl)
+                if len(load_cache) < max_load_cache_entries:
+                    load_cache[f_lbl] = lbl
+
+            # random left/right flips
+            if random.random() < 0.5:
+                np.fliplr(ipt)
+                np.fliplr(lbl)
+
+            # random brightness
+            ipt += random.normalvariate(0, 0.1)
+            ipt[ipt < 0] = 0
+            ipt[ipt > 1] = 1
+
+            inputs[n] = ipt
+            labels[n] = lbl
 
         b += batch_size
         yield inputs, labels
 
 
-def data_gen_wrapper(helper, input_files, label_files, epochs, cached=False):
-    if cached:
-        cache = list(data_gen(helper, input_files, label_files))
-        print "cached training data"
-        for epoch in range(epochs):
-            random.shuffle(cache)
-            for x in cache:
-                yield x
-    else:
-        for epoch in range(epochs):
-            for x in data_gen(helper, input_files, label_files):
-                yield x
+def data_gen_wrapper(helper, input_files, label_files, epochs):
+    for epoch in range(epochs):
+        for x in data_gen(helper, input_files, label_files):
+            yield x
 
 
 def weighted_focal_loss(gamma, class_imbalance):
@@ -72,6 +94,10 @@ def max_output_non_background(y_true, y_pred):
 
 
 def main(acceptable_image_formats):
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    keras.backend.set_session(tf.Session(config=config))
+
     rospy.init_node("train_segmentation")
 
     data_dir = rospy.get_param("~data_dir")
@@ -108,7 +134,7 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(loss=weighted_focal_loss(3, 100), optimizer='adam', metrics=['accuracy', max_output_non_background])
+    model.compile(loss=weighted_focal_loss(2, 100), optimizer='adam', metrics=['accuracy', max_output_non_background])
     time.sleep(2.0)
     model.summary()
 
@@ -116,12 +142,12 @@ def main(acceptable_image_formats):
         starting_weights = model.get_weights()
         print "warming up optimizer..."
         warmup_length = 20
-        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, warmup_length, cached=True)
+        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, warmup_length)
         model.fit_generator(data, steps_per_epoch=warmup_length, epochs=1, verbose=1)
         print "done warming up"
         model.set_weights(starting_weights)
 
-        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs, cached=True)
+        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs)
         model.fit_generator(data, steps_per_epoch=len(training_files) // batch_size, epochs=n_epochs, verbose=1)
 
         if not osp.exists(osp.dirname(model_path)):
@@ -152,8 +178,8 @@ def main(acceptable_image_formats):
 
         if visualize_validation:
             cv2.imshow("input", (x * 255).astype(np.uint8))
-            cv2.imshow("ground truth", unet_helper.prediction_to_image(y_))
-            cv2.imshow("output", unet_helper.prediction_to_image(y))
+            cv2.imshow("ground truth", unet_helper.prediction_image_bgr8(y_))
+            cv2.imshow("output", unet_helper.prediction_image_bgr8(y))
 
             while True:
                 k = cv2.waitKey(1)
