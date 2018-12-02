@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "planner.h"
-#include "planner_types.h"
+#include "planner_types.hpp"
 #include "distance_checker.h"
 #include "bicycle_model.h"
 

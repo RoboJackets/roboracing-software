@@ -83,7 +83,6 @@ void DistanceChecker::SetMap(const pcl::PointCloud<Point>& pointcloud) {
 
     cache_[i].might_hit_points.push_back(&p);
     cache_[i].nearest_point = &p;
-//    std::cout << "setmap init " << i << std::endl;
     visited[i] = true;
 
     int r = i / cache_cols_;
@@ -107,8 +106,6 @@ void DistanceChecker::SetMap(const pcl::PointCloud<Point>& pointcloud) {
   while (!updates.empty()) {
     int j = updates.front();
     updates.pop_front();
-
-//    std::cout << "setmap update " << i << " -> " << j << std::endl;
 
     CacheEntry& entry = cache_[j];
     const CacheEntry& parent = *entry.parent;
@@ -161,7 +158,6 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose)
   double half_width = (hitbox_.width_left + hitbox_.width_right) / 2.;
 
   int i = GetCacheIndex(pose.x, pose.y);
-//  std::cout << "cache index is " << i << std::endl;
 
   bool collision = false;
   double min_dist = 1000;
@@ -172,12 +168,9 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose)
     if (entry.nearest_point != nullptr) {
       entry.might_hit_points.push_back(entry.nearest_point);
     }
-//    std::cout << "cache entry " << i << " has " << entry.might_hit_points.size() << std::endl;
 
     for (const Point *p_ptr : entry.might_hit_points) {
       const Point &point = *p_ptr;
-
-//      std::cout << "trying " << point << std::endl;
 
       // note that this is inverse kinematics here. We have origin -> robot but
       // want robot -> origin

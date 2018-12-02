@@ -52,17 +52,12 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMa
       cost += params.collision_penalty * (path.size() - i);
       break;
     } else {
-//      double dx = path[i].pose.x - last_path[i].pose.x;
-//      double dy = path[i].pose.y - last_path[i].pose.y;
-//      double deviation = dx*dx + dy*dy;
-//      cost += params.k_similarity * deviation;
       cost -= params.k_dist * std::log(std::max(0.01, dist));
       cost -= params.k_speed * path[i].speed;
       cost += std::abs(path[i].pose.theta) * params.backwards_penalty;
     }
   }
 
-//  double final_d = std::sqrt(std::pow(path.back().pose.x, 2) + std::pow(path.back().pose.y, 2));
   double dd = max_path_length_ - path.back().pose.x;
   cost += params.k_final_pose * dd * dd;
 

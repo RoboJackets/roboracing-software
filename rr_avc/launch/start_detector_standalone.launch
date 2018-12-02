@@ -1,0 +1,21 @@
+<launch>
+    <group ns="camera">
+        <node pkg="nodelet" type="nodelet" name="start_detector_manager" output="screen" args="manager"/>
+        <node pkg="nodelet" type="nodelet" name="start_detector" output="screen" args="load rr_avc/start_detector start_detector_manager">
+        	<param name="red_low_r" value="18.0"/> <!--V-->
+            <param name="red_high_r" value="150.0"/>
+
+            <param name="red_low_g" value="45.0"/> <!-- S -->
+            <param name="red_high_g" value="255.0"/>
+
+            <param name="red_low_b" value="75.0"/> <!-- H -->
+            <param name="red_high_b" value="95.0"/>
+
+            <param name="minSize" value="15"/>
+            <param name="maxSize" value="80"/>
+            <param name="param1" value="10"/>
+            <param name="param2" value="13"/>
+            <param name="minDist" value="10"/>
+        </node>
+    </group>
+</launch>

@@ -20,5 +20,5 @@
 *.bag
 *.pkl.lz4
 
-# exported neural nets in their default location
-util/neural_nets/*.h5
+# ML training data
+rr_ml/data/*

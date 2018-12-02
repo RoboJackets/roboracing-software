@@ -27,7 +27,6 @@ ros::Time last_impasse;
 bool is_backing_up;
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
-//  ROS_INFO_STREAM("mapCallback");
   last_map_msg = map;
   is_new_msg = true;
 }
@@ -78,7 +77,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
 
   rr_platform::speedPtr speedMSG(new rr_platform::speed);
   rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-  steerMSG->angle = plan.path[0].steer;
+  steerMSG->angle = plan.path[0].steer * 1.1;
   speedMSG->speed = plan.path[0].speed;
   steerMSG->header.stamp = ros::Time::now();
   speedMSG->header.stamp = ros::Time::now();
@@ -154,7 +153,6 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
 
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
-//  params.k_similarity = getParamAssert<double>(nhp, "k_similarity");
   params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
   params.backwards_penalty = getParamAssert<double>(nhp, "backwards_penalty");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");

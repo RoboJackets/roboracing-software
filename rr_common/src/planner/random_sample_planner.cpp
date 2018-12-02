@@ -52,7 +52,6 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(
 
 std::vector<int> RandomSamplePlanner::GetLocalMinima(
     const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
-  // std::cout << "start GetLocalMinima" << std::endl;
 
   std::vector<int> local_minima_indices;
   auto n_samples = plans.size();
@@ -64,8 +63,6 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
     for(int i = 0; i < n_samples; i++) {
       for(int j = 0; j < n_path_segments; j++) {
         sampleArray[i * n_path_segments + j] = plans[i].get().control[j];
-        // std::cout << "sampleArray[" << i * params.n_path_segments + j
-        //           << "] = " << plans[i].get().control[j] << std::endl;
       }
     }
     flann::Matrix<double> samples(sampleArray, n_samples, n_path_segments);
@@ -124,7 +121,6 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
     }
   }
 
-  // std::cout << "end GetLocalMinima" << std::endl;
   return local_minima_indices;
 }
 
@@ -210,7 +206,6 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
       curviness += x*x;
     }
 
-    // cout << "i = " << i << ", curviness = " << curviness << endl;
     if(best_index == -1 || curviness < best_curviness) {
       best_index = i;
       best_curviness = curviness;
