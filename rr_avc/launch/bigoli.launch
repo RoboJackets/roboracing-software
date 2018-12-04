@@ -32,6 +32,7 @@
         <param name="max_speed" value="1.0"/>
         <param name="max_steering" value="0.25"/>
         <param name="steering_speed" value="1.0"/>
+        <param name="steering_gain" value="1.0"/>
 
         <param name="distance_increment" value="0.1"/>
         <param name="segment_sections" value="$(eval ' '.join(['6'] * n_path_segments))"/>
@@ -52,5 +53,9 @@
         <param name="acceptance_scale" value="0.003"/>
 
         <param name="input_cloud_topic" value="/current_obstacles"/>
+
+        <param name="impasse_caution_duration" value="100000000000.0"/>
+        <param name="impasse_reverse_duration" value="0.0"/>
+
     </node>
 </launch>

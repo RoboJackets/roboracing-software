@@ -20,15 +20,36 @@ ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 ros::Publisher path_pub;
 
+rr_platform::speedPtr speed_message;
+rr_platform::steeringPtr steer_message;
+
 sensor_msgs::PointCloud2ConstPtr last_map_msg;
 bool is_new_msg;
 
-ros::Time last_impasse;
-bool is_backing_up;
+enum reverse_state_t {OK, CAUTION, REVERSE};
+
+ros::Duration caution_duration;
+ros::Duration reverse_duration;
+ros::Time caution_start_time;
+ros::Time reverse_start_time;
+reverse_state_t reverse_state;
+
+double steering_gain;
+
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   last_map_msg = map;
   is_new_msg = true;
+}
+
+void update_messages(double speed, double angle) {
+  auto now = ros::Time::now();
+
+  speed_message->speed = speed;
+  speed_message->header.stamp = now;
+
+  steer_message->angle = angle;
+  steer_message->header.stamp = now;
 }
 
 void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
@@ -54,35 +75,53 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloud);
 
-  if (is_backing_up) {
-      ros::Duration duration = ros::Time::now() - last_impasse;
-      double deltaT = duration.toSec();
-      if (deltaT >= 5) {
-          ROS_INFO_STREAM("Done backing up");
-          is_backing_up = false;
-      } else {
-          return;
-      }
-  }
-
   rr::PlannedPath plan = planner->Plan(kdtree);
 
-  ROS_INFO_STREAM("Best path cost is " << plan.cost);
+  ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
 
-  if (plan.all_collide) {
-      ROS_INFO_STREAM("Determined that all paths would collide, backing up for 5s");
-      last_impasse = ros::Time::now();
-      is_backing_up = true;
+  // update impasse state machine
+  auto now = ros::Time::now();
+
+  if (OK == reverse_state) {
+    if (plan.has_collision) {
+      if (caution_duration.toSec() <= 0) {
+        reverse_state = REVERSE;
+        reverse_start_time = now;
+      } else {
+        reverse_state = CAUTION;
+        caution_start_time = now;
+      }
+    }
+  }
+  else if (CAUTION == reverse_state) {
+    if (!plan.has_collision) {
+      reverse_state = OK;
+    } else if (now - caution_start_time > caution_duration) {
+      reverse_state = REVERSE;
+      reverse_start_time = now;
+    }
+  }
+  else if (REVERSE == reverse_state) {
+    if (now - reverse_start_time > reverse_duration) {
+      reverse_state = CAUTION;
+      caution_start_time = now;
+    }
+  }
+  else {
+    ROS_WARN_STREAM("Planner encountered unknown reverse state");
   }
 
-  rr_platform::speedPtr speedMSG(new rr_platform::speed);
-  rr_platform::steeringPtr steerMSG(new rr_platform::steering);
-  steerMSG->angle = plan.path[0].steer * 1.1;
-  speedMSG->speed = plan.path[0].speed;
-  steerMSG->header.stamp = ros::Time::now();
-  speedMSG->header.stamp = ros::Time::now();
-  speed_pub.publish(speedMSG);
-  steer_pub.publish(steerMSG);
+  if (REVERSE == reverse_state) {
+    update_messages(-0.8, 0);
+    ROS_INFO_STREAM("Planner reversing");
+  } else if (plan.has_collision) {
+    ROS_INFO_STREAM("Planner: no path found but not reversing; reusing previous message");
+  } else {
+    update_messages(plan.path[0].speed, plan.path[0].steer * steering_gain);
+  }
+
+  speed_pub.publish(speed_message);
+  steer_pub.publish(steer_message);
 
   if(path_pub.getNumSubscribers() > 0) {
     nav_msgs::Path pathMsg;
@@ -207,24 +246,41 @@ int main(int argc, char** argv)
     std::exit(-2);
   }
 
+  caution_duration = ros::Duration(getParamAssert<double>(nhp, "impasse_caution_duration"));
+  reverse_duration = ros::Duration(getParamAssert<double>(nhp, "impasse_reverse_duration"));
+  caution_start_time = ros::Time(0);
+  reverse_start_time = ros::Time(0);
+  reverse_state = OK;
+
+  steering_gain = getParamAssert<double>(nhp, "steering_gain");
+
   auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
   speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
   steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
   path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
+
+  speed_message.reset(new rr_platform::speed);
+  steer_message.reset(new rr_platform::steering);
+  update_messages(0, 0);
 
   ROS_INFO("Planner initialized");
 
   ros::Rate rate(30);
   is_new_msg = false;
   while (ros::ok()) {
+    ros::spinOnce();
+
     if (is_new_msg) {
+      is_new_msg = false;
+      auto start = ros::Time::now();
+
       processMap(last_map_msg);
+
+      double seconds = (ros::Time::now() - start).toSec();
+      ROS_INFO("Planner took %0.1fms", seconds * 1000);
     }
 
-    ros::spinOnce();
     rate.sleep();
-
-    ROS_INFO_STREAM("Planner took " << rate.cycleTime() << " seconds");
   }
 
   return 0;

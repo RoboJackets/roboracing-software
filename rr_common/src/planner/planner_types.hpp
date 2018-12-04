@@ -44,7 +44,7 @@ struct PlannedPath {
   std::vector<PathPoint> path;  // results of path rollout
   std::vector<double> dists;  // results of collision checking
   double cost;  // result of applying cost function
-  int all_collide;
+  bool has_collision;
 };
 
 

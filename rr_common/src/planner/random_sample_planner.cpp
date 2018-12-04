@@ -182,13 +182,7 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
   }
 
   PlannedPath fallback_plan;
-  double backwards_steer = -params.steer_limits[0] * 0.3;
-  fallback_plan.control = {backwards_steer, backwards_steer};
-  model_.RollOutPath(fallback_plan.path, fallback_plan.control);
-  for (auto& path_point : fallback_plan.path) {
-    path_point.speed = -0.3;
-  }
-  fallback_plan.cost = 0;
+  fallback_plan.has_collision = true;
 
   if (good_plans.empty()) {
     std::cout << "[Planner] Using fallback plan" << std::endl;
