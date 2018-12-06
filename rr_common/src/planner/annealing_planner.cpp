@@ -79,6 +79,9 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
 
   distance_checker_.SetMap(*kd_tree_map.input_);
 
+  // update our steering angle estimate using the last output
+  model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
+
   for (unsigned int t = 0; t < params.annealing_steps; t++) {
     auto& path = path_pool_[t];
 
