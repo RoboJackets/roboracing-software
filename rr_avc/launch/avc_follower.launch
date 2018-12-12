@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find avc)/launch/mapper.launch"/>
+    <include file="$(find rr_avc)/launch/mapper.launch"/>
     <node name="follower" pkg="rr_common" type="follower" output="screen">
         <param name="MIN_FRONT_VISION" value="0.4"/>
         <param name="MAX_FRONT_VISION" value="4.0"/>
