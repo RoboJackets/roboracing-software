@@ -9,6 +9,8 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 ros::Publisher pc_pub;
+double filtering_distance;
+
 
 laser_geometry::LaserProjection projector;
 
@@ -24,7 +26,7 @@ void scanCallback(const sensor_msgs::LaserScanConstPtr &msg) {
     for(auto iter = cloud_pc->begin(); iter != cloud_pc->end();) {
         auto point = *iter;
         auto distance = std::sqrt((point.x*point.x) + (point.y*point.y));
-        if(distance < 0.1) {
+        if(distance < filtering_distance) {
             iter = cloud_pc->erase(iter);
         } else {
             iter++;
@@ -41,7 +43,10 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "scanToPointCloud");
 
     ros::NodeHandle nh;
-
+    ros::NodeHandle nhp("~");
+    
+    nhp.param("min_point_dist", filtering_distance, double(1.0));
+    
     auto scan_sub = nh.subscribe("scan", 1, scanCallback);
 
     pc_pub = nh.advertise<sensor_msgs::PointCloud2>("scan/pointcloud", 1);
