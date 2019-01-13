@@ -6,7 +6,7 @@
 #include <rr_platform/camera_pose.h>
 #include <cmath>
 #include <sensor_msgs/JointState.h>
-#include <avc/constants.hpp>
+#include <rr_avc/constants.hpp>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <boost/algorithm/string.hpp>

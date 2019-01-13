@@ -1,0 +1,11 @@
+<launch>
+    <include file="$(find rr_ml)/launch/run_e2e.launch">
+        <arg name="image_topic" value="camera/image_color_rect_flipped"/>
+        <arg name="categories" value="0.1 0.3"/>
+        <arg name="model" value="model_circuit_iarrc_1.h5"/>
+        <arg name="speed_topic" value="/plan/speed"/>
+        <arg name="steer_topic" value="/plan/steering"/>
+        <arg name="speed_straight" value="1.0"/>
+        <arg name="speed_turn_prop" value="0.2"/>
+    </include>
+</launch>
