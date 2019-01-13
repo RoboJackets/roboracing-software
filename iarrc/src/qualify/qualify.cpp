@@ -11,7 +11,7 @@
 ros::Publisher speedPub;
 ros::Publisher steeringPub;
 
-double straightYaw; 
+double straightYaw = 0; 
 double currentYaw = 0;
 
 
@@ -25,6 +25,7 @@ double error_prior = 0;
 double time_prior = 0;  // used to calculate integration interval
 ros::Time time_now; 
 double dt = 0; 
+
 double integral = 0;
 double derivative; 
 
@@ -43,7 +44,6 @@ void imuCallback(const rr_platform::axesConstPtr& msg) {
     tf::quaternionMsgToTF(orientation, tf_quat);
     auto currentYaw = tf::getYaw(tf_quat);
     */
-
 
     if(!straightYawSet){
         straightYaw = msg->yaw;
@@ -68,7 +68,6 @@ void imuCallback(const rr_platform::axesConstPtr& msg) {
     control_output = kP*error + kI*integral + kD*derivative;  
 
     error_prior = error; 
-
 
     ROS_INFO_STREAM(currentYaw);
 }
