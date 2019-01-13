@@ -1,3 +1,5 @@
+import time
+
 import keras
 import numpy as np
 import cv2
@@ -37,45 +39,42 @@ def main():
     rospy.Subscriber(image_topic, Image, image_msg_callback, queue_size=1, buff_size=10**8)
 
     model = keras.models.load_model(path_to_model)
-    input_shape = keras.backend.int_shape(model.input)[1:]
-    n_classes = keras.backend.int_shape(model.output)[-1]
-    unet_helper = model_utils.UNetModelUtils(input_shape=input_shape, n_classes=n_classes)
+    input_shape = keras.backend.int_shape(model.input)[1:3]
+    # n_classes = keras.backend.int_shape(model.output)[-1]
+    unet_helper = model_utils.UNetModelUtils(input_shape=input_shape)
 
     cv_bridge = CvBridge()
-    rate = rospy.Rate(30)
 
-    # tf_graph = get_default_graph()
-    # with tf_graph.as_default():
     while not rospy.is_shutdown():
-        rate.sleep()
-
         if last_msg is None:
+            time.sleep(0.01)
             continue
 
         try:
-            img = cv_bridge.imgmsg_to_cv2(last_msg)
-            last_msg = None
+            cam_img = cv_bridge.imgmsg_to_cv2(last_msg).copy()  # copy because cv bridge makes it read-only by default
         except CvBridgeError as e:
             print e
             continue
+        else:
+            last_msg = None
 
-        cam_height, cam_width = img.shape[:2]
-        new_height = int(cam_height * 0.6)
-        img = img[cam_height - new_height:].copy()  # copy because cv bridge makes image bytes read-only
+        img = unet_helper.crop(cam_img)
+        half_height, cam_width = img.shape[:2]
 
         X = unet_helper.prepare_input(img)
         y = model.predict_on_batch(X[np.newaxis])[0]
 
         output_img = unet_helper.prediction_image_mono8(y)  # convert to mask
-        output_img = cv2.resize(output_img, (cam_width, new_height))  # back to original half dimensions
+        output_img = cv2.resize(output_img, (cam_width, half_height))  # back to original half dimensions
+        output_img = unet_helper.uncrop(output_img)
 
         out_msg = cv_bridge.cv2_to_imgmsg(output_img)
         detect_pub.publish(out_msg)
 
         obstacle_mask = (output_img > 0)
-        highlight_color = np.array([0,255,0], dtype=np.uint8)
-        img[obstacle_mask] /= 2
-        img[obstacle_mask] += (highlight_color / 2)
+        highlight_color = np.array([0, 255, 0], dtype=np.uint8)
+        cam_img[obstacle_mask] /= 2
+        cam_img[obstacle_mask] += (highlight_color / 2)
 
-        vis_msg = cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
+        vis_msg = cv_bridge.cv2_to_imgmsg(cam_img, encoding="bgr8")
         visualizer_pub.publish(vis_msg)

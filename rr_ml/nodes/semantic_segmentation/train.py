@@ -52,13 +52,15 @@ def data_gen(helper, input_files, label_files):
 
             # random left/right flips
             if random.random() < 0.5:
-                np.fliplr(ipt)
-                np.fliplr(lbl)
+                ipt = np.fliplr(ipt)
+                lbl = np.fliplr(lbl)
 
-            # random brightness
-            ipt += random.normalvariate(0, 0.1)
-            ipt[ipt < 0] = 0
-            ipt[ipt > 1] = 1
+            # random fluctuations
+            ipt[:, :, 0] += random.normalvariate(0, 0.02)  # H
+            ipt[:, :, 1] += random.normalvariate(0, 0.1)  # S
+            ipt[:, :, 2] += random.normalvariate(0, 0.1)  # V
+            # ipt[ipt < 0.0] = 0.0
+            # ipt[ipt > 1.0] = 1.0
 
             inputs[n] = ipt
             labels[n] = lbl
@@ -75,8 +77,8 @@ def data_gen_wrapper(helper, input_files, label_files, epochs):
 
 def weighted_focal_loss(gamma, class_imbalance):
     def loss(target, output):
-        weights = [class_imbalance ** 0.5] * K.int_shape(output)[-1]
-        weights[0] = 1
+        weights = np.ones(K.int_shape(output)[-1]) * class_imbalance
+        weights[0] = 1.0
         weights = K.constant(weights)
 
         output /= K.sum(output, axis=-1, keepdims=True)
@@ -84,18 +86,54 @@ def weighted_focal_loss(gamma, class_imbalance):
         output = K.clip(output, eps, 1. - eps)
 
         focal_loss_pos = -target * K.log(output) * K.pow(1. - output, gamma) * weights
-        focal_loss_neg = (target - 1.) * K.log(1. - output) * K.pow(output, gamma) * (1. / weights)
+        # focal_loss_neg = (target - 1.) * K.log(1. - output) * K.pow(output, gamma)
+        focal_loss_neg = 0
         return K.sum(focal_loss_pos + focal_loss_neg, axis=-1)
+        # return K.sum(focal_loss_pos, axis=-1)
     return loss
 
 
-def max_output_non_background(y_true, y_pred):
-    return K.mean(K.max(y_pred[:,:,:,1:], axis=[1,2,3]))
+def max_line_val(y_true, y_pred):
+    return K.max(y_pred[:,:,:,1:])
+
+
+def single_iou_score(y1, y2):
+    argmax_img1 = np.argmax(y1, axis=-1)
+    argmax_img2 = np.argmax(y2, axis=-1)
+    mask = ((argmax_img1 + argmax_img2) > 0)
+
+    total = np.sum(mask)
+    right = np.sum(np.equal(argmax_img1, argmax_img2)[mask])
+    return float(right) / total
+
+
+def iou(y_true, y_pred):
+    def f(y1, y2):
+        y1 = y1.numpy()
+        y2 = y2.numpy()
+        scores = np.zeros(y1.shape[0])
+        for i in range(y1.shape[0]):
+            scores[i] = single_iou_score(y1[i], y2[i])
+        return scores
+
+    return tf.py_function(f, [y_true, y_pred], tf.double)
+
+
+def detect_prop(y_true, y_pred):
+    def f(y_true, y_pred):
+        y = y_pred.numpy()
+        scores = np.zeros(y.shape[0])
+        for i in range(y.shape[0]):
+            mask = (np.argmax(y[i], axis=-1) != 0)
+            scores[i] = float(np.count_nonzero(mask)) / np.prod(y.shape[1:3])
+        return np.mean(scores)
+
+    return tf.py_function(f, [y_true, y_pred], tf.double)
 
 
 def main(acceptable_image_formats):
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    config.gpu_options.per_process_gpu_memory_fraction = 0.7
     keras.backend.set_session(tf.Session(config=config))
 
     rospy.init_node("train_segmentation")
@@ -117,15 +155,15 @@ def main(acceptable_image_formats):
     files = list(zip(input_files, label_files))
     random.shuffle(files)
     split = int(len(input_files) * 0.75)
-    training_files = files[:split]
-    validate_files = files[split:]
-    # training_files = files[:]
-    # validate_files = files[:]
+    # training_files = files[:split]
+    # validate_files = files[split:]
+    training_files = files[:]
+    validate_files = files[:]
 
     training_input_files, training_label_files = zip(*training_files)
     validate_input_files, validate_label_files = zip(*validate_files)
 
-    unet_helper = model_utils.UNetModelUtils(input_shape=(144, 256, 3), n_classes=4)
+    unet_helper = model_utils.UNetModelUtils(input_shape=(144, 256))
 
     try:
         model = keras.models.load_model(model_path)
@@ -134,11 +172,20 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(loss=weighted_focal_loss(2, 100), optimizer='adam', metrics=['accuracy', max_output_non_background])
+    model.compile(# loss="categorical_crossentropy",
+                  loss=weighted_focal_loss(2, 10),
+                  # optimizer=keras.optimizers.Adadelta(lr=1.0, rho=0.95, clipvalue=None),
+                  optimizer="adam",
+                  metrics=['accuracy', iou, detect_prop])
     time.sleep(2.0)
     model.summary()
 
     if not validate_only:
+
+        metrics = model.evaluate_generator(data_gen(unet_helper, validate_input_files, validate_label_files),
+                                           steps=len(validate_files) // batch_size, verbose=1)
+        print "metrics before", metrics
+
         starting_weights = model.get_weights()
         print "warming up optimizer..."
         warmup_length = 20
@@ -152,12 +199,16 @@ def main(acceptable_image_formats):
 
         if not osp.exists(osp.dirname(model_path)):
             os.makedirs(osp.dirname(model_path))
+
+        while osp.exists(model_path):
+            os.remove(model_path)
+
         model.save(model_path, include_optimizer=False)
         print "saved to disk"
 
         metrics = model.evaluate_generator(data_gen(unet_helper, validate_input_files, validate_label_files),
                                            steps=len(validate_files) // batch_size, verbose=1)
-        print "metrics", metrics
+        print "metrics after", metrics
 
     scores = []
     pred_times = []
@@ -170,11 +221,11 @@ def main(acceptable_image_formats):
         t_pred = time.time() - t_pred_0
         pred_times.append(t_pred)
 
-        maxes = [np.max(y[...,i]) for i in range(y.shape[-1])]
+        maxes = [np.max(y[..., i]) for i in range(y.shape[-1])]
         print "max per category:", maxes
 
-        iou_score = model_utils.IOU_score(y, y_)
-        scores.append(iou_score)
+        score = single_iou_score(y, y_)
+        scores.append(score)
 
         if visualize_validation:
             cv2.imshow("input", (x * 255).astype(np.uint8))
