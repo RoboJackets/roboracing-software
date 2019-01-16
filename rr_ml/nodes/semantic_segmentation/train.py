@@ -56,11 +56,29 @@ def data_gen(helper, input_files, label_files):
                 lbl = np.fliplr(lbl)
 
             # random fluctuations
-            ipt[:, :, 0] += random.normalvariate(0, 0.02)  # H
-            ipt[:, :, 1] += random.normalvariate(0, 0.1)  # S
-            ipt[:, :, 2] += random.normalvariate(0, 0.1)  # V
-            # ipt[ipt < 0.0] = 0.0
-            # ipt[ipt > 1.0] = 1.0
+            ipt[:, :, 0] += random.normalvariate(0, 0.05)  # H
+            ipt[:, :, 1] += random.normalvariate(0, 0.1)  # L
+            ipt[:, :, 2] += random.normalvariate(0, 0.1)  # S
+
+            if random.random() < 0.3:
+                prev_shape = ipt.shape
+                direction = random.randint(0, 3)
+                amount = random.randint(1, 50)
+                if direction == 0:
+                    ipt = ipt[amount:]
+                    lbl = lbl[amount:]
+                elif direction == 1:
+                    ipt = ipt[:-amount]
+                    lbl = lbl[:-amount]
+                elif direction == 2:
+                    ipt = ipt[:, amount:]
+                    lbl = lbl[:, amount:]
+                else:
+                    ipt = ipt[:, :-amount]
+                    lbl = lbl[:, :-amount]
+
+                ipt = cv2.resize(ipt, (prev_shape[1], prev_shape[0]))
+                lbl = cv2.resize(lbl, (prev_shape[1], prev_shape[0]))
 
             inputs[n] = ipt
             labels[n] = lbl
@@ -89,7 +107,6 @@ def weighted_focal_loss(gamma, class_imbalance):
         # focal_loss_neg = (target - 1.) * K.log(1. - output) * K.pow(output, gamma)
         focal_loss_neg = 0
         return K.sum(focal_loss_pos + focal_loss_neg, axis=-1)
-        # return K.sum(focal_loss_pos, axis=-1)
     return loss
 
 
@@ -104,7 +121,7 @@ def single_iou_score(y1, y2):
 
     total = np.sum(mask)
     right = np.sum(np.equal(argmax_img1, argmax_img2)[mask])
-    return float(right) / total
+    return float(right) / (total + 0.001)
 
 
 def iou(y_true, y_pred):
@@ -163,7 +180,7 @@ def main(acceptable_image_formats):
     training_input_files, training_label_files = zip(*training_files)
     validate_input_files, validate_label_files = zip(*validate_files)
 
-    unet_helper = model_utils.UNetModelUtils(input_shape=(144, 256))
+    unet_helper = model_utils.UNetModelUtils()
 
     try:
         model = keras.models.load_model(model_path)
@@ -172,9 +189,7 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(# loss="categorical_crossentropy",
-                  loss=weighted_focal_loss(2, 10),
-                  # optimizer=keras.optimizers.Adadelta(lr=1.0, rho=0.95, clipvalue=None),
+    model.compile(loss=weighted_focal_loss(2, 10),
                   optimizer="adam",
                   metrics=['accuracy', iou, detect_prop])
     time.sleep(2.0)
