@@ -20,34 +20,31 @@ class UNetModelUtils(object):
 
         input_layer = L.Input((self.in_height, self.in_width, self.n_channels))
 
-        conv1 = L.Conv2D(32, 3, activation='relu', padding='same')(input_layer)
-        conv1 = L.Dropout(0.05)(conv1)
-        conv1 = L.Conv2D(32, 3, activation='relu', padding='same')(conv1)
+        conv1 = L.Conv2D(32, 5, strides=2, activation='relu', padding='same')(input_layer)  # 128
 
-        pool1 = L.AveragePooling2D(pool_size=4)(conv1)  # 32x64
+        conv2 = L.Conv2D(32, 5, strides=2, activation='relu', padding='same')(conv1)  # 64
 
-        conv2 = L.Conv2D(32, 3, activation='relu', padding='same')(pool1)
+        conv3 = L.Conv2D(32, 3, strides=2, activation='relu', padding='same')(conv2)  # 32
 
-        pool2 = L.AveragePooling2D(pool_size=4)(conv2)  # 16x16
+        conv4 = L.Conv2D(32, 3, strides=2, activation='relu', padding='same')(conv3)  # 16
 
-        conv3 = L.Conv2D(1, 3, activation='relu', padding='same')(pool2)
-        flat1 = L.Flatten()(conv3)  # 8*16*N flat
-        dense2 = L.Dense(self.in_height * self.in_width // 256, activation='relu')(flat1)
-        small1 = L.Reshape(target_shape=(self.in_height // 16, self.in_width // 16, 1))(dense2)
+        conv4_1 = L.Conv2D(1, 3, strides=1, activation='relu', padding='same')(conv4)  # 16
+        flat1 = L.Flatten()(conv4_1)
+        dense1 = L.Dense(self.in_height * self.in_width // 256, activation='relu')(flat1)
+        small1 = L.Reshape(target_shape=(self.in_height // 16, self.in_width // 16, 1))(dense1)
 
-        up1 = L.UpSampling2D(size=4)(small1)
-        up1 = L.Concatenate(axis=3)([up1, conv2])
-        up1 = L.Dropout(0.1)(up1)
+        up1 = L.UpSampling2D(size=16)(small1)
+        up2 = L.UpSampling2D(size=8)(conv3)
+        up3 = L.UpSampling2D(size=4)(conv2)
+        up4 = L.UpSampling2D(size=2)(conv1)
 
-        conv4 = L.Conv2D(32, 3, activation='relu', padding='same')(up1)
+        concat1 = L.Concatenate(axis=3)([up1, up2, up3, up4])
+        conv6 = L.Conv2D(16, 3, activation='relu', padding='same')(concat1)
 
-        up2 = L.UpSampling2D(size=4)(conv4)
-        up2 = L.Concatenate(axis=3)([up2, conv1])
+        conv7 = L.Conv2D(self.n_classes, 1, padding='same')(conv6)
+        conv7 = L.Activation('softmax')(conv7)
 
-        conv6 = L.Conv2D(self.n_classes, 1, padding='same')(up2)
-        conv6 = L.Activation('softmax')(conv6)
-
-        model = keras.Model(inputs=input_layer, outputs=conv6)
+        model = keras.Model(inputs=input_layer, outputs=conv7)
         return model
 
     def crop(self, img):

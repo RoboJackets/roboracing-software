@@ -189,7 +189,7 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(loss=weighted_focal_loss(2, 10),
+    model.compile(loss=weighted_focal_loss(2, 1),
                   optimizer="adam",
                   metrics=['accuracy', iou, detect_prop])
     time.sleep(2.0)
