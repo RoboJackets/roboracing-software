@@ -3,6 +3,9 @@ project(rr_iarrc)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
+## Generate added messages and services with any dependencies listed here
+
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ## Find catkin macros and libraries
@@ -16,19 +19,30 @@ find_package(catkin REQUIRED COMPONENTS
   sick_tim
   laser_geometry
   image_transport
+  message_generation
 )
 
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED filters)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+## Generate messages in the 'msg' folder
+add_message_files(
+    FILES
+    hsv_tuned.msg
+)
+
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+)
+
 
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform
+  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
 )
 
 ###########
@@ -51,3 +65,5 @@ add_subdirectory(src/stoplight_watcher)
 add_subdirectory(src/finish_line_watcher)
 add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
+add_subdirectory(src/hsv_tuner)
+

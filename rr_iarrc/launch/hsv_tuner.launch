@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<launch>
+    <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
+        
+    </node>
+</launch>

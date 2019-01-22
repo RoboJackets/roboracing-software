@@ -1,5 +1,6 @@
 #include "color_detector.h"
 #include <pluginlib/class_list_macros.h>
+#include <rr_iarrc/hsv_tuned.h>
 
 using namespace std;
 using namespace ros;
@@ -7,6 +8,15 @@ using namespace cv;
 
 namespace iarrc {
 
+    double white_h_low = 255; 
+    double white_s_low = 255; 
+    double white_v_low = 255; 
+    double white_h_high = 255;    
+    double white_s_high = 255;
+    double white_v_high = 255;
+
+
+    /*
     const Scalar magenta_low{165, 25, 66}; 
     const Scalar magenta_high{255, 255, 255}; 
     const Scalar magenta_label{255 , 0, 0};
@@ -14,6 +24,10 @@ namespace iarrc {
     const Scalar magenta_low_2{0, 25, 66}; 
     const Scalar magenta_high_2{15, 255, 255}; 
     const Scalar magenta_label_2{255 , 0, 0};
+    */
+
+    const Scalar white_low{white_h_low, white_s_low, white_v_low}; 
+    const Scalar white_high{white_h_high, white_s_high, white_v_high}; 
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
@@ -34,28 +48,42 @@ namespace iarrc {
 
         const Mat frame_masked = frameHSV(mask);
 
-        Mat output_magenta = Mat::zeros(mask.height, mask.width, CV_8U);
-        Mat output_magenta_2 = Mat::zeros(mask.height, mask.width, CV_8U);
+        Mat output_white = Mat::zeros(mask.height, mask.width, CV_8U);
 
-        inRange(frame_masked, magenta_low, magenta_high, output_magenta);
-        inRange(frame_masked, magenta_low_2, magenta_high_2, output_magenta_2);
+        inRange(frame_masked, white_low, white_high, output_white);
 
-        erode(output_magenta, output_magenta, erosion_kernel_magenta);
-        erode(output_magenta_2, output_magenta_2, erosion_kernel_magenta);
+        erode(output_white, output_white, erosion_kernel_white);
 
         Mat output = Mat::zeros(frameHSV.rows, frameHSV.cols, CV_8UC3);
+    /*        
         Mat output_masked = output(mask);
-
         output_masked.setTo(magenta_label, output_magenta);
         output_masked.setTo(magenta_label_2, output_magenta_2);
 
+    */
         img_pub.publish(cv_bridge::CvImage{std_msgs::Header(), "bgr8", output}.toImageMsg());
     }
+
+    void hsvTunedCallback(const rr_iarrc::hsv_tuned::ConstPtr &msg){
+        white_h_low = msg->white_h_low;
+        white_s_low = msg->white_s_low;
+        white_v_low = msg->white_v_low;
+
+        white_h_high = msg->white_h_high;
+        white_s_high = msg->white_s_high;
+        white_v_high = msg->white_v_high;
+
+        ROS_INFO("Testing");
+    }    
+
 
     void color_detector::onInit() {
         NodeHandle nh = getNodeHandle();
         NodeHandle pnh = getPrivateNodeHandle();
         image_transport::ImageTransport it(nh);
+
+
+        ros::Subscriber hsv_tuned_sub = nh.subscribe("/hsv_tuned", 1, hsvTunedCallback);
 
         mask = Rect(0, 482, 1280, 482); // x, y, w, h
 
@@ -73,6 +101,8 @@ namespace iarrc {
         img_pub = it.advertise("/colors_img", 1);
 
         ROS_INFO("Color Detector ready!");
+        ros::spin();        
+
     }
 
 }
