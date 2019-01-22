@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     // Serial port setup
     std::string serial_port_name;
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
-    
+
     SerialPort serial_port;
     if(!serial_port.Open(serial_port_name, 115200)) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
 
         auto ret = serial_port.ReadLine();
         ROS_INFO_STREAM("motor relay received " << ret);
+        publishData(serial_port.ReadLine());
         rate.sleep();
     }
 
