@@ -6,7 +6,7 @@ using namespace std;
 using namespace ros;
 using namespace cv;
 
-namespace iarrc {
+namespace rr_iarrc {
 
     double white_h_low = 255; 
     double white_s_low = 255; 
@@ -73,8 +73,8 @@ namespace iarrc {
         white_s_high = msg->white_s_high;
         white_v_high = msg->white_v_high;
 
-        ROS_INFO("Testing");
-    }    
+        ROS_INFO("Set HSV limits");
+    }
 
 
     void color_detector::onInit() {
@@ -107,4 +107,4 @@ namespace iarrc {
 
 }
 
-PLUGINLIB_EXPORT_CLASS(iarrc::color_detector, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(rr_iarrc::color_detector, nodelet::Nodelet)
