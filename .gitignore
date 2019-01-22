@@ -21,4 +21,4 @@
 *.pkl.lz4
 
 # ML training data
-rr_ml/exported_data/*
+rr_ml/data/*
