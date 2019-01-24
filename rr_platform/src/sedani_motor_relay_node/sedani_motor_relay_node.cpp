@@ -44,11 +44,15 @@ void publishData(const std::string &line) {
     std::vector <std::string> data = split(line.substr(1), ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.speed_mps = std::stod(data[1]);
-    msg.steer_rad = std::stod(data[2]);
+    msg.speed_mps = std::stof(data[1]);
+    msg.steer_rad = std::stof(data[2]);
+
     msg.state = data[0];
-    msg.mux_automatic = (data[0] == "1.00" || data[0] == "3.00");
-    msg.estop_on = (data[0] == "2.00");
+    int firmware_state = static_cast<int>(std::stof(msg.state));
+    bool is_disabled = (firmware_state == 0);
+    bool is_estopped = (firmware_state == 2);
+    msg.mux_automatic = static_cast<uint8_t>(!(is_estopped || is_disabled));
+    msg.estop_on = static_cast<uint8_t>(is_estopped);
     state_pub.publish(msg);
 }
 
