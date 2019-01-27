@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 
         auto ret = serial_port.ReadLine();
         ROS_INFO_STREAM("motor relay received " << ret);
-        publishData(serial_port.ReadLine());
+        publishData(ret);
         rate.sleep();
     }
 
