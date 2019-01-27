@@ -6,7 +6,7 @@
 #include <rr_platform/camera_pose.h>
 #include <cmath>
 #include <sensor_msgs/JointState.h>
-#include <avc/constants.hpp>
+// #include "rr_platform/constants.hpp"
 #include <tf/transform_listener.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <boost/algorithm/string.hpp>
@@ -15,14 +15,15 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 
-double camera_fov_horizontal;
-double camera_fov_vertical;
+Size imageSize = Size(1280, 964);
+double camera_fov_horizontal = 2 * atan2(imageSize.width, 2*568.295471);
+double camera_fov_vertical = 2 * atan2(imageSize.height, 2*586.508911);
 double cam_mount_angle; //angle of camera from horizontal
 double cam_height; //camera height from ground in meters
 double chassis_height; //amount to subtract for calculated height for joint state
 
 Size mapSize; //pixels = cm
-Size imageSize;
+// Size imageSize;
 Mat transform_matrix;
 
 Publisher camera_pose_pub;
@@ -110,7 +111,7 @@ bool getCalibBoardCorners(const Mat &inimage, Size dims, Point2f * outPoints) {
     cvtColor(inimage, gray, CV_BGR2GRAY);
 
     //home in on the precise corners using edge lines in sourrounding +-11 pixel box
-    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), 
+    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1),
                  TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
     outPoints[0] = corners[0];
@@ -150,13 +151,13 @@ void setGeometry(Size_<double> boardMeters, Point2f * corners) {
     // phi2: angle between ground plane, back edge of board, and camera
     double phi2 = asin(dist0 / boardMeters.height * sin(phi1));
     double bottomAngleV = (M_PI/2) - phi1 - phi2;
-    
+
     cam_mount_angle = (M_PI/2) - bottomAngleV - imageAngle; //*****
     cam_height = dist0 * sin(bottomAngleV); //*****
 }
 
 /*
- * Start with a horizontal line on the groud at dmin meters horizonally in front of the 
+ * Start with a horizontal line on the groud at dmin meters horizonally in front of the
  * camera. It fills half the camera's FOV, from the center to the right edge. Then back
  * up the car so that the line is dmax meters away horizontally from the camera. The
  * apparent length of this hypothetical line (in pixels) is the output of this function.
@@ -182,15 +183,15 @@ double pxFromDist_Y(double dist) {
 void setTransformFromGeometry() {
     //set width and height of the rectangle in front of the robot with 1cm = 1px
     // the actual output image will show more than this rectangle
-    int rectangle_w = sqrt(pow(constants::camera_distance_min,2) + pow(cam_height,2)) 
-                      * tan(camera_fov_horizontal/2) * constants::pixels_per_meter * 2;
-    int rectangle_h = (constants::camera_distance_max - constants::camera_distance_min) 
-                      * constants::pixels_per_meter;
+    int rectangle_w = sqrt(pow(.5,2) + pow(cam_height,2))
+                      * tan(camera_fov_horizontal/2) * 100 * 2;
+    int rectangle_h = (8.0 - .5)
+                      * 100;
 
     //find coordinates for corners above rectangle in input image
-    double x_top_spread = pxFromDist_X(constants::camera_distance_min, constants::camera_distance_max);
-    double y_bottom = pxFromDist_Y(constants::camera_distance_min);
-    double y_top    = pxFromDist_Y(constants::camera_distance_max);
+    double x_top_spread = pxFromDist_X(.5, 8.0);
+    double y_bottom = pxFromDist_Y(.5);
+    double y_top    = pxFromDist_Y(8.0);
 
     //set the ouput image size to include the whole transformed image,
     // not just the target rectangle
@@ -236,8 +237,8 @@ void TransformImage(const sensor_msgs::ImageConstPtr msg, string topic) {
 /*
  * Tune the angle and height of the camera using a pattern board
  */
-bool CalibrateCallback(rr_platform::calibrate_image::Request &request, 
-                       rr_platform::calibrate_image::Response &response) 
+bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
+                       rr_platform::calibrate_image::Response &response)
 {
     if(camera_fov_horizontal <= 0 || camera_fov_vertical <= 0) {
         ROS_ERROR("Calling calibration callback without a FOV defined");
@@ -251,7 +252,7 @@ bool CalibrateCallback(rr_platform::calibrate_image::Request &request,
 
     //size in pointsPerRow, pointsPerColumn
     Size chessboardVertexDims(request.chessboardCols-1, request.chessboardRows-1);
-    
+
     Point2f corners[4];
     bool foundBoard = getCalibBoardCorners(inimage, chessboardVertexDims, corners);
 
@@ -278,7 +279,7 @@ int main(int argc, char **argv) {
     NodeHandle nh;
     NodeHandle pnh("~");
 
-    loadCameraFOV(); //spins ROS event loop for a bit
+    //loadCameraFOV(); //spins ROS event loop for a bit
     loadCameraPoseFromTf();
     setTransformFromGeometry();
     ROS_INFO("Set transform. Used height %f and angle %f", cam_height, cam_mount_angle);

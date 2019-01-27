@@ -1,8 +1,33 @@
 <launch>
   <node name="canny_line_detector" pkg="iarrc" type="canny_line_detector" output="screen">
-        <param name="line_threshold" type="int" value="24" />
-	      <param name="dilating_kernel" type="int" value="15" />
-	      <param name="contour_rect_extent" type="double" value="0.3" />
+          <param name="min_line_threshold" type="int" value="110" />
+          <param name="max_line_threshold" type="int" value="5" />
 
+          <param name="blockSky_height" type="int" value="130" />
+          <param name="blockWheels_height" type="int" value="40" />
+	      <param name="blockBumper_height" type="int" value="-20" />
+
+          <param name="yellow_low_H" type="int" value="20" />
+          <param name="yellow_high_H" type="int" value="40" />
+          <param name="yellow_low_S" type="int" value="20" />
+          <param name="yellow_low_V" type="int" value="90" />
+
+          <param name="white_low_H" type="int" value="90" />
+          <param name="white_high_H" type="int" value="115" />
+          <param name="white_low_S" type="int" value="0" />
+          <param name="white_low_V" type="int" value="130" />
   </node>
+
+    <param name="robot_description" command="cat $(find rr_description)/urdf/macaroni.urdf"/>
+    <node name="macaroni_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
+
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/canny_color_edges"/>
+    </node>
+
+    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
+        <param name="image_topics" value="/canny_color_edges_transformed"/>
+        <param name="px_per_meter" value="100.0"/>
+    </node>
+
 </launch>
