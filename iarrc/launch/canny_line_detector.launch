@@ -18,16 +18,4 @@
           <param name="white_low_V" type="int" value="130" />
   </node>
 
-    <param name="robot_description" command="cat $(find rr_description)/urdf/macaroni.urdf"/>
-    <node name="macaroni_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
-
-    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
-        <param name="transform_topics" value="/canny_color_edges"/>
-    </node>
-
-    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
-        <param name="image_topics" value="/canny_color_edges_transformed"/>
-        <param name="px_per_meter" value="100.0"/>
-    </node>
-
 </launch>
