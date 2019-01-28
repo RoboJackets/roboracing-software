@@ -50,9 +50,9 @@ void publishData(const std::string &line) {
     msg.state = data[0];
     int firmware_state = static_cast<int>(std::stof(msg.state));
     bool is_disabled = (firmware_state == 0);
-    bool is_estopped = (firmware_state == 2);
-    msg.mux_automatic = static_cast<uint8_t>(!(is_estopped || is_disabled));
-    msg.estop_on = static_cast<uint8_t>(is_estopped);
+    bool is_manual = (firmware_state == 2);
+    msg.mux_autonomous = static_cast<uint8_t>(!(is_manual || is_disabled));
+    msg.estop_on = static_cast<uint8_t>(is_disabled);
     state_pub.publish(msg);
 }
 
