@@ -80,9 +80,7 @@ namespace rr_iarrc {
 
         ROS_INFO("Color Detector ready!");
         ros::spin();        
-
     }
-
 }
 
 PLUGINLIB_EXPORT_CLASS(rr_iarrc::color_detector, nodelet::Nodelet)
