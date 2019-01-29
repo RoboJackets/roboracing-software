@@ -114,8 +114,6 @@ void loadValues(){
         nhp.param(std::string("load_file"), load_file_path ,default_load_file_path);
         loadValues();
 
-        cout << white_s_high << endl;
-
         ros::Subscriber hsv_tuned_sub = nh.subscribe("/hsv_tuned", 1, hsvTunedCallback);
 
         mask = Rect(0, 482, 1280, 482); // bottom half of the image; x, y, w, h
