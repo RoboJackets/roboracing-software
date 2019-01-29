@@ -25,7 +25,9 @@ int32_t white_v_high_slider;
 
 int32_t saving_slider =  0;
 
- std::string package_path = ros::package::getPath("rr_iarrc");
+std::string package_path = ros::package::getPath("rr_iarrc");    
+std::string load_file_path; 
+    
 
 // Callback for trackbar
 void on_trackbar( int, void* ){
@@ -46,7 +48,7 @@ void on_trackbar( int, void* ){
 void loadValues(){
     string line;
     int value; 
-    ifstream myfile (package_path + "/saved_hsv/example.txt");
+    ifstream myfile (load_file_path);
     if (myfile.is_open()){
         ROS_INFO("Loading HSV values.");
         getline(myfile,line);
@@ -116,6 +118,10 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "hsv_tuner");
     ros::NodeHandle handle;
     ros::NodeHandle private_handle("~");
+    ros::NodeHandle nhp("~");
+
+    std::string default_load_file_path = package_path + "/saved_hsv/example.txt" ;
+    nhp.param(std::string("load_file"), load_file_path ,default_load_file_path);
     
     hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>("/hsv_tuned", 1);
 
