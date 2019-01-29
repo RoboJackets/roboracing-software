@@ -2,6 +2,7 @@
     <group ns="camera">
         <node pkg="nodelet" type="nodelet" name="color_detector" output="screen"
               args="load rr_iarrc/color_detector camera_nodelet_manager">
+              <param name="load_file" type="string" value= "$(find rr_iarrc)/saved_hsv/example.txt"/>
         </node>
     </group>
 </launch>
