@@ -2,13 +2,13 @@
 <launch>
     <include file="$(find rr_avc)/launch/mapper.launch"/>
     <node name="follower" pkg="rr_common" type="follower" output="screen">
-        <param name="MIN_FRONT_VISION" value="0.8"/>
-        <param name="MAX_FRONT_VISION" value="1.8"/>
-        <param name="GOAL_DIST" value="1.3"/>
+        <param name="MIN_FRONT_VISION" value="0.5"/>
+        <param name="MAX_FRONT_VISION" value="3.0"/>
+        <param name="GOAL_DIST"        value="1.5"/>
         <param name="GOAL_MARGIN_OF_ERR" value="0.2"/>
         <param name="MIN_SIDE_VISION" value="-0.2"/>
         <param name="MAX_SIDE_VISION" value="0.2"/>
-        <param name="FOLLOWER_SPEED" value="0.2"/>
+        <param name="FOLLOWER_SPEED" value="0.5"/>
         <param name="INPUT_CLOUD_TOPIC" value="/current_obstacles"/>
     </node>
 </launch>
