@@ -79,7 +79,9 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
 
   distance_checker_.SetMap(*kd_tree_map.input_);
 
-  bool all_colliding = true;
+  // update our steering angle estimate using the last output
+  model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
+
   for (unsigned int t = 0; t < params.annealing_steps; t++) {
     auto& path = path_pool_[t];
 
@@ -103,31 +105,19 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
       }
     }
 
-    all_colliding &= has_collided;
+    path.has_collision = has_collided;
 
-    double cost = GetCost(path, kd_tree_map);
-    path.cost = cost;
-    double dcost = cost - path_pool_[state_idx].cost;
+    path.cost = GetCost(path, kd_tree_map);
+    double dcost = path.cost - path_pool_[state_idx].cost;
     double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
 
     if (uniform_01_(rand_gen_) < p_accept) {
       state_idx = t;
-//      std::cout << "new state cost " << path.cost << ", t = " << t
-//      << ", p = " << p_accept << ", T = " << GetTemperature(t) << std::endl;
     }
 
     if (path.cost < path_pool_[best_idx].cost) {
       best_idx = t;
-//      std::cout << "new best cost " << path.cost << std::endl;
     }
-  }
-
-  if (all_colliding) {
-    std::cout << "[Planner] no valid paths found" << std::endl;
-    rr::PlannedPath& best = path_pool_[best_idx];
-    std::fill(best.control.begin(), best.control.end(), 0);
-    model_.RollOutPath(best.path, best.control);
-    std::for_each(best.path.begin(), best.path.end(), [](PathPoint& p) { p.speed = -0.5; });
   }
 
   last_path_idx_ = best_idx;
