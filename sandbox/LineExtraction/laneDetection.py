@@ -14,7 +14,10 @@ import matplotlib.pyplot as plt
 import pickle
 import math
 from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
 import imutils
+import time
+
 
 
 # left_a, left_b, left_c = [],[],[]
@@ -224,7 +227,8 @@ import imutils
 #     warped = cv2.warpPerspective(img, M, dst_size)
 #     return warped
 # im = cv2.imread('images/image4.png')
-im = cv2.imread("images/test9.png")
+im = cv2.imread("images/test13.png")
+t0 = time.time()
 height = np.size(im, 0)
 width = np.size(im, 1)
 # plt.imshow(im)
@@ -316,8 +320,8 @@ boundingBoxes = [cv2.boundingRect(c) for c in contours]
 # contours = list(np.array(contours)[inds])
 
 for cnt in contours:
-	if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
-	 	continue
+	# if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
+	#  	continue
 	currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
 	currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
 	if x == 0:
@@ -438,9 +442,9 @@ for cnt in array2:
 
 
 
-cv2.drawContours(im, [contours[10]],0,(0,255,0),2)
-cv2.imshow("", im)
-cv2.waitKey(0);
+cv2.drawContours(im, [contours[3]],0,(0,255,0),2)
+# cv2.imshow("", im)
+# cv2.waitKey(0);
 
 # print(len(array1x))
 # print(array1y)
@@ -500,19 +504,21 @@ if len(array1x) > 0:
 		# x1 = l[0] * i + l[1]
 		l_funcy_xpred.append(x1)
 
-	print(r2_score(array1y, l_funcx_ypred))
-	print(r2_score(array1x, l_funcy_xpred))
-	l_points = np.array(l_funcx_points, dtype=np.int32)
-	cv2.polylines(im, [l_points], 0, (255,0,0))
-	l_points = np.array(l_funcy_points, dtype=np.int32)
-	cv2.polylines(im, [l_points], 0, (0,255,0))
+	# print(array1y)
+	# print(l_funcx_ypred)
+	# print(mean_squared_error(array1y, l_funcx_ypred))
+	# print(mean_squared_error(array1x, l_funcy_xpred))
+	# l_points = np.array(l_funcx_points, dtype=np.int32)
+	# cv2.polylines(im, [l_points], 0, (255,0,0))
+	# l_points = np.array(l_funcy_points, dtype=np.int32)
+	# cv2.polylines(im, [l_points], 0, (0,255,0))
 
-	# if r2_score(array1y, l_funcx_ypred) > r2_score(array1x, l_funcy_xpred):
-	# 	l_points = np.array(l_funcx_points, dtype=np.int32)
-	# 	cv2.polylines(im, [l_points], 0, (255,0,0))
-	# else:
-	# 	l_points = np.array(l_funcy_points, dtype=np.int32)
-	# 	cv2.polylines(im, [l_points], 0, (255,0,0))
+	if mean_squared_error(array1y, l_funcx_ypred) < mean_squared_error(array1x, l_funcy_xpred):
+		l_points = np.array(l_funcx_points, dtype=np.int32)
+		cv2.polylines(im, [l_points], 0, (255,0,0))
+	else:
+		l_points = np.array(l_funcy_points, dtype=np.int32)
+		cv2.polylines(im, [l_points], 0, (255,0,0))
 
 
 if len(array2x) > 0:
@@ -552,7 +558,7 @@ if len(array2x) > 0:
 	# r_points = np.array(r_funcy_points, dtype=np.int32)
 	# cv2.polylines(im, [r_points], 0, (0,0,255))
 
-	if r2_score(array2y, r_funcx_ypred) > r2_score(array2x, r_funcy_xpred):
+	if mean_squared_error(array2y, r_funcx_ypred) < mean_squared_error(array2x, r_funcy_xpred):
 		r_points = np.array(r_funcx_points, dtype=np.int32)
 		cv2.polylines(im, [r_points], 0, (0,0,255))
 	else:
@@ -562,7 +568,8 @@ if len(array2x) > 0:
 
 
 # print(len(l_points[0][0]))
-
+t1 = time.time()
+print(t1 - t0)
 cv2.imshow("", im)
 cv2.waitKey(0);
 # fig, ax = plt.subplots()

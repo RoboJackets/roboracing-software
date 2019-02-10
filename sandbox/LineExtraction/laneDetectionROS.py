@@ -9,26 +9,20 @@ import math
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import imutils
+import rospy
+from sensor_msgs.msg import Image
 
 
-# Create a VideoCapture object and read from input file 
-cap = cv2.VideoCapture('videos/vid1.mp4') 
-   
-# Check if camera opened successfully 
-if (cap.isOpened()== False):  
-  print("Error opening video  file") 
-   
-# Read until video is completed 
-while(cap.isOpened()): 
-	  
-  # Capture frame-by-frame 
-  ret, im = cap.read() 
-  if ret == True: 
-   
-	# Display the resulting frame 
-	# cv2.imshow('Frame', frame)
-	cv2.imshow("", im)
-	cv2.waitKey(0) 
+def callback(data):
+	
+	bridge = CvBridge()
+    try:
+        im = bridge.imgmsg_to_cv2(data)
+    except CvBridgeError as e:
+        print e
+        return None
+
+	t0 = time.time()
 	height = np.size(im, 0)
 	width = np.size(im, 1)
 	# plt.imshow(im)
@@ -120,9 +114,8 @@ while(cap.isOpened()):
 	# contours = list(np.array(contours)[inds])
 
 	for cnt in contours:
-		# if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
-		# 	continue
-
+		if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
+		 	continue
 		currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
 		currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
 		if x == 0:
@@ -153,9 +146,9 @@ while(cap.isOpened()):
 				distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 , 
 				((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
 				((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
-				print(min(distListArr1))
-				print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
-				print(arr1ExtRight)
+				#print(min(distListArr1))
+				#print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
+				#print(arr1ExtRight)
 				
 				if  min(distListArr1) > 63:
 					# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
@@ -243,11 +236,7 @@ while(cap.isOpened()):
 
 
 
-	# cv2.drawContours(im, [contours[2]],0,(0,255,0),2)
-
-
-
-
+	cv2.drawContours(im, [contours[10]],0,(0,255,0),2)
 	# cv2.imshow("", im)
 	# cv2.waitKey(0);
 
@@ -309,6 +298,15 @@ while(cap.isOpened()):
 			# x1 = l[0] * i + l[1]
 			l_funcy_xpred.append(x1)
 
+		# print(array1y)
+		# print(l_funcx_ypred)
+		# print(mean_squared_error(array1y, l_funcx_ypred))
+		# print(mean_squared_error(array1x, l_funcy_xpred))
+		# l_points = np.array(l_funcx_points, dtype=np.int32)
+		# cv2.polylines(im, [l_points], 0, (255,0,0))
+		# l_points = np.array(l_funcy_points, dtype=np.int32)
+		# cv2.polylines(im, [l_points], 0, (0,255,0))
+
 		if mean_squared_error(array1y, l_funcx_ypred) < mean_squared_error(array1x, l_funcy_xpred):
 			l_points = np.array(l_funcx_points, dtype=np.int32)
 			cv2.polylines(im, [l_points], 0, (255,0,0))
@@ -349,6 +347,11 @@ while(cap.isOpened()):
 			# x2 = r[0] * i + r[1]
 			r_funcy_xpred.append(x2)
 
+		# r_points = np.array(r_funcx_points, dtype=np.int32)
+		# cv2.polylines(im, [r_points], 0, (0,0,255))
+		# r_points = np.array(r_funcy_points, dtype=np.int32)
+		# cv2.polylines(im, [r_points], 0, (0,0,255))
+
 		if mean_squared_error(array2y, r_funcx_ypred) < mean_squared_error(array2x, r_funcy_xpred):
 			r_points = np.array(r_funcx_points, dtype=np.int32)
 			cv2.polylines(im, [r_points], 0, (0,0,255))
@@ -359,23 +362,17 @@ while(cap.isOpened()):
 
 
 	# print(len(l_points[0][0]))
-
-
-
+	t1 = time.time()
+	print(t1 - t0)
 	cv2.imshow("", im)
-	cv2.waitKey(0)
-	# cv2.waitKey(0);
-	# Press Q on keyboard to  exit 
-	if cv2.waitKey(25) & 0xFF == ord('q'): 
-	  break
-   
-  # Break the loop 
-  else:  
-	break
-   
-# When everything done, release  
-# the video capture object 
-cap.release() 
-   
-# Closes all the frames 
-cv2.destroyAllWindows() 
+	cv2.waitKey(0);
+
+def listener():
+	rospy.init_node('listener', anonymous=True)
+
+	rospy.Subscriber("/Combined_lines_transformed", Image, callback)
+
+	rospy.spin()
+
+if __name__ == '__main__':
+	listener()
