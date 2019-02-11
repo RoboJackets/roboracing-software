@@ -50,7 +50,7 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, const string& top
         for(int c = 0; c < transformed.cols; c++) {
             if(row[c] != 0) {
                 pcl::PointXYZ point;
-                point.y = static_cast<float>((transformed.cols - c / 2.0f) / pxPerMeter);
+                point.y = static_cast<float>(((transformed.cols / 2.0f) - c) / pxPerMeter);
                 point.x = static_cast<float>((transformed.rows - r) / pxPerMeter);
                 point.z = 0.0;
 
