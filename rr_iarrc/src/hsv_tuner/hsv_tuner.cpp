@@ -77,7 +77,7 @@ void loadValues(){
         myfile.close();
     }
     else{
-        cout << "Unable to load HSV values."; 
+        ROS_INFO("Unable to load HSV values.");
     }
 }
 
