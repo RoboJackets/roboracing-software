@@ -38,21 +38,20 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, const string& top
         return;
     }
 
-    cloud->clear();
     const cv::Mat& in_image = cv_ptr->image;
 
     // get outline
-    cv::Mat transformed(in_image.size(), CV_8UC1);
-    cv::Canny(in_image, transformed, 10, 0);
+    cv::Mat transformed;
+    cv::Laplacian(in_image, transformed, CV_16SC1);
 
+    cloud->clear();
     for(int r = 0; r < transformed.rows; r++) {
-        uchar* row = transformed.ptr<uchar>(r);
+        auto* row = transformed.ptr<int16_t>(r);
         for(int c = 0; c < transformed.cols; c++) {
-            if(row[c] > 0) {
-
+            if(row[c] != 0) {
                 pcl::PointXYZ point;
-                point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
-                point.x = (transformed.rows - r) / pxPerMeter;
+                point.y = static_cast<float>((transformed.cols - c / 2.0f) / pxPerMeter);
+                point.x = static_cast<float>((transformed.rows - r) / pxPerMeter);
                 point.z = 0.0;
 
                 cloud->push_back(point);
