@@ -7,7 +7,7 @@
         <param name="angle_compensate"    type="bool"   value="true"/>
     </node>
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
-	<param name="min_point_dist" type="double" value="0.1"/>
+        <param name="min_point_dist" type="double" value="0.1"/>
     </node>
 </launch>
 
