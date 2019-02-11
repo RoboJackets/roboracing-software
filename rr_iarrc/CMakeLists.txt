@@ -51,3 +51,5 @@ add_subdirectory(src/stoplight_watcher)
 add_subdirectory(src/finish_line_watcher)
 add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
+add_subdirectory(src/laplacian_line_detection)
+
