@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
         rr_platform::chassis_state chassisStateMsg;
         chassisStateMsg.header.stamp = ros::Time::now();
         chassisStateMsg.speed_mps = -(speed_measured_left + speed_measured_right) / 2;
-        chassisStateMsg.mux_automatic = true;
+        chassisStateMsg.mux_autonomous = true;
         chassisStateMsg.estop_on = false;
         chassisStatePublisher.publish(chassisStateMsg);
 
