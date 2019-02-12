@@ -1,6 +1,5 @@
 import numpy as np
-import pandas as pd
-from cv_bridge import CvBridge, CvBridgeError
+# import pandas as pd
 import cv2
 import os
 import glob
@@ -12,6 +11,7 @@ from sklearn.metrics import mean_squared_error
 import imutils
 import rospy
 from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
 
 class contourObject:
 
@@ -19,21 +19,23 @@ class contourObject:
 		self.contour = contour
 		self.extLeft = extLeft
 		self.extRight = extRight
-		self.midpoint = midpoint 
+		self.midpoint = midpoint
 
 def callback(data):
 	bridge = CvBridge()
 	try:
-		im = bridge.imgmsg_to_cv2(data)
+		imgray = bridge.imgmsg_to_cv2(data)
 	except CvBridgeError as e:
 		print e
 		return None
+
+	im = imgray;
 
 	height = np.size(im, 0)
 	width = np.size(im, 1)
 	# plt.imshow(im)
 	# plt.show()
-	imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+	# imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
 	# kernel = np.ones((5,5), np.uint8)
 	# img_dilation = cv2.dilate(imgray, kernel, iterations=4)
@@ -42,7 +44,8 @@ def callback(data):
 	# img_erosion = cv2.erode(img_dilation, kernel, iterations=3)
 	# cv2.imshow('', img_erosion)
 	# cv2.waitKey(0)
-	ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+	# ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+	thresh = imgray
 	im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# for cnt in contours:
 	#     cv2.drawContours(im,[cnt],0,(0,255,0),2)
@@ -80,22 +83,22 @@ def callback(data):
 		# initialize the reverse flag and sort index
 		reverse = False
 		i = 0
-	 
+
 		# handle if we need to sort in reverse
 		if method == "right-to-left" or method == "bottom-to-top":
 			reverse = True
-	 
+
 		# handle if we are sorting against the y-coordinate rather than
 		# the x-coordinate of the bounding box
 		if method == "top-to-bottom" or method == "bottom-to-top":
 			i = 1
-	 
+
 		# construct the list of bounding boxes and sort them from top to
 		# bottom
 		boundingBoxes = [cv2.boundingRect(c) for c in cnts]
 		(cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes),
 			key=lambda b:b[1][i], reverse=reverse))
-	 
+
 		# return the list of sorted contours and bounding boxes
 		return (cnts, boundingBoxes)
 
@@ -107,7 +110,7 @@ def callback(data):
 	#         continue
 	#     valid_contours.append(contours[i])
 	# for i in range(len(valid_contours)):
-	#     smallest_x = im.shape[1]    
+	#     smallest_x = im.shape[1]
 	#     for j in range(len(contours[i])):
 	#         x = contours[i][j][0][0]
 	#         print(x)
@@ -118,8 +121,8 @@ def callback(data):
 	# contours = list(np.array(contours)[inds])
 
 	for cnt in contours:
-		# if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
-		#  	continue
+		if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
+		 	continue
 		currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
 		currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
 		xVal = 0
@@ -147,16 +150,16 @@ def callback(data):
 				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
 				lowestDist = float("inf")
 				for cntObj in array1:
-					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
 					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 					lowestDist = min([lowestDist, min(distListArr1)])
 				print(lowestDist)
 				#print(min(distListArr1))
 				#print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
 				#print(arr1ExtRight)
-				
-				if  lowestDist > 90:
+
+				if  lowestDist > 20:
 					# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
 					array2.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
 					# arr2XMid = xVal
@@ -174,23 +177,23 @@ def callback(data):
 
 				lowestDist1 = float("inf")
 				for cntObj in array1:
-					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
 					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 					lowestDist1 = min([lowestDist1, min(distListArr1)])
-				# distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 , 
-				# ((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+				# distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 ,
+				# ((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5,
 				# ((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 
 
 				lowestDist2 = float("inf")
 				for cntObj in array2:
-					distListArr2 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					distListArr2 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
 					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 					lowestDist2 = min([lowestDist2, min(distListArr2)])
-				# distListArr2 = [((arr2XMid - xVal) ** 2 + (arr2YMid - yVal) ** 2) ** 0.5 , 
-				# ((arr2ExtRight[0] - currExtLeft[0]) ** 2 + (arr2ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+				# distListArr2 = [((arr2XMid - xVal) ** 2 + (arr2YMid - yVal) ** 2) ** 0.5 ,
+				# ((arr2ExtRight[0] - currExtLeft[0]) ** 2 + (arr2ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5,
 				# ((arr2ExtLeft[0] - currExtRight[0]) ** 2 + (arr2ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
 
@@ -282,14 +285,14 @@ def callback(data):
 	if len(array1x) > 0:
 
 		#fit y = x^2
-		l = np.polyfit(array1x, array1y, 2)  
+		l = np.polyfit(array1x, array1y, 2)
 		x1 = np.linspace(0, width, 400)
 		for i in x1:
-			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5] 
+			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5]
 			y1 = l[0] * i**1 + l[1] * i**1 + l[2]
 			# y1 = l[0] * i + l[1]
 			if y1 < height and y1 > 0:
-				l_funcx_points.append([i, y1]) 
+				l_funcx_points.append([i, y1])
 		for i in array1x:
 			y1 = l[0] * i**2 + l[1] * i**1 + l[2]
 			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5]
@@ -373,12 +376,12 @@ def callback(data):
 			r_points = np.array(r_funcy_points, dtype=np.int32)
 			cv2.polylines(im, [r_points], 0, (0,0,255))
 	cv2.imshow("", im)
-	# cv2.waitKey(0);
+	cv2.waitKey(0);
 
 def listener():
 	rospy.init_node('listener', anonymous=True)
 
-	rospy.Subscriber("/Combined_lines_transformed", Image, callback)
+	rospy.Subscriber("/lines_detection_img_transformed", Image, callback)
 
 	rospy.spin()
 
