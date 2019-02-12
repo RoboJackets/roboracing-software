@@ -1,5 +1,6 @@
 import numpy as np
-# import pandas as pd
+import pandas as pd
+from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import os
 import glob
