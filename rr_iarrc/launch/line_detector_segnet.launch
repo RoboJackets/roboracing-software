@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find rr_ml)/launch/run_seg.launch">
+        <arg name="image_topic" value="/camera/image_color_rect"/>
+        <arg name="detection_topic" value="/lines_detection_img"/>
+        <arg name="model" value="iarrc_lines"/>
+    </include>
+</launch>

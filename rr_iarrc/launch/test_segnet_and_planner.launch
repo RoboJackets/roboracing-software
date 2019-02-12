@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(dirname)/line_detector_segnet.launch"/>
+    <include file="$(dirname)/lines_pcl_converter.launch"/>
+    <include file="$(dirname)/mpc_planner_sedani.launch"/>
+
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
+</launch>
