@@ -365,7 +365,7 @@ def callback(data):
 	t1 = time.time()
 	print(t1 - t0)
 	cv2.imshow("", im)
-	cv2.waitKey(0);
+	# cv2.waitKey(0);
 
 def listener():
 	rospy.init_node('listener', anonymous=True)

@@ -9,7 +9,15 @@ import math
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import imutils
+import time
 
+class contourObject:
+
+	def __init__(self, contour, extLeft, extRight, midpoint):
+		self.contour = contour
+		self.extLeft = extLeft
+		self.extRight = extRight
+		self.midpoint = midpoint 
 
 # Create a VideoCapture object and read from input file 
 cap = cv2.VideoCapture('videos/vid1.mp4') 
@@ -24,11 +32,10 @@ while(cap.isOpened()):
   # Capture frame-by-frame 
   ret, im = cap.read() 
   if ret == True: 
-   
-	# Display the resulting frame 
-	# cv2.imshow('Frame', frame)
-	cv2.imshow("", im)
-	cv2.waitKey(0) 
+
+  	cv2.imshow("", im)
+	cv2.waitKey(0)
+	t0 = time.time()
 	height = np.size(im, 0)
 	width = np.size(im, 1)
 	# plt.imshow(im)
@@ -62,8 +69,6 @@ while(cap.isOpened()):
 	arr1YMid = 0
 	arr1ExtLeft = 0#tuple(c[c[:, :, 0].argmin()][0])
 	arr1ExtRight = 0#tuple(c[c[:, :, 0].argmax()][0])
-
-
 	arr2XMid = 0
 	arr2YMid = 0
 	arr2ExtLeft = 0#tuple(c[c[:, :, 0].argmin()][0])
@@ -75,8 +80,8 @@ while(cap.isOpened()):
 	array2x = []
 	array2y = []
 
-	contour_min_xs = []
-	valid_contours = []
+	# contour_min_xs = []
+	# valid_contours = []
 
 	def sort_contours(cnts, method="left-to-right"):
 		# initialize the reverse flag and sort index
@@ -121,86 +126,94 @@ while(cap.isOpened()):
 
 	for cnt in contours:
 		# if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
-		# 	continue
-
+		#  	continue
 		currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
 		currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
+		xVal = 0
+		yVal = 0
+		points = 0
+		for pointA in cnt:
+			xVal = xVal + pointA[0][0]
+			yVal = yVal + pointA[0][1]
+			points = points+1
+		xVal = xVal/points
+		yVal = yVal/points
+		cv2.circle(im, (xVal, yVal), 7, (255, 255, 255), -1)
 		if x == 0:
-			array1.append(cnt)
-			xVal = 0
-			yVal = 0
-			for pointA in cnt:
-				xVal = xVal + pointA[0][0]
-				yVal = yVal + pointA[0][1]
-			xVal = xVal/cnt.size/2
-			yVal = yVal/cnt.size/2
-			arr1XMid = xVal
-			arr1YMid = yVal
-			arr1ExtRight = currExtRight
-			arr1ExtLeft = currExtLeft
+			# array1.append(cnt)
+			# arr1XMid = xVal
+			# arr1YMid = yVal
+			# arr1ExtRight = currExtRight
+			# arr1ExtLeft = currExtLeft
+			array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
+
 			# cv2.drawContours(im, [cnt],0,(0,255,0),2)
 			# array1.append([cnt])
 		else:
 			if noElementInList2:
-				xVal = 0
-				yVal = 0
-				for pointA in cnt:
-					xVal = xVal + pointA[0][0]
-					yVal = yVal + pointA[0][1]
-				xVal = xVal/cnt.size/2
-				yVal = yVal/cnt.size/2
 				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
-				distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 , 
-				((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
-				((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
-				print(min(distListArr1))
-				print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
-				print(arr1ExtRight)
+				lowestDist = float("inf")
+				for cntObj in array1:
+					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+					lowestDist = min([lowestDist, min(distListArr1)])
+				print(lowestDist)
+				#print(min(distListArr1))
+				#print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
+				#print(arr1ExtRight)
 				
-				if  min(distListArr1) > 63:
+				if  lowestDist > 185:
 					# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
-					array2.append(cnt)
-					arr2XMid = xVal
-					arr2YMid = yVal
-					arr2ExtRight = currExtRight
-					arr2ExtLeft = currExtLeft
+					array2.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
+					# arr2XMid = xVal
+					# arr2YMid = yVal
+					# arr2ExtRight = currExtRight
+					# arr2ExtLeft = currExtLeft
 					noElementInList2 = False
 				else:
-					array1.append(cnt)
-					arr1XMid = xVal
-					arr1YMid = yVal
-					arr1ExtRight = currExtRight
-					arr1ExtLeft = currExtLeft
+					array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
+					# arr1XMid = xVal
+					# arr1YMid = yVal
+					# arr1ExtRight = currExtRight
+					# arr1ExtLeft = currExtLeft
 			else:
-				xVal = 0
-				yVal = 0
-				for pointA in cnt:
-					xVal = xVal + pointA[0][0]
-					yVal = yVal + pointA[0][1]
-				xVal = xVal/cnt.size/2
-				yVal = yVal/cnt.size/2
 
-				distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 , 
-				((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
-				((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+				lowestDist1 = float("inf")
+				for cntObj in array1:
+					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+					lowestDist1 = min([lowestDist1, min(distListArr1)])
+				# distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 , 
+				# ((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+				# ((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 
-				distListArr2 = [((arr2XMid - xVal) ** 2 + (arr2YMid - yVal) ** 2) ** 0.5 , 
-				((arr2ExtRight[0] - currExtLeft[0]) ** 2 + (arr2ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
-				((arr2ExtLeft[0] - currExtRight[0]) ** 2 + (arr2ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+
+				lowestDist2 = float("inf")
+				for cntObj in array2:
+					distListArr2 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 , 
+					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+					lowestDist2 = min([lowestDist2, min(distListArr2)])
+				# distListArr2 = [((arr2XMid - xVal) ** 2 + (arr2YMid - yVal) ** 2) ** 0.5 , 
+				# ((arr2ExtRight[0] - currExtLeft[0]) ** 2 + (arr2ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5, 
+				# ((arr2ExtLeft[0] - currExtRight[0]) ** 2 + (arr2ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
 				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
-				if min(distListArr1) > min(distListArr2):
-					array2.append(cnt)
-					arr2XMid = xVal
-					arr2YMid = yVal
-					arr2ExtRight = currExtRight
-					arr2ExtLeft = currExtLeft
+
+				if lowestDist1 > lowestDist2:
+					array2.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
+					# arr2XMid = xVal
+					# arr2YMid = yVal
+					# arr2ExtRight = currExtRight
+					# arr2ExtLeft = currExtLeft
 					# print("Here")
 				else:
-					array1.append(cnt)
-					arr1XMid = xVal
-					arr1YMid = yVal
-					arr1ExtRight = currExtRight
-					arr1ExtLeft = currExtLeft
+					array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
+					# arr1XMid = xVal
+					# arr1YMid = yVal
+					# arr1ExtRight = currExtRight
+					# arr1ExtLeft = currExtLeft
 
 		x = x + 1
 
@@ -224,17 +237,18 @@ while(cap.isOpened()):
 	# print(len(array1))
 	# print(len(array2))
 	# THIS WORKS
-	for cnt in array1:
-		cv2.drawContours(im, [cnt],0,(255,0,0),2)
+	print("-----------------------------------------------")
+	for cntObj in array1:
+		cv2.drawContours(im, [cntObj.contour],0,(255,0,0),2)
 		# print(cnt.size)
-		for pointA in cnt:
+		for pointA in cntObj.contour:
 			array1x.append(pointA[0][0])
 			array1y.append(pointA[0][1])
 			# print(cnt)
 			# array1.append([cnt])
-	for cnt in array2:
-		cv2.drawContours(im, [cnt],0,(0,0,255),2)
-		for pointA in cnt:
+	for cntObj in array2:
+		cv2.drawContours(im, [cntObj.contour],0,(0,0,255),2)
+		for pointA in cntObj.contour:
 			array2x.append(pointA[0][0])
 			array2y.append(pointA[0][1])
 			# print(cnt)
@@ -243,11 +257,7 @@ while(cap.isOpened()):
 
 
 
-	# cv2.drawContours(im, [contours[2]],0,(0,255,0),2)
-
-
-
-
+	# cv2.drawContours(im, [contours[3]],0,(0,255,0),2)
 	# cv2.imshow("", im)
 	# cv2.waitKey(0);
 
@@ -309,6 +319,15 @@ while(cap.isOpened()):
 			# x1 = l[0] * i + l[1]
 			l_funcy_xpred.append(x1)
 
+		# print(array1y)
+		# print(l_funcx_ypred)
+		# print(mean_squared_error(array1y, l_funcx_ypred))
+		# print(mean_squared_error(array1x, l_funcy_xpred))
+		# l_points = np.array(l_funcx_points, dtype=np.int32)
+		# cv2.polylines(im, [l_points], 0, (255,0,0))
+		# l_points = np.array(l_funcy_points, dtype=np.int32)
+		# cv2.polylines(im, [l_points], 0, (0,255,0))
+
 		if mean_squared_error(array1y, l_funcx_ypred) < mean_squared_error(array1x, l_funcy_xpred):
 			l_points = np.array(l_funcx_points, dtype=np.int32)
 			cv2.polylines(im, [l_points], 0, (255,0,0))
@@ -349,12 +368,23 @@ while(cap.isOpened()):
 			# x2 = r[0] * i + r[1]
 			r_funcy_xpred.append(x2)
 
+		# r_points = np.array(r_funcx_points, dtype=np.int32)
+		# cv2.polylines(im, [r_points], 0, (0,0,255))
+		# r_points = np.array(r_funcy_points, dtype=np.int32)
+		# cv2.polylines(im, [r_points], 0, (0,0,255))
+
 		if mean_squared_error(array2y, r_funcx_ypred) < mean_squared_error(array2x, r_funcy_xpred):
 			r_points = np.array(r_funcx_points, dtype=np.int32)
 			cv2.polylines(im, [r_points], 0, (0,0,255))
 		else:
 			r_points = np.array(r_funcy_points, dtype=np.int32)
 			cv2.polylines(im, [r_points], 0, (0,0,255))
+
+
+
+	# print(len(l_points[0][0]))
+	t1 = time.time()
+	print(t1 - t0)
 
 
 
