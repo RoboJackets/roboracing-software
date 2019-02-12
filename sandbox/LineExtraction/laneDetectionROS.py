@@ -21,13 +21,12 @@ class contourObject:
 		self.midpoint = midpoint 
 
 def callback(data):
-	
 	bridge = CvBridge()
-    try:
-        im = bridge.imgmsg_to_cv2(data)
-    except CvBridgeError as e:
-        print e
-        return None
+	try:
+		im = bridge.imgmsg_to_cv2(data)
+	except CvBridgeError as e:
+		print e
+		return None
 
 	height = np.size(im, 0)
 	width = np.size(im, 1)
