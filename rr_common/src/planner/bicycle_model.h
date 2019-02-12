@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+#include <ros/time.h>
+
 #include "planner_types.hpp"
 
 
@@ -21,6 +23,15 @@ class BicycleModel {
    * control - vector with a steering value for each path segment
    */
   void RollOutPath(std::vector<PathPoint>& path_points, const std::vector<double>& control);
+
+  /*
+   * UpdateSteeringAngle: move the tracked steering angle of the car towards the value that
+   * the car has been commanded to steer. This tracks the ROS time it is called, so it
+   * should be used just before RollOutPath
+   */
+  void UpdateSteeringAngle(double commanded_angle);
+
+  double GetCurrentSteeringAngle();
 
  private:
   /*
@@ -41,13 +52,18 @@ class BicycleModel {
    */
   void StepKinematics(Pose& pose, const Pose& last_pose, double steer_angle);
 
+  double IncrementSteering(double current, double target, double dt);
 
-  double wheel_base_;
-  double max_lateral_accel_;
-  std::vector<int> segment_sections_;
-  double distance_increment_;
-  double max_speed_;
-  double max_steer_rate_;
+
+  const double wheel_base;
+  const double max_lateral_accel;
+  const std::vector<int> segment_sections;
+  const double distance_increment;
+  const double max_speed;
+  const double max_steer_rate;
+
+  double current_steering_;
+  ros::Time last_steering_update_;
 };
 
 }  // namespace rr
