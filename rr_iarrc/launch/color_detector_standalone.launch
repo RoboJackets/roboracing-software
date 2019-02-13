@@ -1,7 +1,8 @@
 <launch>
     <group ns="camera">
         <node pkg="nodelet" type="nodelet" name="color_detector_manager" output="screen" args="manager"/>
-        <node pkg="nodelet" type="nodelet" name="color_detector" output="screen" args="load iarrc/color_detector color_detector_manager">
+        <node pkg="nodelet" type="nodelet" name="color_detector" output="screen" args="load rr_iarrc/color_detector color_detector_manager">
+         <param name="load_file" type="string" value= "$(find rr_iarrc)/saved_hsv/example.txt"/>
         </node>
     </group>
 </launch>

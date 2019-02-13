@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nhp("~");
     
     nhp.param("min_point_dist", filtering_distance, double(1.0));
+    ROS_INFO_STREAM("[ScanToPointCloud] using min distance " << filtering_distance);
     
     auto scan_sub = nh.subscribe("scan", 1, scanCallback);
 

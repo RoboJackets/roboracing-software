@@ -60,9 +60,9 @@ void publishData(const std::string &line) {
     std::vector <std::string> data = split(line.substr(1), ',');
     rr_platform::chassis_state msg;
     msg.header.stamp = ros::Time::now();
-    msg.speed_mps = std::atof(data[0].c_str()) / (s_per_50ms * ticks_per_meter);
-    msg.mux_automatic = (data[1] == "1");
-    msg.estop_on = (data[2] == "1");
+    msg.speed_mps = static_cast<float>(std::stod(data[0]) / (s_per_50ms * ticks_per_meter));
+    msg.mux_autonomous = static_cast<uint8_t>(data[1] == "1");
+    msg.estop_on = static_cast<uint8_t>(data[2] == "1");
     state_pub.publish(msg);
 }
 

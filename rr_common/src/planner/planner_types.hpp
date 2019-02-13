@@ -29,7 +29,7 @@ struct PathPoint {
   double steer;
   double speed;
 
-  PathPoint(const Pose& pose, double steer, double speed) 
+  PathPoint(const Pose& pose, double steer, double speed)
     : pose(pose), steer(steer), speed(speed) {}
   PathPoint() : pose(), steer(0), speed(0) {}
 };
@@ -44,6 +44,7 @@ struct PlannedPath {
   std::vector<PathPoint> path;  // results of path rollout
   std::vector<double> dists;  // results of collision checking
   double cost;  // result of applying cost function
+  bool has_collision;
 };
 
 

@@ -17,44 +17,48 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
-using namespace cv;
-using namespace ros;
 
 using uchar = unsigned char;
 
-map<string, Publisher> cloud_pubs;
+map<string, ros::Publisher> cloud_pubs;
 double pxPerMeter;
 
-void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+
+void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, const string& topic) {
     if(cloud_pubs[topic].getNumSubscribers() == 0) {
-        // no one is listening. go home and cry
         return;
     }
 
-    cv_bridge::CvImagePtr cv_ptr;
+    cv_bridge::CvImageConstPtr cv_ptr;
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+        cv_ptr = cv_bridge::toCvShare(msg);
     } catch(cv_bridge::Exception& e) {
         ROS_ERROR("CV_Bridge error: %s", e.what());
         return;
     }
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    Mat transformed = cv_ptr->image;
-    for(int r = 0; r < transformed.rows; r++) {
-        uchar* row = transformed.ptr<uchar>(r);
-        for(int c = 0; c < transformed.cols; c++) {
-            if(row[3*c] || row[3*c + 1] || row[3*c + 2]) {
+    const cv::Mat& in_image = cv_ptr->image;
 
+    // get outline
+    cv::Mat transformed;
+    cv::Laplacian(in_image, transformed, CV_16SC1);
+
+    cloud->clear();
+    for(int r = 0; r < transformed.rows; r++) {
+        auto* row = transformed.ptr<int16_t>(r);
+        for(int c = 0; c < transformed.cols; c++) {
+            if(row[c] != 0) {
                 pcl::PointXYZ point;
-                point.y = -1 * (c - transformed.cols / 2.0f) / pxPerMeter;
-                point.x = (transformed.rows - r) / pxPerMeter;
+                point.y = static_cast<float>(((transformed.cols / 2.0f) - c) / pxPerMeter);
+                point.x = static_cast<float>((transformed.rows - r) / pxPerMeter);
                 point.z = 0.0;
 
                 cloud->push_back(point);
             }
         }
     }
+
     pcl::PCLPointCloud2 cloud_pc2;
     pcl::toPCLPointCloud2(*cloud, cloud_pc2);
     sensor_msgs::PointCloud2 cloud_msg;
@@ -65,17 +69,19 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, string topic) {
 }
 
 int main(int argc, char** argv) {
-    init(argc, argv, "image_pcl_converter");
-    NodeHandle nh;
-    NodeHandle nhp("~");
+    ros::init(argc, argv, "image_pcl_converter");
+    ros::NodeHandle nh;
+    ros::NodeHandle nhp("~");
 
     string topicsConcat;
     nhp.getParam("image_topics", topicsConcat);
     nhp.getParam("px_per_meter", pxPerMeter);
 
+    cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+
     vector<string> topics;
     boost::split(topics, topicsConcat, boost::is_any_of(" ,"));
-    vector<Subscriber> image_subs;
+    vector<ros::Subscriber> image_subs;
     for(const string &topic : topics) {
         if(topic.size() == 0) continue;
 
@@ -89,6 +95,6 @@ int main(int argc, char** argv) {
         cloud_pubs[topic] = nh.advertise<sensor_msgs::PointCloud2>(newTopic, 1);
     }
 
-    spin();
+    ros::spin();
     return 0;
 }
