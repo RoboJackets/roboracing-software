@@ -1,5 +1,5 @@
 import numpy as np
-# import pandas as pd
+import pandas as pd
 import cv2
 import os
 import glob
@@ -12,27 +12,37 @@ import imutils
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import time
+
 
 class contourObject:
 
-	def __init__(self, contour, extLeft, extRight, midpoint):
+	def __init__(self, contour, extLeft, extRight, midpoint, extTop, extBottom):
 		self.contour = contour
 		self.extLeft = extLeft
 		self.extRight = extRight
 		self.midpoint = midpoint
+		self.extTop = extTop
+		self.extBottom = extBottom 
 
 def callback(data):
 	bridge = CvBridge()
 	try:
-		imgray = bridge.imgmsg_to_cv2(data)
+		im = bridge.imgmsg_to_cv2(data)
 	except CvBridgeError as e:
 		print e
 		return None
 
-	im = imgray;
+	# im = imgray;
+	t0 = time.time()
+	scale_percent = 100 # percent of original size
+	width = int(im.shape[1] * scale_percent / 100)
+	height = int(im.shape[0] * scale_percent / 100)
+	dim = (width, height)
+	# resize image
 
-	height = np.size(im, 0)
-	width = np.size(im, 1)
+	im = cv2.resize(im, dim, interpolation = cv2.INTER_AREA)
+	im = im[int(height*0.30):height, 0:width]
 	# plt.imshow(im)
 	# plt.show()
 	# imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -44,8 +54,9 @@ def callback(data):
 	# img_erosion = cv2.erode(img_dilation, kernel, iterations=3)
 	# cv2.imshow('', img_erosion)
 	# cv2.waitKey(0)
-	# ret, thresh = cv2.threshold(imgray, 127, 255, 0)
-	thresh = imgray
+	# ret, thresh = cv2.threshold(im, 127, 255, 0)
+	
+	thresh = im
 	im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# for cnt in contours:
 	#     cv2.drawContours(im,[cnt],0,(0,255,0),2)
@@ -55,6 +66,27 @@ def callback(data):
 
 	x = 0;
 	noElementInList2 = True
+
+	cntObjArr = []
+
+	for cnt in contours:
+		currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
+		currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
+		extTop = tuple(cnt[cnt[:, :, 1].argmin()][0])
+		extBottom = tuple(cnt[cnt[:, :, 1].argmax()][0])
+		xVal = 0
+		yVal = 0
+		points = 0
+		for pointA in cnt:
+			xVal = xVal + pointA[0][0]
+			yVal = yVal + pointA[0][1]
+			points = points+1
+		xVal = xVal/points
+		yVal = yVal/points
+		# cv2.circle(im, (xVal, yVal), 7, (255, 255, 255), -1)
+		# cv2.circle(im, (currExtLeft[0], currExtLeft[1]), 7, (0, 255, 255), -1)
+		# cv2.circle(im, (currExtRight[0], currExtRight[1]), 7, (255, 255, 0), -1)
+		cntObjArr.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal], extTop, extBottom))
 
 
 	array1 = []
@@ -79,38 +111,41 @@ def callback(data):
 	# contour_min_xs = []
 	# valid_contours = []
 
-	def sort_contours(cnts, method="left-to-right"):
-		# initialize the reverse flag and sort index
-		reverse = False
-		i = 0
+	# def sort_contours(cnts, method="left-to-right"):
+	# 	# initialize the reverse flag and sort index
+	# 	reverse = False
+	# 	i = 0
+	 
+	# 	# handle if we need to sort in reverse
+	# 	if method == "right-to-left" or method == "bottom-to-top":
+	# 		reverse = True
+	 
+	# 	# handle if we are sorting against the y-coordinate rather than
+	# 	# the x-coordinate of the bounding box
+	# 	if method == "top-to-bottom" or method == "bottom-to-top":
+	# 		i = 1
+	 
+	# 	# construct the list of bounding boxes and sort them from top to
+	# 	# bottom
+	# 	boundingBoxes = [cv2.boundingRect(c) for c in cnts]
+	# 	(cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes),
+	# 		key=lambda b:b[1][i], reverse=reverse))
+	 
+	# 	# return the list of sorted contours and bounding boxes
+	# 	return (cnts, boundingBoxes)
 
-		# handle if we need to sort in reverse
-		if method == "right-to-left" or method == "bottom-to-top":
-			reverse = True
+	# boundingBoxes = [cv2.boundingRect(c) for c in contours]
+	# (contours, boundingBoxes) = zip(*sorted(zip(contours, boundingBoxes),
+	# 	key=lambda b:b[1][0], reverse=False))
 
-		# handle if we are sorting against the y-coordinate rather than
-		# the x-coordinate of the bounding box
-		if method == "top-to-bottom" or method == "bottom-to-top":
-			i = 1
 
-		# construct the list of bounding boxes and sort them from top to
-		# bottom
-		boundingBoxes = [cv2.boundingRect(c) for c in cnts]
-		(cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes),
-			key=lambda b:b[1][i], reverse=reverse))
 
-		# return the list of sorted contours and bounding boxes
-		return (cnts, boundingBoxes)
-
-	boundingBoxes = [cv2.boundingRect(c) for c in contours]
-	(contours, boundingBoxes) = zip(*sorted(zip(contours, boundingBoxes),
-		key=lambda b:b[1][0], reverse=False))
 	# for i in range(len(contours)):
 	#     if cv2.arcLength(contours[i], True) < 67 or cv2.contourArea(contours[i]) < 34.0:
 	#         continue
 	#     valid_contours.append(contours[i])
 	# for i in range(len(valid_contours)):
-	#     smallest_x = im.shape[1]
+	#     smallest_x = im.shape[1]    
 	#     for j in range(len(contours[i])):
 	#         x = contours[i][j][0][0]
 	#         print(x)
@@ -119,99 +154,79 @@ def callback(data):
 	#     contour_min_xs.append(smallest_x)
 	# inds = np.argsort(contour_min_xs)
 	# contours = list(np.array(contours)[inds])
-
-	for cnt in contours:
-		if cv2.arcLength(cnt, True) < 67 or cv2.contourArea(cnt) < 34.0:
-		 	continue
-		currExtLeft = tuple(cnt[cnt[:, :, 0].argmin()][0])
-		currExtRight = tuple(cnt[cnt[:, :, 0].argmax()][0])
-		xVal = 0
-		yVal = 0
-		points = 0
-		for pointA in cnt:
-			xVal = xVal + pointA[0][0]
-			yVal = yVal + pointA[0][1]
-			points = points+1
-		xVal = xVal/points
-		yVal = yVal/points
-		cv2.circle(im, (xVal, yVal), 7, (255, 255, 255), -1)
-		if x == 0:
-			# array1.append(cnt)
-			# arr1XMid = xVal
-			# arr1YMid = yVal
-			# arr1ExtRight = currExtRight
-			# arr1ExtLeft = currExtLeft
-			array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
-
-			# cv2.drawContours(im, [cnt],0,(0,255,0),2)
-			# array1.append([cnt])
+	alreadyPut = 0
+	threshold = 27
+	prev = cntObjArr[0]
+	# print(len(cntObjArr))
+	while len(cntObjArr) > 0:
+		if alreadyPut == 0:
+			array1.append(cntObjArr.pop(0))
+			# print(len(cntObjArr))
 		else:
 			if noElementInList2:
-				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
 				lowestDist = float("inf")
-				for cntObj in array1:
-					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
-					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
-					lowestDist = min([lowestDist, min(distListArr1)])
-				print(lowestDist)
-				#print(min(distListArr1))
-				#print(((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5)
-				#print(arr1ExtRight)
+				highestDist = 0
+				farthestObj = None
+				index = 0
+				indexOfLargest = -1
+				for obj in cntObjArr:
+					for cntObj in array1:
+						distListArr1 = [((cntObj.midpoint[0] - obj.midpoint[0]) ** 2 + (cntObj.midpoint[1] - obj.midpoint[1]) ** 2) ** 0.5 , 
+						((cntObj.extRight[0] - obj.extLeft[0]) ** 2 + (cntObj.extRight[1] - obj.extLeft[1]) ** 2) ** 0.5, 
+						((cntObj.extLeft[0] - obj.extRight[0]) ** 2 + (cntObj.extLeft[1] - obj.extRight[1]) ** 2) ** 0.5,
+						((cntObj.extTop[0] - obj.extBottom[0]) ** 2 + (cntObj.extTop[1] - obj.extBottom[1]) ** 2) ** 0.5,
+						((cntObj.extBottom[0] - obj.extTop[0]) ** 2 + (cntObj.extBottom[1] - obj.extTop[1]) ** 2) ** 0.5]
+						# print(distListArr1)
+						lowestDist = min([lowestDist, min(distListArr1)])
+					if lowestDist < threshold:
+						array1.append(cntObjArr.pop(index))
+						# print(index)
+						# print("Here")
+						break 
 
-				if  lowestDist > 20:
-					# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
-					array2.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
-					# arr2XMid = xVal
-					# arr2YMid = yVal
-					# arr2ExtRight = currExtRight
-					# arr2ExtLeft = currExtLeft
-					noElementInList2 = False
+					if lowestDist > highestDist:
+						farthestObj = cntObjArr[index]
+						highestDist = lowestDist
+						indexOfLargest = index
+					
+					index = index + 1
+				# print("Here2")
+				print("lowestDist", lowestDist)
+				if lowestDist < threshold:
+					continue
 				else:
-					array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
-					# arr1XMid = xVal
-					# arr1YMid = yVal
-					# arr1ExtRight = currExtRight
-					# arr1ExtLeft = currExtLeft
+					array2.append(cntObjArr.pop(indexOfLargest))
+					noElementInList2 = False
 			else:
-
 				lowestDist1 = float("inf")
+				obj = cntObjArr[0]
 				for cntObj in array1:
-					distListArr1 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
-					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+					distListArr1 = [((cntObj.midpoint[0] - obj.midpoint[0]) ** 2 + (cntObj.midpoint[1] - obj.midpoint[1]) ** 2) ** 0.5 , 
+						((cntObj.extRight[0] - obj.extLeft[0]) ** 2 + (cntObj.extRight[1] - obj.extLeft[1]) ** 2) ** 0.5, 
+						((cntObj.extLeft[0] - obj.extRight[0]) ** 2 + (cntObj.extLeft[1] - obj.extRight[1]) ** 2) ** 0.5,
+						((cntObj.extTop[0] - obj.extBottom[0]) ** 2 + (cntObj.extTop[1] - obj.extBottom[1]) ** 2) ** 0.5,
+						((cntObj.extBottom[0] - obj.extTop[0]) ** 2 + (cntObj.extBottom[1] - obj.extTop[1]) ** 2) ** 0.5]
 					lowestDist1 = min([lowestDist1, min(distListArr1)])
-				# distListArr1 = [((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5 ,
-				# ((arr1ExtRight[0] - currExtLeft[0]) ** 2 + (arr1ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5,
-				# ((arr1ExtLeft[0] - currExtRight[0]) ** 2 + (arr1ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
-
 
 				lowestDist2 = float("inf")
 				for cntObj in array2:
-					distListArr2 = [((cntObj.midpoint[0] - xVal) ** 2 + (cntObj.midpoint[1] - yVal) ** 2) ** 0.5 ,
-					((cntObj.extRight[0] - currExtLeft[0]) ** 2 + (cntObj.extRight[1] - currExtLeft[1]) ** 2) ** 0.5,
-					((cntObj.extLeft[0] - currExtRight[0]) ** 2 + (cntObj.extLeft[1] - currExtRight[1]) ** 2) ** 0.5]
+					distListArr2 = [((cntObj.midpoint[0] - obj.midpoint[0]) ** 2 + (cntObj.midpoint[1] - obj.midpoint[1]) ** 2) ** 0.5 , 
+						((cntObj.extRight[0] - obj.extLeft[0]) ** 2 + (cntObj.extRight[1] - obj.extLeft[1]) ** 2) ** 0.5, 
+						((cntObj.extLeft[0] - obj.extRight[0]) ** 2 + (cntObj.extLeft[1] - obj.extRight[1]) ** 2) ** 0.5,
+						((cntObj.extTop[0] - obj.extBottom[0]) ** 2 + (cntObj.extTop[1] - obj.extBottom[1]) ** 2) ** 0.5,
+						((cntObj.extBottom[0] - obj.extTop[0]) ** 2 + (cntObj.extBottom[1] - obj.extTop[1]) ** 2) ** 0.5]
 					lowestDist2 = min([lowestDist2, min(distListArr2)])
-				# distListArr2 = [((arr2XMid - xVal) ** 2 + (arr2YMid - yVal) ** 2) ** 0.5 ,
-				# ((arr2ExtRight[0] - currExtLeft[0]) ** 2 + (arr2ExtRight[1] - currExtLeft[1]) ** 2) ** 0.5,
-				# ((arr2ExtLeft[0] - currExtRight[0]) ** 2 + (arr2ExtLeft[1] - currExtRight[1]) ** 2) ** 0.5]
-				# print(((arr1XMid - xVal) ** 2 + (arr1YMid - yVal) ** 2) ** 0.5)
-
+				
 				if lowestDist1 > lowestDist2:
-					array2.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
-					# arr2XMid = xVal
-					# arr2YMid = yVal
-					# arr2ExtRight = currExtRight
-					# arr2ExtLeft = currExtLeft
-					# print("Here")
+					array2.append(cntObjArr.pop(0))
 				else:
-					array1.append(contourObject(cnt, currExtLeft, currExtRight, [xVal, yVal]))
-					# arr1XMid = xVal
-					# arr1YMid = yVal
-					# arr1ExtRight = currExtRight
-					# arr1ExtLeft = currExtLeft
+					array1.append(cntObjArr.pop(0))		 
 
-		x = x + 1
+		alreadyPut = alreadyPut + 1
+
+	# print(len(cntObjArr))
+	# print(len(array1))
+	# print(len(array2))
 
 	# cv2.drawContours(im, array1[0],0,(0,255,0),2)
 	# cv2.drawContours(im, array2[0],0,(255,0,0),2)
@@ -233,9 +248,9 @@ def callback(data):
 	# print(len(array1))
 	# print(len(array2))
 	# THIS WORKS
-	print("-----------------------------------------------")
+	# print("-----------------------------------------------")
 	for cntObj in array1:
-		cv2.drawContours(im, [cntObj.contour],0,(255,0,0),2)
+		cv2.drawContours(im, [cntObj.contour],0,(255,255,255),2)
 		# print(cnt.size)
 		for pointA in cntObj.contour:
 			array1x.append(pointA[0][0])
@@ -243,7 +258,7 @@ def callback(data):
 			# print(cnt)
 			# array1.append([cnt])
 	for cntObj in array2:
-		cv2.drawContours(im, [cntObj.contour],0,(0,0,255),2)
+		cv2.drawContours(im, [cntObj.contour],0,(255,255,255),2)
 		for pointA in cntObj.contour:
 			array2x.append(pointA[0][0])
 			array2y.append(pointA[0][1])
@@ -253,7 +268,7 @@ def callback(data):
 
 
 
-	# cv2.drawContours(im, [contours[3]],0,(0,255,0),2)
+	# cv2.drawContours(im, [contours[6]],0,(255,0,255),2)
 	# cv2.imshow("", im)
 	# cv2.waitKey(0);
 
@@ -285,14 +300,14 @@ def callback(data):
 	if len(array1x) > 0:
 
 		#fit y = x^2
-		l = np.polyfit(array1x, array1y, 2)
+		l = np.polyfit(array1x, array1y, 2)  
 		x1 = np.linspace(0, width, 400)
 		for i in x1:
-			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5]
-			y1 = l[0] * i**1 + l[1] * i**1 + l[2]
+			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5] 
+			y1 = l[0] * i**2 + l[1] * i**1 + l[2]
 			# y1 = l[0] * i + l[1]
 			if y1 < height and y1 > 0:
-				l_funcx_points.append([i, y1])
+				l_funcx_points.append([i, y1]) 
 		for i in array1x:
 			y1 = l[0] * i**2 + l[1] * i**1 + l[2]
 			# y1 = l[0] * i**5 + l[1] * i**4 + l[2] * i**3 + l[3] * i**2 + l[4] * i + l[5]
@@ -322,14 +337,14 @@ def callback(data):
 		# l_points = np.array(l_funcx_points, dtype=np.int32)
 		# cv2.polylines(im, [l_points], 0, (255,0,0))
 		# l_points = np.array(l_funcy_points, dtype=np.int32)
-		# cv2.polylines(im, [l_points], 0, (0,255,0))
+		# cv2.polylines(im, [l_points], 0, (0,255,255))
 
 		if mean_squared_error(array1y, l_funcx_ypred) < mean_squared_error(array1x, l_funcy_xpred):
 			l_points = np.array(l_funcx_points, dtype=np.int32)
-			cv2.polylines(im, [l_points], 0, (255,0,0))
+			# cv2.polylines(im, [l_points], 0, (255,255,255))
 		else:
 			l_points = np.array(l_funcy_points, dtype=np.int32)
-			cv2.polylines(im, [l_points], 0, (255,0,0))
+			# cv2.polylines(im, [l_points], 0, (255,255,255))
 
 
 	if len(array2x) > 0:
@@ -371,12 +386,16 @@ def callback(data):
 
 		if mean_squared_error(array2y, r_funcx_ypred) < mean_squared_error(array2x, r_funcy_xpred):
 			r_points = np.array(r_funcx_points, dtype=np.int32)
-			cv2.polylines(im, [r_points], 0, (0,0,255))
+			# cv2.polylines(im, [r_points], 0, (255,255,255))
 		else:
 			r_points = np.array(r_funcy_points, dtype=np.int32)
-			cv2.polylines(im, [r_points], 0, (0,0,255))
+			# cv2.polylines(im, [r_points], 0, (255,255,255))
+	
+	t1 = time.time()
+	print("time", t1 - t0)
+	print("-----------------------------------------------")
 	cv2.imshow("", im)
-	cv2.waitKey(0);
+	cv2.waitKey(1);
 
 def listener():
 	rospy.init_node('listener', anonymous=True)
