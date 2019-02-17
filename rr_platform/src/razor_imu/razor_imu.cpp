@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 
     // Serial port setup
     std::string serial_port_name;
-    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
+    private_handle.param(std::string("serial_port"), serial_port_name, std::string("/dev/razor_imu"));
     SerialPort serial_port;
     
     if(!serial_port.Open(serial_port_name, 115200)) {
