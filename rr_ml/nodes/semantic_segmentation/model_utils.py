@@ -21,30 +21,37 @@ class UNetModelUtils(object):
         input_layer = L.Input((self.in_height, self.in_width, self.n_channels))
 
         conv1 = L.Conv2D(32, 5, strides=2, activation='relu', padding='same')(input_layer)  # 128
+        conv1 = L.Dropout(rate=0.05)(conv1)
 
         conv2 = L.Conv2D(32, 5, strides=2, activation='relu', padding='same')(conv1)  # 64
+        conv2 = L.Dropout(rate=0.05)(conv2)
 
         conv3 = L.Conv2D(32, 3, strides=2, activation='relu', padding='same')(conv2)  # 32
+        conv3 = L.Dropout(rate=0.05)(conv3)
 
         conv4 = L.Conv2D(32, 3, strides=2, activation='relu', padding='same')(conv3)  # 16
+        conv4 = L.Dropout(rate=0.05)(conv4)
 
-        conv4_1 = L.Conv2D(1, 3, strides=1, activation='relu', padding='same')(conv4)  # 16
-        flat1 = L.Flatten()(conv4_1)
+        conv5 = L.Conv2D(1, 3, activation='relu', padding='same')(conv4)  # 16
+        flat1 = L.Flatten()(conv5)
+        flat1 = L.Dropout(rate=0.1)(flat1)
         dense1 = L.Dense(self.in_height * self.in_width // 256, activation='relu')(flat1)
         small1 = L.Reshape(target_shape=(self.in_height // 16, self.in_width // 16, 1))(dense1)
 
-        up1 = L.UpSampling2D(size=16)(small1)
-        up2 = L.UpSampling2D(size=8)(conv3)
-        up3 = L.UpSampling2D(size=4)(conv2)
-        up4 = L.UpSampling2D(size=2)(conv1)
+        up1 = L.UpSampling2D(size=4)(small1)
 
-        concat1 = L.Concatenate(axis=3)([up1, up2, up3, up4])
-        conv6 = L.Conv2D(16, 3, activation='relu', padding='same')(concat1)
+        concat1 = L.Concatenate(axis=3)([up1, conv2])
+        conv6 = L.Conv2D(32, 3, activation='relu', padding='same')(concat1)
+        conv6 = L.Dropout(rate=0.05)(conv6)
 
-        conv7 = L.Conv2D(self.n_classes, 1, padding='same')(conv6)
-        conv7 = L.Activation('softmax')(conv7)
+        up2 = L.UpSampling2D(size=4)(conv6)
 
-        model = keras.Model(inputs=input_layer, outputs=conv7)
+        concat2 = L.Concatenate(axis=3)([up2, input_layer])
+        conv7 = L.Conv2D(32, 5, activation='relu', padding='same')(concat2)
+
+        output = L.Conv2D(self.n_classes, 1, activation='softmax', padding='same')(conv7)
+
+        model = keras.Model(inputs=input_layer, outputs=output)
         return model
 
     def crop(self, img):
@@ -65,13 +72,7 @@ class UNetModelUtils(object):
         img_scaled = img_hsv.astype(np.float32) / np.array([180., 255., 255.])
 
         img_gray = cv2.cvtColor(img_resized, cv2.COLOR_BGR2GRAY)
-        # clahe = cv2.createCLAHE(clipLimit=10.0, tileGridSize=(8, 8))
-        # img_eq = clahe.apply(img_gray)
         img_blurred = cv2.GaussianBlur(img_gray, (15, 15), 0)
-        # img_edges = cv2.Canny(img_blurred, 18, 35)
-        # img_edges_scaled = img_edges.astype(np.float32) / 255.
-        # img_edges_scaled = img_edges_scaled.reshape(img_edges_scaled.shape + (1,))
-
         sobel1 = cv2.Sobel(img_blurred, cv2.CV_32F, 0, 1, ksize=3)
         sobel2 = cv2.Sobel(img_blurred, cv2.CV_32F, 1, 0, ksize=3)
         sobel_combo = np.stack([sobel1, sobel2], axis=-1)
@@ -81,7 +82,6 @@ class UNetModelUtils(object):
         # cv2.waitKey(500)
 
         return np.concatenate([img_scaled, sobel_scaled], axis=2)
-        # return img_scaled
 
     def load_input(self, fname):
         img = cv2.imread(fname)

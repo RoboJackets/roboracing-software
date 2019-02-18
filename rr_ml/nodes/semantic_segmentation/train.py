@@ -20,7 +20,7 @@ load_cache = dict()
 max_load_cache_entries = 5000
 
 
-def data_gen(helper, input_files, label_files):
+def data_gen(helper, input_files, label_files, do_augmentation):
     z = list(zip(input_files, label_files))
     random.shuffle(z)
     input_files, label_files = zip(*z)
@@ -50,35 +50,38 @@ def data_gen(helper, input_files, label_files):
                 if len(load_cache) < max_load_cache_entries:
                     load_cache[f_lbl] = lbl
 
-            # random left/right flips
-            if random.random() < 0.5:
-                ipt = np.fliplr(ipt)
-                lbl = np.fliplr(lbl)
+            if do_augmentation:
 
-            # random fluctuations
-            ipt[:, :, 0] += random.normalvariate(0, 0.05)  # H
-            ipt[:, :, 1] += random.normalvariate(0, 0.1)  # L
-            ipt[:, :, 2] += random.normalvariate(0, 0.1)  # S
+                # left/right flips
+                if random.random() < 0.5:
+                    ipt = np.fliplr(ipt)
+                    lbl = np.fliplr(lbl)
 
-            if random.random() < 0.3:
-                prev_shape = ipt.shape
-                direction = random.randint(0, 3)
-                amount = random.randint(1, 50)
-                if direction == 0:
-                    ipt = ipt[amount:]
-                    lbl = lbl[amount:]
-                elif direction == 1:
-                    ipt = ipt[:-amount]
-                    lbl = lbl[:-amount]
-                elif direction == 2:
-                    ipt = ipt[:, amount:]
-                    lbl = lbl[:, amount:]
-                else:
-                    ipt = ipt[:, :-amount]
-                    lbl = lbl[:, :-amount]
+                # lighting fluctuations
+                ipt[:, :, 0] += random.normalvariate(0, 0.08)  # Hue
+                ipt[:, :, 1] += random.normalvariate(0, 0.15)  # Lightness
+                ipt[:, :, 2] += random.normalvariate(0, 0.15)  # Saturation
 
-                ipt = cv2.resize(ipt, (prev_shape[1], prev_shape[0]))
-                lbl = cv2.resize(lbl, (prev_shape[1], prev_shape[0]))
+                # crops
+                if random.random() < 0.5:
+                    prev_shape = ipt.shape
+                    direction = random.randint(0, 3)
+                    amount = random.randint(1, 100)
+                    if direction == 0:
+                        ipt = ipt[amount:]
+                        lbl = lbl[amount:]
+                    elif direction == 1:
+                        ipt = ipt[:-amount]
+                        lbl = lbl[:-amount]
+                    elif direction == 2:
+                        ipt = ipt[:, amount:]
+                        lbl = lbl[:, amount:]
+                    else:
+                        ipt = ipt[:, :-amount]
+                        lbl = lbl[:, :-amount]
+
+                    ipt = cv2.resize(ipt, (prev_shape[1], prev_shape[0]))
+                    lbl = cv2.resize(lbl, (prev_shape[1], prev_shape[0]))
 
             inputs[n] = ipt
             labels[n] = lbl
@@ -87,31 +90,23 @@ def data_gen(helper, input_files, label_files):
         yield inputs, labels
 
 
-def data_gen_wrapper(helper, input_files, label_files, epochs):
+def data_gen_wrapper(helper, input_files, label_files, epochs, do_augmentation):
     for epoch in range(epochs):
-        for x in data_gen(helper, input_files, label_files):
+        for x in data_gen(helper, input_files, label_files, do_augmentation):
             yield x
 
 
-def weighted_focal_loss(gamma, class_imbalance):
+def focal_loss(gamma):
     def loss(target, output):
-        weights = np.ones(K.int_shape(output)[-1]) * class_imbalance
-        weights[0] = 1.0
-        weights = K.constant(weights)
-
         output /= K.sum(output, axis=-1, keepdims=True)
         eps = K.epsilon()
         output = K.clip(output, eps, 1. - eps)
 
-        focal_loss_pos = -target * K.log(output) * K.pow(1. - output, gamma) * weights
+        focal_loss_pos = -target * K.log(output) * K.pow(1. - output, gamma)
         # focal_loss_neg = (target - 1.) * K.log(1. - output) * K.pow(output, gamma)
         focal_loss_neg = 0
         return K.sum(focal_loss_pos + focal_loss_neg, axis=-1)
     return loss
-
-
-def max_line_val(y_true, y_pred):
-    return K.max(y_pred[:,:,:,1:])
 
 
 def single_iou_score(y1, y2):
@@ -121,7 +116,7 @@ def single_iou_score(y1, y2):
 
     total = np.sum(mask)
     right = np.sum(np.equal(argmax_img1, argmax_img2)[mask])
-    return float(right) / (total + 0.001)
+    return (float(right) / total) if total > 0 else 0
 
 
 def iou(y_true, y_pred):
@@ -136,16 +131,11 @@ def iou(y_true, y_pred):
     return tf.py_function(f, [y_true, y_pred], tf.double)
 
 
-def detect_prop(y_true, y_pred):
-    def f(y_true, y_pred):
-        y = y_pred.numpy()
-        scores = np.zeros(y.shape[0])
-        for i in range(y.shape[0]):
-            mask = (np.argmax(y[i], axis=-1) != 0)
-            scores[i] = float(np.count_nonzero(mask)) / np.prod(y.shape[1:3])
-        return np.mean(scores)
-
-    return tf.py_function(f, [y_true, y_pred], tf.double)
+def get_save_function(model, model_path):
+    def save():
+        model.save(model_path, include_optimizer=False)
+        print "saved to disk"
+    return save
 
 
 def main(acceptable_image_formats):
@@ -157,10 +147,7 @@ def main(acceptable_image_formats):
 
     data_dir = rospy.get_param("~data_dir")
     model_path = rospy.get_param("~model_path")
-
     n_epochs = rospy.get_param("~epochs")
-    validate_only = rospy.get_param("~validate_only")
-    visualize_validation = rospy.get_param("~visualize_validation")
 
     input_files = []
     for fmt in acceptable_image_formats:
@@ -172,10 +159,8 @@ def main(acceptable_image_formats):
     files = list(zip(input_files, label_files))
     random.shuffle(files)
     split = int(len(input_files) * 0.75)
-    # training_files = files[:split]
-    # validate_files = files[split:]
-    training_files = files[:]
-    validate_files = files[:]
+    training_files = files[:split]
+    validate_files = files[split:]
 
     training_input_files, training_label_files = zip(*training_files)
     validate_input_files, validate_label_files = zip(*validate_files)
@@ -189,71 +174,41 @@ def main(acceptable_image_formats):
         model = unet_helper.make_unet_model()
         print "no model found on disk, created a new one"
 
-    model.compile(loss=weighted_focal_loss(2, 1),
+    model.compile(loss=focal_loss(2),
                   optimizer="adam",
-                  metrics=['accuracy', iou, detect_prop])
+                  metrics=[iou])
     time.sleep(2.0)
     model.summary()
 
-    if not validate_only:
+    save = get_save_function(model, model_path)
 
-        metrics = model.evaluate_generator(data_gen(unet_helper, validate_input_files, validate_label_files),
-                                           steps=len(validate_files) // batch_size, verbose=1)
-        print "metrics before", metrics
+    data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs, True)
+    data_validate = data_gen_wrapper(unet_helper, validate_input_files, validate_label_files, n_epochs, False)
 
-        starting_weights = model.get_weights()
-        print "warming up optimizer..."
-        warmup_length = 20
-        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, warmup_length)
-        model.fit_generator(data, steps_per_epoch=warmup_length, epochs=1, verbose=1)
-        print "done warming up"
-        model.set_weights(starting_weights)
+    steps_per_epoch = len(training_files) // batch_size
+    validation_steps = len(validate_files) // batch_size
 
-        data = data_gen_wrapper(unet_helper, training_input_files, training_label_files, n_epochs)
-        model.fit_generator(data, steps_per_epoch=len(training_files) // batch_size, epochs=n_epochs, verbose=1)
+    def on_epoch_end(epoch, log):
+        if epoch != 0 and epoch % 20 == 0:
+            save()
 
-        if not osp.exists(osp.dirname(model_path)):
-            os.makedirs(osp.dirname(model_path))
+    tensorboard_log_dir = osp.join(osp.dirname(__file__), '../../tensorboard_logs')
+    for fname in os.listdir(tensorboard_log_dir):
+        fname = osp.join(tensorboard_log_dir, fname)
+        while osp.exists(fname):
+            os.remove(fname)
 
-        while osp.exists(model_path):
-            os.remove(model_path)
+    callbacks = [
+        keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=200, verbose=1, mode='min'),
+        keras.callbacks.TensorBoard(log_dir=tensorboard_log_dir,
+                                    write_graph=True, write_grads=True, write_images=False, update_freq='epoch'),
+        keras.callbacks.LambdaCallback(on_epoch_end=on_epoch_end)
+    ]
 
-        model.save(model_path, include_optimizer=False)
-        print "saved to disk"
+    if not osp.exists(osp.dirname(model_path)):
+        os.makedirs(osp.dirname(model_path))
 
-        metrics = model.evaluate_generator(data_gen(unet_helper, validate_input_files, validate_label_files),
-                                           steps=len(validate_files) // batch_size, verbose=1)
-        print "metrics after", metrics
+    model.fit_generator(data, steps_per_epoch=steps_per_epoch, epochs=n_epochs, verbose=1,
+                        validation_data=data_validate, validation_steps=validation_steps, callbacks=callbacks)
 
-    scores = []
-    pred_times = []
-    for fx, fy in zip(validate_input_files, validate_label_files):
-        x = unet_helper.load_input(fx)
-        y_ = unet_helper.load_label(fy)
-
-        t_pred_0 = time.time()
-        y = model.predict(x[None])[0]
-        t_pred = time.time() - t_pred_0
-        pred_times.append(t_pred)
-
-        maxes = [np.max(y[..., i]) for i in range(y.shape[-1])]
-        print "max per category:", maxes
-
-        score = single_iou_score(y, y_)
-        scores.append(score)
-
-        if visualize_validation:
-            cv2.imshow("input", (x * 255).astype(np.uint8))
-            cv2.imshow("ground truth", unet_helper.prediction_image_bgr8(y_))
-            cv2.imshow("output", unet_helper.prediction_image_bgr8(y))
-
-            while True:
-                k = cv2.waitKey(1)
-                if k == ord(' '):
-                    break
-                if k == ord('q'):
-                    visualize_validation = False
-                    break
-
-    print "avg IOU =", sum(scores) / len(scores)
-    print "avg prediction time", sum(pred_times) / len(pred_times)
+    save()

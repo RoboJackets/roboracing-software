@@ -13,6 +13,7 @@ from . import model_utils
 
 
 last_msg = None
+disable_gpu = True
 
 
 def image_msg_callback(msg):
@@ -24,7 +25,8 @@ def main():
     global last_msg
 
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    if disable_gpu:
+        config.device_count['GPU'] = 0  # disables GPU if testing system has one
     keras.backend.set_session(tf.Session(config=config))
 
     rospy.init_node('segnet_labeler')
@@ -39,58 +41,51 @@ def main():
     rospy.Subscriber(image_topic, Image, image_msg_callback, queue_size=1, buff_size=10**8)
 
     unet_helper = model_utils.UNetModelUtils()
-
     cv_bridge = CvBridge()
 
-    # limit tensorflow from using GPU
-    sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
+    model = keras.models.load_model(path_to_model)
 
-    with sess.as_default():
-        model = keras.models.load_model(path_to_model)
+    while not rospy.is_shutdown():
+        if last_msg is None:
+            time.sleep(0.01)
+            continue
 
-        while not rospy.is_shutdown():
-            if last_msg is None:
-                time.sleep(0.01)
-                continue
+        try:
+            # CvBridge makes img read-only without copy
+            cam_img = cv_bridge.imgmsg_to_cv2(last_msg, desired_encoding="bgr8").copy()
+        except CvBridgeError as e:
+            print e
+            continue
+        else:
+            last_msg = None
 
-            try:
-                cam_img = cv_bridge.imgmsg_to_cv2(last_msg).copy()  # CvBridge makes img read-only without copy
-            except CvBridgeError as e:
-                print e
-                continue
-            else:
-                last_msg = None
+        img = unet_helper.crop(cam_img)
+        cropped_height, cam_width = img.shape[:2]
 
-            img = unet_helper.crop(cam_img)
-            cropped_height, cam_width = img.shape[:2]
+        X = unet_helper.prepare_input(img)
 
-            X = unet_helper.prepare_input(img)
+        t0 = time.time()
+        y = model.predict_on_batch(X[np.newaxis])[0]
+        t1 = time.time()
+        print "neural net latency:", (t1 - t0)
 
-            t0 = time.time()
-            y = model.predict_on_batch(X[np.newaxis])[0]
-            t1 = time.time()
-            print "neural net latency:", (t1 - t0)
+        output_img = unet_helper.prediction_image_mono8(y)  # convert to mask
+        output_img = cv2.resize(output_img, (cam_width, cropped_height))  # back to original half dimensions
+        output_img = unet_helper.uncrop(output_img)
 
-            output_img = unet_helper.prediction_image_mono8(y)  # convert to mask
-            output_img = cv2.resize(output_img, (cam_width, cropped_height))  # back to original half dimensions
-            output_img = unet_helper.uncrop(output_img)
+        n_labels, labels_img = cv2.connectedComponents(output_img, 8, cv2.CV_32S)
+        for i in range(n_labels):
+            component_size = np.count_nonzero(labels_img == i)
+            if component_size < 500:
+                output_img[labels_img == i] = 0
 
-            # keypoints = blob_detector.detect(output_img)
-            # pub_img = np.zeros_like(output_img)
-            # cv2.drawKeypoints(output_img, keypoints, pub_img, color=255, flags=cv2.DRAW_MATCHES_FLAGS_DEFAULT)
-            # print keypoints
+        out_msg = cv_bridge.cv2_to_imgmsg(output_img, encoding="mono8")
+        detect_pub.publish(out_msg)
 
-            # image, contours, hierarchy = cv2.findContours(output_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            # pub_img = np.zeros_like(output_img)
-            # cv2.drawContours(pub_img, contours, -1, (255,), 1)
+        obstacle_mask = (output_img > 0)
+        highlight_color = np.array([0, 255, 0], dtype=np.uint8)
+        cam_img[obstacle_mask] /= 2
+        cam_img[obstacle_mask] += (highlight_color / 2)
 
-            out_msg = cv_bridge.cv2_to_imgmsg(output_img, encoding="mono8")
-            detect_pub.publish(out_msg)
-
-            obstacle_mask = (output_img > 0)
-            highlight_color = np.array([0, 255, 0], dtype=np.uint8)
-            cam_img[obstacle_mask] /= 2
-            cam_img[obstacle_mask] += (highlight_color / 2)
-
-            vis_msg = cv_bridge.cv2_to_imgmsg(cam_img, encoding="bgr8")
-            visualizer_pub.publish(vis_msg)
+        vis_msg = cv_bridge.cv2_to_imgmsg(cam_img, encoding="bgr8")
+        visualizer_pub.publish(vis_msg)
