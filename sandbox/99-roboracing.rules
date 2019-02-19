@@ -15,3 +15,5 @@ KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="9206", ATTRS{idVendor}
 
 KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idProduct}=="ea60", ATTRS{idVendor}=="10c4", SYMLINK+="rplidar_a2"
 
+KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="0002" , ATTRS{idVendor}=="1d6b",  SYMLINK+="razor_imu"
+
