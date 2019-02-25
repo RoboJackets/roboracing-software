@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/stoplight_watcher.launch"/>
 
-    <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
-        <param name="startSignal" type="string" value="/start_detected"/>
-        <param name="resetSignal" type="string" value="/reset_detected"/>
+    <node name="turning_test" pkg="rr_iarrc" type="turning_test" output="screen">
         <param name="turn_speed" type="double" value="0.0"/>
         <param name="left_turn_steering" type="double" value="0.0"/>
         <param name="right_turn_steering" type="double" value="0.0"/>
         <param name="left_offset" type="double" value="0.0"/>
         <param name="right_offset" type="double" value="0.0"/>
        	<param name="forward_timeout" type="double" value="0.0"/>
+        <param name="turn_direction" type="string" value="forward"/>
     </node>
 </launch>

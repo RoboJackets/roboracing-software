@@ -33,8 +33,10 @@ double target_yaw;
 
 double left_offset; 
 double right_offset; 
-double turn_speed; 
-double turn_steering; 
+double turn_speed;
+double left_turn_steering; 
+double right_turn_steering; 
+
 
 double forward_timeout;
 
@@ -82,7 +84,7 @@ void updateState() {
                 target_yaw = initial_yaw - 1.57 + left_offset;
                 while(imu_yaw > target_yaw){
                     speed = turn_speed;
-                    steering = turn_steering;
+                    steering = left_turn_steering;
                     publishSpeedandSteering();
                 }
                 state = RUNNING_PLANNER;
@@ -92,7 +94,7 @@ void updateState() {
                 target_yaw = initial_yaw + 1.57 + right_offset;
                 while(imu_yaw < target_yaw){
                     speed = turn_speed;
-                    steering = turn_steering;
+                    steering = right_turn_steering;
                     publishSpeedandSteering();
 
                 }
@@ -163,10 +165,11 @@ int main(int argc, char** argv) {
     nhp.getParam("startSignal", startSignal);
     nhp.getParam("resetSignal", resetSignal);
     nhp.getParam("turn_speed", turn_speed);
-    nhp.getParam("turn_steering", turn_steering);
+    nhp.getParam("left_turn_steering", left_turn_steering);
+    nhp.getParam("right_turn_steering", right_turn_steering);
     nhp.getParam("left_offset", left_offset);
     nhp.getParam("right_offset", right_offset);
-    nhp.getParam("forward_timeout", right_offset);
+    nhp.getParam("forward_timeout", forward_timeout);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
@@ -177,7 +180,6 @@ int main(int argc, char** argv) {
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
     steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
-
 
     ros::Rate rate(30.0);
     while(ros::ok()) {
