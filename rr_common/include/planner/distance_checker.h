@@ -1,5 +1,4 @@
-#ifndef RR_COMMON_DISTANCE_CHECKER_H
-#define RR_COMMON_DISTANCE_CHECKER_H
+#pragma once
 
 #include <tuple>
 #include <deque>
@@ -10,8 +9,6 @@ namespace rr {
 
 class DistanceChecker {
  public:
-  using Point = pcl::PointXYZ;
-
   DistanceChecker(const CenteredBox& box, const CenteredBox& map_size);
 
   /*
@@ -23,17 +20,17 @@ class DistanceChecker {
    */
   std::tuple<bool, double> GetCollisionDistance(const Pose& pose);
 
-  void SetMap(const pcl::PointCloud<Point>& pointcloud);
+  void SetMap(const pcl::PointCloud<PCLPoint>& pointcloud);
 
-  bool GetCollision(const Point& relative_point);
+  bool GetCollision(const PCLPoint& relative_point);
 
-  double Dist(const Point& p1, const Point& p2);
+  double Dist(const PCLPoint& p1, const PCLPoint& p2);
 
  private:
   struct CacheEntry {
-    Point location;
-    std::vector<const Point*> might_hit_points;
-    const Point* nearest_point;
+    PCLPoint location;
+    std::vector<const PCLPoint*> might_hit_points;
+    const PCLPoint* nearest_point;
     const CacheEntry* parent;
   };
 
@@ -54,9 +51,7 @@ class DistanceChecker {
   int cache_cols_;
 
   int GetCacheIndex(double x, double y);
-  Point GetPointFromIndex(int i);
+  PCLPoint GetPointFromIndex(int i);
 };
 
 }  // namespace rr
-
-#endif  // RR_COMMON_DISTANCE_CHECKER_H

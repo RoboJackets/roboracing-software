@@ -1,5 +1,4 @@
-#ifndef RR_COMMON_KINEMATIC_BICYCLE_MODEL_H
-#define RR_COMMON_KINEMATIC_BICYCLE_MODEL_H
+#pragma once
 
 #include <tuple>
 
@@ -67,5 +66,3 @@ class BicycleModel {
 };
 
 }  // namespace rr
-
-#endif  // RR_COMMON_KINEMATIC_BICYCLE_MODEL_H

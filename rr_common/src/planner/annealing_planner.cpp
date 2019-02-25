@@ -1,4 +1,4 @@
-#include "annealing_planner.h"
+#include "planner/annealing_planner.h"
 
 namespace rr {
 
@@ -38,7 +38,7 @@ double AnnealingPlanner::GetTemperature(unsigned int t) {
   return params.temperature_start * std::exp(K * t);
 }
 
-double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMap& kd_tree_map) {
+double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& map) {
   double cost = 0;
 
   const std::vector<PathPoint>& path = planned_path.path;
@@ -64,7 +64,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMa
   return cost;
 }
 
-PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
+PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
   path_pool_[0] = path_pool_[last_path_idx_];
 
   unsigned int best_idx = 0;
@@ -77,7 +77,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     path.control = best_prev_control;
   });
 
-  distance_checker_.SetMap(*kd_tree_map.input_);
+  distance_checker_.SetMap(map);
 
   // update our steering angle estimate using the last output
   model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
@@ -107,7 +107,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
 
     path.has_collision = has_collided;
 
-    path.cost = GetCost(path, kd_tree_map);
+    path.cost = GetCost(path, map);
     double dcost = path.cost - path_pool_[state_idx].cost;
     double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
 

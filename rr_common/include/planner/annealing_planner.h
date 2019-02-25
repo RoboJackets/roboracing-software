@@ -1,5 +1,4 @@
-#ifndef RR_COMMON_ANNEALING_PLANNER_H
-#define RR_COMMON_ANNEALING_PLANNER_H
+#pragma once
 
 #include <random>
 #include <vector>
@@ -36,7 +35,7 @@ public:
   /*
    * Plan: given a map of the world, find the best path through it
    */
-  PlannedPath Plan(const KdTreeMap& kd_tree_map);
+  PlannedPath Plan(const PCLMap& map);
 
 private:
 
@@ -53,7 +52,7 @@ private:
    * Returns:
    *  cost of the path
    */
-  double GetCost(const PlannedPath& path, const KdTreeMap& kd_tree_map);
+  double GetCost(const PlannedPath& path, const PCLMap& map);
 
   const Params params;
 
@@ -71,5 +70,3 @@ private:
 };
 
 }  // namespace rr
-
-#endif  // RR_COMMON_ANNEALING_PLANNER_H

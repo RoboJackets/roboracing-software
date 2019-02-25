@@ -1,14 +1,14 @@
-#ifndef RR_COMMON_PLANNER_TYPES_H
-#define RR_COMMON_PLANNER_TYPES_H
+#pragma once
 
 #include <vector>
 
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 namespace rr {
 
-using KdTreeMap = pcl::KdTreeFLANN<pcl::PointXYZ>;
+using PCLMap = pcl::PointCloud<pcl::PointXYZ>;
+using PCLPoint = pcl::PointXYZ;
 
 struct Pose {
   double x;
@@ -56,5 +56,3 @@ struct CenteredBox {
 };
 
 }  // namespace rr
-
-#endif  // RR_COMMON_PLANNER_TYPES_H
