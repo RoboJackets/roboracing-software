@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="rr_common" type="pose_tracker_server" name="pose_tracker_server" output="screen">
+        <param name="chassis_state_topic" value="/chassis_state"/>
+        <param name="angles_topic" value="/axes"/>
+        <param name="time_horizon" value="5.0"/>
+        <param name="update_hz" value="50"/>
+        <param name="publish_resolution" value="5"/>
+    </node>
+</launch>
