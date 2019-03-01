@@ -22,60 +22,93 @@ cv::Mat sign_forward;
 cv::Mat sign_left;
 cv::Mat sign_right;
 
+std::vector<cv::Point> template_contour_upright;
+
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-    //cv::Mat frame = cv_ptr->image;
+    cv::Mat frame = cv_ptr->image;
 
-    //########################################FOR TEST ONLY #TODO REMOVE THIS and uncomment above#######
-    std::string path2 = ros::package::getPath("rr_iarrc");
-    cv::Mat frame = cv::imread(path2 + "/src/sign_detector/traffic_signs1.png");
-    //###############################33
-
-    cv::Mat gray;
-    cv::cvtColor(frame, gray, CV_RGB2GRAY);
-    equalizeHist( gray, gray ); //contrast enhancement
-
-    cv::Mat crop_gray;
-    cv::Mat crop_color;
+    cv::Mat crop;
     if (roi_width == -1 || roi_height == -1) {
-      crop_gray = gray;
-      crop_color = frame;
+      crop = frame;
     } else {
       cv::Rect roi(roi_x, roi_y, roi_width, roi_height);
-      crop_gray = gray(roi); //note that crop is just a reference to that roi of the frame, not a copy
-      crop_color = frame(roi);
+      crop = frame(roi); //note that crop is just a reference to that roi of the frame, not a copy
     }
-    //cv::GaussianBlur(crop_gray, crop_gray, cv::Size(5,5), 0, 0, cv::BORDER_DEFAULT); //may or may not help with template matching
+    cv::GaussianBlur(crop, crop, cv::Size(5,5), 0, 0, cv::BORDER_DEFAULT); //may or may not help Canny
 
-    //#TODO: matchTemplate and minMaxLoc stuff
-    cv::Mat result;
-double start =ros::Time::now().toSec();
-for (int i = 0; i < 8; i++) {
-    cv::matchTemplate( crop_gray, sign_forward, result, CV_TM_SQDIFF_NORMED );
-    cv::normalize( result, result, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
-}
-    /// Localizing the best match with minMaxLoc
-    double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
-    cv::Point matchLoc;
+    //Color -> binary; Edge detection
+    cv::Mat edges;
+    double thresh1 = 100; //TODO: make these launch params
+    double thresh2 = thresh1 * 3;
+    cv::Canny(crop, edges, thresh1, thresh2 );
+/*
+    //Find arrow-like shapes with Contours
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
 
-    minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
-    matchLoc = minLoc; //@Note CV_TM_SQDIFF_NORMED uses the min
-double end =ros::Time::now().toSec();
-ROS_INFO_STREAM(end-start);
+    cv::findContours(edges, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+
+    for(size_t i=0; i<contours.size(); i++) {
+      std::vector<cv::Point> c = contours[i]; //curent contour
+      double perimeter = cv::arcLength(c, true);
+      double epsilon = 0.04 * perimeter; //#TODO: PLAY WITH THIS AS IT DETERMINES HOW GOOD THE APPROXIMATION IS
+      std::vector<cv::Point> approxC;
+      cv::approxPolyDP(c, approxC, epsilon, true);
+      if (approxC.size() >= 6 || approxC.size() <= 8) { //#TODO: adjust bounds of what is an arrow after adjusting epsilon
+          //check the ratio is arrow-like
+          cv::Rect rect = cv::boundingRect(c); //#TODO: maybe do the bounding rect check before approximation
+          double ratio = 1.5; //ratio of width or height or vice versa
+          if (rect.width * ratio <= rect.height || rect.height * ratio <= rect.width) {
+            if (rect.width > rect.height) {
+              //Sideways
+              double matchThreshold = 0.2; //#TODO: play with this #
+              double matchLikeness = cv::matchShapes(approxC, template_contour_upright, CV_CONTOURS_MATCH_I2, 0); //#TODO: change to sideways contours
+              if (matchLikeness < matchThreshold) {
+                  // compare x axis
+                  auto extremeY = std::minmax_element(approxC.begin(), approxC.end(), [](cv::Point const& a, cv::Point const& b){
+                      return a.y < b.y;
+                  });
+                  if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
+                    //left pointing arrow!
+                    cv::putText(crop, "Left!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0));
+                  } else {
+                    //right pointing arrow!
+                    cv::putText(crop, "Right!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0));
+                  }
+
+              }
+            } else {
+              //Upright
+              double matchThreshold = 0.2; //#TODO: play with this #
+              double matchLikeness = cv::matchShapes(approxC, template_contour_upright, CV_CONTOURS_MATCH_I2, 0);
+              if (matchLikeness < matchThreshold) {
+                  cv::putText(crop, "Forward!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0));
+
+              }
+            }
+
+        }
+      }
+
+
+    }
+
+*/
 
 
     //Some debug images for us
     //show where the match is found
-    cv::Mat sign = sign_forward;
-    cv::rectangle(crop_color, matchLoc, cv::Point(matchLoc.x + sign.cols, matchLoc.y + sign.rows), cv::Scalar(0, 255, 0), 2, 8, 0);
+    //cv::Mat sign = sign_forward;
+    //cv::rectangle(crop, matchLoc, cv::Point(matchLoc.x + sign.cols, matchLoc.y + sign.rows), cv::Scalar(0, 255, 0), 2, 8, 0);
     //show where we are cropped to
-    cv::rectangle(crop_color, cv::Point(0,0), cv::Point(crop_color.rows-1, crop_color.cols-1), cv::Scalar(0,255,0), 2, 8 ,0);
+    cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.rows-1, crop.cols-1), cv::Scalar(0,255,0), 2, 8 ,0);
 
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
-        cv_ptr->image = frame;
-        cv_ptr->encoding = "bgr8";
+        cv_ptr->image = edges;//frame;
+        cv_ptr->encoding = "mono8"; //"bgr8";
         cv_ptr->toImageMsg(outmsg);
         pub.publish(outmsg);
     }
@@ -89,7 +122,13 @@ int loadSignImages(std::string packageName, std::string fileName) {
   sign_forward = cv::imread(path + fileName);
   cv::cvtColor(sign_forward, sign_forward, CV_RGB2GRAY); //single channel helps with templateMatch
   //currently sign is 2000x2000px
-  cv::resize(sign_forward, sign_forward, cv::Size(300,300));//110,110)); //scale image down #TODO: more options
+  //cv::resize(sign_forward, sign_forward, cv::Size(300,300));//110,110)); //scale image down #TODO: more options
+
+  //#TODO: LOAD THE CONTOURS
+  std::vector<std::vector<cv::Point>> cnts;
+  std::vector<cv::Vec4i> h;
+  cv::findContours(sign_forward, cnts, h, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+  template_contour_upright = cnts[0];
 
 
   cv::Point2f center(sign_forward.rows/2, sign_forward.cols/2);
