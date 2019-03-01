@@ -67,11 +67,8 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     v.nearest_point = nullptr;
   }
 
-  auto& updates = cache_updates_;
-  auto& visited = cache_visited_;
-
-  updates.clear();
-  std::fill(visited.begin(), visited.end(), false);
+  cache_updates_.clear();
+  std::fill(cache_visited_.begin(), cache_visited_.end(), false);
 
   for (const PCLPoint& p : pointcloud.points) {
     int i = GetCacheIndex(p.x, p.y);
@@ -81,7 +78,7 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
 
     cache_[i].might_hit_points.push_back(&p);
     cache_[i].nearest_point = &p;
-    visited[i] = true;
+    cache_visited_[i] = true;
 
     int r = i / cache_cols_;
     int c = i % cache_cols_;
@@ -92,18 +89,18 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
         }
 
         int j = i + dr * cache_cols_ + dc;
-        if (!visited[j]) {
-          updates.emplace_back(j);
+        if (!cache_visited_[j]) {
+          cache_updates_.emplace_back(j);
           cache_[j].parent = cache_.data() + i;
-          visited[j] = true;
+          cache_visited_[j] = true;
         }
       }
     }
   }
 
-  while (!updates.empty()) {
-    int j = updates.front();
-    updates.pop_front();
+  while (!cache_updates_.empty()) {
+    int j = cache_updates_.front();
+    cache_updates_.pop_front();
 
     CacheEntry& entry = cache_[j];
     const CacheEntry& parent = *entry.parent;
@@ -132,10 +129,10 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
           }
 
           int k = j + dr * cache_cols_ + dc;
-          if (!visited[k]) {
-            updates.emplace_back(k);
+          if (!cache_visited_[k]) {
+            cache_updates_.emplace_back(k);
             cache_[k].parent = &entry;
-            visited[k] = true;
+            cache_visited_[k] = true;
           }
         }
       }

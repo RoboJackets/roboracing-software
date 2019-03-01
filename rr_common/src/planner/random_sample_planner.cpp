@@ -159,7 +159,7 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
       plan.control.push_back(SampleSteering(stage));
     }
 
-    model_.RollOutPath(plan.path, plan.control);
+    model_.RollOutPath(plan.control, plan.path);
 
     bool collision;
     std::tie(collision, plan.cost) = GetCost(plan.path);

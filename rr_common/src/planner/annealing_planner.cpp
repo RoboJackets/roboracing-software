@@ -8,7 +8,7 @@ AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel&
   for (int i = 0; i < params.annealing_steps; i++) {
     rr::PlannedPath& path = path_pool_.emplace_back();
     path.control = std::vector<double>(params.n_path_segments, 0);
-    model_.RollOutPath(path.path, path.control);
+    model_.RollOutPath(path.control, path.path);
     path.dists = std::vector<double>(path.path.size(), 0.0);
     path.cost = std::numeric_limits<double>::max();
   }
@@ -54,7 +54,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& 
     } else {
       cost -= params.k_dist * std::log(std::max(0.01, dist));
       cost -= params.k_speed * path[i].speed;
-      cost += std::abs(path[i].pose.theta) * params.backwards_penalty;
+      cost += std::abs(path[i].pose.theta) * params.k_angle;
     }
   }
 
@@ -89,7 +89,7 @@ PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
       SampleControls(path.control, path_pool_[state_idx].control, t);
     }
 
-    model_.RollOutPath(path.path, path.control);
+    model_.RollOutPath(path.control, path.path);
 
     // Check collisions and adjust path speeds based on distance to obstacles
     bool has_been_too_close = false;

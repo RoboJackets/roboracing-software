@@ -191,7 +191,7 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
   params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
-  params.backwards_penalty = getParamAssert<double>(nhp, "backwards_penalty");
+  params.k_angle = getParamAssert<double>(nhp, "k_angle");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
   params.max_steering = getParamAssert<double>(nhp, "max_steering");
   params.acceptance_scale = getParamAssert<double>(nhp, "acceptance_scale");

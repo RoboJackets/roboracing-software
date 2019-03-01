@@ -22,8 +22,8 @@ public:
     double k_dist;  // importance of distance in cost function
     double k_speed;  // importance of speed/straightness in cost fn
     double k_final_pose;  // importance of final position in cost function
-    double backwards_penalty;
-    double collision_penalty;  // cost fn penalty for a collision
+    double k_angle;  // cost penalty for not going straight
+    double collision_penalty;  // cost penalty for a collision
     double acceptance_scale;  // strictness for accepting bad paths
     double max_steering;  // max steering angle output
   };
@@ -32,25 +32,37 @@ public:
 
   ~AnnealingPlanner() = default;
 
-  /*
-   * Plan: given a map of the world, find the best path through it
+
+  /**
+   * Given a map of the world, find the best path through it
+   * @param map A point cloud representation of the world around the car
+   * @return PlannedPath object representing the plan for movement
    */
   PlannedPath Plan(const PCLMap& map);
 
 private:
 
-  void SampleControls(std::vector<double>& ctrl, const std::vector<double>& source,
-                      unsigned int t);
+  /**
+   * Probabilistically jiggle a vector of control inputs (steering angles) to an optimization neighbor
+   * @param ctrl Out param, list of steering angles which we will test
+   * @param source In param, previously-tested control vector
+   * @param t Iteration number of simulated annealing algorithm
+   */
+  void SampleControls(std::vector<double>& ctrl, const std::vector<double>& source, unsigned int t);
 
+  /**
+   * Find the current annealing temperature. This is used as the standard deviation for SampleControls
+   * in addition to the normal usage in the SA algorithm. Uses an exponential decay schedule.
+   * @param t Iteration number in annealing procedure
+   * @return temperature
+   */
   double GetTemperature(unsigned int t);
 
-  /*
-   * GetCost: calculate the total cost of a path
-   * Params:
-   *  path - list of (pose, steering, speed) tuples
-   *  kd_tree_map - nearest-neighbors-searchable map
-   * Returns:
-   *  cost of the path
+  /**
+   * Calculate the total cost of a path (see Params for more detail on cost coefficients)
+   * @param path list of (pose, steering, speed) tuples
+   * @param map point cloud map
+   * @return cost of the path
    */
   double GetCost(const PlannedPath& path, const PCLMap& map);
 
