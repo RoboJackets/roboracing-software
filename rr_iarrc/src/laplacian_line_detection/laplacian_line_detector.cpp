@@ -20,7 +20,7 @@ cv::Mat kernel(int, int);
 cv::Mat fillColorLines(cv::Mat, cv::Mat);
 void cutEnvironment(cv::Mat);
 cv::Mat cutSmall(cv::Mat, int);
-void publishMessage(ros::Publisher, Mat, std::string);
+void publishMessage(ros::Publisher, Mat, std::string, ros::Time);
 Mat overlayBinaryGreen(Mat, Mat);
 
 int blockSky_height, blockWheels_height, blockBumper_height;
@@ -28,6 +28,8 @@ int perfect_lines_min_cut, Laplacian_threshold;
 
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
+    auto time_stamp = msg->header.stamp;
+
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     Mat frame = cv_ptr->image;
 
@@ -55,10 +57,10 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     Mat green_lines = overlayBinaryGreen(frame, fill);
 
 //	publish images
-    publishMessage(pub, fill, "mono8");
-    publishMessage(pub1, cut, "mono8");
-    publishMessage(pub2, lapl, "mono8");
-    publishMessage(pub3, green_lines, "bgr8");
+    publishMessage(pub, fill, "mono8", time_stamp);
+    publishMessage(pub1, cut, "mono8", time_stamp);
+    publishMessage(pub2, lapl, "mono8", time_stamp);
+    publishMessage(pub3, green_lines, "bgr8", time_stamp);
 }
 
 
@@ -139,12 +141,13 @@ cv::Mat cutSmall(cv::Mat color_edges, int size_min) {
     return contours_color;
 }
 
-void publishMessage(ros::Publisher pub, Mat img, std::string img_type) {
+void publishMessage(ros::Publisher pub, Mat img, std::string img_type, ros::Time time_stamp) {
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptr->image = img;
         cv_ptr->encoding = img_type;
         cv_ptr->toImageMsg(outmsg);
+        outmsg.header.stamp = time_stamp;
         pub.publish(outmsg);
     }
 }

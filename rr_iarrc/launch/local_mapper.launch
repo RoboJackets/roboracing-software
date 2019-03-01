@@ -6,4 +6,9 @@
         <param name="update_hz" value="50"/>
         <param name="publish_resolution" value="5"/>
     </node>
+
+    <node pkg="rr_common" type="local_mapper" name="local_mapper" output="screen">
+        <param name="current_obstacles_topic" value="/lines_detection_img_transformed_cloud"/>
+        <param name="time_horizon" value="5.0"/>
+    </node>
 </launch>

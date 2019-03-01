@@ -11,18 +11,7 @@
         <param name="blockBumper_height" type="int" value="200" />
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
+
+        <remap from="Combined_lines" to="/lines_detection_img"/>
     </node>
-
-        <param name="robot_description" command="cat $(find rr_description)/urdf/sedani.urdf"/>
-        <node name="sedani_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
-
-        <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
-            <param name="transform_topics" value="/Combined_lines"/>
-        </node>
-
-        <!--Uncomment for bird-eye view point cloud-->
-        <!--<node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">-->
-            <!--<param name="image_topics" value="/Combined_lines_transformed"/>-->
-            <!--<param name="px_per_meter" value="100.0"/>-->
-        <!--</node>-->
 </launch>

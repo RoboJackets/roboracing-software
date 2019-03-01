@@ -22,8 +22,10 @@ public:
    * Register callback for /pose_history topic
    * @param handle NodeHandle to use for subscription
    */
-  void RegisterCallback(ros::NodeHandle& handle);
+  ros::Subscriber RegisterCallback(ros::NodeHandle& handle);
 
 private:
+  void callback(const nav_msgs::PathConstPtr& path_msg);
+
   nav_msgs::PathConstPtr history_;
 };

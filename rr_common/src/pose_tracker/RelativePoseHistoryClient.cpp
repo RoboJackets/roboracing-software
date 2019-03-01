@@ -28,11 +28,12 @@ RelativePoseHistoryClient::Pose linear_interp(const geometry_msgs::PoseStamped& 
   return out_pose;
 }
 
-void RelativePoseHistoryClient::RegisterCallback(ros::NodeHandle& nh) {
-  auto callback = [this](const nav_msgs::PathConstPtr& path_msg) {
-    history_ = path_msg;
-  };
-  nh.subscribe<nav_msgs::Path>("/pose_history", 1, callback);
+void RelativePoseHistoryClient::callback(const nav_msgs::PathConstPtr& path_msg) {
+  history_ = path_msg;
+}
+
+ros::Subscriber RelativePoseHistoryClient::RegisterCallback(ros::NodeHandle& nh) {
+  return nh.subscribe("/pose_history", 1, &RelativePoseHistoryClient::callback, this);
 }
 
 RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime(const ros::Time& t) {
@@ -64,6 +65,7 @@ RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime
         // interpolate between newest point in history and now
         geometry_msgs::PoseStamped now_pose;  // x = y = z = r = p = y = 0
         now_pose.header.stamp = now;
+        now_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
         out_pose = linear_interp(poses[0], now_pose, t);
       }
     }

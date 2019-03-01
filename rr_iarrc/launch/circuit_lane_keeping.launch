@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <include file="$(dirname)/laplacian_line_detector.launch"/>
+
+    <include file="$(dirname)/lines_pcl_converter.launch"/>
+
+    <include file="$(dirname)/local_mapper.launch"/>
+</launch>

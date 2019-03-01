@@ -25,14 +25,17 @@ struct HistoryPoint {
 // globals
 double speed_;
 double yaw_;
+ros::Time most_recent_data_time;
 
 
 void chassis_state_callback(const ChassisState::ConstPtr& msg) {
   speed_ = msg->speed_mps;
+  most_recent_data_time = msg->header.stamp;
 }
 
 void orientation_callback(const Orientation::ConstPtr& msg) {
   yaw_ = msg->yaw;
+  most_recent_data_time = msg->header.stamp;
 }
 
 
@@ -99,8 +102,8 @@ int main(int argc, char** argv) {
   }
 
   // subscribers
-  auto sub1 = nh.subscribe<ChassisState>(chassis_state_topic, 1, chassis_state_callback);
-  auto sub2 = nh.subscribe<Orientation>(angles_topic, 1, orientation_callback);
+  auto sub1 = nh.subscribe(chassis_state_topic, 1, chassis_state_callback);
+  auto sub2 = nh.subscribe(angles_topic, 1, orientation_callback);
 
   auto history_publisher = nh.advertise<PoseHistoryMsg>("/pose_history", 10);
 
@@ -115,27 +118,31 @@ int main(int argc, char** argv) {
     rate.sleep();
     ros::spinOnce();
 
-    auto now = ros::Time::now();
-
     // remove any history which is too old
-    while (!history.empty() && history.back().time + time_horizon < now) {
+    while (!history.empty() && history.back().time + time_horizon < most_recent_data_time) {
       history.pop_back();
+    }
+
+    // handle time looping from rosbag, etc.
+    if (!history.empty() && history.front().time < history.back().time) {
+      history.clear();
     }
 
     // record current state
     auto& history_front = history.emplace_front();
-    history_front.time = now;
+    history_front.time = most_recent_data_time;
     history_front.speed = speed_;
     history_front.yaw = yaw_;
 
     // estimate previous path
     if (history.size() >= 2) {
       PoseHistoryMsg pose_history_msg;
-      pose_history_msg.header.stamp = now;
+      pose_history_msg.header.stamp = most_recent_data_time;
       pose_history_msg.header.frame_id = "base_footprint";
 
-      auto& origin = pose_history_msg.poses.emplace_back().pose;  // default constructor puts this at the origin
-      origin.orientation = tf::createQuaternionMsgFromYaw(0);
+      auto& origin = pose_history_msg.poses.emplace_back();  // default constructor puts this at the origin
+      origin.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+      origin.header.stamp = history.front().time;
 
       // the notation here is slightly confusing but we are moving from "next" to "current"
       int counter = 1;
