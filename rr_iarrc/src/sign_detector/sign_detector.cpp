@@ -37,14 +37,14 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
       crop = frame(roi); //note that crop is just a reference to that roi of the frame, not a copy
     }
 
-std::string path1 = ros::package::getPath("rr_iarrc");
-crop =  cv::imread(path1 + "/src/sign_detector/traffic_signs.png");
+//std::string path1 = ros::package::getPath("rr_iarrc");
+//crop =  cv::imread(path1 + "/src/sign_detector/traffic_signs.png");
 
     cv::GaussianBlur(crop, crop, cv::Size(5,5), 0, 0, cv::BORDER_DEFAULT); //may or may not help Canny
 
     //Color -> binary; Edge detection
     cv::Mat edges;
-    double thresh1 = 100; //TODO: make these launch params
+    double thresh1 = 100; //#TODO: make these launch params
     double thresh2 = thresh1 * 3;
     cv::Canny(crop, edges, thresh1, thresh2 );
 
@@ -56,14 +56,18 @@ crop =  cv::imread(path1 + "/src/sign_detector/traffic_signs.png");
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours(edges, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
+    /* //Allows viewing of the Canny and drawing on it #debug
     std::vector<cv::Mat> channels(3);
     channels[0] = edges;
     channels[1] = edges;
     channels[2] = edges;
     cv::merge(channels, crop);
+    */
 
+    cv::drawContours(crop, contours, -1, cv::Scalar(0,255,0), 2); //debug #TODO: REMOVE
 
-    //cv::drawContours(crop, contours, -1, cv::Scalar(0,255,0), 2); //debug #TODO: REMOVE
+    cv::Rect bestMatch(0,0,0,0);
+    std::string bestMove = "NONE"; //"right", "left", "straight"
 
     for(size_t i=0; i<contours.size(); i++) {
       std::vector<cv::Point> c = contours[i]; //curent contour
@@ -73,43 +77,59 @@ crop =  cv::imread(path1 + "/src/sign_detector/traffic_signs.png");
       cv::approxPolyDP(c, approxC, epsilon, true);
       if (approxC.size() >= 7 || approxC.size() <= 9) { //#TODO: adjust bounds of what is an arrow after adjusting epsilon
           //check the ratio is arrow-like
-          cv::Rect rect = cv::boundingRect(c); //#TODO: maybe do the bounding rectc check before approximation
-          double ratio = 1.5; //ratio of width or height or vice versa
-          if (rect.width * ratio <= rect.height || rect.height * ratio <= rect.width) {
+          cv::Rect rect = cv::boundingRect(c); //#TODO: maybe do the bounding rect check before approximation
+          double ratioMin = 1.5; //ratio of width to height or vice versa
+          double ratioMax = 2.2;
+          if ( (rect.width * ratioMin <= rect.height && rect.width * ratioMax >= rect.height) ||
+                (rect.height * ratioMin <= rect.width && rect.height * ratioMax >= rect.width) ) {
+
             cv::rectangle(crop, rect, cv::Scalar(0,255,255),3); //debug #TODO: REMOVE
 
             if (rect.width > rect.height) {
               //Sideways
-              double matchThreshold = 0.2; //#TODO: play with this #
-              double matchLikeness = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I1, 0); //#TODO: change to sideways contours
-              cv::putText(crop, std::to_string(matchLikeness), cv::Point(rect.x, rect.y +10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+              double matchThreshold = 0.2; //#TODO: play with this #and add a left/right shape to compare to as well.
+              double matchSimilarity = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I1, 0); //#TODO: change to sideways contours
 
-              if (matchLikeness < matchThreshold) {
+              if (matchSimilarity < matchThreshold) {
                   // find top point of the arrow and test its x location
                   auto extremeY = std::minmax_element(c.begin(), c.end(), [](cv::Point const& a, cv::Point const& b){
                       return a.y < b.y;
                   });
                   if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
                     //left pointing arrow!
-                    cv::putText(crop, "Left!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0, 255), 2);
-                    cv::putText(crop, std::to_string(matchLikeness), cv::Point(rect.x, rect.y +10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+                    cv::putText(crop, "Left", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0, 255), 2);
+                    cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y +10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+
+                    if (rect.area() > bestMatch.area()) {
+                      bestMatch = rect;
+                      bestMove = "left";
+                    }
+
                   } else {
                     //right pointing arrow!
-                    cv::putText(crop, "Right!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
-                    cv::putText(crop, std::to_string(matchLikeness), cv::Point(rect.x, rect.y + 10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+                    cv::putText(crop, "Right", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
+                    cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y + 10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+
+                    if (rect.area() > bestMatch.area()) {
+                      bestMatch = rect;
+                      bestMove = "right";
+                    }
 
                   }
 
               }
             } else {
               //Straight
-              double matchThreshold = 0.2; //#TODO: play with this #
-              double matchLikeness = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I2, 0.0);
-              if (matchLikeness < matchThreshold) {
-                  cv::putText(crop, "Forward!", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
-                  cv::putText(crop, std::to_string(matchLikeness), cv::Point(rect.x, rect.y + 10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
+              double matchThreshold = 0.1; //#TODO: play with this #
+              double matchSimilarity = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I2, 0.0);
+              if (matchSimilarity < matchThreshold) {
+                  cv::putText(crop, "Straight", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
+                  cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y + 10), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255, 255), 2);
 
-
+                  if (rect.area() > bestMatch.area()) {
+                    bestMatch = rect;
+                    bestMove = "straight";
+                  }
               }
             }
 
@@ -120,15 +140,16 @@ crop =  cv::imread(path1 + "/src/sign_detector/traffic_signs.png");
     }
 
     //Some debug images for us
-    //show where the match is found
-    //cv::Mat sign = sign_forward;
-    //cv::rectangle(crop, matchLoc, cv::Point(matchLoc.x + sign.cols, matchLoc.y + sign.rows), cv::Scalar(0, 255, 0), 2, 8, 0);
+    //show the bestMatch
+    cv::rectangle(crop, bestMatch, cv::Scalar(0,255,255), 2, 8 ,0);
+    cv::putText(crop, bestMove, bestMatch.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,255), 2);
+
     //show where we are cropped to
     cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.cols-1, crop.rows-1), cv::Scalar(0,255,0), 2, 8 ,0);
 
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
-        cv_ptr->image = crop;//frame;
+        cv_ptr->image = crop;//frame; //#TODO change to frame
         cv_ptr->encoding = "bgr8";
         cv_ptr->toImageMsg(outmsg);
         pub.publish(outmsg);
