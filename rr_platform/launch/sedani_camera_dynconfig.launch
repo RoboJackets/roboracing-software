@@ -1,7 +1,6 @@
 <launch>
     <!-- Don't forget commas between entries in the dictionary -->
     <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_configurator"
-    args="load /pointgrey_camera_nodelet $(find rr_platform)/launch/flir.yaml"
-    >
+          args="load /pointgrey_camera_nodelet $(find rr_platform)/launch/flir.yaml">
     </node>
 </launch>

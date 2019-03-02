@@ -1,93 +1,28 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
-  auto_exposure: true
-  auto_gain: true
-  auto_saturation: true
-  auto_sharpness: true
-  auto_shutter: true 
-  auto_white_balance: true
-  brightness: 1.3671875
-  enable_strobe1: false
-  enable_strobe2: false
-  enable_trigger: false
-  enable_trigger_delay: false
-  exposure: -3.4150390625
-  format7_color_coding: raw8
-  format7_roi_height: 964
-  format7_roi_width: 1280
-  format7_x_offset: 0
-  format7_y_offset: 0
-  frame_rate: 30.003332138061523
-  gain: 0.0
-  gamma: 1.0
-  # groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-  #   dictitems:
-  #     auto_exposure: false
-  #     auto_gain: true
-  #     auto_saturation: true
-  #     auto_sharpness: true
-  #     auto_shutter: false
-  #     auto_white_balance: true
-  #     brightness: 1.3671875
-  #     enable_strobe1: false
-  #     enable_strobe2: false
-  #     enable_trigger: false
-  #     enable_trigger_delay: false
-  #     exposure: -3.4150390625
-  #     format7_color_coding: raw8
-  #     format7_roi_height: 964
-  #     format7_roi_width: 1280
-  #     format7_x_offset: 0
-  #     format7_y_offset: 0
-  #     frame_rate: 30.003332138061523
-  #     gain: 0.0
-  #     gamma: 1.0
-  #     groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-  #       state: []
-  #     id: 0
-  #     name: Default
-  #     pan: 0
-  #     parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-  #       state: []
-  #     parent: 0
-  #     saturation: 100.0
-  #     sharpness: 0.0
-  #     shutter_speed: 0.029996931076049806
-  #     state: true
-  #     strobe1_delay: 0.0
-  #     strobe1_duration: 0.0
-  #     strobe1_polarity: 0
-  #     strobe2_delay: 0.0
-  #     strobe2_duration: 0.0
-  #     strobe2_polarity: 0
-  #     tilt: 0
-  #     trigger_delay: 0.0
-  #     trigger_mode: mode0
-  #     trigger_parameter: 0
-  #     trigger_polarity: 0
-  #     trigger_source: gpio0
-  #     type: ''
-  #     video_mode: format7_mode0
-  #     white_balance_blue: 800
-  #     white_balance_red: 550
-  #   state: []
-  pan: 0
-  saturation: 100.0
-  sharpness: 0.0
-  shutter_speed: 0.029996931076049806
-  strobe1_delay: 0.0
-  strobe1_duration: 0.0
-  strobe1_polarity: 0
-  strobe2_delay: 0.0
-  strobe2_duration: 0.0
-  strobe2_polarity: 0
-  tilt: 0
-  trigger_delay: 0.0
-  trigger_mode: mode0
-  trigger_parameter: 0
-  trigger_polarity: 0
-  trigger_source: gpio0
   video_mode: format7_mode0
+  frame_rate: 15
+  format7_color_coding: raw8
+
+  auto_exposure: true
+  exposure: -3.4150390625
+
+  auto_gain: true
+  gain: 0.0
+  brightness: 1.3671875
+
+  auto_saturation: true
+  saturation: 100.0
+
+  auto_sharpness: true
+  sharpness: 0.0
+
+  auto_shutter: true
+  shutter_speed: 0.029996931076049806
+
+  auto_white_balance: true
   white_balance_blue: 800
   white_balance_red: 550
+  gamma: 1.0
+
 state: []
