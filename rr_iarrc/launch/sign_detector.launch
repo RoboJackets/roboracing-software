@@ -1,0 +1,14 @@
+<launch>
+    <node name="sign_detector" pkg="rr_iarrc" type="sign_detector" output="screen">
+        <!--Crop Area (-1 keeps whole screen)-->
+        <param name="roi_x" type="int" value="-1" />
+        <param name="roi_y" type="int" value="-1" />
+        <param name="roi_width" type="int" value="600" />
+        <param name="roi_height" type="int" value="600" />
+
+        <param name="img_subscription" type="string" value="/camera/image_color_rect"/>
+
+        <param name="sign_file_package_name" type="string" value="rr_iarrc"/>
+        <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
+    </node>
+</launch>
