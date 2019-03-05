@@ -13,12 +13,26 @@
 using cloud_t = pcl::PointCloud<pcl::PointXYZ>;
 using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
-std::map<std::string, sensor_msgs::PointCloud2ConstPtr> partials;
-bool needsUpdating = false;
+std::map<std::string, std::queue<sensor_msgs::PointCloud2ConstPtr>> queues;
+bool hasChanged = false;
+
+bool shouldUpdate() {
+    if (!hasChanged) {
+        return false;
+    }
+
+    for (const auto& entry : queues) {
+        if (entry.second.empty()) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
-    partials[topic] = msg;
-    needsUpdating = true;
+    queues[topic].push(msg);
+    hasChanged = true;
 }
 
 /**
@@ -89,15 +103,15 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         ros::spinOnce();
 
-        if(needsUpdating) {
+        if(shouldUpdate()) {
 
             combo_cloud->clear();
             combo_cloud_filtered->clear();
 
-            for(const auto& partial_pair : partials) {
-                // grab the reference to the sensor message from the map
-                auto& msg = partial_pair.second;
-                if(msg->width == 0) continue;
+            for(const auto& entry : queues) {
+                std::queue<sensor_msgs::PointCloud2ConstPtr> queue = entry.second;
+                auto& msg = queue.front();
+                queue.pop();
 
                 // convert from message to pcl pointcloud
                 pcl::PCLPointCloud2 pcl_pc2;
@@ -144,7 +158,7 @@ int main(int argc, char** argv) {
 
             combo_pub.publish(msg);
 
-            needsUpdating = false;
+            hasChanged = false;
         }
 
         rate.sleep();
