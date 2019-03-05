@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
-    pub = nh.advertise<sensor_msgs::Image>("/Combined_lines", 1); //test publish of image
+    pub = nh.advertise<sensor_msgs::Image>("/lines_detection_img", 1); //test publish of image
     pub1 = nh.advertise<sensor_msgs::Image>("/Adpt_Thres_lines", 1);
     pub2 = nh.advertise<sensor_msgs::Image>("/Laplacian_lines", 1);
     pub3 = nh.advertise<sensor_msgs::Image>("/Colored_combined_lines", 1);
