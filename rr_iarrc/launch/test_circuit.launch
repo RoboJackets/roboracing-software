@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
+
+    <include file="$(dirname)/laplacian_line_detector.launch"/>
+
+    <include file="$(dirname)/pointcloud_converter.launch"/>
+
+    <include file="$(dirname)/local_mapper.launch"/>
+
+    <include file="$(dirname)/mpc_planner.launch"/>
+</launch>

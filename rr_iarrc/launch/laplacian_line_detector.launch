@@ -11,7 +11,5 @@
         <param name="blockBumper_height" type="int" value="200" />
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
-
-        <remap from="Combined_lines" to="/lines_detection_img"/>
     </node>
 </launch>

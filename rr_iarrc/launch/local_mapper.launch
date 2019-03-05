@@ -1,4 +1,6 @@
 <launch>
+    <arg name="obstacles_topic"/>
+
     <node pkg="rr_common" type="pose_tracker_server" name="pose_tracker_server" output="screen">
         <param name="chassis_state_topic" value="/chassis_state"/>
         <param name="angles_topic" value="/axes"/>
@@ -8,7 +10,7 @@
     </node>
 
     <node pkg="rr_common" type="local_mapper" name="local_mapper" output="screen">
-        <param name="current_obstacles_topic" value="/lines_detection_img_transformed_cloud"/>
-        <param name="time_horizon" value="5.0"/>
+        <param name="current_obstacles_topic" value="$(arg obstacles_topic)"/>
+        <param name="time_horizon" value="3.0"/>
     </node>
 </launch>
