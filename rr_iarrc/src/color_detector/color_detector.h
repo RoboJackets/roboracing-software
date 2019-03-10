@@ -4,7 +4,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 
-namespace iarrc {
+namespace rr_iarrc {
 class color_detector : public nodelet::Nodelet {
 private:
     image_transport::Publisher img_pub;
@@ -26,4 +26,3 @@ private:
 };
 
 }
-
