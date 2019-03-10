@@ -37,6 +37,7 @@ double cannyThresholdHigh;
 std::string currentMove = "NONE";
 
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
+ros::Time start = ros::Time::now();
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
@@ -52,8 +53,6 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     //Color -> binary; Edge detection
     cv::Mat edges;
-    double thresh1 = 100; //#TODO: make these launch params
-    double thresh2 = thresh1 * 3;
     cv::Canny(crop, edges, cannyThresholdLow, cannyThresholdHigh );
 
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(3,3));
@@ -88,7 +87,6 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
             if (rect.width > rect.height) {
               //Sideways
               double matchSimilarity = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I1, 0); //#TODO: change to sideways contours
-
               cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y + 25), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
 
               if (matchSimilarity <= turnMatchSimilarityThreshold) {
