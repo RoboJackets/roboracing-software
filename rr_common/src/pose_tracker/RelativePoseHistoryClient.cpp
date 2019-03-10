@@ -1,5 +1,5 @@
-#include "pose_tracker/RelativePoseHistoryClient.h"
-#include "pose_tracker/angle_utils.hpp"
+#include "rr_common/RelativePoseHistoryClient.h"
+#include "rr_common/angle_utils.hpp"
 
 /**
  * Interpolate in time domain between two poses

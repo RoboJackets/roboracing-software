@@ -8,7 +8,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "pose_tracker/RelativePoseHistoryClient.h"
+#include "rr_common/RelativePoseHistoryClient.h"
 
 // types
 using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
