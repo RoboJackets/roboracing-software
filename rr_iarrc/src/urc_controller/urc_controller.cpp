@@ -11,10 +11,10 @@ const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
 const int TURNING = 3; 
+const double PI = 3.14; 
 
 std::string startSignal;
 std::string resetSignal;
-
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
@@ -27,6 +27,7 @@ bool raceStarted;
 bool turnDetected = false;
 bool completed; 
 
+int imu_quadrant; 
 double imu_yaw;
 double initial_yaw; 
 double target_yaw;
@@ -42,6 +43,31 @@ double forward_timeout;
 
 std::string turn_direction = "right";
 ros::Time finishTime;
+
+/*
+// As you turn counterclockwise, the yaw value received from the IMU ranges from [0, 3.14] U [-3.14, 0]
+// This function returns a new yaw value in the range of [0 ,6.28]
+*/
+double setInRange(double yaw_read){
+    double new_yaw; 
+    if(yaw_read < 0){
+        new_yaw = yaw_read + 2*PI; 
+        return new_yaw;
+    }else{
+        return yaw_read;
+    }
+}
+
+/*
+// Checks to see in which quadrant the current yaw reading is in. Turning right while in Q1, and turning left in Q4 are special cases.
+*/
+void checkQuadrant(){
+    if(imu_yaw <= 2*PI && imu_yaw >= 1.5*PI ){
+        imu_quadrant = 4;
+    }else if(imu_yaw >= 0 && imu_yaw <= .5*PI){
+        imu_quadrant = 1;
+    }
+}
 
 void publishSpeedandSteering(){
         rr_platform::speed speedMsg;
@@ -64,6 +90,7 @@ void updateState() {
                 state = RUNNING_PLANNER;
             }
             break;
+
         case RUNNING_PLANNER:
             speed = planSpeed;
             steering = planSteering;
@@ -76,23 +103,34 @@ void updateState() {
             } 
             break;
 
-
         case TURNING: 
             initial_yaw = imu_yaw; 
+            checkQuadrant(); 
 
             if(turn_direction.compare("left")){
-                target_yaw = initial_yaw - 1.57 + left_offset;
-                while(imu_yaw > target_yaw){
+
+                if(imu_quadrant == 4){
+                    target_yaw = initial_yaw - 1.5*PI - left_offset;
+                }else{
+                    target_yaw = initial_yaw + .5*PI + left_offset;
+                }
+                
+                while(imu_yaw != target_yaw){
                     speed = turn_speed;
                     steering = left_turn_steering;
                     publishSpeedandSteering();
                 }
                 state = RUNNING_PLANNER;
 
-
             }else if(turn_direction.compare("right")){
-                target_yaw = initial_yaw + 1.57 + right_offset;
-                while(imu_yaw < target_yaw){
+
+                if(imu_quadrant == 1){
+                    target_yaw = initial_yaw + 1.5*PI + right_offset;
+                }else{
+                    target_yaw = initial_yaw - .5*PI + right_offset;
+                }
+
+                while(imu_yaw != target_yaw){
                     speed = turn_speed;
                     steering = right_turn_steering;
                     publishSpeedandSteering();
@@ -110,9 +148,8 @@ void updateState() {
                 }
                 state = RUNNING_PLANNER;
             }
-
-
             break; 
+
         case FINISHED:
             ROS_INFO("Finished");
             if( (ros::Time::now() - finishTime) > ros::Duration(0.5)) {
@@ -120,7 +157,6 @@ void updateState() {
                 steering = 0.0;
             }
             break;
-
 
         default:
             ROS_WARN("URC state machine defaulted");
@@ -140,7 +176,6 @@ void startLightCB(const std_msgs::Bool::ConstPtr &bool_msg) {
     raceStarted = bool_msg->data;
 }
 
-
 void resetCB(const rr_platform::race_reset &reset_msg) {
     state = WAITING_FOR_START;
     raceStarted = false;
@@ -148,11 +183,11 @@ void resetCB(const rr_platform::race_reset &reset_msg) {
 }
 
 void imuCB(const rr_platform::axesConstPtr& msg){
-     imu_yaw = msg->yaw;
+     imu_yaw = setInRange(msg->yaw);
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "navigation_controller");
+    ros::init(argc, argv, "urc_controller");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
