@@ -145,7 +145,6 @@
     </gazebo>
 
 
-
     <!--Sensor Links-->
 
     <link name="laser"/>
@@ -198,57 +197,155 @@
         </sensor>
     </gazebo>
 
-
-    <link name="camera">
+    <link name="camera_center">
         <inertial> <!--Null inertia-->
             <mass value="0.001"/>
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
         </inertial>
     </link>
-    <gazebo reference="camera">
-        <sensor name="camera_sensor" type="depth">
+    <gazebo reference="camera_center">
+        <sensor name="camera_sensor" type="camera">
             <camera>
                 <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
                 <image>
-                    <width>320</width>
-                    <height>240</height>
+                    <width>1280</width>
+                    <height>964</height>
                     <format>R8G8B8</format>
                 </image>
                 <clip>
                     <near>0.05</near>
                     <far>100</far>
                 </clip>
+                <noise>
+                  <type>gaussian</type>
+                  <!-- Noise is sampled independently per pixel on each frame.
+                       That pixel's noise value is added to each of its color
+                       channels, which at that point lie in the range [0,1]. -->
+                  <mean>0.0</mean>
+                  <stddev>0.007</stddev>
+                </noise>
             </camera>
             <always_on>true</always_on>
             <update_rate>30</update_rate>
-            <visualize>false</visualize>
-            <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <robotNamespace>/</robotNamespace>
                 <baseline>0.1</baseline>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>30.0</updateRate>
-                <cameraName>camera</cameraName>
+                <cameraName>camera_center</cameraName>
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <depthImageTopicName>depth/image_raw</depthImageTopicName>
-                <depthImageInfoTopicName>depth/camera_info</depthImageInfoTopicName>
-                <pointCloudTopicName>depth/points</pointCloudTopicName>
-                <frameName>camera_optical</frameName>
-                <pointCloudCutoff>0.4</pointCloudCutoff>
+                <frameName>camera_optical_center</frameName>
                 <distortionK1>0.00000001</distortionK1>
                 <distortionK2>0.00000001</distortionK2>
                 <distortionK3>0.00000001</distortionK3>
                 <distortionT1>0.00000001</distortionT1>
                 <distortionT2>0.00000001</distortionT2>
-                <CxPrime>0</CxPrime>
-                <Cx>0</Cx>
-                <Cy>0</Cy>
-                <focalLength>0</focalLength>
             </plugin>
         </sensor>
     </gazebo>
 
-    <link name="camera_optical"/>
+    <link name="camera_optical_center"/>
+
+    <link name="camera_left">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <gazebo reference="camera_left">
+        <sensor name="camera_sensor" type="camera">
+            <camera>
+                <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>100</far>
+                </clip>
+                <noise>
+                  <type>gaussian</type>
+                  <!-- Noise is sampled independently per pixel on each frame.
+                       That pixel's noise value is added to each of its color
+                       channels, which at that point lie in the range [0,1]. -->
+                  <mean>0.0</mean>
+                  <stddev>0.007</stddev>
+                </noise>
+            </camera>
+            <always_on>true</always_on>
+            <update_rate>30</update_rate>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <robotNamespace>/</robotNamespace>
+                <baseline>0.1</baseline>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>30.0</updateRate>
+                <cameraName>camera_left</cameraName>
+                <imageTopicName>image_raw</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <frameName>camera_optical_left</frameName>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <link name="camera_optical_left"/>
+
+    <link name="camera_right">
+        <inertial> <!--Null inertia-->
+            <mass value="0.001"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+    <gazebo reference="camera_left">
+        <sensor name="camera_sensor" type="camera">
+            <camera>
+                <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>100</far>
+                </clip>
+                <noise>
+                  <type>gaussian</type>
+                  <!-- Noise is sampled independently per pixel on each frame.
+                       That pixel's noise value is added to each of its color
+                       channels, which at that point lie in the range [0,1]. -->
+                  <mean>0.0</mean>
+                  <stddev>0.007</stddev>
+                </noise>
+            </camera>
+            <always_on>true</always_on>
+            <update_rate>30</update_rate>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <robotNamespace>/</robotNamespace>
+                <baseline>0.1</baseline>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>30.0</updateRate>
+                <cameraName>camera_right</cameraName>
+                <imageTopicName>image_raw</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <frameName>camera_optical_right</frameName>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <link name="camera_optical_right"/>
 
 
     <link name="ultrasonic_array_base">
@@ -371,15 +468,40 @@
         <axis xyz="0 1 0"/>
     </joint>
 
-    <joint name="camera_joint" type="fixed">
+
+    <joint name="camera_joint_center" type="fixed">
         <parent link="chassis"/>
-        <child link="camera"/>
+        <child link="camera_center"/>
         <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
     </joint>
 
-    <joint name="camera_optical_joint" type="fixed">
-        <parent link="camera"/>
-        <child link="camera_optical"/>
+    <joint name="camera_optical_joint_center" type="fixed">
+        <parent link="camera_center"/>
+        <child link="camera_optical_center"/>
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+
+    <joint name="camera_joint_left" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera_left"/>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="camera_optical_joint_left" type="fixed">
+        <parent link="camera_left"/>
+        <child link="camera_optical_left"/>
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+
+    <joint name="camera_joint_right" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera_right"/>
+        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="camera_optical_joint_right" type="fixed">
+        <parent link="camera_right"/>
+        <child link="camera_optical_right"/>
         <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
     </joint>
 
