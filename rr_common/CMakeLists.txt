@@ -23,15 +23,11 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  #INCLUDE_DIRS include
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
@@ -57,3 +53,4 @@ add_subdirectory(src/mapper)
 add_subdirectory(src/navigation_controller)
 add_subdirectory(src/sound_node)
 add_subdirectory(src/follower)
+add_subdirectory(src/camera_geometry)

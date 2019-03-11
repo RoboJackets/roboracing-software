@@ -22,6 +22,7 @@ find_package(
     std_msgs
     message_generation
     geometry_msgs
+    rr_common
 )
 
 find_package(OpenCV REQUIRED)

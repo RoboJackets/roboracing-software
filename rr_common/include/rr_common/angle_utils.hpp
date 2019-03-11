@@ -42,17 +42,28 @@ double heading_diff(double theta1, double theta2) {
 
 
 /**
- * Get the yaw value from a pose
+ * Get the roll, pitch, and yaw values from a pose
  * @param pose_stamped any geometry_msgs::PoseStamped
- * @return yaw Euler angle
+ * @return tuple<roll, pitch, yaw>
  */
-double poseStampedToYaw(const geometry_msgs::PoseStamped& pose_stamped) {
+std::tuple<double, double, double> poseToRPY(const geometry_msgs::Pose& pose) {
   tf::Quaternion q;
-  tf::quaternionMsgToTF(pose_stamped.pose.orientation, q);
+  tf::quaternionMsgToTF(pose.orientation, q);
 
   double roll, pitch, yaw;
   tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
-  return yaw;
+
+  return std::make_tuple(roll, pitch, yaw);
+}
+
+
+/**
+ * Get the yaw value from a pose
+ * @param pose_stamped any geometry_msgs::Pose
+ * @return yaw Euler angle
+ */
+double poseToYaw(const geometry_msgs::Pose& pose) {
+  return std::get<2>(poseToRPY(pose));
 }
 
 }  // namespace rr
