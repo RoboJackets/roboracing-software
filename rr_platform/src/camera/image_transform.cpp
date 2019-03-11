@@ -2,12 +2,7 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <rr_platform/calibrate_image.h>
-#include <rr_platform/camera_pose.h>
 #include <cmath>
-#include <sensor_msgs/JointState.h>
-#include <tf/transform_listener.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <boost/algorithm/string.hpp>
 #include <rr_common/CameraGeometry.h>
 

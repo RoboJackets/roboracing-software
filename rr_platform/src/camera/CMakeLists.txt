@@ -1,3 +1,5 @@
 add_executable(image_transform image_transform.cpp)
 target_link_libraries(image_transform rr_camera_geometry ${catkin_LIBRARIES})
-add_dependencies(image_transform rr_platform_generate_messages_cpp)
+
+add_executable(image_transform_test image_transform_test.cpp)
+target_link_libraries(image_transform_test rr_camera_geometry ${catkin_LIBRARIES})

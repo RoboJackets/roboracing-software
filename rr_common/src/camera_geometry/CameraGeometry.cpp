@@ -120,7 +120,7 @@ double CameraGeometry::AngleFromCenterColumn(int col) {
   return col_diff * angle_per_col;
 }
 
-geometry_msgs::Point CameraGeometry::ProjectToWorld(int row, int col) {
+std::tuple<bool, geometry_msgs::Point> CameraGeometry::ProjectToWorld(int row, int col) {
   const auto [cam_roll, cam_pitch, cam_yaw] = GetCameraOrientationRPY();
 
   // pitch is negative if pointing down to ground, so invert it
@@ -141,7 +141,7 @@ geometry_msgs::Point CameraGeometry::ProjectToWorld(int row, int col) {
   point_world.y = point_rotated.y() + camera_pose_.position.y;
   point_world.z = 0;
 
-  return point_world;
+  return std::make_tuple(pitch_ground_relative > 0, point_world);
 }
 
 }  // namespace rr

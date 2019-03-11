@@ -34,7 +34,7 @@ public:
 
   double AngleFromCenterColumn(int col);
 
-  geometry_msgs::Point ProjectToWorld(int row, int col);
+  std::tuple<bool, geometry_msgs::Point> ProjectToWorld(int row, int col);
 
 
 protected:
