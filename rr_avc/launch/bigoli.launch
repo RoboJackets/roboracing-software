@@ -35,14 +35,11 @@
         <param name="steering_gain" value="1.0"/>
 
         <param name="distance_increment" value="0.1"/>
-        <param name="segment_sections" value="$(eval ' '.join(['6'] * n_path_segments))"/>
+        <param name="segment_sections" value="$(eval ' '.join(['10'] * n_path_segments))"/>
 
         <param name="n_path_segments" value="$(arg n_path_segments)"/>
         <param name="temperature_start" value="0.2"/>
         <param name="temperature_end" value="0.02"/>
-
-        <param name="distance_increment" value="0.1"/>
-        <param name="segment_sections" value="$(eval ' '.join(['10'] * n_path_segments))"/>
 
         <param name="annealing_steps" value="1000"/>
         <param name="k_dist" value="0.9"/>
