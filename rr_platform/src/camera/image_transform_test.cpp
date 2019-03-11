@@ -5,29 +5,25 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <rr_common/CameraGeometry.h>
+#include "CameraGeometry.h"
 
-rr::CameraGeometry* cam_geom;
+rr::CameraGeometry cam_geom;
 ros::Publisher pointcloud_pub;
 
 void image_cb(const sensor_msgs::ImageConstPtr& msg) {
   const auto cv_img = cv_bridge::toCvCopy(msg, "mono8")->image;
   pcl::PointCloud<pcl::PointXYZ> cloud;
 
-  const auto start_time = ros::Time::now();
-
   for (int r = 0; r < cv_img.rows; r++) {
     for (int c = 0; c < cv_img.cols; c++) {
-      if (cv_img.at<uint8_t>(r, c) > 0 || r == 100) {
-        auto [in_front, point] = cam_geom->ProjectToWorld(r, c);
+      if (cv_img.at<uint8_t>(r, c) > 0) {
+        auto [in_front, point] = cam_geom.ProjectToWorld(r, c);
         if (in_front) {
           cloud.push_back(pcl::PointXYZ(point.x, point.y, 0));
         }
       }
     }
   }
-
-  ROS_INFO("found %lu points in %f seconds", cloud.size(), (ros::Time::now() - start_time).toSec());
 
   sensor_msgs::PointCloud2 out;
   pcl::toROSMsg(cloud, out);
@@ -41,8 +37,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh;
 
   // load camera geometry
-  cam_geom = new rr::CameraGeometry;
-  cam_geom->LoadInfo(nh, "/camera/camera_info", "camera", 60.0);
+  cam_geom.LoadInfo(nh, "/camera/camera_info", "camera", 60.0);
 
   ROS_INFO("finished load info");
 

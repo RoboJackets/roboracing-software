@@ -1,5 +1,10 @@
+add_library(rr_camera_geometry CameraGeometry.cpp)
+target_link_libraries(rr_camera_geometry ${catkin_LIBRARIES})
+
 add_executable(image_transform image_transform.cpp)
 target_link_libraries(image_transform rr_camera_geometry ${catkin_LIBRARIES})
+add_dependencies(image_transform rr_camera_geometry)
 
 add_executable(image_transform_test image_transform_test.cpp)
 target_link_libraries(image_transform_test rr_camera_geometry ${catkin_LIBRARIES})
+add_dependencies(image_transform_test rr_camera_geometry)
