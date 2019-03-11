@@ -19,11 +19,8 @@ ros::Publisher pub, pub1, pub2, pub3;
 
 cv::Mat kernel(int, int);
 cv::Mat fillColorLines(cv::Mat, cv::Mat);
-cv::Mat fillColorLines2(cv::Mat, cv::Mat);
-cv::Mat fillColorLines3(cv::Mat, cv::Mat);
 void cutEnvironment(cv::Mat, int offset);
 cv::Mat cutSmall(cv::Mat, int);
-cv::Mat cutSmall2(cv::Mat, int);
 void publishMessage(ros::Publisher, Mat, std::string);
 Mat overlayBinaryGreen(Mat, Mat);
 Mat removeAngels(Mat img, int distanceFromEarth);
@@ -38,8 +35,6 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     int orginalHeight = frame.rows;
     int orginalWidth = frame.cols;
-
-    ros::Time begin = ros::Time::now();
     resize(frame, frame, Size(400, 400));
 
     cv::Mat frame_gray, frame_blur, detected_edges;
@@ -56,21 +51,18 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     threshold(lapl, lapl, -Laplacian_threshold, 255, 1);
     convertScaleAbs(lapl, lapl);
 
-    Mat cut = cutSmall(thres, perfect_lines_min_cut);   //Make sure only Lines
-    Mat fill = fillColorLines2(lapl, cut);
+    Mat cut = cutSmall(thres, perfect_lines_min_cut);
+    Mat fill = fillColorLines(lapl, cut);
     fill = cutSmall(fill, perfect_lines_min_cut);
-
-    ros::Time end = ros::Time::now();
-    cerr << "Time: " << end - begin << " Hz: " << 1/(end - begin).toSec() << endl;
-
-//    Mat green_lines = overlayBinaryGreen(frame, fill);
 
     resize(fill, fill, Size(orginalWidth, orginalHeight));
 
-//	publish images
     publishMessage(pub, fill, "mono8");
     publishMessage(pub1, thres, "mono8");
     publishMessage(pub2, lapl, "mono8");
+
+//    Uncomment for Green Overlay
+//    Mat green_lines = overlayBinaryGreen(frame, fill);
 //    publishMessage(pub3, green_lines, "bgr8");
 }
 
@@ -92,9 +84,9 @@ int main(int argc, char** argv) {
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
     pub = nh.advertise<sensor_msgs::Image>("/lines_detection_img", 1); //test publish of image
-    pub1 = nh.advertise<sensor_msgs::Image>("/Adpt_Thres_lines2", 1);
-    pub2 = nh.advertise<sensor_msgs::Image>("/Laplacian_lines2", 1);
-    pub3 = nh.advertise<sensor_msgs::Image>("/Colored_combined_lines2", 1);
+    pub1 = nh.advertise<sensor_msgs::Image>("/Adpt_Thres_lines", 1);
+    pub2 = nh.advertise<sensor_msgs::Image>("/Laplacian_lines", 1);
+    pub3 = nh.advertise<sensor_msgs::Image>("/Colored_combined_lines", 1);
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     ros::spin();
@@ -107,22 +99,6 @@ cv::Mat kernel(int x, int y) {
 }
 
 cv::Mat fillColorLines(cv::Mat lines, cv::Mat color_found) {
-    cv::Mat color_left, lines_found(lines.rows,lines.cols,CV_8UC1,cv::Scalar::all(0));
-    Mat lines_remaining = lines.clone();
-    std::vector<cv::Point> locations;
-
-    lines.copyTo(color_left, color_found);
-    cv::findNonZero(color_left, locations);
-    while(!locations.empty()) {
-        floodFill(lines_remaining, locations[0], cv::Scalar(0));
-        bitwise_xor(lines, lines_remaining, lines_found);
-        bitwise_and(lines_remaining, color_left, color_left);
-        cv::findNonZero(color_left, locations);
-    }
-    return lines_found;
-}
-
-cv::Mat fillColorLines2(cv::Mat lines, cv::Mat color_found) {
     cv::Mat color_left, lines_found(lines.rows,lines.cols,CV_8UC1,cv::Scalar::all(0));
     Mat lines_remaining = lines.clone();
     lines.copyTo(color_left, color_found);
@@ -167,23 +143,6 @@ cv::Mat cutSmall(cv::Mat color_edges, int size_min) {
     return contours_color;
 }
 
-cv::Mat cutSmall2(cv::Mat color_edges, int size_min) {
-    Mat imBin = color_edges;
-    Mat stats, centroids, labelImage;
-    int nLabels = connectedComponentsWithStats(imBin, labelImage, stats, centroids, 8, CV_32S);
-    Mat mask(labelImage.size(), CV_8UC1, Scalar(0));
-    Mat surfSup=stats.col(4)>size_min;
-
-    for (int i = 1; i < nLabels; i++)
-    {  if (surfSup.at<uchar>(i, 0))
-        { mask = mask | (labelImage==i); }
-    }
-
-    Mat r(color_edges.size(), CV_8UC1, Scalar(0));
-    color_edges.copyTo(r,mask);
-    return r;
-}
-
 void publishMessage(ros::Publisher pub, Mat img, std::string img_type) {
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
@@ -214,12 +173,11 @@ Mat removeAngels(Mat img, int distanceFromEarth) {
 
     std::vector<cv::Point> locations;
     cv::findNonZero(top, locations);
-    for (int i = 0; i < 20; ++i) {
+    int number_of_angles = 20;
+    for (int i = 0; i < number_of_angles; ++i) {
         floodFill(img, locations[i], cv::Scalar(0));
         floodFill(top, locations[i], cv::Scalar(0));
         cv::findNonZero(top, locations);
     }
-
     return img;
-
 }
