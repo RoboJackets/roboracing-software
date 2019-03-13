@@ -1,0 +1,3 @@
+<library path="lib/librr_pointcloud_projector">
+    <class name="rr_platform/pointcloud_projector" type="PointCloudProjector" base_class_type="nodelet::Nodelet"/>
+</library>

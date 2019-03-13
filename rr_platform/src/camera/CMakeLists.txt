@@ -3,8 +3,7 @@ target_link_libraries(rr_camera_geometry ${catkin_LIBRARIES})
 
 add_executable(image_transform image_transform.cpp)
 target_link_libraries(image_transform rr_camera_geometry ${catkin_LIBRARIES})
-add_dependencies(image_transform rr_camera_geometry)
 
-add_executable(image_transform_test pointcloud_projector.cpp)
-target_link_libraries(image_transform_test rr_camera_geometry ${catkin_LIBRARIES})
-add_dependencies(image_transform_test rr_camera_geometry)
+add_library(rr_pointcloud_projector pointcloud_projector.cpp)
+target_link_libraries(rr_pointcloud_projector rr_camera_geometry ${catkin_LIBRARIES})
+#add_dependencies(rr_pointcloud_projector ${${PROJECT_NAME}_EXPORTED_TARGETS})
