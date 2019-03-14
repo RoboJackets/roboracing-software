@@ -16,13 +16,4 @@
         <param name="image_topics" value="/lines_detection_img_transformed"/>
         <param name="px_per_meter" value="50"/>
     </node>
-
-    <node pkg="nodelet" type="nodelet" name="line_projector" output="screen"
-          args="standalone rr_platform/pointcloud_projector">
-        <param name="camera_info_topic" value="/camera/camera_info"/>
-        <param name="camera_tf_frame" value="camera"/>
-        <param name="image_topic_in" value="/lines_detection_img"/>
-        <param name="pointcloud_topic_out" value="/lines_projected"/>
-        <param name="load_timeout" value="60"/>
-    </node>
 </launch>
