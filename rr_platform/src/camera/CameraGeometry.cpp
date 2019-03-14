@@ -108,7 +108,7 @@ int CameraGeometry::GetImageWidth() {
 
 double CameraGeometry::AngleFromCenterRow(int row) {
   const auto center_row = image_size_rows_ * 0.5;
-  const auto row_diff = center_row - row;  // up (low row) is positive difference to match pitch
+  const auto row_diff = row - center_row;  // down (high row) is positive difference to match pitch
   const auto angle_per_row = cam_fov_y_ / image_size_rows_;
   return row_diff * angle_per_row;
 }
@@ -123,15 +123,14 @@ double CameraGeometry::AngleFromCenterColumn(int col) {
 std::tuple<bool, geometry_msgs::Point> CameraGeometry::ProjectToWorld(int row, int col) {
   const auto [cam_roll, cam_pitch, cam_yaw] = GetCameraOrientationRPY();
 
-  // pitch is negative if pointing down to ground, so invert it
-  const auto pitch_ground_relative = -(cam_pitch + AngleFromCenterRow(row));
+  // positive pitch points toward ground in Rviz
+  const auto pitch_ground_relative = cam_pitch + AngleFromCenterRow(row);
   const auto yaw_ground_relative = AngleFromCenterColumn(col);
 
   // first compute the x and y location relative to the camera
-  tf::Vector3 point_relative;
-  point_relative.setX(camera_pose_.position.z / std::tan(pitch_ground_relative));
-  point_relative.setY(point_relative.x() * std::tan(yaw_ground_relative));
-  point_relative.setZ(0);
+  double x = camera_pose_.position.z / std::tan(pitch_ground_relative);
+  double y = x * std::tan(yaw_ground_relative);
+  tf::Vector3 point_relative(x, y, 0);
 
   // rotate to match camera pose
   tf::Vector3 point_rotated = tf::quatRotate(tf::createQuaternionFromYaw(cam_yaw), point_relative);
