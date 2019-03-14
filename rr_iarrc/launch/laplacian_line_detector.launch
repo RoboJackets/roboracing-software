@@ -14,8 +14,4 @@
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
     </node>
-
-    <include file="$(find rr_platform)/launch/sedani_state_publisher.launch"/>
-    <include file="$(find rr_iarrc)/launch/lines_pcl_converter.launch"/>
-
 </launch>

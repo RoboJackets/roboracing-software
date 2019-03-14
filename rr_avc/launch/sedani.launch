@@ -5,7 +5,7 @@
 
     <include file="$(find rr_platform)/launch/sedani.launch"/>
 
-    <include file="$(find avc)/launch/mapper.launch"/>
+    <include file="$(find rr_avc)/launch/mapper.launch"/>
 
 
     <arg name="n_path_segments" value="6"/>
