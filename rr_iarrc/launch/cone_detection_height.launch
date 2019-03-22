@@ -10,8 +10,11 @@
         <param name="percent_max_distance_transform" type="double" value="0.7" />
         <param name="minimum_area_cut" type="double" value="30" />
 
+        <!--Formula: F = PxHeight * RealDist / RealHeight-->
         <param name="camera_focal_length_y" type="double" value="611.46" />
+        <!--9" or .2286m-->
         <param name="real_cone_height" type="double" value=".2286" />
+        <!--5.5"/2 or .07m-->
         <param name="real_cone_radius" type="double" value=".07" />
 
         <!--The larger the height the lower it will be on the screen-->

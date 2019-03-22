@@ -25,7 +25,6 @@ using namespace std;
 using namespace ros;
 
 cv::Mat kernel(int, int);
-
 Mat cutEnvironment(cv::Mat);
 void publishMessage(ros::Publisher, Mat, std::string);
 cv::Mat getCenter(cv::Mat, double);
@@ -45,10 +44,7 @@ int low_H, high_H, low_S, low_V;
 int canny_cut_min_threshold, minimum_area_cut;
 double percent_max_distance_transform;
 
-double fy; //586.508911;
-double real_cone_height; //9.0" or .2286m
-double real_cone_radius;
-
+double fy, real_cone_height, real_cone_radius;
 double camera_fov_horizontal;  // radians
 Size imageSize;
 bool fov_callback_called;
@@ -74,12 +70,13 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::inRange(hsv_frame, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, 255, 255), orange_found);
     orange_found = cutSmall(orange_found, minimum_area_cut);
 
-    
+    //Cut HSV to find individual cones
     Mat detected_bodies = cutBodies(frame_cut, orange_found);
     detected_bodies = cutSmall(detected_bodies, minimum_area_cut);
     Mat sure_bodies = doWatershed(frame, orange_found, detected_bodies);
     sure_bodies = cutSmall(sure_bodies, minimum_area_cut);
 
+    //Find Distance
     frame = drawAndCalc(frame, sure_bodies);
     ros::Time end = ros::Time::now();
 
