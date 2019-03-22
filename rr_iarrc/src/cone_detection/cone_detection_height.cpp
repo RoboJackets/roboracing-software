@@ -24,75 +24,83 @@ using namespace cv;
 using namespace std;
 using namespace ros;
 
-cv_bridge::CvImagePtr cv_ptr;
-ros::Publisher pub, pub1, pub2;
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
-
 cv::Mat kernel(int, int);
-void cutEnvironment(cv::Mat);
+
+Mat cutEnvironment(cv::Mat);
 void publishMessage(ros::Publisher, Mat, std::string);
-cv::Mat  getCenter(cv::Mat, double);
-cv::Mat  cutBodies(cv::Mat, Mat);
-cv::Mat  doWatershed(Mat, cv::Mat, Mat);
-cv::Mat  drawAndCalc(cv::Mat, Mat);
+cv::Mat getCenter(cv::Mat, double);
+cv::Mat cutBodies(cv::Mat, Mat);
+cv::Mat doWatershed(Mat, cv::Mat, Mat);
+cv::Mat drawAndCalc(cv::Mat, Mat);
 void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, double radius, int numPoints);
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg);
 void loadCameraFOV(NodeHandle& nh);
 cv::Mat cutSmall(cv::Mat, int);
 
+cv_bridge::CvImagePtr cv_ptr;
+ros::Publisher pub, pub1, pub2;
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 int blockSky_height, blockWheels_height, blockBumper_height;
 int low_H, high_H, low_S, low_V;
-int canny_cut_min_threshold;
+int canny_cut_min_threshold, minimum_area_cut;
 double percent_max_distance_transform;
 
-double fy = 671.46; //586.508911;
-double real_height = 9; //cm or 9.0 inches .2286 m
+double fy; //586.508911;
+double real_cone_height; //9.0" or .2286m
+double real_cone_radius;
 
 double camera_fov_horizontal;  // radians
 Size imageSize;
 bool fov_callback_called;
 double angle_constant;
-
 vector<pcl::PointXYZ> cone_points;
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
+    //Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     Mat frame = cv_ptr->image;
 
-    cv::Mat hsv_frame, orange_found;
-    Mat frame_cut = frame;
-    cutEnvironment(frame_cut);
+    ros::Time begin = ros::Time::now();
 
+    //Record original dimensions and resize
+    int originalHeight = frame.rows;
+    int originalWidth = frame.cols;
+    cv::resize(frame, frame, cv::Size(500, 500));
+
+    //Get ROI of frame and HSV color threshold
+    cv::Mat hsv_frame, orange_found, frame_cut;
+    frame_cut = cutEnvironment(frame.clone());
     cv::cvtColor(frame_cut, hsv_frame, cv::COLOR_BGR2HSV);
     cv::inRange(hsv_frame, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, 255, 255), orange_found);
-    cv::morphologyEx(orange_found, orange_found, cv::MORPH_OPEN, kernel(2,2));
-    orange_found = cutSmall(orange_found, 50);
+    orange_found = cutSmall(orange_found, minimum_area_cut);
 
+    
     Mat detected_bodies = cutBodies(frame_cut, orange_found);
-    detected_bodies = cutSmall(detected_bodies, 50);
+    detected_bodies = cutSmall(detected_bodies, minimum_area_cut);
     Mat sure_bodies = doWatershed(frame, orange_found, detected_bodies);
+    sure_bodies = cutSmall(sure_bodies, minimum_area_cut);
+
     frame = drawAndCalc(frame, sure_bodies);
+    ros::Time end = ros::Time::now();
+
+//    cerr<< 1/((end - begin).toSec()) << endl;
 
 //	publish Images
     publishMessage(pub, frame, "bgr8");
-    publishMessage(pub1, sure_bodies, "mono8");
+    publishMessage(pub1, detected_bodies, "mono8");
 
     pcl::PointCloud<pcl::PointXYZ> cone_cloud;
-//    printf("%d", cone_points.size());
-
     for (int i = 0; i < cone_points.size(); i++) {
-//        cerr << cone_points[i] << endl;
-        drawCircle(cone_cloud, cone_points[i], 5.5/2, 20);
+        drawCircle(cone_cloud, cone_points[i], real_cone_radius, 20);
     }
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(cone_cloud, outmsg);
     outmsg.header.frame_id = "base_footprint";
     pub2.publish(outmsg);
-
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "coneDetection");
+    ros::init(argc, argv, "coneDetectionHeight");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
@@ -104,6 +112,11 @@ int main(int argc, char** argv) {
 
     nhp.param("canny_cut_min_threshold", canny_cut_min_threshold, 40);
     nhp.param("percent_max_distance_transform", percent_max_distance_transform, 0.7);
+    nhp.param("minimum_area_cut", minimum_area_cut, 40);
+    
+    nhp.param("camera_focal_length_y", fy, 611.46);
+    nhp.param("real_cone_height", real_cone_height, .2286);
+    nhp.param("real_cone_radius", real_cone_radius, .07);
 
     nhp.param("blockSky_height", blockSky_height, 220);
     nhp.param("blockWheels_height", blockWheels_height, 200);
@@ -112,10 +125,9 @@ int main(int argc, char** argv) {
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
     loadCameraFOV(nh);
-
-    pub = nh.advertise<sensor_msgs::Image>("/overlay_cones_point", 1); //test publish of image
-    pub1 = nh.advertise<sensor_msgs::Image>("/cone_point_body_found", 1);
-    pub2 = nh.advertise<sensor_msgs::PointCloud2>("/cone_point_cloud", 1); //test publish of image
+    pub = nh.advertise<sensor_msgs::Image>("/cones/height/debug_coordinates", 1); //test publish of image
+    pub1 = nh.advertise<sensor_msgs::Image>("/cones/height/separated_bodies", 1);
+    pub2 = nh.advertise<sensor_msgs::PointCloud2>("/cones/height/pointcloud", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     ros::spin();
@@ -140,9 +152,8 @@ cv::Mat cutSmall(cv::Mat color_edges, int size_min) {
 cv::Mat cutBodies(cv::Mat frame_cut, cv::Mat orange_found) {
     Mat frame_gray, detected_edges, detected_bodies;
 
-    GaussianBlur(frame_cut, frame_cut, Size(5,5), 0, 0, BORDER_DEFAULT );
+    GaussianBlur(frame_cut, frame_cut, Size(3,3), 0, 0, BORDER_DEFAULT );
     cv::cvtColor(frame_cut, frame_gray, cv::COLOR_BGR2GRAY );
-
     bitwise_and(frame_gray, orange_found, frame_gray);
 
     cv::Canny(frame_gray, detected_edges, canny_cut_min_threshold, canny_cut_min_threshold*3, 3);
@@ -231,7 +242,7 @@ cv::Mat drawAndCalc(cv::Mat frame, cv::Mat sure_bodies) {
         Point center = Point(m.m10 / m.m00, m.m01 / m.m00);
 
         int offset = 0;
-        double distance = (real_height * fy) / rect[i].height;
+        double distance = (real_cone_height * fy) / rect[i].height;
         int px_horz_dist = frame.cols/2 - center.x;
         double horz_dist = distance * px_horz_dist / fy;
         double horz_dist2 = distance * tan(px_horz_dist * angle_constant);
@@ -264,7 +275,7 @@ cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
 }
 
-void cutEnvironment(cv::Mat img) {
+Mat cutEnvironment(cv::Mat img) {
     cv::rectangle(img,
                   cv::Point(0,0),
                   cv::Point(img.cols,img.rows / 3 + blockSky_height),
@@ -279,6 +290,7 @@ void cutEnvironment(cv::Mat img) {
                   cv::Point(img.cols/3,img.rows),
                   cv::Point(2 * img.cols / 3, 2 * img.rows / 3 + blockBumper_height),
                   cv::Scalar(0,0,0),CV_FILLED);
+    return img;
 }
 
 void publishMessage(ros::Publisher pub, Mat img, std::string img_type) {

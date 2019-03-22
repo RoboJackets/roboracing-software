@@ -1,15 +1,19 @@
 <launch>
     <node name="cone_detection_bottom" pkg="rr_iarrc" type="cone_detection_bottom" output="screen">
+        <!--HSV color threshold for orange cones-->
+        <param name="orange_low_H" type="int" value="5" />
+        <param name="orange_high_H" type="int" value="15" />
+        <param name="orange_low_S" type="int" value="140" />
+        <param name="orange_low_V" type="int" value="140" />
 
         <!--The larger the height the lower it will be on the screen-->
-        <param name="blockSky_height" type="int" value="200" />
-        <param name="blockWheels_height" type="int" value="200" />
-        <param name="blockBumper_height" type="int" value="200" />
+        <param name="blockSky_height" type="int" value="90" />
+        <param name="blockWheels_height" type="int" value="100" />
+        <param name="blockBumper_height" type="int" value="50" />
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
     </node>
 
     <include file="$(find rr_platform)/launch/sedani_state_publisher.launch"/>
     <include file="$(find rr_iarrc)/launch/lines_pcl_converter.launch"/>
-
 </launch>
