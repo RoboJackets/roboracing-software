@@ -15,7 +15,7 @@
         <param name="straight_match_similarity_threshold" type="double" value="0.3" />
         <param name="turn_match_similarity_threshold" type="double" value="0.3" />
         <param name="canny_threshold_low" type="double" value="60" />
-        <param name="canny_threshold_low" type="double" value="200" /> <!-- usually about 2-3 times the low threshold -->
+        <param name="canny_threshold_high" type="double" value="100" /> <!-- usually about 2-3 times the low threshold -->
 
     </node>
 </launch>

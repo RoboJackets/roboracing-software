@@ -34,7 +34,8 @@ double turnMatchSimilarityThreshold;
 double cannyThresholdLow;
 double cannyThresholdHigh;
 
-std::string currentMove = "NONE";
+cv::Rect bestMatchRect(0,0,0,0);
+std::string bestMove = "NONE"; //"right", "left", "straight"
 
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
 ros::Time start = ros::Time::now();
@@ -64,9 +65,6 @@ ros::Time start = ros::Time::now();
     cv::findContours(edges, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
     cv::drawContours(crop, contours, -1, cv::Scalar(0,255,0), 2); //debug #TODO: REMOVE
-
-    cv::Rect bestMatch(0,0,0,0);
-    std::string bestMove = "NONE"; //"right", "left", "straight"
 
     for(size_t i=0; i<contours.size(); i++) {
       std::vector<cv::Point> c = contours[i]; //curent contour reference
@@ -98,8 +96,8 @@ ros::Time start = ros::Time::now();
                     //left pointing arrow!
                     cv::putText(crop, "Left", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
-                    if (rect.area() > bestMatch.area()) {
-                      bestMatch = rect;
+                    if (rect.area() > bestMatchRect.area()) {
+                      bestMatchRect = rect;
                       bestMove = "left";
                     }
 
@@ -107,8 +105,8 @@ ros::Time start = ros::Time::now();
                     //right pointing arrow!
                     cv::putText(crop, "Right", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
-                    if (rect.area() > bestMatch.area()) {
-                      bestMatch = rect;
+                    if (rect.area() > bestMatchRect.area()) {
+                      bestMatchRect = rect;
                       bestMove = "right";
                     }
 
@@ -124,8 +122,8 @@ ros::Time start = ros::Time::now();
               if (matchSimilarity <= straightMatchSimilarityThreshold) {
                   cv::putText(crop, "Straight", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
-                  if (rect.area() > bestMatch.area()) {
-                    bestMatch = rect;
+                  if (rect.area() > bestMatchRect.area()) {
+                    bestMatchRect = rect;
                     bestMove = "straight";
                   }
               }
@@ -138,9 +136,9 @@ ros::Time start = ros::Time::now();
     }
 
     //Some debug images for us
-    //show the bestMatch
-    cv::rectangle(crop, bestMatch, cv::Scalar(255,0,255), 2, 8 ,0);
-    cv::putText(crop, bestMove, bestMatch.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,255), 2);
+    //show the bestMatchRect
+    //cv::rectangle(crop, bestMatchRect, cv::Scalar(255,0,255), 2, 8 ,0);
+    cv::putText(crop, bestMove, cv::Point(0,frame.rows - 1), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(255,0,255), 2);
 
     //show where we are cropped to
     cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.cols-1, crop.rows-1), cv::Scalar(0,255,0), 2, 8 ,0);
@@ -180,19 +178,18 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
 		std::vector<cv::Point> points;
 		cv::Point2f vertices[4];
 		rRect.points(vertices);
-		rRect.angle = std::abs(rRect.angle);
+		//rRect.angle = std::abs(rRect.angle);
 		//debug view
 		for (int i = 0; i < 4; i++) {
         	cv::line(lineOutput, vertices[i], vertices[(i+1)%4], cv::Scalar(0,0,255), 2);
 		}
-		cv::putText(lineOutput, std::to_string(rRect.angle), rRect.center, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0, 255), 1);
+		cv::putText(lineOutput, std::to_string((int)rRect.angle), rRect.center, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0, 255), 1);
 
 		//these determine what makes a stop bar //#TODO: launch file params, convert using pixel_per_meter?
-		double minAngleDegrees = 80;
-		double maxAngleDegrees = 100;
+		double angleDegreesDeviation = 5;
 		double minWidth = 2;
 		double minHeight = 1;
-		double triggerDistance = 1;
+		double triggerDistance = 0.2;
 
 		double distance = frame.rows - rRect.center.y;
 
@@ -205,16 +202,29 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
 			width = rRect.size.height;
 			height = rRect.size.width;
 		}
-		if (rRect.angle >= minAngleDegrees &&
-			rRect.angle <= maxAngleDegrees &&
+
+		if ((static_cast<int>(rRect.angle) % 90 <= angleDegreesDeviation ||
+			static_cast<int>(rRect.angle) % 90 >= 90 - angleDegreesDeviation) &&
 			width >= minWidth &&
 			height >= minHeight &&
-			distance <= triggerDistance) {
+            rRect.size.width > rRect.size.height) {
 
-			stopBarDetected = true;
+            //debug draw a line and show distance
+            cv::Point2f bottomPoint(rRect.center.x, lineOutput.rows - 1);
+            cv::line(lineOutput, rRect.center, bottomPoint, cv::Scalar(0,255,255), 2);
+            /*cv::putText(lineOutput, std::to_string(distance),
+                        cv::Point2f(rRect.center.x, rRect.center.y - distance /2),
+                        cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(255,255,0), 1);
+            */
+			if (distance <= triggerDistance) {
 
-			ROS_INFO_STREAM("STOP BAR DETECTED");
-			cv::putText(lineOutput, "AHHHHHHHHHHH!", rRect.center, cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0, 255), 2);
+			    stopBarDetected = true;
+                bestMove = "NONE"; //reset
+                bestMatchRect.width = 0;
+                bestMatchRect.height = 0;
+
+			    ROS_INFO_STREAM("STOP BAR DETECTED: " + bestMove);
+            }
 
 		}
 
@@ -262,14 +272,14 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     if (pubLine.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptr->image = lineOutput;
-        cv_ptr->encoding = "bgr8";//"mono8";
+        cv_ptr->encoding = "bgr8";
         cv_ptr->toImageMsg(outmsg);
         pubLine.publish(outmsg);
     }
 
 	if (stopBarDetected) { //only say the sign if we se the line!
 		std_msgs::String moveMsg;
-		moveMsg.data = currentMove;
+		moveMsg.data = bestMove;
 		pubMove.publish(moveMsg);
 	}
 }
