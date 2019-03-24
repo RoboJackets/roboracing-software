@@ -7,10 +7,10 @@
  * Remote control for recording Rosbag files.
  * Uses a button from E-Stop remote to start recording bag files.
  *
- *
+ * @author Brian Cochran @btdubs
 */
 
-bool startRecording = true;//false;
+bool startRecording = false;
 bool begunRecording = false;
 
 void chassisStateCallback(const rr_platform::chassis_state::ConstPtr &chassis_msg) {
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     recorder_options_.limit = 0; // 0 is unlimited
     recorder_options_.split = true;
     recorder_options_.max_size = bag_max_size * 1024 * 1024; //split after this size
-    recorder_options_.min_space = 1024 * 1024 * 1024;
+    recorder_options_.min_space = bag_max_size * 1024 * 1024;
     recorder_options_.min_space_str = "Recording space is running out";
     rosbag::Recorder recorder(recorder_options_);
 
@@ -59,9 +59,10 @@ int main(int argc, char **argv) {
         if (startRecording && !begunRecording) {
             recorder.run();
             begunRecording = true;
-            startRecording = false; //.removetodo
+            ROS_INFO_STREAM("Recording bag to " + absolute_folder_path + bag_name_prefix);
         }
         if (!startRecording && begunRecording) {
+            ROS_INFO_STREAM("Stopping bag recording");
             ros::shutdown(); //only way to stop the recording, but we respawn!
         }
 
