@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<launch>
+    <node pkg="rr_common" type="rosbag_remote_recorder" name="rosbag_remote_recorder" output="screen" respawn="true">
+        <param name="topics_to_record" type="string" value="/camera/image_color_rect"/> <!--Seperate multiple topics with a space -->
+	<param name="bag_name_prefix" type="string" value="test"/> 
+	<param name="absolute_folder_path" type="string" value="/home/brian/bag_files/"/>
+	<param name="bag_max_size" type="int" value="3000"/> <!-- size before splitting into multiple bag files -->
+    </node>
+</launch>

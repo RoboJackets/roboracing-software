@@ -1,0 +1,2 @@
+add_executable(rosbag_remote_recorder rosbag_remote_recorder.cpp)
+target_link_libraries(rosbag_remote_recorder ${catkin_LIBRARIES})
