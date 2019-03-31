@@ -39,7 +39,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::cvtColor(frame_blur, frame_gray, cv::COLOR_BGR2GRAY);
 
     Mat thres;
-    adaptiveThreshold(frame_gray, thres, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 5, -1);
+    adaptiveThreshold(frame_gray, thres, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 5, -2);
     cutEnvironment(thres);
     Mat cut = cutSmall(thres, perfect_lines_min_cut);   //Make sure only Lines
 
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
-    pub = nh.advertise<sensor_msgs::Image>("/Combined_lines", 1); //test publish of image
+    pub = nh.advertise<sensor_msgs::Image>("/lines_detection_img", 1); //test publish of image
     pub1 = nh.advertise<sensor_msgs::Image>("/Adpt_Thres_lines", 1);
     pub2 = nh.advertise<sensor_msgs::Image>("/Laplacian_lines", 1);
     pub3 = nh.advertise<sensor_msgs::Image>("/Colored_combined_lines", 1);
