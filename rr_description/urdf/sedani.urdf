@@ -321,7 +321,7 @@
     <joint name="base_footprint_to_chassis" type="fixed">
         <parent link="base_footprint"/>
         <child link="chassis"/>
-        <origin xyz="0 0 0.036" rpy="0 0 0"/>
+        <origin xyz="0 0 0.079" rpy="0 0 0"/>
     </joint>
 
     <joint name="chassis_to_back_axle" type="fixed">
@@ -374,7 +374,7 @@
     <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera"/>
-        <origin xyz="0.28 0 0.08" rpy="0 -0.04 0"/>
+        <origin xyz="0.28 0 0.18" rpy="0 -0.04 0"/>
     </joint>
 
     <joint name="camera_optical_joint" type="fixed">
