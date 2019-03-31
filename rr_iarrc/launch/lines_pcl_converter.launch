@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <launch>
-    <node pkg="rr_platform" type="image_transform" name="image_transform1" output="screen">
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/lines/detection_img /cones/bottom/detection_img"/>
         <param name="px_per_meter" value="50"/>
         <param name="map_dist_max" value="4.0"/>
@@ -12,7 +12,7 @@
         <param name="fallback_image_height" value="964"/>
     </node>
 
-    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter1" output="screen">
+    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
         <param name="image_topics" value="/lines/detection_img_transformed /cones/bottom/detection_img_transformed"/>
         <param name="px_per_meter" value="50"/>
     </node>
