@@ -23,6 +23,10 @@ ros::Publisher pub, pub1, pub2;
 int low_H, high_H, low_S, low_V;
 int blockSky_height, blockWheels_height, blockBumper_height;
 
+/**
+ * Gets the bottom edge of the cones
+ * @param msg image from camera
+ */
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     //Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");

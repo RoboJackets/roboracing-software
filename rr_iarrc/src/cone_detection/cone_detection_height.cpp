@@ -45,7 +45,7 @@ int canny_cut_min_threshold, minimum_area_cut;
 double percent_max_distance_transform;
 
 double fy, real_cone_height, real_cone_radius;
-double camera_fov_horizontal;  // radians
+double camera_fov_horizontal;
 Size imageSize;
 bool fov_callback_called;
 double angle_constant;
@@ -61,7 +61,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     //Record original dimensions and resize
     int originalHeight = frame.rows;
     int originalWidth = frame.cols;
-    cv::resize(frame, frame, cv::Size(500, 500));
+    //cv::resize(frame, frame, cv::Size(500, 500));
 
     //Get ROI of frame and HSV color threshold
     cv::Mat hsv_frame, orange_found, frame_cut;
@@ -79,8 +79,6 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     //Find Distance
     frame = drawAndCalc(frame, sure_bodies);
     ros::Time end = ros::Time::now();
-
-//    cerr<< 1/((end - begin).toSec()) << endl;
 
 //	publish Images
     publishMessage(pub, frame, "bgr8");

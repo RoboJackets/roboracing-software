@@ -18,7 +18,7 @@
         <param name="real_cone_radius" type="double" value=".07" />
 
         <!--The larger the height the lower it will be on the screen-->
-        <param name="blockSky_height" type="int" value="95" />
+        <param name="blockSky_height" type="int" value="140" />
         <param name="blockWheels_height" type="int" value="100" />
         <param name="blockBumper_height" type="int" value="50" />
 
