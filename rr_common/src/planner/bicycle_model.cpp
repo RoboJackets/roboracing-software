@@ -1,4 +1,4 @@
-#include "bicycle_model.h"
+#include "planner/bicycle_model.h"
 
 #include <numeric>
 
@@ -20,7 +20,7 @@ BicycleModel::BicycleModel(double wheel_base, double max_lateral_accel,
 }
 
 
-void BicycleModel::RollOutPath(std::vector<PathPoint>& path_points, const std::vector<double>& control) {
+void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<PathPoint>& path_points) {
   const size_t n_path_segments = control.size();
 
   const int n_path_points = std::accumulate(segment_sections.begin(), segment_sections.end(), 1);
@@ -34,7 +34,7 @@ void BicycleModel::RollOutPath(std::vector<PathPoint>& path_points, const std::v
   path_points[0].steer = control[0];
   path_points[0].speed = SteeringToSpeed(control[0]);
 
-  double real_steer = current_steering_;
+  double real_steer = GetCurrentSteeringAngle();
 
   int i = 1;
   for (int segment = 0; segment < n_path_segments; segment++) {
@@ -50,7 +50,7 @@ void BicycleModel::RollOutPath(std::vector<PathPoint>& path_points, const std::v
 
       real_steer = IncrementSteering(real_steer, ideal_steer, dt);
 
-      StepKinematics(path_point.pose, last_pose, real_steer);
+      StepKinematics(last_pose, real_steer, path_point.pose);
       path_point.steer = ideal_steer;
       path_point.speed = speed;
     }
@@ -59,7 +59,7 @@ void BicycleModel::RollOutPath(std::vector<PathPoint>& path_points, const std::v
   }
 }
 
-void BicycleModel::StepKinematics(Pose& pose, const Pose& last_pose, double steer_angle) {
+void BicycleModel::StepKinematics(const Pose& last_pose, double steer_angle, Pose& pose) {
   double deltaX, deltaY, deltaTheta;
 
   if (std::abs(steer_angle) < 1e-3) {
@@ -109,7 +109,7 @@ void BicycleModel::UpdateSteeringAngle(double commanded_angle) {
   double dt = (now - last_steering_update_).toSec();
 
   if (dt > 0) {
-    // ROS time changes in sim, or related edge cases
+    // if-statement covers time changes in sim or bag files
     current_steering_ = IncrementSteering(current_steering_, commanded_angle, dt);
   }
 

@@ -1,4 +1,4 @@
-#include "annealing_planner.h"
+#include "planner/annealing_planner.h"
 
 namespace rr {
 
@@ -8,7 +8,7 @@ AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel&
   for (int i = 0; i < params.annealing_steps; i++) {
     rr::PlannedPath& path = path_pool_.emplace_back();
     path.control = std::vector<double>(params.n_path_segments, 0);
-    model_.RollOutPath(path.path, path.control);
+    model_.RollOutPath(path.control, path.path);
     path.dists = std::vector<double>(path.path.size(), 0.0);
     path.cost = std::numeric_limits<double>::max();
   }
@@ -38,7 +38,7 @@ double AnnealingPlanner::GetTemperature(unsigned int t) {
   return params.temperature_start * std::exp(K * t);
 }
 
-double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMap& kd_tree_map) {
+double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& map) {
   double cost = 0;
 
   const std::vector<PathPoint>& path = planned_path.path;
@@ -54,7 +54,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMa
     } else {
       cost -= params.k_dist * std::log(std::max(0.01, dist));
       cost -= params.k_speed * path[i].speed;
-      cost += std::abs(path[i].pose.theta) * params.backwards_penalty;
+      cost += std::abs(path[i].pose.theta) * params.k_angle;
     }
   }
 
@@ -64,7 +64,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const KdTreeMa
   return cost;
 }
 
-PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
+PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
   path_pool_[0] = path_pool_[last_path_idx_];
 
   unsigned int best_idx = 0;
@@ -77,7 +77,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
     path.control = best_prev_control;
   });
 
-  distance_checker_.SetMap(*kd_tree_map.input_);
+  distance_checker_.SetMap(map);
 
   // update our steering angle estimate using the last output
   model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
@@ -89,7 +89,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
       SampleControls(path.control, path_pool_[state_idx].control, t);
     }
 
-    model_.RollOutPath(path.path, path.control);
+    model_.RollOutPath(path.control, path.path);
 
     // Check collisions and adjust path speeds based on distance to obstacles
     bool has_been_too_close = false;
@@ -107,7 +107,7 @@ PlannedPath AnnealingPlanner::Plan(const KdTreeMap& kd_tree_map) {
 
     path.has_collision = has_collided;
 
-    path.cost = GetCost(path, kd_tree_map);
+    path.cost = GetCost(path, map);
     double dcost = path.cost - path_pool_[state_idx].cost;
     double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
 
