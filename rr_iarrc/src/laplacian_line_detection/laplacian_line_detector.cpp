@@ -2,10 +2,6 @@
 #include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <stdlib.h>
@@ -15,16 +11,18 @@ using namespace std;
 
 cv::Mat kernel(int, int);
 cv::Mat fillColorLines(const cv::Mat&, const cv::Mat&);
-void cutEnvironment(const cv::Mat&, int offset);
+void blockEnvironment(const cv::Mat&);
 cv::Mat cutSmall(const cv::Mat&, int);
 void publishMessage(const ros::Publisher, const cv::Mat&, std::string);
 cv::Mat overlayBinaryGreen(cv::Mat&, const cv::Mat&);
 cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth);
 
 cv_bridge::CvImagePtr cv_ptr;
-ros::Publisher pub, pub1, pub2, pub3;
+ros::Publisher pub_line_detector, pub_debug_adaptive, pub_debug_laplacian, pub_debug_overlay;
 int blockSky_height, blockWheels_height, blockBumper_height;
 int perfect_lines_min_cut, Laplacian_threshold, adaptive_mean_threshold;
+int originalWidth, originalHeight;
+int decreasedSize = 400;
 
 /**
  * Performs Adaptive Threshold to find areas where we are certain there are lines then
@@ -38,9 +36,9 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat frame = cv_ptr->image;
 
     //Store original dimensions and resize
-    int originalHeight = frame.rows;
-    int originalWidth = frame.cols;
-    cv::resize(frame, frame, cv::Size(400, 400));
+    originalHeight = frame.rows;
+    originalWidth = frame.cols;
+    cv::resize(frame, frame, cv::Size(decreasedSize, decreasedSize));
 
     //Blur and convert to GrayScale
     cv::Mat frame_gray, frame_blur, detected_edges;
@@ -52,7 +50,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     //The adaptive image (Little Noise / High Certainty) will represent where we are certain lines are located
     cv::Mat thres;
     cv::adaptiveThreshold(frame_gray, thres, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 5, -1);
-    cutEnvironment(thres, 0);
+    blockEnvironment(thres);
     cv::erode(thres, thres, kernel(3,1));
     cv::Mat cut = cutSmall(thres, perfect_lines_min_cut);
 
@@ -74,10 +72,10 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::resize(fill, fill, cv::Size(originalWidth, originalHeight));
 
     //Publish Messages
-    publishMessage(pub, fill, "mono8");
-    publishMessage(pub1, thres, "mono8");
-    publishMessage(pub2, lapl, "mono8");
-    publishMessage(pub3, green_lines, "bgr8");
+    publishMessage(pub_line_detector, fill, "mono8");
+    publishMessage(pub_debug_adaptive, thres, "mono8");
+    publishMessage(pub_debug_laplacian, lapl, "mono8");
+    publishMessage(pub_debug_overlay, green_lines, "bgr8");
 }
 
 int main(int argc, char** argv) {
@@ -96,10 +94,10 @@ int main(int argc, char** argv) {
 
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
-    pub = nh.advertise<sensor_msgs::Image>("/lines/detection_img", 1); //test publish of image
-    pub1 = nh.advertise<sensor_msgs::Image>("/lines/debug_adaptive", 1);
-    pub2 = nh.advertise<sensor_msgs::Image>("/lines/debug_laplacian", 1);
-    pub3 = nh.advertise<sensor_msgs::Image>("/lines/debug_overlay", 1);
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("/lines/detection_img", 1); //test publish of image
+    pub_debug_adaptive = nh.advertise<sensor_msgs::Image>("/lines/debug_adaptive", 1);
+    pub_debug_laplacian = nh.advertise<sensor_msgs::Image>("/lines/debug_laplacian", 1);
+    pub_debug_overlay = nh.advertise<sensor_msgs::Image>("/lines/debug_overlay", 1);
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     ros::spin();
@@ -125,20 +123,20 @@ cv::Mat fillColorLines(const cv::Mat& lines, const cv::Mat& color_found) {
 }
 
 
-void cutEnvironment(const cv::Mat& img, int offset) {
+void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img,
                   cv::Point(0,0),
-                  cv::Point(img.cols,img.rows / 3 + blockSky_height - offset),
+                  cv::Point(img.cols, blockSky_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 
     cv::rectangle(img,
                   cv::Point(0,img.rows),
-                  cv::Point(img.cols,2 * img.rows / 3 + blockWheels_height + offset),
+                  cv::Point(img.cols, blockWheels_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 
     cv::rectangle(img,
                   cv::Point(img.cols/3,img.rows),
-                  cv::Point(2 * img.cols / 3, 2 * img.rows / 3 + blockBumper_height + offset),
+                  cv::Point(2 * img.cols / 3, blockBumper_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 }
 

@@ -7,14 +7,11 @@
         <!--Strength of Adaptive Thresholding-->
         <param name="adaptive_mean_threshold" type="int" value="3" />
 
-        <!--The larger the height the lower it will be on the screen-->
-        <param name="blockSky_height" type="int" value="95" />
-        <param name="blockWheels_height" type="int" value="70" />
-        <param name="blockBumper_height" type="int" value="0" />
+        <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
+        <param name="blockSky_height" type="int" value="550" />
+        <param name="blockWheels_height" type="int" value="800" />
+        <param name="blockBumper_height" type="int" value="650" />
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
     </node>
-
-    <include file="$(find rr_platform)/launch/sedani_state_publisher.launch"/>
-    <include file="$(find rr_iarrc)/launch/lines_pcl_converter.launch"/>
 </launch>

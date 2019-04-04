@@ -2,10 +2,6 @@
 #include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <stdlib.h>
@@ -14,14 +10,16 @@
 using namespace std;
 
 cv::Mat kernel(int, int);
-void cutEnvironment(const cv::Mat&);
+void blockEnvironment(const cv::Mat&);
 void publishMessage(ros::Publisher,const cv::Mat&, std::string);
 cv::Mat overlayBinaryGreen(cv::Mat&, const cv::Mat&);
 cv_bridge::CvImagePtr cv_ptr;
 
-ros::Publisher pub, pub1, pub2;
+ros::Publisher pub_cone_detector, pub_debug_overlay, pub_debug_hsv;
 int low_H, high_H, low_S, low_V;
 int blockSky_height, blockWheels_height, blockBumper_height;
+int originalWidth, originalHeight;
+int decreasedSize = 400;
 
 /**
  * Gets the bottom edge of the cones
@@ -32,31 +30,26 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
-    int originalHeight = frame.rows;
-    int originalWidth = frame.cols;
-    cv::resize(frame, frame, cv::Size(400, 400));
+    originalHeight = frame.rows;
+    originalWidth = frame.cols;
+    cv::resize(frame, frame, cv::Size(decreasedSize, decreasedSize));
 
     //Get Orange-HSV Cones
-    cv::Mat hsv_frame, orange_found, orange_found_rot, nonZeroCoordinates, green_lines;
+    cv::Mat hsv_frame, orange_found, green_lines;
     cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
     cv::inRange(hsv_frame, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, 255, 255), orange_found);
-    cutEnvironment(orange_found);
+    blockEnvironment(orange_found);
 
-    //Rotates Image because findNonZero() gives points already sorted by Y-coordinate
-    //Then gets the bottom by getting first Y-coordinate
-    //Rotates Image again to make left side the bottom
-    cv::rotate(orange_found, orange_found_rot, cv::ROTATE_90_CLOCKWISE);
-    cv::findNonZero(orange_found_rot, nonZeroCoordinates);
-    cv::Mat bottom_edges(orange_found_rot.size(), CV_8UC1, cv::Scalar::all(0));
-    for (int i = 0, last = 0; i < nonZeroCoordinates.total(); i++) {
-        int x = nonZeroCoordinates.at<cv::Point>(i).x;
-        int y = nonZeroCoordinates.at<cv::Point>(i).y;
-        if(y != last) {
-            bottom_edges.at<uchar>(y,x) = 255;
-            last = y;
+    //Gets the Bottom of the Orange Color Thresholding
+    cv::Mat bottom_edges(orange_found.size(), CV_8UC1, cv::Scalar::all(0));
+    for (int col = 0; col < orange_found.cols; col++) {
+        for (int row = orange_found.rows - 1; row >= 0; row--) {
+            if (orange_found.at<uchar>(row,col) == 255) {
+                bottom_edges.at<uchar>(row,col) = 255;
+                break;
+            }
         }
     }
-    cv::rotate(bottom_edges, bottom_edges, cv::ROTATE_90_COUNTERCLOCKWISE);
 
     //Dilate, make green overlay, and resize image to initial dimensions
     cv::dilate(bottom_edges, bottom_edges, kernel(2,2));
@@ -64,9 +57,9 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::resize(bottom_edges, bottom_edges, cv::Size(originalWidth, originalHeight));
 
     //publish Images
-    publishMessage(pub, bottom_edges, "mono8");
-    publishMessage(pub2, orange_found, "mono8");
-    publishMessage(pub1, green_lines, "bgr8");
+    publishMessage(pub_cone_detector, bottom_edges, "mono8");
+    publishMessage(pub_debug_hsv, orange_found, "mono8");
+    publishMessage(pub_debug_overlay, green_lines, "bgr8");
 }
 
 
@@ -88,9 +81,9 @@ int main(int argc, char** argv) {
 
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
-    pub = nh.advertise<sensor_msgs::Image>("/cones/bottom/detection_img", 1); //test publish of image
-    pub1 = nh.advertise<sensor_msgs::Image>("/cones/bottom/debug_overlay", 1);
-    pub2 = nh.advertise<sensor_msgs::Image>("/cones/bottom/debug_hsv", 1);
+    pub_cone_detector = nh.advertise<sensor_msgs::Image>("/cones/bottom/detection_img", 1); //test publish of image
+    pub_debug_overlay = nh.advertise<sensor_msgs::Image>("/cones/bottom/debug_overlay", 1);
+    pub_debug_hsv = nh.advertise<sensor_msgs::Image>("/cones/bottom/debug_hsv", 1);
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     ros::spin();
@@ -101,20 +94,20 @@ cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
 }
 
-void cutEnvironment(const cv::Mat& img) {
+void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img,
                   cv::Point(0,0),
-                  cv::Point(img.cols,img.rows / 3 + blockSky_height),
+                  cv::Point(img.cols, blockSky_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 
     cv::rectangle(img,
                   cv::Point(0,img.rows),
-                  cv::Point(img.cols,2 * img.rows / 3 + blockWheels_height),
+                  cv::Point(img.cols, blockWheels_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 
     cv::rectangle(img,
                   cv::Point(img.cols/3,img.rows),
-                  cv::Point(2 * img.cols / 3, 2 * img.rows / 3 + blockBumper_height),
+                  cv::Point(2 * img.cols / 3, blockBumper_height * decreasedSize / originalHeight),
                   cv::Scalar(0,0,0),CV_FILLED);
 }
 
