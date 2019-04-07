@@ -25,11 +25,11 @@ int main(int argc, char **argv) {
     ros::NodeHandle nhp("~");
     std::string topics_to_record;
     std::string bag_name_prefix;
-    std::string absolute_folder_path;
+    std::string folder_path;
     int bag_max_size;
     nhp.param(std::string("topics_to_record"), topics_to_record, std::string(""));
     nhp.param(std::string("bag_name_prefix"), bag_name_prefix, std::string(""));
-    nhp.param(std::string("absolute_folder_path"), absolute_folder_path, std::string(""));
+    nhp.param(std::string("folder_path_from_home"), folder_path, std::string(""));
     nhp.param(std::string("bag_max_size"), bag_max_size, 3000);
 
     std::vector< std::string > topics_list;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     rosbag::RecorderOptions recorder_options_;
     recorder_options_.record_all = false;
     recorder_options_.topics = topics_list; //only record specified topics
-    recorder_options_.prefix = absolute_folder_path + bag_name_prefix;
+    recorder_options_.prefix = folder_path + bag_name_prefix;
     recorder_options_.trigger = false;
     recorder_options_.regex = false;
     recorder_options_.do_exclude = false;
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         if (startRecording && !begunRecording) {
             recorder.run();
             begunRecording = true;
-            ROS_INFO_STREAM("Recording bag to " + absolute_folder_path + bag_name_prefix);
+            ROS_INFO_STREAM("Recording bag to " + folder_path + bag_name_prefix);
         }
         if (!startRecording && begunRecording) {
             ROS_INFO_STREAM("Stopping bag recording");
