@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     int bag_max_size;
     nhp.param(std::string("topics_to_record"), topics_to_record, std::string(""));
     nhp.param(std::string("bag_name_prefix"), bag_name_prefix, std::string(""));
-    nhp.param(std::string("folder_path_from_home"), folder_path, std::string(""));
+    nhp.param(std::string("folder_path"), folder_path, std::string(""));
     nhp.param(std::string("bag_max_size"), bag_max_size, 3000);
 
     std::vector< std::string > topics_list;
