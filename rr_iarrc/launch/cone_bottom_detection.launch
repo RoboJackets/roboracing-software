@@ -1,5 +1,5 @@
 <launch>
-    <node name="cone_detection_bottom" pkg="rr_iarrc" type="cone_detection_bottom" output="screen">
+    <node name="cone_bottom_detector" pkg="rr_iarrc" type="cone_bottom_detector" output="screen">
         <!--HSV color threshold for orange cones-->
         <param name="orange_low_H" type="int" value="5" />
         <param name="orange_high_H" type="int" value="15" />
