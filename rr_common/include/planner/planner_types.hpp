@@ -1,15 +1,18 @@
-#ifndef RR_COMMON_PLANNER_TYPES_H
-#define RR_COMMON_PLANNER_TYPES_H
+#pragma once
 
 #include <vector>
 
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 namespace rr {
 
-using KdTreeMap = pcl::KdTreeFLANN<pcl::PointXYZ>;
+using PCLMap = pcl::PointCloud<pcl::PointXYZ>;
+using PCLPoint = pcl::PointXYZ;
 
+/**
+ * Pose: 2D state vector
+ */
 struct Pose {
   double x;
   double y;
@@ -24,6 +27,9 @@ std::ostream& operator<<(std::ostream& out, const Pose& p) {
 }
 
 
+/**
+ * PathPoint: Pose tagged with steering and speed info
+ */
 struct PathPoint {
   Pose pose;
   double steer;
@@ -39,6 +45,9 @@ std::ostream& operator<<(std::ostream& out, const PathPoint& p) {
 }
 
 
+/**
+ * PlannedPath: object representing a planned trajectory
+ */
 struct PlannedPath {
   std::vector<double> control;  // input to a path
   std::vector<PathPoint> path;  // results of path rollout
@@ -48,6 +57,9 @@ struct PlannedPath {
 };
 
 
+/**
+ * CenteredBox: container for forward, backward, left, and right offsets
+ */
 struct CenteredBox {
   double length_front;  // distance from origin to front edge
   double length_back;  // ditto for back edge, etc.
@@ -56,5 +68,3 @@ struct CenteredBox {
 };
 
 }  // namespace rr
-
-#endif  // RR_COMMON_PLANNER_TYPES_H
