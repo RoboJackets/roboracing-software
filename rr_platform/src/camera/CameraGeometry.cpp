@@ -49,14 +49,20 @@ bool CameraGeometry::LoadCameraPose(const std::string &camera_link_name, const d
   ps_src_cam.header.frame_id = camera_link_name;
 
   tf::TransformListener listener;
+  ros::Time t_start = ros::Time::now();
   bool success = false;
   while (!success) {
     try {
-      listener.waitForTransform("base_footprint", camera_link_name, ros::Time(0), ros::Duration(timeout));
+      listener.waitForTransform("base_footprint", camera_link_name, ros::Time(0), ros::Duration(1.0));
       listener.transformPose("base_footprint", ps_src_cam, ps_dst_base);
       success = true;
     } catch (tf::LookupException& e) {
-      ROS_ERROR("tf lookup exception in LoadCameraPose: %s", e.what());
+      ROS_WARN("tf lookup exception in LoadCameraPose: %s", e.what());
+    }
+
+    if ((ros::Time::now() - t_start).toSec() > timeout) {
+      ROS_WARN("[CameraGeometry] loading camera pose timed out");
+      break;
     }
   }
 
