@@ -68,6 +68,12 @@ bool CameraGeometry::LoadCameraPose(const std::string &camera_link_name, const d
 bool CameraGeometry::LoadInfo(ros::NodeHandle& nh, const std::string& camera_info_topic,
                               const std::string& camera_link_name, const double timeout)
 {
+  // ROS simulated time is sometimes wonky when Gazebo is starting up. Make sure we actually have a time
+  //   before doing anything that can time out
+  while (ros::Time::now().toSec() == 0) {
+    ros::Duration(0.01).sleep();
+  }
+
   bool success = true;
   success &= LoadFOV(nh, camera_info_topic, timeout);
   success &= LoadCameraPose(camera_link_name, timeout);
