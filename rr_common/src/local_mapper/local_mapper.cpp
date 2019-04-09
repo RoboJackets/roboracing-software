@@ -132,7 +132,12 @@ int main(int argc, char** argv) {
   std::string cam_link_name;
   nhp.getParam("camera_link_name", cam_link_name);
   rr::CameraGeometry camera_geometry;
-  camera_geometry.LoadInfo(nh, cam_info_topic, cam_link_name, 60);
+  camera_geometry.LoadInfo(nh, cam_info_topic, cam_link_name, 300);
+
+  // proportion of each side of the image that should *not* be considered part of the
+  //   field of view
+  double keep_border_prop;
+  nhp.getParam("keep_border_prop", keep_border_prop);
 
   // find FOV convex polygon
   int horizon_row = 0;
@@ -144,7 +149,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  const auto w1 = static_cast<int>(camera_geometry.GetImageWidth() * 0.1);
+  const auto w1 = static_cast<int>(camera_geometry.GetImageWidth() * keep_border_prop);
   const auto w2 = camera_geometry.GetImageWidth() - w1;
   const auto h1 = camera_geometry.GetImageHeight();
   in_frame_polygon.push_back(std::get<1>(camera_geometry.ProjectToWorld(h1, w1)));
