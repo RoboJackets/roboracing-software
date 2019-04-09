@@ -1,6 +1,8 @@
 #include <rr_common/RelativePoseHistoryClient.h>
 #include <rr_platform/angle_utils.hpp>
 
+namespace rr {
+
 /**
  * Interpolate in time domain between two poses
  * @param p1 pose with smaller timestamp
@@ -85,3 +87,5 @@ RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime
 
   return out_pose;
 }
+
+}  // namespace rr

@@ -7,7 +7,9 @@
 
     <include file="$(dirname)/pointcloud_converter.launch"/>
 
-    <include file="$(dirname)/local_mapper.launch"/>
+    <include file="$(dirname)/local_mapper.launch">
+        <arg name="obstacles_topic" value="/lines_detection_img_transformed_cloud"/>
+    </include>
 
-    <include file="$(dirname)/mpc_planner.launch"/>
+    <include file="$(dirname)/mpc_planner_circuit.launch"/>
 </launch>

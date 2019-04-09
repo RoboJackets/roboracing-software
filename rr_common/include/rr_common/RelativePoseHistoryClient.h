@@ -5,6 +5,8 @@
 #include <nav_msgs/Path.h>
 
 
+namespace rr {
+
 class RelativePoseHistoryClient {
 public:
   using Pose = geometry_msgs::Pose2D;
@@ -29,3 +31,5 @@ private:
 
   nav_msgs::PathConstPtr history_;
 };
+
+}  // namespace rr

@@ -25,6 +25,7 @@
         <param name="k_dist" value="0.9"/>
         <param name="k_speed" value="1"/>
         <param name="k_final_pose" value="20"/>
+        <param name="k_angle" value="1"/>
         <param name="backwards_penalty" value="1"/>
         <param name="collision_penalty" value="50"/>
         <param name="acceptance_scale" value="0.003"/>

@@ -12,5 +12,7 @@
     <node pkg="rr_common" type="local_mapper" name="local_mapper" output="screen">
         <param name="current_obstacles_topic" value="$(arg obstacles_topic)"/>
         <param name="time_horizon" value="3.0"/>
+        <param name="camera_info_topic" value="/camera/camera_info"/>
+        <param name="camera_link_name" value="camera"/>
     </node>
 </launch>
