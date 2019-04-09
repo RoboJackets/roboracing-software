@@ -7,14 +7,27 @@
  * Remote control for recording Rosbag files.
  * Uses a button from E-Stop remote to start recording bag files.
  *
+ * Due to how the Recorder class works, it blocks and the whole
+ * ROS node must be shutdown and restarted to end a clip.
+ *
  * @author Brian Cochran @btdubs
 */
 
 bool startRecording = false;
 bool begunRecording = false;
 
+//lambda for removing empty strings from the split()
+auto pred = [&](const std::string& key) ->bool
+{
+    return key.empty();
+};
+
 void chassisStateCallback(const rr_platform::chassis_state::ConstPtr &chassis_msg) {
     startRecording = chassis_msg->record_bag;
+    if (!startRecording && begunRecording) {
+        ROS_INFO_STREAM("Stopping bag recording");
+        ros::shutdown(); //only way to stop the recording, but we respawn!
+    }
 }
 
 int main(int argc, char **argv) {
@@ -30,11 +43,11 @@ int main(int argc, char **argv) {
     nhp.param(std::string("topics_to_record"), topics_to_record, std::string(""));
     nhp.param(std::string("bag_name_prefix"), bag_name_prefix, std::string(""));
     nhp.param(std::string("folder_path"), folder_path, std::string(""));
-    nhp.param(std::string("bag_max_size"), bag_max_size, 3000);
+    nhp.param(std::string("bag_max_size"), bag_max_size, 1024);
 
     std::vector< std::string > topics_list;
-    boost::split(topics_list, topics_to_record, boost::is_any_of(" "));
-
+    boost::split(topics_list, topics_to_record, boost::is_any_of(" ,")); //allow comma or space or both seperation
+    topics_list.erase(std::remove_if(topics_list.begin(), topics_list.end(), pred), topics_list.end()); //get rid of split oddities
 
     rosbag::RecorderOptions recorder_options_;
     recorder_options_.record_all = false;
@@ -57,13 +70,8 @@ int main(int argc, char **argv) {
 
     while (ros::ok()){
         if (startRecording && !begunRecording) {
-            recorder.run();
             begunRecording = true;
-            ROS_INFO_STREAM("Recording bag to " + folder_path + bag_name_prefix);
-        }
-        if (!startRecording && begunRecording) {
-            ROS_INFO_STREAM("Stopping bag recording");
-            ros::shutdown(); //only way to stop the recording, but we respawn!
+            recorder.run(); //@note: this blocks, hence the callback is our shutdown(
         }
 
         ros::spinOnce();
