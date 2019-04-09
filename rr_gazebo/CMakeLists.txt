@@ -32,6 +32,10 @@ add_executable(macaroni_controller nodes/macaroni_controller.cpp)
 target_link_libraries(macaroni_controller ${catkin_LIBRARIES})
 add_dependencies(macaroni_controller rr_platform_generate_messages_cpp)
 
+add_executable(imu_axes nodes/imu_axes.cpp)
+target_link_libraries(imu_axes ${catkin_LIBRARIES})
+add_dependencies(imu_axes rr_platform_generate_messages_cpp)
+
 catkin_install_python(
         PROGRAMS
         scripts/controller_spawner.py
