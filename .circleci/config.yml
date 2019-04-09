@@ -12,7 +12,7 @@ defaults: &save_src_cache
   save_cache:
     key: source-v1-{{ .Branch }}-{{ .Revision }}
     paths:
-    - ".git"
+    - "~/catkin_ws/src/roboracing-software/.git"
 defaults: &load_src_cache
   restore_cache:
     keys:
