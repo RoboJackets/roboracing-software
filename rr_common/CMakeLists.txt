@@ -27,7 +27,7 @@ find_package(PCL REQUIRED)
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  # INCLUDE_DIRS include
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
@@ -37,10 +37,11 @@ catkin_package(
 
 ## Specify additional locations of header files
 include_directories(
+  include
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${EIGEN_INCLUDE_DIRS}
+  ${rr_platform_INCLUDE_DIRS}
 )
 
 add_library(rr_common src/image_flipper/image_flipper.cpp)

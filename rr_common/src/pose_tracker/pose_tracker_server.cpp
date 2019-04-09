@@ -6,8 +6,7 @@
 
 #include <rr_platform/chassis_state.h>
 #include <rr_platform/axes.h>
-
-#include "rr_common/angle_utils.hpp"
+#include <rr_platform/angle_utils.hpp>
 
 
 // Types
@@ -50,7 +49,7 @@ geometry_msgs::PoseStamped step_reverse(const geometry_msgs::PoseStamped& next_p
                                         const HistoryPoint& h1, const HistoryPoint& h2) {
   // set travel heading as average between start and end of time slice
   // note that this is relative to current heading
-  double travel_heading_end = rr::poseStampedToYaw(next_pose);
+  double travel_heading_end = rr::poseToYaw(next_pose.pose);
   double heading_change = rr::heading_diff(h1.yaw, h2.yaw);
   double travel_heading_avg = rr::fix_angle(travel_heading_end - (heading_change / 2));
   double travel_heading_start = rr::fix_angle(travel_heading_end - heading_change);

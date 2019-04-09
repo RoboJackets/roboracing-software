@@ -1,5 +1,5 @@
-#include "rr_common/RelativePoseHistoryClient.h"
-#include "rr_common/angle_utils.hpp"
+#include <rr_common/RelativePoseHistoryClient.h>
+#include <rr_platform/angle_utils.hpp>
 
 /**
  * Interpolate in time domain between two poses
@@ -21,8 +21,8 @@ RelativePoseHistoryClient::Pose linear_interp(const geometry_msgs::PoseStamped& 
   out_pose.x = p2.pose.position.x * lambda + p1.pose.position.x * (1 - lambda);
   out_pose.y = p2.pose.position.y * lambda + p1.pose.position.y * (1 - lambda);
 
-  double theta1 = rr::poseStampedToYaw(p1);
-  double theta2 = rr::poseStampedToYaw(p2);
+  double theta1 = rr::poseToYaw(p1.pose);
+  double theta2 = rr::poseToYaw(p2.pose);
   out_pose.theta = rr::fix_angle(theta1 + lambda * rr::heading_diff(theta1, theta2));
 
   return out_pose;
@@ -74,7 +74,7 @@ RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime
       // case 2.2: requested time is older than any in history
       out_pose.x = poses.back().pose.position.x;
       out_pose.y = poses.back().pose.position.y;
-      out_pose.theta = rr::poseStampedToYaw(poses.back());
+      out_pose.theta = rr::poseToYaw(poses.back().pose);
     }
 
     else {

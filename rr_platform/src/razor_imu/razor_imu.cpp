@@ -3,7 +3,7 @@
 #include <sensor_msgs/MagneticField.h>
 #include <rr_platform/chassis_state.h>
 #include <rr_platform/axes.h>
-#include <SerialPort.h>
+#include <rr_platform/SerialPort.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
 

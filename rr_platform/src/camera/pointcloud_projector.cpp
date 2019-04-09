@@ -11,7 +11,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "CameraGeometry.h"
+#include <rr_platform/CameraGeometry.h>
 
 using PointT = pcl::PointXYZ;
 

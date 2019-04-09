@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <cmath>
 #include <boost/algorithm/string.hpp>
-#include "CameraGeometry.h"
+#include <rr_platform/CameraGeometry.h>
 
 using namespace std;
 using namespace cv;
