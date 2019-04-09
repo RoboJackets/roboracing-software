@@ -7,11 +7,13 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
 
+#include <stdlib.h>
+
 const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
 const int TURNING = 3; 
-const double PI = 3.14; 
+const float PI = 3.14; 
 
 std::string startSignal;
 std::string resetSignal;
@@ -28,9 +30,7 @@ bool turnDetected = false;
 bool completed; 
 
 int imu_quadrant; 
-double imu_yaw;
-double initial_yaw; 
-double target_yaw;
+float imu_yaw, initial_yaw, target_yaw;
 
 double left_offset; 
 double right_offset; 
@@ -38,11 +38,9 @@ double turn_speed;
 double left_turn_steering; 
 double right_turn_steering; 
 
-
 double forward_timeout;
 
 std::string turn_direction = "right";
-ros::Time finishTime;
 
 /*
 // As you turn counterclockwise, the yaw value received from the IMU ranges from [0, 3.14] U [-3.14, 0]
@@ -67,6 +65,17 @@ void checkQuadrant(){
     }else if(imu_yaw >= 0 && imu_yaw <= .5*PI){
         imu_quadrant = 1;
     }
+}
+
+// Used to calculate the distance from the target IMU yaw to the current IMU yaw within range of [0 ,6.28]
+bool comp(int a, int b) { 
+    return (a < b); 
+}
+
+float angleDist(float target, float current){
+    float diff = target - current;  
+    float min = std::min({std::abs(diff), std::abs(diff - 2*PI),std::abs(diff + 2*PI)}, comp); 
+    return min; 
 }
 
 void publishSpeedandSteering(){
@@ -99,30 +108,34 @@ void updateState() {
                 state = TURNING;
             } else if(completed) {
                 state = FINISHED;
-                finishTime = ros::Time::now();
             } 
             break;
 
         case TURNING: 
-            initial_yaw = imu_yaw; 
+            ros::spinOnce();
             checkQuadrant(); 
+            initial_yaw = imu_yaw;
 
-            if(turn_direction.compare("left")){
+            if(turn_direction.compare("left") == 0){
 
                 if(imu_quadrant == 4){
                     target_yaw = initial_yaw - 1.5*PI - left_offset;
                 }else{
                     target_yaw = initial_yaw + .5*PI + left_offset;
                 }
-                
-                while(imu_yaw != target_yaw){
+
+                while(1){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                        break;
+                    }
+
                     speed = turn_speed;
                     steering = left_turn_steering;
                     publishSpeedandSteering();
+                    ros::spinOnce();
                 }
-                state = RUNNING_PLANNER;
 
-            }else if(turn_direction.compare("right")){
+            }else if(turn_direction.compare("right") == 0){
 
                 if(imu_quadrant == 1){
                     target_yaw = initial_yaw + 1.5*PI + right_offset;
@@ -130,32 +143,33 @@ void updateState() {
                     target_yaw = initial_yaw - .5*PI + right_offset;
                 }
 
-                while(imu_yaw != target_yaw){
+                while(1){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                        break;
+                    }
+
                     speed = turn_speed;
                     steering = right_turn_steering;
                     publishSpeedandSteering();
-
+                    ros::spinOnce();
                 }
-                state = RUNNING_PLANNER;
 
-            }else if(turn_direction.compare("forward")){
+            }else if(turn_direction.compare("forward") == 0){
                 ros::Time start_time = ros::Time::now();
                 ros::Duration timeout(forward_timeout); // Timeout of 2 seconds
-                while(ros::Time::now() - start_time < timeout) {
-                    speed = planSpeed;
-                    steering = planSteering;
+                while(ros::Time::now() < start_time + timeout) {
+                    speed = turn_speed;
+                    steering = 0;
                     publishSpeedandSteering();
                 }
-                state = RUNNING_PLANNER;
             }
+            state = RUNNING_PLANNER;
             break; 
 
         case FINISHED:
             ROS_INFO("Finished");
-            if( (ros::Time::now() - finishTime) > ros::Duration(0.5)) {
-                speed = 0.0;
-                steering = 0.0;
-            }
+            speed = 0.0;
+            steering = 0.0;
             break;
 
         default:

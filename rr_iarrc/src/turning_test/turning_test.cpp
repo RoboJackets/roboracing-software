@@ -6,7 +6,12 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
 
-const double PI = 3.14;
+#include <stdlib.h>     /* abs */
+
+
+using namespace std;
+
+const float PI = 3.14;
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
@@ -15,9 +20,9 @@ double speed;
 double steering;
 
 int imu_quadrant; 
-double imu_yaw;
-double initial_yaw; 
-double target_yaw;
+float imu_yaw;
+float initial_yaw; 
+float target_yaw;
 
 double left_offset; 
 double right_offset; 
@@ -62,17 +67,29 @@ double setInRange(double yaw_read){
     double new_yaw; 
     if(yaw_read < 0){
         new_yaw = yaw_read + 2*PI; 
-        return new_yaw;
+        return new_yaw; 
     }else{
         return yaw_read;
     }
 }
 
-void makeTurn(){
-    initial_yaw = imu_yaw; 
-    checkQuadrant(); 
+// Used to calculate the distance from the target IMU yaw to the current IMU yaw within range of [0 ,6.28]
+bool comp(int a, int b) { 
+    return (a < b); 
+}
 
-    if(turn_direction.compare("left")){
+float angleDist(float target, float current){
+    float diff = target - current;  
+    float min = std::min({std::abs(diff), std::abs(diff - 2*PI),std::abs(diff + 2*PI)}, comp); 
+    return min; 
+}
+
+void makeTurn(){
+    ros::spinOnce();
+    checkQuadrant(); 
+    initial_yaw = imu_yaw; 
+
+    if(turn_direction.compare("left") == 0){
 
         if(imu_quadrant == 4){
             target_yaw = initial_yaw - 1.5*PI - left_offset;
@@ -80,13 +97,18 @@ void makeTurn(){
             target_yaw = initial_yaw + .5*PI + left_offset;
         }
         
-        while(imu_yaw != target_yaw){
+        while(1){
+            if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                break;
+            }
+
             speed = turn_speed;
             steering = left_turn_steering;
             publishSpeedandSteering();
+            ros::spinOnce();
         }
 
-    }else if(turn_direction.compare("right")){
+    }else if(turn_direction.compare("right") == 0){
 
         if(imu_quadrant == 1){
             target_yaw = initial_yaw + 1.5*PI + right_offset;
@@ -94,21 +116,32 @@ void makeTurn(){
             target_yaw = initial_yaw - .5*PI + right_offset;
         }
 
-        while(imu_yaw != target_yaw){
+        while(1){
+            if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                break;
+            }
+
             speed = turn_speed;
             steering = right_turn_steering;
             publishSpeedandSteering();
+            ros::spinOnce();
         }
+    }else if(turn_direction.compare("forward") == 0){
 
-    }else if(turn_direction.compare("forward")){
         ros::Time start_time = ros::Time::now();
         ros::Duration timeout(forward_timeout); // Timeout of 2 seconds
-        while(ros::Time::now() - start_time < timeout) {
+        while(ros::Time::now() < start_time + timeout) {
             speed = turn_speed;
             steering = 0;
             publishSpeedandSteering();
         }
     }
+
+    ROS_INFO("Turn made");
+    speed = 0.0;
+    steering = 0.0;
+    publishSpeedandSteering();
+
 }
 
 void imuCB(const rr_platform::axesConstPtr& msg){
@@ -116,6 +149,7 @@ void imuCB(const rr_platform::axesConstPtr& msg){
 }
 
 int main(int argc, char** argv) {
+    ROS_INFO("Starting turning test node");
     ros::init(argc, argv, "turning_test");
 
     ros::NodeHandle nh;
@@ -126,19 +160,18 @@ int main(int argc, char** argv) {
     nhp.getParam("right_turn_steering", right_turn_steering);
     nhp.getParam("left_offset", left_offset);
     nhp.getParam("right_offset", right_offset);
-    nhp.getParam("forward_timeout", right_offset);
+    nhp.getParam("forward_timeout", forward_timeout);
     nhp.getParam("turn_direction", turn_direction);
 
     auto imuSub = nh.subscribe("/axes", 1, imuCB);
+    speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
+    steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
     
-    ros::Time start_time = ros::Time::now();
-    ros::Duration timeout(forward_timeout); 
-    while(ros::Time::now() - start_time < timeout){
-        speed = 1.0;
-        steering = 0.0;
-        publishSpeedandSteering();
-    }   
+    ros::Rate loopRate(1.0);
+    ros::spinOnce();
+    loopRate.sleep(); 
 
     makeTurn(); 
+
     return 0;
 }
