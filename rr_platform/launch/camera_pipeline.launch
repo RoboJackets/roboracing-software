@@ -1,0 +1,36 @@
+<launch>
+    <arg name="side"/>  <!-- center, left, right -->
+    <arg name="type"/>  <!-- e.g. flir_blackfly, logitech_c615. camera_{type}.launch -->
+    <arg name="serial"/>
+    <arg name="manager_launched" default="false"/>
+
+    <group unless="$(arg manager_launched)">
+        <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" output="screen"
+              args="manager"/>
+    </group>
+
+    <group ns="camera_$(arg side)">
+        <include file="$(dirname)/camera_$(arg type).launch">
+            <arg name="serial" value="$(arg serial)"/>
+            <arg name="side" value="$(arg side)"/>
+        </include>
+
+        <node pkg="nodelet" type="nodelet" name="debayer" output="screen"
+              args="load image_proc/debayer /camera_nodelet_manager">
+            <param name="debayer" value="0"/>
+        </node>
+
+        <node pkg="nodelet" type="nodelet" name="rectifier_mono" output="screen"
+              args="load image_proc/rectify /camera_nodelet_manager">
+            <param name="interpolation" value="1"/>
+            <remap from="image_rect" to="image_mono_rect"/>
+        </node>
+
+        <node pkg="nodelet" type="nodelet" name="rectifier_color" output="screen"
+              args="load image_proc/rectify /camera_nodelet_manager">
+            <param name="interpolation" value="1"/>
+            <remap from="image_mono" to="image_color"/>
+            <remap from="image_rect" to="image_color_rect"/>
+        </node>
+    </group>
+</launch>
