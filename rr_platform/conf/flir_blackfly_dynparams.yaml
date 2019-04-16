@@ -1,7 +1,7 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
   video_mode: format7_mode0
-  frame_rate: 30
+  frame_rate: 20
   format7_color_coding: raw8
 
   auto_exposure: false

@@ -1,5 +1,8 @@
 <launch>
-    <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
+    <arg name="camera_namespace" default="camera_center"/>
+
+    <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector" 
+          output="screen" ns="$(arg camera_namespace)">
         <!--Minimum Area to Keep-->
         <param name="perfect_lines_min_cut" type="int" value="50" />
         <!--Strength of Floodfill-->
@@ -12,6 +15,6 @@
         <param name="blockWheels_height" type="int" value="800" />
         <param name="blockBumper_height" type="int" value="650" />
 
-        <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
+        <param name="subscription_node" type="string" value="image_color_rect"/>
     </node>
 </launch>

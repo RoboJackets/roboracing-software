@@ -13,6 +13,8 @@
 
 #include <rr_platform/CameraGeometry.h>
 
+#include <thread>
+
 using PointT = pcl::PointXYZ;
 
 class PointCloudProjector : public nodelet::Nodelet {
@@ -24,9 +26,17 @@ private:
   pcl::VoxelGrid<PointT> grid_filter_;
   double x_max_;
   int downsample_factor_;
+  bool cam_geom_ready_;
+  std::thread load_info_thread_;
 
 
   void ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
+    if (!cam_geom_ready_) {
+      NODELET_INFO("Pointcloud projector waiting for camera geometry load");
+      load_info_thread_.join();
+      NODELET_INFO("Camera geometry loaded");
+    }
+
     const cv::Mat cv_img = cv_bridge::toCvShare(msg, "mono8")->image;
 
     cv::Mat cv_img_resized;
@@ -85,7 +95,12 @@ private:
     }
 
     // load camera geometry
-    cam_geom_.LoadInfo(node_handle, camera_info_topic, camera_tf_frame, load_timeout);
+    cam_geom_ready_ = false;
+    load_info_thread_ = std::thread([this, camera_info_topic, camera_tf_frame, load_timeout]() {
+      auto nh = getNodeHandle();
+      cam_geom_.LoadInfo(nh, camera_info_topic, camera_tf_frame, load_timeout);
+      cam_geom_ready_ = true;
+    });
 
     detection_image_sub_ = image_transport.subscribe(image_topic_in, 1, &PointCloudProjector::ImageCallback, this);
 

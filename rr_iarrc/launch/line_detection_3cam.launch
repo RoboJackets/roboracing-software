@@ -1,0 +1,33 @@
+<launch>
+    <!-- detection -->
+    <include file="$(dirname)/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera_center"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_left"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_right"/>
+    </include>
+
+    <!-- projection -->
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_center"/>
+        <arg name="is_side_cam" value="false"/>
+    </include>
+
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_left"/>
+        <arg name="is_side_cam" value="true"/>
+    </include>
+
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_right"/>
+        <arg name="is_side_cam" value="true"/>
+    </include>
+</launch>
