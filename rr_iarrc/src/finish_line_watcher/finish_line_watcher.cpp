@@ -20,7 +20,7 @@ using namespace ros;
 
 using uchar = unsigned char;
 
-Publisher debug_pub;
+// Publisher debug_pub;
 Publisher crosses_pub;
 
 #define HIGH 1
@@ -59,7 +59,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     Mat output;
 
     try {
-        cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+        cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
     } catch (cv_bridge::Exception& e) {
         ROS_ERROR("CV-Bridge error: %s", e.what());
         return;
@@ -67,40 +67,25 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     frame = cv_ptr->image;
 
-    for(int r = 0; r < frame.rows; r++) {
-        unsigned char* row = frame.ptr<unsigned char>(r);
-        for(int c = 0; c < frame.cols * frame.channels(); c+= frame.channels()) {
-            auto& blue = row[c];
-            auto& green = row[c+1];
-            auto& red = row[c+2];
-            if(blue == 255 && green == 0 && red == 0) {
-                blue = green = red = 255;
-            } else if(blue != 0 || green != 0 || red != 0) {
-                blue = green = red = 0;
-            }
-        }
-    }
-    cvtColor(frame, frame, CV_BGR2GRAY);
-
     auto count = countNonZero(frame);
 
     auto width = getWidth(frame);
 
 
-    if(state == LOW && count > 4000 && width > 850) {
+    if(state == LOW && count > 2000 && width > 600) {
         state = HIGH;
-    } else if(state == HIGH && count < 4000) {
+    } else if(state == HIGH && count < 2000) {
         // We crossed the line!
         state = LOW;
         number_of_crosses++;
         ROS_INFO_STREAM("Finish line crossed - " << to_string(number_of_crosses));
     }
 
-    sensor_msgs::Image outmsg;
-    cv_ptr->image = frame;
-    cv_ptr->encoding = "mono8";
-    cv_ptr->toImageMsg(outmsg);
-    debug_pub.publish(outmsg);
+    // sensor_msgs::Image outmsg;
+    // cv_ptr->image = frame;
+    // cv_ptr->encoding = "mono8";
+    // cv_ptr->toImageMsg(outmsg);
+    // debug_pub.publish(outmsg);
 }
 
 int main(int argc, char** argv) {
@@ -117,7 +102,7 @@ int main(int argc, char** argv) {
     Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
-    debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
+    // debug_pub = nhp.advertise<sensor_msgs::Image>("finish_line_debug_img", 1);
 
     Rate rate(30);
     while(ros::ok()) {

@@ -120,7 +120,9 @@ int main(int argc, char **argv) {
     std::string default_load_file_path = package_path + "/saved_hsv/example.txt" ;
     nhp.param(std::string("load_file"), load_file_path ,default_load_file_path);
     
-    hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>("/hsv_tuned", 1);
+    std::string values_topic;
+    nhp.getParam("values_topic", values_topic);
+    hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>(values_topic, 1);
 
     rr_iarrc::hsv_tuned hsv_tuned_msg;
     hsv_tuned_msg.header.frame_id = "hsv_tuned";

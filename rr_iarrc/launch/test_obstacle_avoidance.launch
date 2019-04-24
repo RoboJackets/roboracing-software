@@ -3,13 +3,17 @@
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
-    <include file="$(dirname)/laplacian_line_detector.launch"/>
-    <include file="$(dirname)/cone_detection.launch"/>
+    <include file="$(dirname)/line_detection_3cam.launch"/>
 
-    <include file="$(dirname)/pointcloud_converter.launch"/>
+    <include file="$(dirname)/cone_bottom_detection.launch"/>
+    <include file="$(dirname)/cones_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_center"/>
+        <arg name="is_side_cam" value="false"/>
+    </include>
 
     <include file="$(dirname)/local_mapper.launch">
-        <arg name="obstacles_topic" value="/cone_detection_img_transformed_cloud"/>
+        <arg name="obstacles_topic" value="/current_obstacles"/>
     </include>
 
     <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>

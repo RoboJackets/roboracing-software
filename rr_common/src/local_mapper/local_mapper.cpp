@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 
   const auto w1 = static_cast<int>(camera_geometry.GetImageWidth() * keep_border_prop);
   const auto w2 = camera_geometry.GetImageWidth() - w1;
-  const auto h1 = camera_geometry.GetImageHeight();
+  const auto h1 = static_cast<int>(camera_geometry.GetImageHeight() * 0.8);
   in_frame_polygon.push_back(std::get<1>(camera_geometry.ProjectToWorld(h1, w1)));
   in_frame_polygon.push_back(std::get<1>(camera_geometry.ProjectToWorld(h1, w2)));
   in_frame_polygon.push_back(std::get<1>(camera_geometry.ProjectToWorld(horizon_row, w2)));

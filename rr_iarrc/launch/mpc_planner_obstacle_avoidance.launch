@@ -9,7 +9,7 @@
 
         <param name="wheel_base" value="0.485"/>
         <param name="lateral_accel" value="1.5"/>
-        <param name="max_speed" value="1.5"/>
+        <param name="max_speed" value="1.0"/>
         <param name="max_steering" value="0.45"/>
         <param name="steering_speed" value="1.2"/>
         <param name="steering_gain" value="1.1"/>
@@ -31,7 +31,7 @@
 
         <param name="input_cloud_topic" value="/local_map"/>
 
-        <param name="impasse_caution_duration" value="0.1"/>
+        <param name="impasse_caution_duration" value="0.2"/>
         <param name="impasse_reverse_duration" value="3.0"/>
 
     </node>
