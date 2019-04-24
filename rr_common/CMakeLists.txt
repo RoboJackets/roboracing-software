@@ -49,7 +49,7 @@ target_link_libraries(rr_common ${catkin_LIBRARIES})
 
 add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
-add_subdirectory(src/mapper)
+add_subdirectory(src/pointcloud_combiner)
 add_subdirectory(src/navigation_controller)
 add_subdirectory(src/sound_node)
 add_subdirectory(src/follower)

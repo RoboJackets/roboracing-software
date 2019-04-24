@@ -32,12 +32,13 @@
     </include>
 
     <!-- combine pointclouds -->
-    <node pkg="rr_common" type="mapper" name="lines_combiner" output="screen">
+    <node pkg="rr_common" type="pointcloud_combiner" name="lines_combiner" output="screen">
         <param name="sources" value="/camera_center/lines/cloud /camera_left/lines/cloud /camera_right/lines/cloud"/>
         <param name="destination" value="/current_obstacles"/>
         <param name="refresh_rate" value="100"/>
         <param name="combined_frame" value="base_footprint"/>
 
+        <!-- deprecated -->
         <param name="ground_threshold" value="-0.1"/>
         <param name="outlier_neighbors" value="1"/>
         <param name="outlier_threshold" value="100.0"/>

@@ -13,27 +13,13 @@
 using cloud_t = pcl::PointCloud<pcl::PointXYZ>;
 using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
-std::map<std::string, std::queue<sensor_msgs::PointCloud2ConstPtr>> queues;
-bool hasChanged = false;
+std::map<std::string, sensor_msgs::PointCloud2ConstPtr> cache;
+bool has_new_info;
 
-bool shouldUpdate() {
-    if (!hasChanged) {
-        return false;
-    }
-
-    for (const auto& entry : queues) {
-        ROS_INFO_STREAM("Queue " << entry.first << " has " << entry.second.size());
-        if (entry.second.empty()) {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
-    queues[topic].push(msg);
-    hasChanged = true;
+    cache[topic] = msg;
+    has_new_info = true;
 }
 
 /**
@@ -50,7 +36,7 @@ std::vector <std::string> split(const std::string &s, char delim) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "mapper");
+    ros::init(argc, argv, "pointcloud_combiner");
 
     ros::NodeHandle nh;
     ros::NodeHandle nh_private("~");
@@ -98,25 +84,27 @@ int main(int argc, char** argv) {
 
     tf::TransformListener tfListener;
 
-    ROS_INFO("starting mapper main loop");
+    ROS_INFO("starting pointcloud_combiner main loop");
 
     ros::Rate rate(refreshRate);
-    while(ros::ok()) {
+    while (ros::ok()) {
         ros::spinOnce();
 
-        if(shouldUpdate()) {
+        if (has_new_info) {
 
             combo_cloud->clear();
             combo_cloud_filtered->clear();
 
-            for(auto& entry : queues) {
-                auto& queue = entry.second;
-                auto msg = queue.front();  // copy
-                queue.pop();
+            for (auto entry_pair : cache) {  // copy for kind-of thread safety?
+                if (!entry_pair.second) {
+                  continue;  // null pointer for message
+                }
+
+                const auto& cloud_msg = *(entry_pair.second);
 
                 // convert from message to pcl pointcloud
                 pcl::PCLPointCloud2 pcl_pc2;
-                pcl_conversions::toPCL(*msg, pcl_pc2);
+                pcl_conversions::toPCL(cloud_msg, pcl_pc2);
 
                 cloud_t partialCloud;
                 pcl::fromPCLPointCloud2(pcl_pc2, partialCloud);
@@ -127,16 +115,16 @@ int main(int argc, char** argv) {
 
                 // frame transform
                 transformed->clear();
-                tfListener.waitForTransform(msg->header.frame_id, combinedFrame, ros::Time(0), ros::Duration(0.1));
+                tfListener.waitForTransform(cloud_msg.header.frame_id, combinedFrame, ros::Time(0), ros::Duration(5.0));
                 pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
 
                 // filter by z axis height
                 // filtered_pass->clear();
                 // filterPass.setInputCloud(transformed);
                 // filterPass.filter(*filtered_pass);
-                *filtered_pass = *transformed;
+                // *filtered_pass = *transformed;
 
-                *(combo_cloud) += *filtered_pass;
+                *(combo_cloud) += *transformed;
             }
 
             // make 2D
@@ -155,12 +143,12 @@ int main(int argc, char** argv) {
             // filtered_pass->clear();
             // filterOutliers.setInputCloud(filtered_vg);
             // filterOutliers.filter(*filtered_pass);
-            *filtered_pass = *combo_cloud;
+            // *filtered_pass = *combo_cloud;
 
             // convert back to message
             if (!combo_cloud->points.empty()) {
                 pcl::PCLPointCloud2 combo_pc2;
-                pcl::toPCLPointCloud2(*filtered_pass, combo_pc2);
+                pcl::toPCLPointCloud2(*combo_cloud, combo_pc2);
                 sensor_msgs::PointCloud2 msg;
                 pcl_conversions::fromPCL(combo_pc2, msg);
 
@@ -172,7 +160,7 @@ int main(int argc, char** argv) {
                 ROS_INFO("pointcloud empty");
             }
 
-            hasChanged = false;
+            has_new_info = false;
         }
 
         rate.sleep();
@@ -180,4 +168,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
