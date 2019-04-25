@@ -25,6 +25,9 @@
 
     <node name="sim_controller" pkg="rr_gazebo" type="macaroni_controller" respawn="false" output="screen" />
 
+    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />
+
     <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_macaroni_platform.sh" 
           args="$(arg start_pose)"/>
+
 </launch>
