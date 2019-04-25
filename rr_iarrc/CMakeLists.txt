@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_iarrc)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -61,6 +61,7 @@ add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
 add_subdirectory(src/hsv_tuner)
 add_subdirectory(src/laplacian_line_detection)
+add_subdirectory(src/cone_detection)
 add_subdirectory(src/urc_controller)
 add_subdirectory(src/turning_test)
 

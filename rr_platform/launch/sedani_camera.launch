@@ -3,4 +3,5 @@
         <arg name="serial" value="18064461" />
     </include>
 
+    <node pkg="rr_platform" type="sedani_camera_dynconfig.sh" name="dynamic_configurator"/>
 </launch>

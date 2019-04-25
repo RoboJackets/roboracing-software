@@ -1,4 +1,4 @@
-#include "random_sample_planner.h"
+#include "planner/random_sample_planner.h"
 
 #include <algorithm>
 #include <cmath>
@@ -33,20 +33,24 @@ double RandomSamplePlanner::SampleSteering(int stage) {
   return angle;
 }
 
-std::tuple<bool, double> RandomSamplePlanner::GetCost(
-    const std::vector<PathPoint>& path, const KdTreeMap& kd_tree_map) {
+std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoint>& path) {
   double denominator = 0;
   bool is_collision;
   double dist;
+
   for(const auto& path_point : path) {
-    std::tie(is_collision, dist)
-        = distance_checker_.GetCollisionDistance(path_point.pose);
+    std::tie(is_collision, dist) = distance_checker_.GetCollisionDistance(path_point.pose);
 
     if (is_collision) {
       break;
     }
     denominator += params.k_dist * dist + params.k_speed * path_point.speed;
   }
+
+  if (denominator == 0.0) {
+    denominator = 0.001;
+  }
+
   return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
@@ -138,12 +142,12 @@ double RandomSamplePlanner::FilterOutput(double this_steer) {
   return median;
 }
 
-PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
+PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
 
   // allocate planned paths
   std::vector<PlannedPath> plans;
 
-  distance_checker_.SetMap(*kd_tree_map.input_);
+  distance_checker_.SetMap(map);
 
   // fill planned paths and determine best cost
   double best_cost = 1e10;
@@ -155,10 +159,10 @@ PlannedPath RandomSamplePlanner::Plan(const KdTreeMap& kd_tree_map) {
       plan.control.push_back(SampleSteering(stage));
     }
 
-    model_.RollOutPath(plan.path, plan.control);
+    model_.RollOutPath(plan.control, plan.path);
 
     bool collision;
-    std::tie(collision, plan.cost) = GetCost(plan.path, kd_tree_map);
+    std::tie(collision, plan.cost) = GetCost(plan.path);
 
     if (collision) {
       plans.pop_back();

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rr_common)
 
-set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -23,15 +23,11 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  #INCLUDE_DIRS include
+  # INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
@@ -41,7 +37,6 @@ catkin_package(
 
 ## Specify additional locations of header files
 include_directories(
-  include
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}

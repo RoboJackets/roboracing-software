@@ -17,6 +17,7 @@
     <param name="format7_roi_height" value="1024"/>
     <param name="format7_x_offset" value="0"/>
     <param name="format7_y_offset" value="0"/>
+    <param name="frame_id" value="camera_optical"/>
     <param name="camera_info_url" value="package://rr_platform/launch/flir-blackfly-calibration-20181118.yaml" />
     <param name="format7_color_coding" value="raw8"/>
     <param name="frame_rate" value="60" />
@@ -44,13 +45,5 @@
     <remap from="image_mono" to="camera/image_color" />
     <remap from="image_rect" to="camera/image_color_rect" />
   </node>
-
-  <node pkg="nodelet" type="nodelet" name="pointgrey_image_flipper" args="load rr_common/image_flipper camera_nodelet_manager">
-    <param name="flip_code" value="-1"/>
-    <remap from="image" to="camera/image_color_rect"/>
-    <remap from="image_flipped" to="camera/image_color_rect_flipped"/>
-  </node>
-  
-  <node pkg="rr_platform" type="sedani_camera_dynconfig.sh" name="dynamic_configurator"/>
   
 </launch>

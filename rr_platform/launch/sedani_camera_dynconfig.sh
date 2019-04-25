@@ -5,5 +5,5 @@
 # reconfigure settings should be applied after all
 # the defaults have been applied
 
-sleep 10
+sleep 3
 roslaunch rr_platform sedani_camera_dynconfig.launch
