@@ -64,7 +64,9 @@ void publish_closest_point() {
                 min = cone_point.x;
             }
         }
-        pub_closest_point.publish((float) min);
+        std_msgs::Float32 msg;
+        msg.data = (float) min;
+        pub_closest_point.publish(msg);
     }
 }
 
