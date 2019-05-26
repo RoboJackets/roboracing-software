@@ -26,6 +26,8 @@ Most folders in this repository are ROS packages.
 
 **rr_platform**: This package contains code for interfacing with the various cars built and maintained by the team.
 
+**rr_ml**: This package contains our machine learning models and tools for working with datasets.
+
 **sandbox**: This package contains utilities and non-ROS code. This includes tools for working with log files and the Arduino code for the car.
 
 The following files and folders enable our continuous integration system.

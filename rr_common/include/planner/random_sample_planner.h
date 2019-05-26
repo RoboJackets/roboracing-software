@@ -1,14 +1,13 @@
-#ifndef RR_COMMON_RANDOM_SAMPLE_PLANNER_H
-#define RR_COMMON_RANDOM_SAMPLE_PLANNER_H
+#pragma once
 
 #include <random>
 #include <tuple>
 #include <vector>
 
-#include "planner.h"
-#include "planner_types.hpp"
-#include "distance_checker.h"
-#include "bicycle_model.h"
+#include "planner/planner.h"
+#include "planner/planner_types.hpp"
+#include "planner/distance_checker.h"
+#include "planner/bicycle_model.h"
 
 namespace rr {
 
@@ -50,7 +49,7 @@ public:
   /*
    * Plan: given a map of the world, find the best path through it
    */
-  PlannedPath Plan(const KdTreeMap& kd_tree_map);
+  PlannedPath Plan(const PCLMap& map);
 
 private:
 
@@ -68,13 +67,11 @@ private:
    * cost = path integral 1 / (k_dist * obstacle_distance + k_speed * speed)
    * Params:
    * path - list of (pose, steering, speed) tuples
-   * kdtree - nearest-neighbors-searchable map
    * Returns:
    * bool - collision detected
    * double - cost
    */
-  std::tuple<bool, double> GetCost(const std::vector<PathPoint>& path, 
-                                   const KdTreeMap& kd_tree_map);
+  std::tuple<bool, double> GetCost(const std::vector<PathPoint>& path);
 
   /*
    * GetLocalMinima: A "clustering" function. Given a set of paths, find local 
@@ -111,5 +108,3 @@ private:
 
 
 }  // namespace rr
-
-#endif  // RR_COMMON_RANDOM_SAMPLE_PLANNER_H

@@ -2,13 +2,9 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <rr_platform/calibrate_image.h>
-#include <rr_platform/camera_pose.h>
 #include <cmath>
-#include <sensor_msgs/JointState.h>
-#include <tf/transform_listener.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <boost/algorithm/string.hpp>
+#include "CameraGeometry.h"
 
 using namespace std;
 using namespace cv;
@@ -23,74 +19,11 @@ double cam_mount_angle;  //angle of camera from horizontal
 double cam_mount_height;  //camera height from ground in meters
 double cam_mount_x;  // distance from camera to base_footprint
 
-bool fov_callback_called;
-
 Size mapSize;  // pixels = cm
 Size imageSize;
 Mat transform_matrix;
 
 map<string, Publisher> transform_pubs;
-
-void loadCameraPoseFromTf() {
-    ROS_INFO("image_transform is loading camera pose from tf...");
-    tf::TransformListener listener;
-
-    geometry_msgs::PoseStamped ps_src_cam;  // source pose, origin
-    geometry_msgs::PoseStamped ps_dst_base;  // destination pose, camera frame origin from base_footprint
-
-    tf::Quaternion tf_no_rotation;
-    tf_no_rotation.setRPY(0, 0, 0);
-    tf::quaternionTFToMsg(tf_no_rotation, ps_src_cam.pose.orientation);
-
-    ps_src_cam.header.frame_id = "camera";
-
-    bool success = false;
-    while(!success) {
-        try {
-            listener.waitForTransform("base_footprint", "camera", ros::Time(0), ros::Duration(5.0));
-            listener.transformPose("base_footprint", ps_src_cam, ps_dst_base);
-            success = true;
-        } catch(tf2::LookupException& e) {
-            ROS_ERROR("tf LookupException: %s", e.what());
-        }
-    }
-
-    tf::Quaternion tf_camera_rotation;
-    tf::quaternionMsgToTF(ps_dst_base.pose.orientation, tf_camera_rotation);
-
-    double roll, pitch, yaw;
-    tf::Matrix3x3(tf_camera_rotation).getRPY(roll, pitch, yaw);
-
-    cam_mount_angle = pitch;
-    cam_mount_height = ps_dst_base.pose.position.z;
-    cam_mount_x = ps_dst_base.pose.position.x;
-}
-
-void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-    double fx = msg->P[0]; //horizontal focal length of rectified image, in px
-    double fy = msg->P[5]; //vertical focal length
-    imageSize = Size(msg->width, msg->height);
-    camera_fov_horizontal = 2 * atan2(imageSize.width, 2*fx);
-    camera_fov_vertical = 2 * atan2(imageSize.height, 2*fy);
-    fov_callback_called = true;
-}
-
-void loadCameraFOV(NodeHandle& nh) {
-    auto infoSub = nh.subscribe("/camera/camera_info", 1, fovCallback);
-
-    Time t_start = Time::now();
-    fov_callback_called = false;
-    while (!fov_callback_called) {
-        if ((Time::now() - t_start).toSec() > 10) {
-            ROS_WARN("[Image_Transform] setting camera FOV from camera_info timed out");
-            break;
-        }
-
-        spinOnce();
-        Duration(0.05).sleep();
-    }
-    ROS_INFO("Using horizontal FOV %f and vertical FOV %f", camera_fov_horizontal, camera_fov_vertical);
-}
 
 
 /*
@@ -195,8 +128,17 @@ int main(int argc, char **argv) {
         ROS_WARN("[Image Transform] Not all launch params defined");
     }
 
-    loadCameraFOV(nh); //spins ROS event loop for a bit
-    loadCameraPoseFromTf();
+    // load camera geometry
+    rr::CameraGeometry cam_geom;
+    cam_geom.LoadInfo(nh, "/camera/camera_info", "camera", 60.0);
+
+    // set relevant camera geometry fields for this node
+    camera_fov_horizontal = cam_geom.GetFOVHorizontal();
+    camera_fov_vertical = cam_geom.GetFOVVertical();
+    cam_mount_angle = std::get<1>(cam_geom.GetCameraOrientationRPY());
+    cam_mount_height = cam_geom.GetCameraLocation().z;
+    cam_mount_x = cam_geom.GetCameraLocation().x;
+
     setTransformFromGeometry();
     ROS_INFO("Calculated perspective transform. Used height %f and angle %f", cam_mount_height, cam_mount_angle);
 

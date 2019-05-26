@@ -12,6 +12,8 @@ pressed_set = set()
 def on_key_press(key):
     try:
         pressed_set.add(key.char)
+    except Exception as e:
+        print "Keyboard driver error:", e
 
     if 'esc' in dir(key) and key.esc:
         # ends key listener loop

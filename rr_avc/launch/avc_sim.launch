@@ -39,7 +39,7 @@
         <param name="k_speed" value="1"/>
         <!--<param name="k_similarity" value="0"/>-->
         <param name="k_final_pose" value="20"/>
-        <param name="backwards_penalty" value="1"/>
+        <param name="k_angle" value="1"/>
         <param name="collision_penalty" value="50"/>
         <param name="acceptance_scale" value="0.003"/>
 
