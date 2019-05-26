@@ -61,11 +61,8 @@ add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
 add_subdirectory(src/hsv_tuner)
 add_subdirectory(src/laplacian_line_detection)
-<<<<<<< HEAD
 add_subdirectory(src/sign_detector)
-=======
 add_subdirectory(src/cone_detection)
 add_subdirectory(src/urc_controller)
 add_subdirectory(src/turning_test)
->>>>>>> fcc0968fc6f41deb73153dee1a39b999f47a281f
 

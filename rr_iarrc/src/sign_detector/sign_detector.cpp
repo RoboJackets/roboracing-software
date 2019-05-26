@@ -402,7 +402,7 @@ int main(int argc, char** argv) {
     pubLine = nh.advertise<sensor_msgs::Image>("/stop_bar_lines", 1); //debug publish of image
 	pubMove = nh.advertise<std_msgs::String>("/turn_detected", 1); //publish the turn move for Urban Challenge
     auto img_real = nh.subscribe(image_sub, 1, sign_callback);
-    auto stopBar = nh.subscribe("/lines_detection_img_transformed", 1, stopBar_callback);
+    auto stopBar = nh.subscribe("/lines/detection_img_transformed", 1, stopBar_callback);
 
     ros::spin();
     return 0;
