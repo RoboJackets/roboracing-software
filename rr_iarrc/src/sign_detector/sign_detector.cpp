@@ -153,19 +153,100 @@ ros::Time start = ros::Time::now();
 }
 
 
+cv::Mat findStopBarFromHough(cv::Mat frame) {
+    double goalAngle = 90;
+
+    //need a form to find lines in
+    cv::Mat edges;
+    int ddepth = CV_8UC1;
+    cv::Laplacian(frame, edges, ddepth);
+    convertScaleAbs( edges, edges );
+    //edges = frame;
+
+    // Standard Hough Line Transform
+    std::vector<cv::Vec2f> lines; // will hold the results of the detection
+    double rho = 1; //distance resolution
+    double theta = CV_PI/180; //CV_PI/180 //angular resolution (in radians) pi/180 is one degree res
+    int threshold = 65;//50; //#TODO: make in launch file
+    //#TODO: may want to set min and max theta for speed
+    //cv::rotate(edges, edges, cv::ROTATE_90_CLOCKWISE); //#TODO: debugging, remove this
+/*
+    cv::HoughLines(edges, lines, rho, theta, threshold, 0, 0 ); // runs the actual detection
+
+    //determine if it is stop bar and visualize results
+    cv::Mat output; //for visualization debug
+    cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR);
+    for( size_t i = 0; i < lines.size(); i++ ) {
+        float rho = lines[i][0], theta = lines[i][1];
+        cv::Point pt1, pt2;
+        double a = cos(theta), b = sin(theta);
+        double x0 = a*rho, y0 = b*rho;
+        pt1.x = cvRound(x0 + 1000*(-b));
+        pt1.y = cvRound(y0 + 1000*(a));
+        pt2.x = cvRound(x0 - 1000*(-b));
+        pt2.y = cvRound(y0 - 1000*(a));
+        cv::line( output, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
+    }
+*/
+
+    cv::Mat output;
+    cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR);
+    std::vector<cv::Vec4i> lines2;
+    cv::HoughLinesP(edges, lines2, rho, theta, threshold, 50, 10);
+    for (size_t i = 0; i < lines2.size(); i++) {
+        cv::Vec4i l = lines2[i];
+        cv::Point p1(l[0], l[1]);
+        cv::Point p2(l[2], l[3]);
+        cv::line(output, p1, p2, cv::Scalar(0,0,255), 2, CV_AA);
+
+        //calc angle and decide if it is a stop bar
+        double dx = p2.x - p1.x;//std::fabs(p2.x - p1.x);
+        double dy = p2.y - p1.y;//std::fabs(p2.y - p1.y);
+        double angle = atan(std::fabs(dy / dx)) * 180/CV_PI;//in degrees
+
+        cv::Point midpoint = (p1 + p2) * 0.5;
+        cv::circle(output, midpoint, 3, cv::Scalar(255,0,0), -1);
+        cv::putText(output, std::to_string(angle), midpoint, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+
+        const double goalAngle = 0; //#TODO: launch file
+        if (fabs(goalAngle - angle) <= 5) { //allows some amount of angle error
+            //get distance to the line
+            const float goalDist = 1.0; // meters #TODO: move to launch file.
+            const int pixels_per_meter = 100; //#TODO: move to launch file and all
+            float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
+
+            cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0,255,255), 1, CV_AA);
+            cv::putText(output, std::to_string(dist), cv::Point(midpoint.x, edges.rows - dist/2), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+
+            if (dist <= goalDist) {
+                bestMove = "NONE"; //reset
+                bestMatchRect.width = 0;
+                bestMatchRect.height = 0;
+
+                ROS_INFO_STREAM("STOP BAR DETECTED: " + bestMove); //#TODO: publish string as message
+            }
+        }
 
 
-void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
-    cv_ptrLine = cv_bridge::toCvCopy(msg, "mono8");
-    cv::Mat frame = cv_ptrLine->image;
-
-	bool stopBarDetected = false;
+    }
 
 
-	//allow us to debug see the image as bgr
-	cv::Mat lineOutput;
+
+
+
+
+    return output;
+}
+
+
+cv::Mat findStopBarFromContourRect(cv::Mat frame) {
+    bool stopBarDetected = false;
+
+
+    //allow us to debug see the image as bgr
+    cv::Mat lineOutput;
     cv::cvtColor(frame, lineOutput, CV_GRAY2BGR);
-///*
+
     std::vector<std::vector<cv::Point>> contours;
     std::vector<cv::Vec4i> h;
     cv::findContours(frame, contours, h, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0,0));
@@ -174,39 +255,40 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     for(size_t i=0; i<contours.size(); i++) {
         std::vector<cv::Point> c = contours[i]; //curent contour
 
-		cv::RotatedRect rRect = cv::minAreaRect(c);
-		std::vector<cv::Point> points;
-		cv::Point2f vertices[4];
-		rRect.points(vertices);
-		//rRect.angle = std::abs(rRect.angle);
-		//debug view
-		for (int i = 0; i < 4; i++) {
-        	cv::line(lineOutput, vertices[i], vertices[(i+1)%4], cv::Scalar(0,0,255), 2);
-		}
-		cv::putText(lineOutput, std::to_string((int)rRect.angle), rRect.center, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0, 255), 1);
+        cv::RotatedRect rRect = cv::minAreaRect(c);
+        std::vector<cv::Point> points;
+        cv::Point2f vertices[4];
+        rRect.points(vertices);
+        //rRect.angle = std::abs(rRect.angle);
+        //debug view
+        cv::Mat lineOutput;
+        for (int i = 0; i < 4; i++) {
+            cv::line(lineOutput, vertices[i], vertices[(i+1)%4], cv::Scalar(0,0,255), 2);
+        }
+        cv::putText(lineOutput, std::to_string((int)rRect.angle), rRect.center, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0, 255), 1);
 
-		//these determine what makes a stop bar //#TODO: launch file params, convert using pixel_per_meter?
-		double angleDegreesDeviation = 5;
-		double minWidth = 2;
-		double minHeight = 1;
-		double triggerDistance = 0.2;
+        //these determine what makes a stop bar //#TODO: launch file params, convert using pixel_per_meter?
+        double angleDegreesDeviation = 5;
+        double minWidth = 2;
+        double minHeight = 1;
+        double triggerDistance = 0.2;
 
-		double distance = frame.rows - rRect.center.y;
+        double distance = frame.rows - rRect.center.y;
 
-		double width;
-		double height;
-		if (rRect.size.width > rRect.size.height) {
-			width = rRect.size.width;
-			height = rRect.size.height;
-		} else {
-			width = rRect.size.height;
-			height = rRect.size.width;
-		}
+        double width;
+        double height;
+        if (rRect.size.width > rRect.size.height) {
+            width = rRect.size.width;
+            height = rRect.size.height;
+        } else {
+            width = rRect.size.height;
+            height = rRect.size.width;
+        }
 
-		if ((static_cast<int>(rRect.angle) % 90 <= angleDegreesDeviation ||
-			static_cast<int>(rRect.angle) % 90 >= 90 - angleDegreesDeviation) &&
-			width >= minWidth &&
-			height >= minHeight &&
+        if ((static_cast<int>(rRect.angle) % 90 <= angleDegreesDeviation ||
+            static_cast<int>(rRect.angle) % 90 >= 90 - angleDegreesDeviation) &&
+            width >= minWidth &&
+            height >= minHeight &&
             rRect.size.width > rRect.size.height) {
 
             //debug draw a line and show distance
@@ -216,17 +298,27 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
                         cv::Point2f(rRect.center.x, rRect.center.y - distance /2),
                         cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(255,255,0), 1);
             */
-			if (distance <= triggerDistance) {
+            if (distance <= triggerDistance) {
 
-			    stopBarDetected = true;
+                stopBarDetected = true;
                 bestMove = "NONE"; //reset
                 bestMatchRect.width = 0;
                 bestMatchRect.height = 0;
 
-			    ROS_INFO_STREAM("STOP BAR DETECTED: " + bestMove);
+                ROS_INFO_STREAM("STOP BAR DETECTED: " + bestMove);
             }
 
-		}
+        }
+    }
+    return lineOutput;
+}
+
+
+void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
+    cv_ptrLine = cv_bridge::toCvCopy(msg, "mono8");
+    cv::Mat frame = cv_ptrLine->image;
+
+    cv::Mat debug = findStopBarFromHough(frame);
 
 
 		/*
@@ -240,48 +332,20 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
 		int righty = ((lineOutput.cols-x)*vy/vx) + y;
 		cv::line(lineOutput, cv::Point(lineOutput.cols-1, righty), cv::Point(0, lefty), cv::Scalar(0,0,255), 2);
 		*/
-	}
-//*/
-/*
-	ros::Time start = ros::Time::now();
-    cv::Canny(frame, frame, 100, 100 * 3);
 
-    // Standard Hough Line Transform
-    std::vector<cv::Vec2f> lines; // will hold the results of the detection
-    cv::HoughLines(frame, lines, 1, CV_PI/180, 50, 0, 0 ); // runs the actual detection
-    // Draw the lines
-    //ROS_INFO_STREAM(lines.size());
-    for( size_t i = 0; i < lines.size(); i++ )
-    {
-        float rho = lines[i][0], theta = lines[i][1];
-		double degreeMax = 95;
-		double degreeMin = 85;
-        if (theta >= degreeMin * CV_PI/180 && theta <= degreeMax * CV_PI/180) {
-            cv::Point pt1, pt2;
-            double a = cos(theta), b = sin(theta);
-            double x0 = a*rho, y0 = b*rho;
-            pt1.x = cvRound(x0 + 1000*(-b));
-            pt1.y = cvRound(y0 + 1000*(a));
-            pt2.x = cvRound(x0 - 1000*(-b));
-            pt2.y = cvRound(y0 - 1000*(a));
-            cv::line( lineOutput, pt1, pt2, cv::Scalar(0,0,255), 3, cv::LINE_AA);
-        }
-    }
-		ROS_INFO_STREAM(ros::Time::now() - start);
-*/
     if (pubLine.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
-        cv_ptr->image = lineOutput;
+        cv_ptr->image = debug;
         cv_ptr->encoding = "bgr8";
         cv_ptr->toImageMsg(outmsg);
         pubLine.publish(outmsg);
     }
 
-	if (stopBarDetected) { //only say the sign if we se the line!
+	/*if (stopBarDetected) { //only say the sign if we se the line!
 		std_msgs::String moveMsg;
 		moveMsg.data = bestMove;
 		pubMove.publish(moveMsg);
-	}
+	}*/
 }
 
 
