@@ -12,10 +12,17 @@
         <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
 
         <param name="minimum_contour_area" type="double" value="300" />
+<<<<<<< HEAD
         <param name="straight_match_similarity_threshold" type="double" value="0.3" />
         <param name="turn_match_similarity_threshold" type="double" value="0.3" />
         <param name="canny_threshold_low" type="double" value="60" />
         <param name="canny_threshold_high" type="double" value="100" /> <!-- usually about 2-3 times the low threshold -->
+=======
+        <param name="straight_match_similarity_threshold" type="double" value="0.4" />
+        <param name="turn_match_similarity_threshold" type="double" value="0.4" />
+        <param name="canny_threshold_low" type="double" value="50" />
+        <param name="canny_threshold_high" type="double" value="200" /> <!-- usually about 2-3 times the low threshold -->
+>>>>>>> 04618b171cbe843fd086ea440bea2e4ad9403dc3
 
     </node>
 </launch>
