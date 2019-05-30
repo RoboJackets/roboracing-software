@@ -11,6 +11,7 @@ const int FINISHED = 2;
 int REQ_FINISH_LINE_CROSSES;
 std::string startSignal;
 std::string resetSignal;
+std::string finishLineCrossesSignal;
 
 
 ros::Publisher steerPub;
@@ -21,8 +22,6 @@ double planSpeed, speed;
 double planSteering, steering;
 bool raceStarted;
 int finishLineCrosses;
-
-ros::Time finishTime;
 
 void updateState() {
     switch(state) {
@@ -38,18 +37,14 @@ void updateState() {
             steering = planSteering;
             if(finishLineCrosses >= REQ_FINISH_LINE_CROSSES) {
                 state = FINISHED;
-                finishTime = ros::Time::now();
             } else {
                 speed = planSpeed;
                 steering = planSteering;
             }
             break;
         case FINISHED:
-            //ROS_INFO("finished");
-            if( (ros::Time::now() - finishTime) > ros::Duration(0.5)) {
-                speed = 0.0;
-                steering = 0.0;
-            }
+            speed = 0.0;
+            steering = 0.0;
             break;
         default:
             ROS_WARN("State machine defaulted");
@@ -93,12 +88,13 @@ int main(int argc, char** argv) {
     nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
     nhp.getParam("startSignal", startSignal);
     nhp.getParam("resetSignal", resetSignal);
+    nhp.getParam("finishLineCrossesSignal", finishLineCrossesSignal);
     ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
     auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
-    auto finishLineSub = nh.subscribe("/camera/finish_line_crosses", 1, finishLineCB);
+    auto finishLineSub = nh.subscribe(finishLineCrossesSignal, 1, finishLineCB);
     auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
