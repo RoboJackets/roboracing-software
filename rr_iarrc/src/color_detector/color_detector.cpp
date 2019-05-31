@@ -11,13 +11,13 @@ using namespace cv;
 
 namespace rr_iarrc {
 
-    double white_h_low; 
-    double white_s_low; 
-    double white_v_low; 
-    double white_h_high;    
+    double white_h_low;
+    double white_s_low;
+    double white_v_low;
+    double white_h_high;
     double white_s_high;
     double white_v_high;
-    std::string package_path = ros::package::getPath("rr_iarrc");    
+    std::string package_path = ros::package::getPath("rr_iarrc");
     std::string load_file_path;
 
     void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
@@ -65,13 +65,13 @@ namespace rr_iarrc {
         white_v_high = msg->white_v_high;
 
         ROS_INFO("Set HSV limits");
-    }    
+    }
 
     void loadValues(){
         string line;
-        int value; 
+        int value;
         ifstream myfile (load_file_path);
-        
+
         if (myfile.is_open()){
             ROS_INFO("Loading HSV values.");
             getline(myfile,line);
@@ -108,25 +108,31 @@ namespace rr_iarrc {
     void color_detector::onInit() {
         NodeHandle nh = getNodeHandle();
         NodeHandle pnh = getPrivateNodeHandle();
-        ros::NodeHandle nhp("~");
         image_transport::ImageTransport it(nh);
 
+        std::string camera_image_topic, detection_topic, hsv_values_topic;
+        pnh.param(string("camera_image"), camera_image_topic, string("/camera/image_color_rect"));
+        pnh.param(string("detection_topic"), detection_topic, string("dummy"));
+        pnh.param(string("hsv_values_topic"), hsv_values_topic, string("/hsv_tuned"));
+
+        ROS_INFO_STREAM("Camera image " << camera_image_topic);
+
         std::string default_load_file_path = package_path + "/saved_hsv/example.txt" ;
-        nhp.param(std::string("load_file"), load_file_path ,default_load_file_path);
+        pnh.param(std::string("load_file"), load_file_path, default_load_file_path);
         loadValues();
 
-        ros::Subscriber hsv_tuned_sub = nh.subscribe("/hsv_tuned", 1, hsvTunedCallback);
+        ros::Subscriber hsv_tuned_sub = nh.subscribe(hsv_values_topic, 1, hsvTunedCallback);
 
         mask = Rect(0, 482, 1280, 482); // x, y, w, h
 
         erosion_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
         dilation_kernel_white = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
 
-        img_sub = it.subscribe("/camera/image_color_rect", 1, &color_detector::ImageCB, this);
-        img_pub = it.advertise("/lines_detection_img", 1);
+        img_sub = it.subscribe(camera_image_topic, 1, &color_detector::ImageCB, this);
+        img_pub = it.advertise(detection_topic, 1);
 
-        ROS_INFO("Color  ready!");
-        ros::spin();        
+        ROS_INFO("Color detector ready!");
+        ros::spin();
     }
 }
 
