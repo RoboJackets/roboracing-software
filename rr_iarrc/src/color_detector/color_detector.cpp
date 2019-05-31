@@ -112,7 +112,7 @@ namespace rr_iarrc {
 
         std::string camera_image_topic, detection_topic, hsv_values_topic;
         pnh.param(string("camera_image"), camera_image_topic, string("/camera/image_color_rect"));
-        pnh.param(string("detection_topic"), detection_topic, string("dummy"));
+        pnh.param(string("detection_topic"), detection_topic, string("/hsv_detected"));
         pnh.param(string("hsv_values_topic"), hsv_values_topic, string("/hsv_tuned"));
 
         ROS_INFO_STREAM("Camera image " << camera_image_topic);
