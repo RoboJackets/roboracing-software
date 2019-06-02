@@ -1,0 +1,2 @@
+add_executable(stoplight_watcher_v2 stoplight_watcher_v2.cpp)
+target_link_libraries(stoplight_watcher_v2 ${catkin_LIBRARIES})
