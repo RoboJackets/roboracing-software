@@ -21,18 +21,6 @@ std_msgs::Bool start_detected;
 cv::Mat history[HIST_FRAMES];
 int counttostart = 1;
 
-/*
- * Matches circles between camera images based on position and radius
- * @param circles vector of vectors containing <x, y, "radius"> (radius is approx)
- * @param frameA first image to match
- * @param frameB second image to match
-*/
-void matchCirclesBetweenFrames(std::vector<std::vector<double>> circlesA, std::vector<std::vector<double>> circlesB, cv::Mat frameA, cv::Mat frameB) {
-    for (int i = 0; i < circlesA.size(); i++) { //#TODO: make sure to not go out of range
-        //circlesA[i]
-    }
-}
-
 cv::Mat getRedImage(cv::Mat frame) {
     std::vector<cv::Mat> bgr;
     cv::split(frame, bgr);
@@ -63,7 +51,8 @@ cv::Mat getGreenImage(cv::Mat frame) {
     return greenLightCheck;
 }
 
-std::vector<std::vector<double>> findCircles(cv::Mat &binary) {
+//@note circles returned is a vector of vectors containing <x, y, radius> (radius is approximate)
+std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     // Find contours
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
@@ -71,7 +60,7 @@ std::vector<std::vector<double>> findCircles(cv::Mat &binary) {
 
     // Find circles
     double circularityThreshold = 0.8; //based on Hu moments
-    std::vector<std::vector<double>> foundCircles;
+    std::vector<cv::Vec3f> foundCircles;
 
     for(int i = 0; i < contours.size(); i++) {
         double area = cv::contourArea(contours[i]);
@@ -82,21 +71,46 @@ std::vector<std::vector<double>> findCircles(cv::Mat &binary) {
             //cv::drawContours(debug, contours, i, color, 2, 8, hierarchy, 0, cv::Point()); //#TODO
             cv::Moments m = cv::moments(contours[i], false);
             cv::Point center(m.m10/m.m00, m.m01/m.m00);
-            std::vector<double> circle{static_cast<double>(center.x), static_cast<double>(center.y), 1}; //<x, y, radius> #TODO: CALCULATE RADIUS! (min rect)
+            cv::Vec3f circle{static_cast<float>(center.x), static_cast<float>(center.y), 1}; //<x, y, radius> #TODO: CALCULATE RADIUS! (min rect)
             foundCircles.push_back(circle);
         }
     }
     return foundCircles;
 }
 
-//@note circles vector of vectors containing <x, y, radius> (radius is approx)
+std::vector<cv::Vec3f> findCirclesFromHough(cv::Mat &binary) {
+    /// Apply the Hough Transform to find the circles
+    std::vector<cv::Vec3f> circles;
+    double dp = 1;
+    double minDist = binary.rows/8;
+    double cannyThreshold = 100;
+    double accumThreshold = 12;
+    int minRadius = 0;
+    int maxRadius = binary.rows/3;
+    cv::HoughCircles(binary, circles, CV_HOUGH_GRADIENT, dp, minDist, cannyThreshold, accumThreshold, minRadius, maxRadius);
+
+}
+
+//For debugging purposes
+void drawCircles(std::vector<cv::Vec3f> circles, cv::Mat &debug) {
+    // Draw the circles detected
+    for( size_t i = 0; i < circles.size(); i++ ) {
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radius = cvRound(circles[i][2]);
+        // circle center
+        circle( debug, center, 3, cv::Scalar(255,255,0), -1, 8, 0 );
+        // circle outline
+        circle( debug, center, radius, cv::Scalar(0,255,255), 3, 8, 0 );
+     }
+}
+
 bool checkForRedLightAbovePoint(cv::Mat &frame, cv::Point greenCenter, double greenRadius) {
     const double widthTolerance = 20.0;
     const double heightTolerance = 100.0;
     const double radiusTolerance = 10.0;
 
     cv::Mat redImage = getRedImage(frame);
-    std::vector<std::vector<double>> redCircles = findCircles(redImage);
+    std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
 
     for (int i = 0; i < redCircles.size(); i++) {
         double redRadius = redCircles[i][2];
@@ -128,8 +142,6 @@ bool checkForRedLightAbovePoint(cv::Mat &frame, cv::Point greenCenter, double gr
 /*
  * The idea: keep checking for green circles, when we find one,
  * go back [x] frames and see if there was a red one above and nearby.
- * Idea 2: match red circles between frames, if there used to be
- * one but no longer, look for a green circle appearing below that spot.
  *
 */
 void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
@@ -157,12 +169,12 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cur = history[0]; // newest frame in buffer
 
     cv::Mat greenImage = getGreenImage(frame);
-    std::vector<std::vector<double>> circles = findCircles(greenImage);
+    std::vector<cv::Vec3f> circles = findCirclesFromContours(greenImage);
     if (circles.size() > 0) {
         //check for an earlier red circle (oldest frame first for speed) #TODO: should we check each circle in each frame first or check all circles of the history frame first
         for(int i = 0; i < circles.size(); i++) {
             for(int j = HIST_FRAMES - 1; j >= 0; j--) {
-                cv::Point center(circles[i][0], circles[i][1]);
+                cv::Point center(static_cast<int>(circles[i][0]), static_cast<int>(circles[i][1]));
                 double radius = circles[i][2];
                 start_detected.data = checkForRedLightAbovePoint(history[j], center, radius);
                 if (start_detected.data) {
@@ -173,29 +185,6 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     }
 
     bool_pub.publish(start_detected);
-
-/*
-    /// Apply the Hough Transform to find the circles
-    std::vector<cv::Vec3f> circles;
-    double dp = 1;
-    double minDist = redLightCheck.rows/8;
-    double cannyThreshold = 100;//6;//20;//100;
-    double accumThreshold = 12;//15;//20;//100;
-    int minRadius = 0;
-    int maxRadius = redLightCheck.rows/3;
-    cv::HoughCircles(redLightCheck, circles, CV_HOUGH_GRADIENT, dp, minDist, cannyThreshold, accumThreshold, minRadius, maxRadius);
-
-    /// Draw the circles detected
-    for( size_t i = 0; i < circles.size(); i++ ) {
-        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radius = cvRound(circles[i][2]);
-        // circle center
-        circle( debug, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
-        // circle outline
-        circle( debug, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
-     }
-*/
-
 
     //do some debug visualizations #TODO: improve with circles and stuff and reuse data.
     cv::Mat debug;
