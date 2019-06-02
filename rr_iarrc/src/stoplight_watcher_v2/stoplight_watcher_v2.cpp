@@ -40,7 +40,7 @@ cv::Mat getGreenImage(cv::Mat frame) {
     std::vector<cv::Mat> bgr;
     cv::split(frame, bgr);
 
-    cv::Mat greenLightCheck = (bgr[0].mul(bgr[1] - bgr[2]) / 255);// - bgr[1]; //elementwiseMult(blue, green) - red
+    cv::Mat greenLightCheck = (bgr[0].mul(bgr[1] - bgr[2]) / 255); //elementwiseMult(blue, green) - red
 
     const int thresholdGreen = 50;
     cv::threshold(greenLightCheck, greenLightCheck, thresholdGreen, 255, cv::THRESH_BINARY);
@@ -59,7 +59,7 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
     // Find circles
-    double circularityThreshold = 0.8; //based on Hu moments
+    double circularityThreshold = 0.8; //based on Hu moments @note: controls the sensitivity of detection
     std::vector<cv::Vec3f> foundCircles;
 
     for(int i = 0; i < contours.size(); i++) {
@@ -67,11 +67,14 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
         double arclength = cv::arcLength(contours[i], true);
         double circularity = 4 * CV_PI * area / (arclength * arclength);
         if (circularity >= circularityThreshold) {
-            cv::Scalar color = cv::Scalar(0,255,255);
-            //cv::drawContours(debug, contours, i, color, 2, 8, hierarchy, 0, cv::Point()); //#TODO
-            cv::Moments m = cv::moments(contours[i], false);
-            cv::Point center(m.m10/m.m00, m.m01/m.m00);
-            cv::Vec3f circle{static_cast<float>(center.x), static_cast<float>(center.y), 1}; //<x, y, radius> #TODO: CALCULATE RADIUS! (min rect)
+            //cv::Moments m = cv::moments(contours[i], false);
+            //cv::Point center(m.m10/m.m00, m.m01/m.m00);
+            //cv::Vec3f circle{static_cast<float>(center.x), static_cast<float>(center.y), 1}; //<x, y, radius> #TODO: CALCULATE RADIUS! (min rect)
+            cv::Point2f center;
+            float radius;
+            cv::minEnclosingCircle(contours[i], center, radius);
+            cv::Vec3f circle{center.x,center.y, radius};
+
             foundCircles.push_back(circle);
         }
     }
@@ -88,11 +91,11 @@ std::vector<cv::Vec3f> findCirclesFromHough(cv::Mat &binary) {
     int minRadius = 0;
     int maxRadius = binary.rows/3;
     cv::HoughCircles(binary, circles, CV_HOUGH_GRADIENT, dp, minDist, cannyThreshold, accumThreshold, minRadius, maxRadius);
-
+    return circles;
 }
 
 //For debugging purposes
-void drawCircles(std::vector<cv::Vec3f> circles, cv::Mat &debug) {
+void drawCircles(cv::Mat &debug, std::vector<cv::Vec3f> circles) {
     // Draw the circles detected
     for( size_t i = 0; i < circles.size(); i++ ) {
         cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -169,13 +172,13 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cur = history[0]; // newest frame in buffer
 
     cv::Mat greenImage = getGreenImage(frame);
-    std::vector<cv::Vec3f> circles = findCirclesFromContours(greenImage);
-    if (circles.size() > 0) {
+    std::vector<cv::Vec3f> greenCircles = findCirclesFromContours(greenImage);
+    if (greenCircles.size() > 0) {
         //check for an earlier red circle (oldest frame first for speed) #TODO: should we check each circle in each frame first or check all circles of the history frame first
-        for(int i = 0; i < circles.size(); i++) {
+        for(int i = 0; i < greenCircles.size(); i++) {
             for(int j = HIST_FRAMES - 1; j >= 0; j--) {
-                cv::Point center(static_cast<int>(circles[i][0]), static_cast<int>(circles[i][1]));
-                double radius = circles[i][2];
+                cv::Point center(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
+                double radius = greenCircles[i][2];
                 start_detected.data = checkForRedLightAbovePoint(history[j], center, radius);
                 if (start_detected.data) {
                     break;
@@ -186,15 +189,23 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
 
     bool_pub.publish(start_detected);
 
-    //do some debug visualizations #TODO: improve with circles and stuff and reuse data.
-    cv::Mat debug;
-    cv::cvtColor(greenImage, debug, cv::COLOR_GRAY2BGR); //#TODO: remove?
+    if (img_pub.getNumSubscribers() > 0) {
+        //do some debug visualizations
+        cv::Mat debug;
+        std::vector<cv::Mat> debugChannels(3);
+        debugChannels[0] = cv::Mat::zeros(greenImage.rows, greenImage.cols, greenImage.type());
+        debugChannels[1] = greenImage;
+        debugChannels[2] = getRedImage(frame);
+        cv::merge(debugChannels, debug);
+        drawCircles(debug, greenCircles);
+        std::vector<cv::Vec3f> redCircles = findCirclesFromContours(debugChannels[2]);
+        drawCircles(debug, redCircles);
 
-
-    cv_ptr->image = debug;
-    cv_ptr->encoding = "bgr8";
-    cv_ptr->toImageMsg(outmsg);
-    img_pub.publish(outmsg);
+        cv_ptr->image = debug;
+        cv_ptr->encoding = "bgr8";
+        cv_ptr->toImageMsg(outmsg);
+        img_pub.publish(outmsg);
+    }
 
 }
 
