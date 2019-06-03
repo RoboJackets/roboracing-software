@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/stoplight_watcher.launch"/>
+    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
 
     <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
         <param name="startSignal" type="string" value="/start_detected"/>

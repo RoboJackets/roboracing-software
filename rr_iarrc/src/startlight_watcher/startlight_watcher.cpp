@@ -10,6 +10,15 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
+
+/*
+ * @author Brian Cochran github @btdubs
+ * Made June 2019 for IARRC 2019
+ *
+ * Determines a start light change from red to green
+ *
+*/
+
 ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image outmsg;

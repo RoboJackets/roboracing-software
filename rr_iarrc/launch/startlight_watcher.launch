@@ -1,5 +1,5 @@
 <launch>
-    <node name="stoplight_watcher_v2" pkg="rr_iarrc" type="stoplight_watcher_v2" output="screen">
+    <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen">
 
         <!--Input and output topics-->
         <param name="img_topic" type="string" value="/camera/image_color_rect"/>
