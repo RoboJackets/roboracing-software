@@ -51,10 +51,10 @@ cv::Mat getGreenImage(cv::Mat frame) {
     return greenLightCheck;
 }
 
-//@note circles returned is a vector of vectors containing <x, y, radius> (radius is approximate)
+//@note circles returned is a vector of vectors containing <x, y, radius>
 std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     // Find contours
-    std::vector<std::vector<cv::Point> > contours;
+    std::vector<std::vector<cv::Point>> contours;
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
@@ -67,14 +67,10 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
         double arclength = cv::arcLength(contours[i], true);
         double circularity = 4 * CV_PI * area / (arclength * arclength);
         if (circularity >= circularityThreshold) {
-            //cv::Moments m = cv::moments(contours[i], false);
-            //cv::Point center(m.m10/m.m00, m.m01/m.m00);
-            //cv::Vec3f circle{static_cast<float>(center.x), static_cast<float>(center.y), 1}; //<x, y, radius> #TODO: CALCULATE RADIUS! (min rect)
             cv::Point2f center;
             float radius;
             cv::minEnclosingCircle(contours[i], center, radius);
-            cv::Vec3f circle{center.x,center.y, radius};
-
+            cv::Vec3f circle{center.x, center.y, radius};
             foundCircles.push_back(circle);
         }
     }
@@ -100,32 +96,12 @@ void drawCircles(cv::Mat &debug, std::vector<cv::Vec3f> circles) {
     for( size_t i = 0; i < circles.size(); i++ ) {
         cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
         int radius = cvRound(circles[i][2]);
+        radius += 0.8 * radius; //add an offset for easier viewing
         // circle center
-        circle( debug, center, 3, cv::Scalar(255,255,0), -1, 8, 0 );
+        cv::circle( debug, center, 3, cv::Scalar(255,255,0), -1, 8, 0 );
         // circle outline
-        circle( debug, center, radius, cv::Scalar(0,255,255), 3, 8, 0 );
+        cv::circle( debug, center, radius, cv::Scalar(0,255,255), 3, 8, 0 );
      }
-}
-
-bool checkForRedLightAbovePoint(cv::Mat &frame, cv::Point greenCenter, double greenRadius) {
-    const double widthTolerance = 20.0;
-    const double heightTolerance = 100.0;
-    const double radiusTolerance = 10.0;
-
-    cv::Mat redImage = getRedImage(frame);
-    std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
-
-    for (int i = 0; i < redCircles.size(); i++) {
-        double redRadius = redCircles[i][2];
-        double redX = redCircles[i][0];
-        double redY = redCircles[i][1];
-        if (std::fabs(greenRadius - redRadius) <= radiusTolerance &&
-            std::fabs(greenCenter.x - redX) <= widthTolerance &&
-            std::fabs(greenCenter.y - redY) <= heightTolerance) {
-            return true; //red light found
-        }
-    }
-    return false;
 }
 
 
@@ -148,6 +124,7 @@ bool checkForRedLightAbovePoint(cv::Mat &frame, cv::Point greenCenter, double gr
  *
 */
 void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
+
     if(start_detected.data) {
         bool_pub.publish(start_detected);
         return; // do not to all this computing if the signal has already been seen and go broadcast
@@ -167,20 +144,28 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
         return;
     }
 
-    cv::Mat past, cur; //#TODO: remove
-    past = history[HIST_FRAMES - 1]; // oldest frame in buffer
-    cur = history[0]; // newest frame in buffer
-
     cv::Mat greenImage = getGreenImage(frame);
     std::vector<cv::Vec3f> greenCircles = findCirclesFromContours(greenImage);
+
+
     if (greenCircles.size() > 0) {
-        //check for an earlier red circle (oldest frame first for speed) #TODO: should we check each circle in each frame first or check all circles of the history frame first
-        for(int i = 0; i < greenCircles.size(); i++) {
-            for(int j = HIST_FRAMES - 1; j >= 0; j--) {
-                cv::Point center(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
-                double radius = greenCircles[i][2];
-                start_detected.data = checkForRedLightAbovePoint(history[j], center, radius);
-                if (start_detected.data) {
+        cv::Mat redImage = getRedImage(history[HIST_FRAMES - 1]); //@note only checks farthest history. May want to check more
+        std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
+        for (int i = 0; i < greenCircles.size(); i++) {
+            cv::Point greenCenter(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
+            double greenRadius = greenCircles[i][2];
+
+            for (int j = 0; j < redCircles.size(); j++) {
+                cv::Point redCenter(static_cast<int>(redCircles[j][0]), static_cast<int>(redCircles[j][1]));
+                double redRadius = redCircles[j][2];
+                const double xTolerance = 20.0; //#TODO: launch params
+                const double yTolerance = 100.0;
+                const double radiusTolerance = 10.0;
+                if (greenCenter.y > redCenter.y && //green below red
+                    std::fabs(greenRadius - redRadius) <= radiusTolerance &&
+                    std::abs(greenCenter.x - redCenter.x) <= xTolerance &&
+                    std::abs(greenCenter.y - redCenter.y) <= yTolerance) {
+                    start_detected.data = true; //red light found
                     break;
                 }
             }
@@ -195,11 +180,10 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
         std::vector<cv::Mat> debugChannels(3);
         debugChannels[0] = cv::Mat::zeros(greenImage.rows, greenImage.cols, greenImage.type());
         debugChannels[1] = greenImage;
-        debugChannels[2] = getRedImage(frame);
+        debugChannels[2] = getRedImage(history[HIST_FRAMES - 1]); //note: this means what you see is HIST_FRAMES behind
         cv::merge(debugChannels, debug);
         drawCircles(debug, greenCircles);
-        std::vector<cv::Vec3f> redCircles = findCirclesFromContours(debugChannels[2]);
-        drawCircles(debug, redCircles);
+        drawCircles(debug, findCirclesFromContours(debugChannels[2]));
 
         cv_ptr->image = debug;
         cv_ptr->encoding = "bgr8";
