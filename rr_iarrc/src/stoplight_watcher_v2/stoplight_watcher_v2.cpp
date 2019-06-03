@@ -10,24 +10,28 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-#define HIST_FRAMES 5     // Number of frames to keep in history
-
-
 ros::Publisher img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image outmsg;
 std_msgs::Bool start_detected;
 
-cv::Mat history[HIST_FRAMES];
+std::vector<cv::Mat> history;
 int counttostart = 1;
+
+double xTolerance;
+double yTolerance;
+double radiusTolerance;
+int thresholdGreen;
+int thresholdRed;
+
 
 cv::Mat getRedImage(cv::Mat frame) {
     std::vector<cv::Mat> bgr;
     cv::split(frame, bgr);
 
+    //@note: if you have trouble seeing red, change this formula.
     cv::Mat redLightCheck = bgr[2] - bgr[0] - bgr[1]; //red - blue - green
 
-    const int thresholdRed = 20;
     cv::threshold(redLightCheck, redLightCheck, thresholdRed, 255, cv::THRESH_BINARY);
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(5,5));
     cv::morphologyEx(redLightCheck, redLightCheck, cv::MORPH_CLOSE, kernel);
@@ -40,9 +44,9 @@ cv::Mat getGreenImage(cv::Mat frame) {
     std::vector<cv::Mat> bgr;
     cv::split(frame, bgr);
 
-    cv::Mat greenLightCheck = (bgr[0].mul(bgr[1] - bgr[2]) / 255); //elementwiseMult(blue, green) - red
+    //@note: if you have trouble seeing green, change to (bgr[0].mul(bgr[1] - bgr[2]) / 255);
+    cv::Mat greenLightCheck = (bgr[0].mul(bgr[1] - bgr[2]) / 255) - bgr[2]; //elementwiseMult(blue, green - red) - red
 
-    const int thresholdGreen = 50;
     cv::threshold(greenLightCheck, greenLightCheck, thresholdGreen, 255, cv::THRESH_BINARY);
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(5,5));
     cv::morphologyEx(greenLightCheck, greenLightCheck, cv::MORPH_CLOSE, kernel);
@@ -59,7 +63,7 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
     // Find circles
-    double circularityThreshold = 0.8; //based on Hu moments @note: controls the sensitivity of detection
+    double circularityThreshold = 0.8; //@note: controls the sensitivity of circle detection
     std::vector<cv::Vec3f> foundCircles;
 
     for(int i = 0; i < contours.size(); i++) {
@@ -77,6 +81,7 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     return foundCircles;
 }
 
+//@note circles returned is a vector of vectors containing <x, y, radius>
 std::vector<cv::Vec3f> findCirclesFromHough(cv::Mat &binary) {
     /// Apply the Hough Transform to find the circles
     std::vector<cv::Vec3f> circles;
@@ -97,8 +102,6 @@ void drawCircles(cv::Mat &debug, std::vector<cv::Vec3f> circles) {
         cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
         int radius = cvRound(circles[i][2]);
         radius += 0.8 * radius; //add an offset for easier viewing
-        // circle center
-        cv::circle( debug, center, 3, cv::Scalar(255,255,0), -1, 8, 0 );
         // circle outline
         cv::circle( debug, center, radius, cv::Scalar(0,255,255), 3, 8, 0 );
      }
@@ -107,18 +110,8 @@ void drawCircles(cv::Mat &debug, std::vector<cv::Vec3f> circles) {
 
 
 
-
-// What happens when the stoplight changes from red to green?
-// The stoplight has a red light on from the start
-// This light is very bright, and can wash out the image
-// It typically looks like a reddish halo around a white circle
-// The stoplight then turns on the green light, and both are on
-// This looks like two white circles one over the other,
-// The top having a red halo, and the bottom a green halo
-// (note: the green looks bluish in frame)
-// This lasts for a few frames, then the red light turns off
-
 /*
+ * Image callback
  * The idea: keep checking for green circles, when we find one,
  * go back [x] frames and see if there was a red one above and nearby.
  *
@@ -135,11 +128,11 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cv::Mat frame = cv_ptr->image;
 
     //gather a set of frames to run on
-    for(int i = HIST_FRAMES-1; i > 0; i--) {
+    for(int i = history.size()-1; i > 0; i--) {
         history[i] = history[i - 1];
     }
     history[0] = frame;
-    if (!(counttostart == HIST_FRAMES)) {
+    if (!(counttostart == history.size())) {
         counttostart++;
         return;
     }
@@ -147,9 +140,9 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cv::Mat greenImage = getGreenImage(frame);
     std::vector<cv::Vec3f> greenCircles = findCirclesFromContours(greenImage);
 
-
     if (greenCircles.size() > 0) {
-        cv::Mat redImage = getRedImage(history[HIST_FRAMES - 1]); //@note only checks farthest history. May want to check more
+        //@note only checks farthest history. May want to check more if you have a slower camera
+        cv::Mat redImage = getRedImage(history[history.size() - 1]);
         std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
         for (int i = 0; i < greenCircles.size(); i++) {
             cv::Point greenCenter(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
@@ -158,9 +151,6 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
             for (int j = 0; j < redCircles.size(); j++) {
                 cv::Point redCenter(static_cast<int>(redCircles[j][0]), static_cast<int>(redCircles[j][1]));
                 double redRadius = redCircles[j][2];
-                const double xTolerance = 20.0; //#TODO: launch params
-                const double yTolerance = 100.0;
-                const double radiusTolerance = 10.0;
                 if (greenCenter.y > redCenter.y && //green below red
                     std::fabs(greenRadius - redRadius) <= radiusTolerance &&
                     std::abs(greenCenter.x - redCenter.x) <= xTolerance &&
@@ -180,7 +170,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
         std::vector<cv::Mat> debugChannels(3);
         debugChannels[0] = cv::Mat::zeros(greenImage.rows, greenImage.cols, greenImage.type());
         debugChannels[1] = greenImage;
-        debugChannels[2] = getRedImage(history[HIST_FRAMES - 1]); //note: this means what you see is HIST_FRAMES behind
+        debugChannels[2] = getRedImage(history[history.size() - 1]); //@note: this means what you see is HIST_FRAMES behind
         cv::merge(debugChannels, debug);
         drawCircles(debug, greenCircles);
         drawCircles(debug, findCirclesFromContours(debugChannels[2]));
@@ -202,6 +192,17 @@ int main(int argc, char* argv[]) {
     std::string stoplight_topic;
     nhp.param("img_topic", img_topic, std::string("/camera/image_color_rect"));
     nhp.param("stoplight_watcher_topic", stoplight_topic, std::string("/start_detected"));
+
+    nhp.param("circle_x_tolerance", xTolerance, 20.0);
+    nhp.param("circle_y_tolerance", yTolerance, 100.0);
+    nhp.param("circle_radius_tolerance", radiusTolerance, 10.0);
+
+    int history_frame_count;
+    nhp.param("history_frame_count", history_frame_count, 5);
+    history.resize(history_frame_count);
+
+    nhp.param("threshold_red", thresholdRed, 1);
+    nhp.param("threshold_green", thresholdGreen, 1);
 
     // Subscribe to ROS topic with callback
     start_detected.data = false;

@@ -1,0 +1,21 @@
+<launch>
+    <node name="stoplight_watcher_v2" pkg="rr_iarrc" type="stoplight_watcher_v2" output="screen">
+
+        <!--Input and output topics-->
+        <param name="img_topic" type="string" value="/camera/image_color_rect"/>
+        <param name="stoplight_watcher_topic" type="string" value="/start_detected"/>
+
+        <!--Control amount of image counted as green and red light candidates-->
+        <param name="threshold_red" type="int" value="1"/>
+        <param name="threshold_green" type="int" value="1"/>
+
+        <!--Allowable difference between red and green circles' size and position (in pixels)-->
+        <param name="circle_x_tolerance" type="double" value="20.0"/>
+        <param name="circle_y_tolerance" type="double" value="100.0"/>
+        <param name="circle_radius_tolerance" type="double" value="10.0"/>
+
+        <!--Number of frames to go back to look for red light after seeing green-->
+        <param name="history_frame_count" type="int" value="5"/>
+
+    </node>
+</launch>
