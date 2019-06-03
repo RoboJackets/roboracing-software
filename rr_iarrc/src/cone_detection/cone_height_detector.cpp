@@ -25,10 +25,10 @@ cv::Mat find_orange_in_ROI(const cv::Mat&);
 cv::Mat cutSmall(const cv::Mat&, int);
 cv::Mat canny_cut_bodies(const cv::Mat&, const cv::Mat&);
 cv::Mat find_unique_centers(const cv::Mat&, double);
-cv::Mat preform_watershed(const cv::Mat&, const cv::Mat&, const cv::Mat&);
+cv::Mat perform_watershed(const cv::Mat&, const cv::Mat&, const cv::Mat&);
 cv::Mat draw_box_and_calc_dist(const cv::Mat&, const cv::Mat&);
 cv::Mat kernel(int, int);
-void publishMessage(ros::Publisher, cv::Mat, std::string);
+void publishImage(ros::Publisher, cv::Mat, std::string);
 
 ros::Publisher pub_debug_pos, pub_debug_mask, pub_pointcloud, pub_closest_point;
 int blockSky_height, blockWheels_height, blockBumper_height;
@@ -65,7 +65,7 @@ void publish_closest_point() {
             }
         }
         std_msgs::Float32 msg;
-        msg.data = (float) min;
+        msg.data = static_cast<float>(min);
         pub_closest_point.publish(msg);
     }
 }
@@ -127,7 +127,7 @@ pcl::PointCloud<pcl::PointXYZ> draw_cone_circles() {
 }
 
 
-void publishMessage(ros::Publisher pub, Mat img, std::string img_type) {
+void publishImage(ros::Publisher pub, Mat img, std::string img_type) {
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptr->image = img;
@@ -218,7 +218,7 @@ cv::Mat find_unique_centers(const cv::Mat& img, double thres_value) {
 }
 
 
-cv::Mat preform_watershed(const cv::Mat& frame, const cv::Mat& orange_found, const cv::Mat& detected_bodies) {
+cv::Mat perform_watershed(const cv::Mat& frame, const cv::Mat& orange_found, const cv::Mat& detected_bodies) {
     Mat sure_back, dist_transform, unknown, markers;
 
     Mat sure_front = find_unique_centers(detected_bodies, percent_max_distance_transform);
@@ -324,14 +324,14 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     //Cut HSV to find individual cones
     cv::Mat detected_bodies = canny_cut_bodies(frame, orange_found);
-    cv::Mat sure_bodies = preform_watershed(frame, orange_found, detected_bodies);
+    cv::Mat sure_bodies = perform_watershed(frame, orange_found, detected_bodies);
 
     //Find Distance
     frame = draw_box_and_calc_dist(frame, sure_bodies);
 
     //publish Images
-    publishMessage(pub_debug_pos, frame, "bgr8");
-    publishMessage(pub_debug_mask, orange_found, "mono8");
+    publishImage(pub_debug_pos, frame, "bgr8");
+    publishImage(pub_debug_mask, orange_found, "mono8");
 
     //Add Circles for cones to PointCloud and Publish
     pcl::PointCloud<pcl::PointXYZ> cone_cloud = draw_cone_circles();

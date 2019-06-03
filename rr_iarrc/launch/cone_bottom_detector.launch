@@ -13,4 +13,5 @@
 
         <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
     </node>
+    <!-- In order to visualize resultant pointcloud, the line_pcl_converter node must be also be launched -->
 </launch>
