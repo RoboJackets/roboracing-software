@@ -7,9 +7,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
+
 using namespace std;
 
 ros::Publisher pub_line_detector;
+ros::Publisher speed_pub;
+ros::Publisher steer_pub;
+
+rr_platform::speed speed_message;
+rr_platform::steering steer_message;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
@@ -45,6 +53,21 @@ cv::Point centerOnLineSegment(cv::Mat imGray, cv::Point currCenter, cv::Point of
 
     return currCenter;
 
+}
+
+//find the "center line" to follow
+std::vector<cv::Point> createCenterLine(std::vector<cv::Point> leftLine, std::vector<cv::Point> rightLine) {
+
+    std::vector<cv::Point> centerLine;
+    for (int i = 0; i < leftLine.size(); i++) {
+        int x = cvRound((leftLine[i].x + rightLine[i].x)/2);
+        int y = cvRound((leftLine[i].y + rightLine[i].y)/2);
+        cv::Point center(x,y);
+        centerLine.push_back(center);
+
+    }
+
+    return centerLine;
 }
 
 
@@ -84,26 +107,63 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     int height = 16;
 
     cv::Point offset(width/2, height/2);
-    cv::Point center = rightMaxLoc;
-    center.y = frame.rows - height/2;
 
-    while (center.y >= 0) {
-        center = centerOnLineSegment(frame, center, offset, width, height);
-        cv::circle(output, center, 2, cv::Scalar(0, 0, 255), -1);
-        cv::Point topLeft = center - offset;
-        cv::rectangle(output, topLeft, center + offset, cv::Scalar(0,255,0), 1);
-        center.y -= height;
+    cv::Point rightCenter = rightMaxLoc;
+    rightCenter.y = frame.rows - height/2;
 
+    std::vector<cv::Point> rightLinePoints;
+    rightLinePoints.push_back(rightCenter);
 
+    cv::Point leftCenter = leftMaxLoc;
+    leftCenter.y = frame.rows - height/2;
+
+    std::vector<cv::Point> leftLinePoints;
+    leftLinePoints.push_back(leftCenter);
+
+    while (rightCenter.y >= 0) {
+        rightCenter = centerOnLineSegment(frame, rightCenter, offset, width, height);
+        cv::circle(output, rightCenter, 2, cv::Scalar(0, 0, 255), -1);
+        cv::Point rightBox_topLeft = rightCenter - offset;
+        cv::rectangle(output, rightBox_topLeft, rightCenter + offset, cv::Scalar(0,255,0), 1);
+        rightCenter.y -= height;
+
+        rightLinePoints.push_back(rightCenter);
+
+        /*
         //shrink the search width as we are more sure of our line
         //#TODO: this is in progress. Could build out from "center" clump we find.
         if (width > 11) {
             width -= 6;
             offset.x = width/2;
         }
+        */
+
+        leftCenter = centerOnLineSegment(frame, leftCenter, offset, width, height);
+        cv::circle(output, leftCenter, 2, cv::Scalar(0, 0, 255), -1);
+        cv::Point leftBox_topLeft = leftCenter - offset;
+        cv::rectangle(output, leftBox_topLeft, leftCenter + offset, cv::Scalar(0,255,0), 1);
+        leftCenter.y -= height;
+
+        leftLinePoints.push_back(leftCenter);
+
     }
 
 
+    std::vector<cv::Point> centerLane = createCenterLine(leftLinePoints, rightLinePoints);
+    cv::polylines(output, centerLane, false, cv::Scalar(255,0,0), 2);
+
+    //find error, P term. Maybe add curvature and stuff
+    cv::Point goal = centerLane[centerLane.size() / 2];
+    int error = (frame.cols/2) - goal.x;
+
+    double steering = error * 0.01; //kP
+    cv::putText(output, std::to_string(steering), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+
+
+    speed_message.speed = 0.7;
+    steer_message.angle = steering;
+    speed_pub.publish(speed_message);
+    steer_pub.publish(steer_message);
 
 /*
     int width = 40;
@@ -145,6 +205,10 @@ int main(int argc, char** argv) {
 
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/line_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
+
+    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("/steering", 1);
+
 
     ros::spin();
     return 0;
