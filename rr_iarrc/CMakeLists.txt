@@ -64,4 +64,4 @@ add_subdirectory(src/laplacian_line_detection)
 add_subdirectory(src/cone_detection)
 add_subdirectory(src/urc_controller)
 add_subdirectory(src/turning_test)
-
+add_subdirectory(src/urc_lane_follower)
