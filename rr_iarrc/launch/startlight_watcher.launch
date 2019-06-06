@@ -10,8 +10,8 @@
         <param name="threshold_green" type="int" value="1"/>
 
         <!--Allowable difference between red and green circles' size and position (in pixels)-->
-        <param name="circle_x_tolerance" type="double" value="20.0"/>
-        <param name="circle_y_tolerance" type="double" value="100.0"/>
+        <param name="circle_x_tolerance" type="int" value="20"/>
+        <param name="circle_y_tolerance" type="int" value="100"/>
         <param name="circle_radius_tolerance" type="double" value="10.0"/>
 
         <!--Number of frames to go back to look for red light after seeing green-->

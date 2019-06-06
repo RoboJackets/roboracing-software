@@ -25,10 +25,10 @@ sensor_msgs::Image outmsg;
 std_msgs::Bool start_detected;
 
 std::vector<cv::Mat> history;
-int counttostart = 1;
+int history_frame_count;
 
-double xTolerance;
-double yTolerance;
+int xTolerance;
+int yTolerance;
 double radiusTolerance;
 int thresholdGreen;
 int thresholdRed;
@@ -136,14 +136,9 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
-    //gather a set of frames to run on
-    for(int i = history.size()-1; i > 0; i--) {
-        history[i] = history[i - 1];
-    }
-    history[0] = frame;
-    if (!(counttostart == history.size())) {
-        counttostart++;
-        return;
+    history.insert(history.begin(), frame);
+    if (history.size() > history_frame_count) {
+        history.pop_back();
     }
 
     cv::Mat greenImage = getGreenImage(frame);
@@ -202,13 +197,12 @@ int main(int argc, char* argv[]) {
     nhp.param("img_topic", img_topic, std::string("/camera/image_color_rect"));
     nhp.param("stoplight_watcher_topic", stoplight_topic, std::string("/start_detected"));
 
-    nhp.param("circle_x_tolerance", xTolerance, 20.0);
-    nhp.param("circle_y_tolerance", yTolerance, 100.0);
+    nhp.param("circle_x_tolerance", xTolerance, 20);
+    nhp.param("circle_y_tolerance", yTolerance, 100);
     nhp.param("circle_radius_tolerance", radiusTolerance, 10.0);
 
-    int history_frame_count;
     nhp.param("history_frame_count", history_frame_count, 5);
-    history.resize(history_frame_count);
+    history.reserve(history_frame_count);
 
     nhp.param("threshold_red", thresholdRed, 1);
     nhp.param("threshold_green", thresholdGreen, 1);
@@ -216,7 +210,7 @@ int main(int argc, char* argv[]) {
     // Subscribe to ROS topic with callback
     start_detected.data = false;
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, img_callback);
-    img_pub = nh.advertise<sensor_msgs::Image>("/stoplight_debug", 1);
+    img_pub = nh.advertise<sensor_msgs::Image>("/startlight_debug", 1);
     bool_pub = nh.advertise<std_msgs::Bool>(stoplight_topic, 1);
 
     ros::spin();
