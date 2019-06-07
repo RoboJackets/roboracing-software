@@ -1,11 +1,11 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
   video_mode: format7_mode0
-  frame_rate: 15
+  frame_rate: 30
   format7_color_coding: raw8
 
   auto_exposure: false
-  exposure: -3.4150390625
+  exposure: -3.415
 
   auto_gain: false
   gain: 1.0
@@ -20,7 +20,7 @@ dictitems:
   auto_shutter: false
   shutter_speed: 0.001
 
-  auto_white_balance: true
+  auto_white_balance: false
   white_balance_blue: 800
   white_balance_red: 550
   gamma: 1.0

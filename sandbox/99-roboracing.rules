@@ -5,6 +5,10 @@ SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0458", ATTRS{id
 
 SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="19a2", ATTRS{idProduct}=="5001", MODE="0666"
 
+SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082c", MODE="0666"
+
+SUBSYSTEMS=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082c", MODE="0666"
+
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="954373133343517061C0", SYMLINK+="arduino_drive"
 
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{serial}=="5533033393035151F070", SYMLINK+="arduino_steer"
@@ -16,4 +20,5 @@ KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="9206", ATTRS{idVendor}
 KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idProduct}=="ea60", ATTRS{idVendor}=="10c4", SYMLINK+="rplidar_a2"
 
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="0002" , ATTRS{idVendor}=="1d6b",  SYMLINK+="razor_imu"
+
 
