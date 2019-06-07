@@ -47,8 +47,24 @@ double calcLineAngle(cv::Mat &binaryImg) {
     cv::HoughLinesP(edges, lines, rho, theta, threshold, minLineLength, maxLineGap );
 
     //find the trend of line angles, weighted by their length
-    return 0;
+    double weightedAngle = 0.0;
+    double totalWeight = 0.0;
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4i l = lines[i];
+        cv::Point p1(l[0], l[1]);
+        cv::Point p2(l[2], l[3]);
 
+        //calc angle and decide if it is a stop bar
+        double dx = p2.x - p1.x;
+        double dy = p2.y - p1.y;
+        double currAngle = atan(std::fabs(dy / dx)) * 180/CV_PI;//in degrees
+        double currLength = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));
+        totalWeight += currLength;
+        weightedAngle += currAngle * currLength;
+    }
+    weightedAngle /= totalWeight; //handle divide by zero (no lines in image)
+
+    return weightedAngle;
 }
 
 
@@ -64,14 +80,33 @@ double calcLineAngle(cv::Mat &binaryImg) {
  */
 void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::ImageConstPtr& rightMsg) {
     //Convert msg to Mat image
-    cv_ptr = cv_bridge::toCvCopy(leftMsg, "bgr8");
+    cv_ptr = cv_bridge::toCvCopy(leftMsg, "mono8");
     cv::Mat leftFrame = cv_ptr->image;
-    cv_ptr = cv_bridge::toCvCopy(rightMsg, "bgr8");
+    cv_ptr = cv_bridge::toCvCopy(rightMsg, "mono8");
     cv::Mat rightFrame = cv_ptr->image;
 
+    //cv::threshold( leftFrame, leftFrame, 130, 255, cv::THRESH_BINARY );
+    //cv::threshold( rightFrame, rightFrame, 130, 255, cv::THRESH_BINARY );
+    //cv::morphologicalEx()
+    //cv::Canny(leftFrame, leftFrame, 20, 100);
+    //cv::Canny(rightFrame, rightFrame, 20, 100);
+    int ddepth = CV_8UC1;
+    cv::Laplacian(leftFrame, leftFrame, ddepth); convertScaleAbs( leftFrame, leftFrame );
+    cv::Laplacian(rightFrame, rightFrame, ddepth); convertScaleAbs( rightFrame, rightFrame );
+    cv::threshold( rightFrame, rightFrame, 25, 255, cv::THRESH_BINARY );
+    cv::threshold( leftFrame, leftFrame, 25, 255, cv::THRESH_BINARY );
 
+
+    double leftAngle = calcLineAngle(leftFrame);
+    double rightAngle = calcLineAngle(rightFrame);
+
+    //debugging stuff
     cv::Mat debug = mergeImagesSideBySide(leftFrame, rightFrame);
     cv::cvtColor(debug, debug, cv::COLOR_GRAY2BGR);
+
+    cv::putText(debug, to_string(leftAngle), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+    cv::putText(debug, to_string(rightAngle), cv::Point(20,150), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+
 
     if (image_pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
@@ -94,8 +129,8 @@ int main(int argc, char** argv) {
     image_pub = nh.advertise<sensor_msgs::Image>("/urc_lane_follower", 1); //publish debug image
 
 
-    message_filters::Subscriber<sensor_msgs::Image> leftCamera_sub(nh, "/camera_left/color_image_rect", 1);
-    message_filters::Subscriber<sensor_msgs::Image> rightCamera_sub(nh, "/camera_right/color_image_rect", 1);
+    message_filters::Subscriber<sensor_msgs::Image> leftCamera_sub(nh, "/camera_left/image_mono_rect", 1);
+    message_filters::Subscriber<sensor_msgs::Image> rightCamera_sub(nh, "/camera_right/image_mono_rect", 1);
 
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MySyncPolicy;
     // ApproximateTime takes a queue size as its constructor argument, hence MySyncPolicy(10) //#TODO: change?

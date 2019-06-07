@@ -94,10 +94,10 @@ int main(int argc, char** argv) {
 
     nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>("/lines/detection_img", 1); //test publish of image
-    pub_debug_adaptive = nh.advertise<sensor_msgs::Image>("/lines/debug_adaptive", 1);
-    pub_debug_laplacian = nh.advertise<sensor_msgs::Image>("/lines/debug_laplacian", 1);
-    pub_debug_overlay = nh.advertise<sensor_msgs::Image>("/lines/debug_overlay", 1);
+    pub_line_detector = nh.advertise<sensor_msgs::Image>(subscription_node + "/lines/detection_img", 1); //test publish of image
+    pub_debug_adaptive = nh.advertise<sensor_msgs::Image>(subscription_node + "/lines/debug_adaptive", 1);
+    pub_debug_laplacian = nh.advertise<sensor_msgs::Image>(subscription_node + "/lines/debug_laplacian", 1);
+    pub_debug_overlay = nh.advertise<sensor_msgs::Image>(subscription_node + "/lines/debug_overlay", 1);
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     ros::spin();
