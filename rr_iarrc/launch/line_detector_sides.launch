@@ -5,7 +5,7 @@
         <!--Strength of Floodfill-->
         <param name="Laplacian_threshold" type="int" value="20" />
         <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="0" />
+        <param name="adaptive_mean_threshold" type="int" value="1" />
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <param name="blockSky_height" type="int" value="0" />
@@ -21,12 +21,12 @@
         <!--Strength of Floodfill-->
         <param name="Laplacian_threshold" type="int" value="20" />
         <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="0" />
+        <param name="adaptive_mean_threshold" type="int" value="-1" />
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <param name="blockSky_height" type="int" value="0" />
         <param name="blockWheels_height" type="int" value="0" />
-        <param name="blockBumper_height" type="int" value="0" />
+        <param name="blockBumper_height" type="int" value="1" />
 
         <param name="subscription_node" type="string" value="/camera_right/image_color_rect"/>
     </node>

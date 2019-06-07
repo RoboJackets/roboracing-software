@@ -12,6 +12,6 @@
         <param name="blockWheels_height" type="int" value="800" />
         <param name="blockBumper_height" type="int" value="650" />
 
-        <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
+        <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
     </node>
 </launch>

@@ -42,7 +42,7 @@ double calcLineAngle(cv::Mat &binaryImg) {
     double theta = CV_PI/180; //angular resolution (in radians) pi/180 is one degree res
     int threshold = 10;
     double minLineLength = 0;
-    double maxLineGap = 0;
+    double maxLineGap = 6;
 
     cv::HoughLinesP(edges, lines, rho, theta, threshold, minLineLength, maxLineGap );
 
@@ -55,9 +55,10 @@ double calcLineAngle(cv::Mat &binaryImg) {
         cv::Point p2(l[2], l[3]);
 
         //calc angle and decide if it is a stop bar
-        double dx = p2.x - p1.x;
-        double dy = p2.y - p1.y;
-        double currAngle = atan(std::fabs(dy / dx)) * 180/CV_PI;//in degrees
+        double dx = p1.x - p2.x;
+        double dy = p1.y - p2.y;
+        double currAngle = std::fabs(atan2(dy, dx)) * 180/CV_PI;//in degrees
+
         double currLength = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));
         totalWeight += currLength;
         weightedAngle += currAngle * currLength;
@@ -87,7 +88,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
 
     //cv::threshold( leftFrame, leftFrame, 130, 255, cv::THRESH_BINARY );
     //cv::threshold( rightFrame, rightFrame, 130, 255, cv::THRESH_BINARY );
-    //cv::morphologicalEx()
+    //cv::morphologyEx()
     //cv::Canny(leftFrame, leftFrame, 20, 100);
     //cv::Canny(rightFrame, rightFrame, 20, 100);
     int ddepth = CV_8UC1;
@@ -95,15 +96,35 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     cv::Laplacian(rightFrame, rightFrame, ddepth); convertScaleAbs( rightFrame, rightFrame );
     cv::threshold( rightFrame, rightFrame, 25, 255, cv::THRESH_BINARY );
     cv::threshold( leftFrame, leftFrame, 25, 255, cv::THRESH_BINARY );
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(5,5));
+    cv::morphologyEx(rightFrame, rightFrame, cv::MORPH_CLOSE, kernel );
+    cv::morphologyEx(leftFrame, leftFrame, cv::MORPH_CLOSE, kernel );
 
 
     double leftAngle = calcLineAngle(leftFrame);
     double rightAngle = calcLineAngle(rightFrame);
-
+    
     //debugging stuff
     cv::Mat debug = mergeImagesSideBySide(leftFrame, rightFrame);
     cv::cvtColor(debug, debug, cv::COLOR_GRAY2BGR);
 
+    //##################
+    std::vector<cv::Vec4i> lines; // will hold the results of the detection
+    double rho = 1; //distance resolution
+    double theta = CV_PI/180; //angular resolution (in radians) pi/180 is one degree res
+    int threshold = 10;
+    double minLineLength = 0;
+    double maxLineGap = 6;
+
+    cv::HoughLinesP(leftFrame, lines, rho, theta, threshold, minLineLength, maxLineGap );
+    for( size_t i = 0; i < lines.size(); i++ )
+      {
+        cv::Vec4i l = lines[i];
+        cv::line( debug, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0,0,255), 3, CV_AA);
+      }
+
+    //#################
+ 
     cv::putText(debug, to_string(leftAngle), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
     cv::putText(debug, to_string(rightAngle), cv::Point(20,150), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
