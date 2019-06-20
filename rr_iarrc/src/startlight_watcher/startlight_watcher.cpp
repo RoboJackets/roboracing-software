@@ -9,6 +9,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+#include <deque>
 
 
 /*
@@ -24,7 +25,7 @@ ros::Publisher bool_pub;
 sensor_msgs::Image outmsg;
 std_msgs::Bool start_detected;
 
-std::vector<cv::Mat> history;
+std::deque<cv::Mat> history;
 int history_frame_count;
 
 int xTolerance;
@@ -136,7 +137,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
-    history.insert(history.begin(), frame);
+    history.push_front(frame);
     if (history.size() > history_frame_count) {
         history.pop_back();
     }
@@ -145,8 +146,8 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
     std::vector<cv::Vec3f> greenCircles = findCirclesFromContours(greenImage);
 
     if (greenCircles.size() > 0) {
-        //@note only checks farthest history. May want to check more if you have a slower camera
-        cv::Mat redImage = getRedImage(history[history.size() - 1]);
+        //@note only checks farthest history. May want to check more frames if you have a slower camera
+        cv::Mat redImage = getRedImage(history.back());
         std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
         for (int i = 0; i < greenCircles.size(); i++) {
             cv::Point greenCenter(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
@@ -174,7 +175,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr& msg) {
         std::vector<cv::Mat> debugChannels(3);
         debugChannels[0] = cv::Mat::zeros(greenImage.rows, greenImage.cols, greenImage.type());
         debugChannels[1] = greenImage;
-        debugChannels[2] = getRedImage(history[history.size() - 1]); //@note: this means what you see is HIST_FRAMES behind
+        debugChannels[2] = getRedImage(history.back()); //@note: this means what you see is HIST_FRAMES behind
         cv::merge(debugChannels, debug);
         drawCircles(debug, greenCircles);
         drawCircles(debug, findCirclesFromContours(debugChannels[2]));
@@ -202,7 +203,6 @@ int main(int argc, char* argv[]) {
     nhp.param("circle_radius_tolerance", radiusTolerance, 10.0);
 
     nhp.param("history_frame_count", history_frame_count, 5);
-    history.reserve(history_frame_count);
 
     nhp.param("threshold_red", thresholdRed, 1);
     nhp.param("threshold_green", thresholdGreen, 1);
