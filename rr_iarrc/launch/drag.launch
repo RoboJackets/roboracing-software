@@ -11,5 +11,6 @@
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
         <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
+        <param name="steeringAfterFinishTime" type="double" value="0.7"/>
     </node>
 </launch>

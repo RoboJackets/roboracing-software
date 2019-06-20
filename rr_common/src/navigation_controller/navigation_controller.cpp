@@ -23,6 +23,9 @@ double planSteering, steering;
 bool raceStarted;
 int finishLineCrosses;
 
+ros::Time finishTime;
+double steeringAfterFinishTime;
+
 void updateState() {
     switch(state) {
         case WAITING_FOR_START:
@@ -33,10 +36,9 @@ void updateState() {
             }
             break;
         case RUNNING_PLANNER:
-            speed = planSpeed;
-            steering = planSteering;
             if(finishLineCrosses >= REQ_FINISH_LINE_CROSSES) {
                 state = FINISHED;
+                finishTime = ros::Time::now();
             } else {
                 speed = planSpeed;
                 steering = planSteering;
@@ -44,7 +46,12 @@ void updateState() {
             break;
         case FINISHED:
             speed = 0.0;
-            steering = 0.0;
+            //Continue steering until we have stopped moving.
+            if (ros::Time::now() - finishTime > ros::Duration(steeringAfterFinishTime)) {
+                steering = 0.0;
+            } else {
+                steering = planSteering;
+            }
             break;
         default:
             ROS_WARN("State machine defaulted");
@@ -89,6 +96,7 @@ int main(int argc, char** argv) {
     nhp.getParam("startSignal", startSignal);
     nhp.getParam("resetSignal", resetSignal);
     nhp.getParam("finishLineCrossesSignal", finishLineCrossesSignal);
+    nhp.getParam("steeringAfterFinishTime", steeringAfterFinishTime)
     ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
