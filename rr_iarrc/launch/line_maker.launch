@@ -1,0 +1,12 @@
+<launch>
+    <node name="line_maker" pkg="rr_iarrc" type="line_maker" output="screen">
+        <!--PID Controller Constants-->
+        <param name="PID_kP" type="double" value="0.002" />
+        <param name="PID_kI" type="double" value="0.0" />
+        <param name="PID_kD" type="double" value="0.0" />
+
+        <param name="maxTurnLimitRadians" type="double" value="0.44" />
+
+        <param name="subscription_node" type="string" value="/lines/detection_img_transformed"/>
+    </node>
+</launch>

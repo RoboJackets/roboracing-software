@@ -22,13 +22,13 @@ rr_platform::speed speed_message;
 rr_platform::steering steer_message;
 
 //PID IMPLEMENATION SETUP
-double kP = 0.0001;//0.01;
-double kI = 0.0;
-double kD = 0.0;
-double setpoint = 0.0; //center camera on line
+double kP;
+double kI;
+double kD;
+double setpoint;
 double input;
 double outputSteering;
-PID myPID(&input, &outputSteering, &setpoint, kP, kI, kD, P_ON_E, DIRECT);
+PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
@@ -92,6 +92,8 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat output;
     cv::cvtColor(frame, output, cv::COLOR_GRAY2BGR); //Doing this just for debugging
 
+    setpoint = frame.cols/2; //want our center line on the center of the camera
+
     //locate beginnings of lines by a large number of pixels
     cv::Mat hist = getColHist(frame);
     //left line
@@ -108,8 +110,11 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     rightMaxLoc.x = rightMaxLoc.y + hist.rows/2;
     rightMaxLoc.y = frame.rows - 1;
 
+    if (rightMaxLoc.x == frame.cols/2) {
+        rightMaxLoc.x = frame.cols - 1;
+    }
 
-
+    //debug visualization
     cv::circle(output, leftMaxLoc, 8, cv::Scalar(0,0,255), -1);
     cv::circle(output, rightMaxLoc, 8, cv::Scalar(0,255,255), -1);
 
@@ -216,14 +221,19 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
     std::string subscription_node;
-    //nhp.param("perfect_lines_min_cut", perfect_lines_min_cut, 200);
-
-
-    myPID.SetMode(AUTOMATIC);
-    myPID.SetOutputLimits(-0.44,0.44);
-
-
     nhp.param("subscription_node", subscription_node, std::string("/lines/detection_img_transformed"));
+
+    nhp.param("PID_kP", kP, 0.0001);
+    nhp.param("PID_kI", kI, 0.0);
+    nhp.param("PID_kD", kD, 0.0);
+
+    double maxTurnLimit;
+    nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
+
+    //setup PID controllers
+    myPID.SetTunings(kP, kI, kD);
+    myPID.SetMode(AUTOMATIC);
+    myPID.SetOutputLimits(-maxTurnLimit, maxTurnLimit);
 
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/line_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
