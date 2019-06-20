@@ -10,6 +10,8 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 
+#include "PID.h"
+
 using namespace std;
 
 ros::Publisher pub_line_detector;
@@ -18,6 +20,15 @@ ros::Publisher steer_pub;
 
 rr_platform::speed speed_message;
 rr_platform::steering steer_message;
+
+//PID IMPLEMENATION SETUP
+double kP = 0.0001;//0.01;
+double kI = 0.0;
+double kD = 0.0;
+double setpoint = 0.0; //center camera on line
+double input;
+double outputSteering;
+PID myPID(&input, &outputSteering, &setpoint, kP, kI, kD, P_ON_E, DIRECT);
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
@@ -156,11 +167,18 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point goal = centerLane[centerLane.size() / 2];
     int error = (frame.cols/2) - goal.x;
 
-    double steering = error * 0.01; //kP
+    //double steering = error * 0.01; //kP
+    input = static_cast<double>(goal.x);
+    myPID.Compute();
+    double steering = outputSteering;
+
+    //debug visualization
     cv::putText(output, std::to_string(steering), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+    cv::line(output, cv::Point(frame.cols/2, 0), cv::Point(frame.cols/2, frame.rows - 1), cv::Scalar(0,255,255), 1); //center
+    cv::line(output, goal, cv::Point(frame.cols/2, goal.y), cv::Scalar(0,0,255), 1); //error amount
 
 
-    speed_message.speed = 0.7;
+    speed_message.speed = 1.5;
     steer_message.angle = steering;
     speed_pub.publish(speed_message);
     steer_pub.publish(steer_message);
@@ -199,6 +217,10 @@ int main(int argc, char** argv) {
     ros::NodeHandle nhp("~");
     std::string subscription_node;
     //nhp.param("perfect_lines_min_cut", perfect_lines_min_cut, 200);
+
+
+    myPID.SetMode(AUTOMATIC);
+    myPID.SetOutputLimits(-0.44,0.44);
 
 
     nhp.param("subscription_node", subscription_node, std::string("/lines/detection_img_transformed"));
