@@ -3,7 +3,7 @@
 #include <ros/package.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
-#include <std_msgs/String.h>
+#include <rr_iarrc/urc_sign.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -16,6 +16,8 @@ cv_bridge::CvImagePtr cv_ptrLine;
 ros::Publisher pub;
 ros::Publisher pubLine;
 ros::Publisher pubMove;
+
+rr_iarrc::urc_sign moveMsg;
 
 int roi_x;
 int roi_y;
@@ -44,7 +46,11 @@ double houghMaxLineGap;
 int pixels_per_meter;
 
 cv::Rect bestMatchRect(0,0,0,0);
-std::string bestMove = "NONE"; //"right", "left", "straight"
+const std::string RIGHT("right");
+const std::string LEFT("left");
+const std::string STRAIGHT("straight");
+const std::string NONE("none");
+std::string bestMove = NONE;
 
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
 ros::Time start = ros::Time::now();
@@ -104,20 +110,20 @@ ros::Time start = ros::Time::now();
                   });
                   if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
                     //left pointing arrow!
-                    cv::putText(crop, "Left", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                    cv::putText(crop, LEFT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
                     if (rect.area() > bestMatchRect.area()) {
                       bestMatchRect = rect;
-                      bestMove = "left";
+                      bestMove = LEFT;
                     }
 
                   } else {
                     //right pointing arrow!
-                    cv::putText(crop, "Right", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                    cv::putText(crop, RIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
                     if (rect.area() > bestMatchRect.area()) {
                       bestMatchRect = rect;
-                      bestMove = "right";
+                      bestMove = RIGHT;
                     }
 
                   }
@@ -130,11 +136,11 @@ ros::Time start = ros::Time::now();
               cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y +50), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
 
               if (matchSimilarity <= straightMatchSimilarityThreshold) {
-                  cv::putText(crop, "Straight", rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                  cv::putText(crop, STRAIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
 
                   if (rect.area() > bestMatchRect.area()) {
                     bestMatchRect = rect;
-                    bestMove = "straight";
+                    bestMove = STRAIGHT;
                   }
               }
             }
@@ -168,8 +174,8 @@ ros::Time start = ros::Time::now();
  *
  * @param frame The input overhead image to search inside
  * @param output debug image
- * @param stopBarAngle The angle of line relative to horizontal that makes a stop bar
- * @param stopBarAngleRange Allowable error around stopBarAngle
+ * @param stopBarGoalAngle The angle of line relative to horizontal that makes a stop bar
+ * @param stopBarGoalAngleRange Allowable error around stopBarGoalAngle
  * @param triggerDistance Distance to the line that we will send out the message to take action
  * @param threshold HoughLinesP threshold that determines # of votes that make a line
  * @param minLineLength HoughLinesP minimum length of a line segment
@@ -177,8 +183,9 @@ ros::Time start = ros::Time::now();
 */
 bool findStopBarFromHough(cv::Mat &frame,
                             cv::Mat &output,
-                            double stopBarAngle,
-                            double stopBarAngleRange,
+                            double &stopBarAngle,
+                            double stopBarGoalAngle,
+                            double stopBarGoalAngleRange,
                             double triggerDistance,
                             int threshold,
                             double minLineLength,
@@ -209,17 +216,21 @@ bool findStopBarFromHough(cv::Mat &frame,
 
         cv::Point midpoint = (p1 + p2) * 0.5;
         cv::circle(output, midpoint, 3, cv::Scalar(255,0,0), -1);
-        cv::putText(output, std::to_string(currAngle), midpoint, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+        std::stringstream streamAngle;
+        streamAngle << std::fixed << std::setprecision(2) << currAngle; //show angle with a couple decimals
+        cv::putText(output, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
 
-        if (fabs(stopBarAngle - currAngle) <= stopBarAngleRange) { //allows some amount of angle error
+        if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) { //allows some amount of angle error
             //get distance to the line
             float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
 
             cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0,255,255), 1, CV_AA);
-            //#TODO: change so distance show is rounded to 1 or 2 decimals (and above)
-            cv::putText(output, std::to_string(dist), cv::Point(midpoint.x, edges.rows - dist/2), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
+            std::stringstream streamDist;
+            streamDist << std::fixed << std::setprecision(2) << dist; //show distance with a couple decimals
+            cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist/2), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
 
             if (dist <= triggerDistance) {
+                stopBarAngle = currAngle;
                 return true; //stop bar detected close to us!
             }
         }
@@ -235,8 +246,10 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptrLine = cv_bridge::toCvCopy(msg, "mono8");
     cv::Mat frame = cv_ptrLine->image;
     cv::Mat debug;
-    bool stopBarDetected = findStopBarFromHough(frame,
+    double stopBarAngle;
+    int stopBarDetected = findStopBarFromHough(frame,
                                         debug,
+                                        stopBarAngle,
                                         stopBarGoalAngle,
                                         stopBarGoalAngleRange,
                                         stopBarTriggerDistance,
@@ -244,27 +257,32 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
                                         houghMinLineLength,
                                         houghMaxLineGap );
 
-    if (pubLine.getNumSubscribers() > 0) {
-        sensor_msgs::Image outmsg;
-        cv_ptr->image = debug;
-        cv_ptr->encoding = "bgr8";
-        cv_ptr->toImageMsg(outmsg);
-        pubLine.publish(outmsg);
-    }
+    //debugging draw a line where we trigger
+    cv::Point leftTriggerPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
+    cv::Point rightTriggerPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
+    cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0,255,0),1, CV_AA);
 
-	if (stopBarDetected) { //only say the sign if we see the line!
+    if (stopBarDetected && bestMove != NONE) {
         //let the world know
-		std_msgs::String moveMsg;
-		moveMsg.data = bestMove;
+        moveMsg.header.stamp = ros::Time::now();
+		moveMsg.direction = bestMove;
+        moveMsg.angle = stopBarAngle;
 		pubMove.publish(moveMsg);
 
         //reset things
-        bestMove = "NONE";
+        bestMove = NONE;
         bestMatchRect.width = 0;
         bestMatchRect.height = 0;
 	}
-}
 
+    if (pubLine.getNumSubscribers() > 0) {
+        sensor_msgs::Image outmsg;
+        cv_ptrLine->image = debug;
+        cv_ptrLine->encoding = "bgr8";
+        cv_ptrLine->toImageMsg(outmsg);
+        pubLine.publish(outmsg);
+    }
+}
 
 //loads images, scales as need be, and makes the rotated versions
 void loadSignImages(std::string packageName, std::string fileName) {
@@ -330,7 +348,7 @@ int main(int argc, char** argv) {
 
     pub = nh.advertise<sensor_msgs::Image>("/sign_detector/signs", 1); //debug publish of image
     pubLine = nh.advertise<sensor_msgs::Image>("/sign_detector/stop_bar", 1); //debug publish of image
-	pubMove = nh.advertise<std_msgs::String>("/turn_detected", 1); //publish the turn move for Urban Challenge Controller
+	pubMove = nh.advertise<rr_iarrc::urc_sign>("/turn_detected", 1); //publish the turn move for Urban Challenge Controller
     auto img_real = nh.subscribe(image_sub, 1, sign_callback);
     auto stopBar = nh.subscribe(overhead_image_sub, 1, stopBar_callback);
 

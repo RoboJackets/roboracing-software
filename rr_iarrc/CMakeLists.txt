@@ -26,6 +26,7 @@ find_package(PCL REQUIRED filters)
 add_message_files(
     FILES
     hsv_tuned.msg
+    urc_sign.msg
 )
 
 generate_messages(
@@ -65,4 +66,3 @@ add_subdirectory(src/sign_detector)
 add_subdirectory(src/cone_detection)
 add_subdirectory(src/urc_controller)
 add_subdirectory(src/turning_test)
-
