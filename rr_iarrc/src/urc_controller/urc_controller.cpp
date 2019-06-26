@@ -50,7 +50,7 @@ double stop_bar_angle;
 
 /*
 // As you turn counterclockwise, the yaw value received from the IMU ranges from [0, 3.14] U [-3.14, 0]
-// This function returns a new yaw value in the range of [0 ,6.28]
+// This function returns a new yaw value in the range of [0, 6.28]
 */
 double setInRange(double yaw_read){
     double new_yaw;
@@ -125,9 +125,9 @@ void updateState() {
             if(turn_direction.compare(LEFT) == 0){
 
                 if(imu_quadrant == 4){
-                    target_yaw = initial_yaw - 1.5*M_PI - left_offset;
+                    target_yaw = initial_yaw - 1.5*M_PI - left_offset + stop_bar_angle;
                 }else{
-                    target_yaw = initial_yaw + .5*M_PI + left_offset;
+                    target_yaw = initial_yaw + 0.5*M_PI + left_offset - stop_bar_angle;
                 }
 
                 while(1){
@@ -144,9 +144,9 @@ void updateState() {
             }else if(turn_direction.compare(RIGHT) == 0){
 
                 if(imu_quadrant == 1){
-                    target_yaw = initial_yaw + 1.5*M_PI + right_offset;
+                    target_yaw = initial_yaw + 1.5*M_PI + right_offset - stop_bar_angle;
                 }else{
-                    target_yaw = initial_yaw - .5*M_PI + right_offset;
+                    target_yaw = initial_yaw - 0.5*M_PI - right_offset + stop_bar_angle;
                 }
 
                 while(1){
