@@ -10,8 +10,8 @@
           args="$(arg nodelet_command) rr_platform/pointcloud_projector $(arg manager_name)">
         <param name="camera_info_topic" value="/camera/camera_info"/>
         <param name="camera_tf_frame" value="camera"/>
-        <param name="image_topic_in" value="/lines_detection_img"/>
-        <param name="pointcloud_topic_out" value="/lines_projected"/>
+        <param name="image_topic_in" value="/lines/detection_img"/>
+        <param name="pointcloud_topic_out" value="/lines/detection_img_transformed"/>
         <param name="load_timeout" value="300"/>
     </node>
 </launch>
