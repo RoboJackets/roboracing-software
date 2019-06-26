@@ -23,6 +23,11 @@ ros::Publisher steer_pub;
 rr_platform::speed speed_message;
 rr_platform::steering steer_message;
 
+double speed;
+double kP;
+double left_angle_offset;
+double right_angle_offset;
+
 
 cv::Mat mergeImagesSideBySide(cv::Mat leftImg, cv::Mat rightImg) {
     int outputRows = leftImg.rows + rightImg.rows;
@@ -43,7 +48,7 @@ double calcLineAngle(cv::Mat &binaryImg, cv::Mat &colorImg) {
     cv::Laplacian(binaryImg, edges, ddepth); //use edges to get better Hough results
     convertScaleAbs( edges, edges );
 
-    // Standard Hough Line Transform
+    // Hough Line Transform
     std::vector<cv::Vec4i> lines; // will hold the results of the detection
     double rho = 1; //distance resolution
     double theta = CV_PI/180; //angular resolution (in radians) pi/180 is one degree res
@@ -64,10 +69,10 @@ double calcLineAngle(cv::Mat &binaryImg, cv::Mat &colorImg) {
         //debug
         cv::line( colorImg, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0,0,255), 3, CV_AA);
 
-        //calc angle and decide if it is a stop bar
+        //calc angle
         double dx = p1.x - p2.x;
         double dy = p1.y - p2.y;
-        double currAngle = std::fabs(atan2(dy, dx)); //in radians
+        double currAngle = std::atan2(dy, dx); //in radians
 
         double currLength = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));
         totalWeight += currLength;
@@ -120,15 +125,20 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     double leftAngle = calcLineAngle(leftLine, leftFrame);
     double rightAngle = calcLineAngle(rightLine, rightFrame);
 
-    double errorTolerance = 16.0; //allowable angle difference
-    if (leftAngle - rightAngle > errorTolerance) {
+    double errorTolerance = 4.0; //allowable angle difference
+    if (std::fabs(std::fabs(leftAngle) - std::fabs(rightAngle)) >= errorTolerance) {
         ROS_WARN_STREAM("URC Lane Follower: Angle mismatch");
     }
 
-    double angleAvg = (leftAngle + rightAngle) / 2; //#TODO: change to radians
-    double kP = 0.01;
-    double goal = 1.0;
-    double steering = ( goal - (angleAvg - angleOffset) ) * kP;
+    //Try to be parallel to lanes.
+    double angleAvg = (leftAngle + rightAngle) / 2;
+    double goal = 0.0;
+    double steering;
+    if (std::isnan(angleAvg)) {
+        steering = 0.0;
+    } else {
+        steering = ( goal - (angleAvg - angleOffset) ) * kP;
+    }
     double speed = 1.0;
 
     auto now = ros::Time::now();
@@ -169,6 +179,10 @@ int main(int argc, char** argv) {
     std::string rightCamera_sub_name;
     nhp.param("camera_left_subscription", leftCamera_sub_name, std::string("/camera_left/image_color_rect"));
     nhp.param("camera_right_subscription", rightCamera_sub_name, std::string("/camera_right/image_color_rect"));
+    nhp.param("speed", speed, -0.01);
+    nhp.param("PID_kP", kP, -0.01);
+    nhp.param("left_angle_offset", left_angle_offset, 0.0);
+    nhp.param("right_angle_offset", right_angle_offset, 0.0);
 
 
     image_pub = nh.advertise<sensor_msgs::Image>("/urc_lane_follower", 1); //publish debug image
