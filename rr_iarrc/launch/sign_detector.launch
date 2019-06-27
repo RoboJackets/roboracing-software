@@ -4,24 +4,24 @@
         <param name="front_image_subscription" type="string" value="/camera_center/image_color_rect"/>
 
         <!--Crop Area for detecting signs (-1 keeps whole screen)-->
-        <param name="roi_x" type="int" value="-1" />
-        <param name="roi_y" type="int" value="-1" />
-        <param name="roi_width" type="int" value="600" />
-        <param name="roi_height" type="int" value="600" />
+        <param name="roi_x" type="int" value="500" />
+        <param name="roi_y" type="int" value="100" />
+        <param name="roi_width" type="int" value="780" />
+        <param name="roi_height" type="int" value="550" />
 
         <param name="sign_file_package_name" type="string" value="rr_iarrc"/>
         <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
 
-        <param name="canny_threshold_low" type="double" value="80" />
-        <param name="canny_threshold_high" type="double" value="200" /> <!-- usually about 2-3 times the low threshold -->
+        <param name="canny_threshold_low" type="double" value="95" />
+        <param name="canny_threshold_high" type="double" value="170" /> <!-- usually about 2-3 times the low threshold -->
         <param name="minimum_contour_area" type="double" value="300" />
-        <param name="straight_match_similarity_threshold" type="double" value="0.3" />
-        <param name="turn_match_similarity_threshold" type="double" value="0.3" />
+        <param name="straight_match_similarity_threshold" type="double" value="0.25" />
+        <param name="turn_match_similarity_threshold" type="double" value="0.4" />
 
         <!-- Stop Bar Detector Params -->
-        <param name="overhead_image_subscription" type="string" value="/lines/detection_img_transformed" />
+        <param name="overhead_image_subscription" type="string" value="/camera_center/image_color_rect/lines/detection_img_transformed" />
         <param name="stopBarGoalAngle" type="double" value="0.0" /> <!-- angle in degrees -->
-        <param name="stopBarGoalAngleRange" type="double" value="35.0" /> <!-- we can come at the line from many angles! -->
+        <param name="stopBarGoalAngleRange" type="double" value="25.0" /> <!-- we can come at the line from many angles! -->
         <param name="stopBarTriggerDistance" type="double" value="1.6" /> <!-- distance in meters -->
         <param name="pixels_per_meter" type="int" value="50" />
         <param name="houghThreshold" type="int" value="65" /> <!-- see opencv HoughLinesP for more info -->

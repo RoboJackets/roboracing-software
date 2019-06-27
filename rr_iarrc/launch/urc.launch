@@ -4,13 +4,14 @@
     <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
 
     <include file="$(find rr_iarrc)/launch/urc_lane_follower.launch"/>
+    <include file="$(find rr_iarrc)/launch/sign_detector.launch"/>
 
     <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
-        <param name="turn_speed" type="double" value="0.60"/>
-        <param name="left_turn_steering" type="double" value="-0.20"/>
-        <param name="right_turn_steering" type="double" value="0.20"/>
+        <param name="turn_speed" type="double" value="0.90"/>
+        <param name="left_turn_steering" type="double" value="-0.28"/>
+        <param name="right_turn_steering" type="double" value="0.46"/>
         <param name="left_offset" type="double" value="0.0"/>
         <param name="right_offset" type="double" value="0.0"/>
        	<param name="forward_timeout" type="double" value="10.0"/>
@@ -34,7 +35,7 @@
     </node>
 
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
-        <param name="transform_topics" value="/lines/detection_img"/>
+        <param name="transform_topics" value="/camera_center/image_color_rect/lines/detection_img"/>
         <param name="px_per_meter" value="50"/>
         <param name="map_dist_max" value="4.0"/>
         <param name="map_dist_min" value="0.0"/>

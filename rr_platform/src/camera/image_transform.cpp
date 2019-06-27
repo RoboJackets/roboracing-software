@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 
     // load camera geometry
     rr::CameraGeometry cam_geom;
-    cam_geom.LoadInfo(nh, "/camera/camera_info", "camera", 60.0);
+    cam_geom.LoadInfo(nh, "/camera_center/camera_info", "camera_center", 60.0);
 
     // set relevant camera geometry fields for this node
     camera_fov_horizontal = cam_geom.GetFOVHorizontal();

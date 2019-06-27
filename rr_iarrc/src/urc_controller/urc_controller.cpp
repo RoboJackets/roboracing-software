@@ -125,9 +125,9 @@ void updateState() {
             if(turn_direction.compare(LEFT) == 0){
 
                 if(imu_quadrant == 4){
-                    target_yaw = initial_yaw - 1.5*M_PI - left_offset + stop_bar_angle;
+                    target_yaw = initial_yaw - 1.5*M_PI - left_offset;// + stop_bar_angle;
                 }else{
-                    target_yaw = initial_yaw + 0.5*M_PI + left_offset - stop_bar_angle;
+                    target_yaw = initial_yaw + 0.5*M_PI + left_offset;// - stop_bar_angle;
                 }
 
                 while(1){

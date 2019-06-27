@@ -154,10 +154,10 @@ ros::Time start = ros::Time::now();
     //Some debug images for us
     //show the bestMatchRect
     //cv::rectangle(crop, bestMatchRect, cv::Scalar(255,0,255), 2, 8 ,0);
-    cv::putText(crop, bestMove, cv::Point(0,frame.rows - 1), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(255,0,255), 2);
+    cv::putText(frame, bestMove, cv::Point(0,frame.rows - 1), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(255,0,255), 2);
 
     //show where we are cropped to
-    cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.cols-1, crop.rows-1), cv::Scalar(0,255,0), 2, 8 ,0);
+    cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.cols-1, crop.rows-1), cv::Scalar(255, 0, 255), 2, 8 ,0);
 
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
@@ -194,7 +194,7 @@ bool findStopBarFromHough(cv::Mat &frame,
     int ddepth = CV_8UC1;
     cv::Laplacian(frame, edges, ddepth); //use edge to get better Hough results
     convertScaleAbs( edges, edges );
-
+    edges = frame; //#TOOD: probably laplace then dilate.
     cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR); //for debugging
 
     // Standard Hough Line Transform

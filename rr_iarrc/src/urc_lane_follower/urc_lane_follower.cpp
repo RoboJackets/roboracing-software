@@ -122,8 +122,8 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     cv::Mat leftLine = findLineBinary(leftFrame);
     cv::Mat rightLine = findLineBinary(rightFrame);
 
-    double leftAngle = calcLineAngle(leftLine, leftFrame);
-    double rightAngle = calcLineAngle(rightLine, rightFrame);
+    double leftAngle = calcLineAngle(leftLine, leftFrame) + left_angle_offset;
+    double rightAngle = calcLineAngle(rightLine, rightFrame) + right_angle_offset;
 
     double errorTolerance = 4.0; //allowable angle difference
     if (std::fabs(std::fabs(leftAngle) - std::fabs(rightAngle)) >= errorTolerance) {
@@ -137,7 +137,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     if (std::isnan(angleAvg)) {
         steering = 0.0;
     } else {
-        steering = ( goal - (angleAvg - angleOffset) ) * kP;
+        steering = ( goal - (angleAvg)) *kP; //- angleOffset) ) * kP;
     }
     double speed = 1.0;
 
