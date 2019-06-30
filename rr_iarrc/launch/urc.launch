@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/stoplight_watcher.launch"/>
+
+    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
     <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
 
     <include file="$(find rr_iarrc)/launch/urc_lane_follower.launch"/>
@@ -45,6 +46,5 @@
         <param name="fallback_image_width" value="1280"/>
         <param name="fallback_image_height" value="964"/>
     </node>
-
 
 </launch>

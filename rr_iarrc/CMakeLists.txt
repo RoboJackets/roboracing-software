@@ -56,7 +56,7 @@ include_directories(
 )
 
 add_subdirectory(src/color_detector)
-add_subdirectory(src/stoplight_watcher)
+add_subdirectory(src/startlight_watcher)
 add_subdirectory(src/finish_line_watcher)
 add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
