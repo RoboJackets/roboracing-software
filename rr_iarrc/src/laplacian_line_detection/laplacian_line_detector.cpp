@@ -61,8 +61,13 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         cv::Mat fill = floorfillAreas(lapl, floodfill_blobs);
         true_lines = cutSmall(fill, min_blob_area);
     } else {
+        cv::Mat lightness;
+        threshold(frame_gray, lightness, 5, 255, 0);
+        lapl.setTo(cv::Scalar(0, 0, 0), lightness == 0);
+
         cv::erode(lapl, lapl, kernel(3,1));
         true_lines = cutSmall(lapl, min_blob_area);
+
         cv::Mat black(frame.rows,frame.cols,CV_8UC1,cv::Scalar::all(0));
         adaptive = black;
         floodfill_blobs = black;

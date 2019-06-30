@@ -3,7 +3,7 @@
 
         <!--Range of the Laplacian Area to Floodfill-->
         <param name="laplacian_threshold_min" type="int" value="-255" />
-        <param name="laplacian_threshold_max" type="int" value="-10" />
+        <param name="laplacian_threshold_max" type="int" value="-5" />
 
         <!--Minimum Area to Keep-->
         <param name="min_blob_area" type="int" value="30" />
@@ -26,7 +26,7 @@
         <param name="ignore_color_high_V" type="int" value="255" />
 
         <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
-        <param name="publish_detection_node" type="string" value="camera_center/lines/detection_img"/>
-        <param name="publish_debug_node" type="string" value="camera_center/lines/debug_img"/>
+        <param name="publish_detection_node" type="string" value="camera_center/image_color_rect/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_center/image_color_rect/lines/debug_img"/>
     </node>
 </launch>

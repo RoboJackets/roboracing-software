@@ -10,8 +10,8 @@
         <param name="ignore_adaptive" type="bool" value="True" />
 
         <param name="subscription_node" type="string" value="/camera_left/image_color_rect"/>
-        <param name="publish_detection_node" type="string" value="camera_left/lines/detection_img"/>
-        <param name="publish_debug_node" type="string" value="camera_left/lines/debug_img"/>
+        <param name="publish_detection_node" type="string" value="camera_left/image_color_rect/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_left/image_color_rect/lines/debug_img"/>
     </node>
 
     <node name="laplacian_line_detector_right_camera" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
@@ -26,7 +26,7 @@
         <param name="ignore_adaptive" type="bool" value="True" />
 
         <param name="subscription_node" type="string" value="/camera_right/image_color_rect"/>
-        <param name="publish_detection_node" type="string" value="camera_right/lines/detection_img"/>
-        <param name="publish_debug_node" type="string" value="camera_right_left/lines/debug_img"/>
+        <param name="publish_detection_node" type="string" value="camera_right/image_color_rect/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_right_left/image_color_rect/lines/debug_img"/>
     </node>
 </launch>
