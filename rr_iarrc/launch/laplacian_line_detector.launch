@@ -1,17 +1,32 @@
 <launch>
     <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
+
+        <!--Range of the Laplacian Area to Floodfill-->
+        <param name="laplacian_threshold_min" type="int" value="-255" />
+        <param name="laplacian_threshold_max" type="int" value="-5" />
+
         <!--Minimum Area to Keep-->
-        <param name="perfect_lines_min_cut" type="int" value="50" />
-        <!--Strength of Floodfill-->
-        <param name="Laplacian_threshold" type="int" value="20" />
+        <param name="min_blob_area" type="int" value="30" />
+
         <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="3" />
+        <param name="ignore_adaptive" type="bool" value="False" />
+        <param name="adaptive_mean_threshold" type="int" value="1" />
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
-        <param name="blockSky_height" type="int" value="550" />
+        <!--Camera_center 570, 800, 760-->
+        <param name="blockSky_height" type="int" value="530" />
         <param name="blockWheels_height" type="int" value="800" />
-        <param name="blockBumper_height" type="int" value="650" />
+        <param name="blockBumper_height" type="int" value="760" />
+
+        <param name="ignore_color_low_H" type="int" value="5" />
+        <param name="ignore_color_high_H" type="int" value="20" />
+        <param name="ignore_color_low_S" type="int" value="100" />
+        <param name="ignore_color_high_S" type="int" value="255" />
+        <param name="ignore_color_low_V" type="int" value="100" />
+        <param name="ignore_color_high_V" type="int" value="255" />
 
         <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
+        <param name="publish_detection_node" type="string" value="camera_center/image_color_rect/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_center/image_color_rect/lines/debug_img"/>
     </node>
 </launch>
