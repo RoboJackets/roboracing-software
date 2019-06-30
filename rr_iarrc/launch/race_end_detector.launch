@@ -1,5 +1,18 @@
 <launch>
   <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
-        <param name="img_topic" type="string" value="/colors_img" />
+      <param name="img_topic" value="/finish_line_detection_img" />
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
+        args="load rr_iarrc/color_detector /camera_nodelet_manager">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_blue.txt"/>
+      <param name="camera_image" value="/camera_center/image_color_rect"/>
+      <param name="detection_topic" value="/finish_line_detection_img"/>
+      <param name="hsv_values_topic" value="/finish_line_hsv"/>
+  </node>
+
+  <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_blue.txt"/>
+      <param name="values_topic" value="/finish_line_hsv"/>
   </node>
 </launch>

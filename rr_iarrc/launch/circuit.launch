@@ -10,5 +10,6 @@
         <param name="req_finish_line_crosses" type="int" value="3"/>
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
     </node>
 </launch>
