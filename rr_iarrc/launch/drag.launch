@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/drag_centerlane_planner.launch"/>
+    <include file="$(find rr_iarrc)/launch/drag_centerline_planner.launch"/>
     <include file="$(find rr_iarrc)/launch/laplacian_line_detector.launch"/>
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/camera_center/image_color_rect/lines/detection_img"/>
         <param name="px_per_meter" value="50"/>
-        <param name="map_dist_max" value="4.0"/>
+        <param name="map_dist_max" value="3.5"/>
         <param name="map_dist_min" value="0.0"/>
 
         <param name="fallback_fov_horizontal" value="1.6955"/>
