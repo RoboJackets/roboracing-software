@@ -3,10 +3,10 @@
 
         <!--Range of the Laplacian Area to Floodfill-->
         <param name="laplacian_threshold_min" type="int" value="-255" />
-        <param name="laplacian_threshold_max" type="int" value="-5" />
+        <param name="laplacian_threshold_max" type="int" value="-35" />
 
         <!--Minimum Area to Keep-->
-        <param name="min_blob_area" type="int" value="30" />
+        <param name="min_blob_area" type="int" value="60" />
 
         <!--Strength of Adaptive Thresholding-->
         <param name="ignore_adaptive" type="bool" value="False" />
@@ -14,9 +14,9 @@
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <!--Camera_center 570, 800, 760-->
-        <param name="blockSky_height" type="int" value="530" />
-        <param name="blockWheels_height" type="int" value="800" />
-        <param name="blockBumper_height" type="int" value="760" />
+        <param name="blockSky_height" type="int" value="560" />
+        <param name="blockWheels_height" type="int" value="750" />
+        <param name="blockBumper_height" type="int" value="750" />
 
         <param name="ignore_color_low_H" type="int" value="5" />
         <param name="ignore_color_high_H" type="int" value="20" />
