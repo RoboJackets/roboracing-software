@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
     
-    <include file="$(dirname)/mpc_planner_circuit.launch"/>
+    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
 
     <include file="$(find rr_iarrc)/launch/laplacian_line_detector.launch"/>
+    <include file="$(find rr_iarrc)/launch/cone_bottom_detector.launch"/>
     <include file="$(find rr_iarrc)/launch/lines_projector.launch">
+         <arg name="use_camera_manager" value="false"/> <!--TODO: should this be true?-->
+     </include>
+     <include file="$(find rr_iarrc)/launch/cones_projector.launch">
          <arg name="use_camera_manager" value="false"/> <!--TODO: should this be true?-->
      </include>
 
