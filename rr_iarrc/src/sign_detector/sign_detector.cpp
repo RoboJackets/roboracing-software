@@ -30,6 +30,7 @@ cv::Mat sign_right;
 
 std::vector<cv::Point> template_contour_upright;
 double minContourArea;
+double maxContourArea;
 double straightMatchSimilarityThreshold;
 double turnMatchSimilarityThreshold;
 
@@ -46,11 +47,16 @@ double houghMaxLineGap;
 int pixels_per_meter;
 
 cv::Rect bestMatchRect(0,0,0,0);
+cv::Rect potentialMoveRect(0,0,0,0);
 const std::string RIGHT("right");
 const std::string LEFT("left");
 const std::string STRAIGHT("straight");
 const std::string NONE("none");
 std::string bestMove = NONE;
+std::string potentialMove = NONE;
+std::string lastPotentialMove = NONE;
+int potentialMoveCount = 0;
+int requiredPotentialCount;
 
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
 ros::Time start = ros::Time::now();
@@ -88,15 +94,17 @@ ros::Time start = ros::Time::now();
       std::vector<cv::Point> approxC;
       cv::approxPolyDP(c, approxC, epsilon, true);
       //@note: if need be, you can allow size range 6-9 because it is possible one edge looks like 2 depending on epsilon
-      if (approxC.size() == 7 && cv::contourArea(approxC) > minContourArea) {
+      double contourArea = cv::contourArea(approxC);
+      if (approxC.size() == 7 && contourArea >= minContourArea && contourArea <= maxContourArea) {
           //check the ratio is arrow-like
           cv::Rect rect = cv::boundingRect(c);
-          double ratioMin = 1.5; //ratio of width to height or vice versa
-          double ratioMax = 2.2;
+          double ratioMin = 1.2;//1.5; //ratio of width to height or vice versa
+          double ratioMax = 2.5;//2.2; //expanded from real to allow us to view it off angle
           if ( (rect.width * ratioMin <= rect.height && rect.width * ratioMax >= rect.height) ||
                 (rect.height * ratioMin <= rect.width && rect.height * ratioMax >= rect.width) ) {
 
             cv::rectangle(crop, rect, cv::Scalar(0,255,255),3); //debug
+            potentialMoveRect = rect;
 
             if (rect.width > rect.height) {
               //Sideways
@@ -111,20 +119,12 @@ ros::Time start = ros::Time::now();
                   if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
                     //left pointing arrow!
                     cv::putText(crop, LEFT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-
-                    if (rect.area() > bestMatchRect.area()) {
-                      bestMatchRect = rect;
-                      bestMove = LEFT;
-                    }
+                    potentialMove = LEFT;
 
                   } else {
                     //right pointing arrow!
                     cv::putText(crop, RIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-
-                    if (rect.area() > bestMatchRect.area()) {
-                      bestMatchRect = rect;
-                      bestMove = RIGHT;
-                    }
+                    potentialMove = RIGHT;
 
                   }
 
@@ -137,11 +137,7 @@ ros::Time start = ros::Time::now();
 
               if (matchSimilarity <= straightMatchSimilarityThreshold) {
                   cv::putText(crop, STRAIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-
-                  if (rect.area() > bestMatchRect.area()) {
-                    bestMatchRect = rect;
-                    bestMove = STRAIGHT;
-                  }
+                  potentialMove = STRAIGHT;
               }
             }
 
@@ -150,6 +146,21 @@ ros::Time start = ros::Time::now();
 
 
     }
+
+
+    //consistency checks
+    if (potentialMove == lastPotentialMove) {
+        potentialMoveCount += 1;
+    } else {
+        potentialMoveCount = 0;
+    }
+    lastPotentialMove = potentialMove;
+
+    if (potentialMoveCount >= requiredPotentialCount) {
+        bestMatchRect = potentialMoveRect;
+        bestMove = potentialMove;
+    }
+
 
     //Some debug images for us
     //show the bestMatchRect
@@ -273,6 +284,9 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
         bestMove = NONE;
         bestMatchRect.width = 0;
         bestMatchRect.height = 0;
+        potentialMove = NONE;
+        potentialMoveRect.width = 0;
+        potentialMoveRect.height = 0;
 	}
 
     if (pubLine.getNumSubscribers() > 0) {
@@ -328,6 +342,9 @@ int main(int argc, char** argv) {
     nhp.param("sign_file_package_name", sign_file_package_name, std::string("rr_iarrc"));
     nhp.param("sign_file_path_from_package", sign_file_path_from_package, std::string("/src/sign_detector/sign_forward.jpg"));
     nhp.param("minimum_contour_area", minContourArea, 300.0);
+    nhp.param("maxmimum_contour_area", maxContourArea, 35000.0);
+    nhp.param("required_match_count", requiredPotentialCount, 1);
+
     nhp.param("straight_match_similarity_threshold", straightMatchSimilarityThreshold, 0.3);
     nhp.param("turn_match_similarity_threshold", turnMatchSimilarityThreshold, 0.3);
     nhp.param("canny_threshold_low", cannyThresholdLow, 100.0);

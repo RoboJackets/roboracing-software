@@ -12,11 +12,13 @@
         <param name="sign_file_package_name" type="string" value="rr_iarrc"/>
         <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
 
-        <param name="canny_threshold_low" type="double" value="95" />
-        <param name="canny_threshold_high" type="double" value="170" /> <!-- usually about 2-3 times the low threshold -->
+        <param name="canny_threshold_low" type="double" value="160" /> <!-- 100, 170 -->
+        <param name="canny_threshold_high" type="double" value="200" /> <!-- usually about 2-3 times the low threshold -->
         <param name="minimum_contour_area" type="double" value="300" />
-        <param name="straight_match_similarity_threshold" type="double" value="0.25" />
-        <param name="turn_match_similarity_threshold" type="double" value="0.4" />
+        <param name="maxmimum_contour_area" type="double" value="15000" />
+        <param name="straight_match_similarity_threshold" type="double" value="0.4" />
+        <param name="turn_match_similarity_threshold" type="double" value="0.65" />
+        <param name="required_match_count" type="int" value="4" />
 
         <!-- Stop Bar Detector Params -->
         <param name="overhead_image_subscription" type="string" value="/camera_center/image_color_rect/lines/detection_img_transformed" />
