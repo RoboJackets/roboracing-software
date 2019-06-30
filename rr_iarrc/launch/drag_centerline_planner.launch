@@ -1,5 +1,5 @@
 <launch>
-    <node name="line_maker" pkg="rr_iarrc" type="line_maker" output="screen">
+    <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
         <!--PID Controller Constants-->
         <param name="PID_kP" type="double" value="0.003" />
         <param name="PID_kI" type="double" value="0.0" />

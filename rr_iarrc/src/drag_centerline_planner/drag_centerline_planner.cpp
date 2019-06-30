@@ -218,7 +218,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "line_maker");
+    ros::init(argc, argv, "drag_center_lane_planner");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
     myPID.SetMode(AUTOMATIC);
     myPID.SetOutputLimits(-maxTurnLimit, maxTurnLimit);
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>("/line_track", 1); //test publish of image
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerlane_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
