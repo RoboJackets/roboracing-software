@@ -30,6 +30,8 @@ double input;
 double outputSteering;
 PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
+double speedGoal;
+
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
 }
@@ -183,7 +185,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::line(output, goal, cv::Point(frame.cols/2, goal.y), cv::Scalar(0,0,255), 1); //error amount
 
 
-    speed_message.speed = 1.5;
+    speed_message.speed = speedGoal;
     steer_message.angle = steering;
     speed_pub.publish(speed_message);
     steer_pub.publish(steer_message);
@@ -226,6 +228,7 @@ int main(int argc, char** argv) {
     nhp.param("PID_kP", kP, 0.0001);
     nhp.param("PID_kI", kI, 0.0);
     nhp.param("PID_kD", kD, 0.0);
+    nhp.param("speed", speedGoal, 1.0);
 
     double maxTurnLimit;
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
