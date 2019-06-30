@@ -241,8 +241,8 @@ int main(int argc, char** argv) {
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerlane_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
-    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
 
 
     ros::spin();
