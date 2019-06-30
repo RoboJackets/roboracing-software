@@ -2,7 +2,7 @@
     <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen">
 
         <!--Input and output topics-->
-        <param name="img_topic" type="string" value="/camera/image_color_rect"/>
+        <param name="img_topic" type="string" value="/camera_center/image_color_rect"/>
         <param name="stoplight_watcher_topic" type="string" value="/start_detected"/>
 
         <!--Control amount of image counted as green and red light candidates-->

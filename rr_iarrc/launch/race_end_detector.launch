@@ -12,7 +12,7 @@
   </node>
 
   <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
-      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_blue.txt"/>
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/30-06-2019_finish_line.txt"/>
       <param name="values_topic" value="/finish_line_hsv"/>
   </node>
 </launch>
