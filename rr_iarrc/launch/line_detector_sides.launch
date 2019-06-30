@@ -1,33 +1,32 @@
 <launch>
     <node name="laplacian_line_detector_left_camera" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
+        <!--Range of the Laplacian Area to Floodfill-->
+        <param name="laplacian_threshold_min" type="int" value="-3" />
+        <param name="laplacian_threshold_max" type="int" value="7" />
         <!--Minimum Area to Keep-->
-        <param name="perfect_lines_min_cut" type="int" value="5" />
-        <!--Strength of Floodfill-->
-        <param name="Laplacian_threshold" type="int" value="20" />
-        <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="1" />
+        <param name="min_blob_area" type="int" value="300" />
 
-        <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
-        <param name="blockSky_height" type="int" value="0" />
-        <param name="blockWheels_height" type="int" value="0" />
-        <param name="blockBumper_height" type="int" value="0" />
+        <!--Strength of Adaptive Thresholding-->
+        <param name="ignore_adaptive" type="bool" value="True" />
 
         <param name="subscription_node" type="string" value="/camera_left/image_color_rect"/>
+        <param name="publish_detection_node" type="string" value="camera_left/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_left/lines/debug_img"/>
     </node>
 
     <node name="laplacian_line_detector_right_camera" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
-        <!--Minimum Area to Keep-->
-        <param name="perfect_lines_min_cut" type="int" value="5" />
-        <!--Strength of Floodfill-->
-        <param name="Laplacian_threshold" type="int" value="20" />
-        <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="-1" />
 
-        <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
-        <param name="blockSky_height" type="int" value="0" />
-        <param name="blockWheels_height" type="int" value="0" />
-        <param name="blockBumper_height" type="int" value="1" />
+        <!--Range of the Laplacian Area to Floodfill-->
+        <param name="laplacian_threshold_min" type="int" value="-225" />
+        <param name="laplacian_threshold_max" type="int" value="-5" />
+        <!--Minimum Area to Keep-->
+        <param name="min_blob_area" type="int" value="100" />
+
+        <!--Strength of Adaptive Thresholding-->
+        <param name="ignore_adaptive" type="bool" value="True" />
 
         <param name="subscription_node" type="string" value="/camera_right/image_color_rect"/>
+        <param name="publish_detection_node" type="string" value="camera_right/lines/detection_img"/>
+        <param name="publish_debug_node" type="string" value="camera_right_left/lines/debug_img"/>
     </node>
 </launch>
