@@ -46,7 +46,8 @@ cv::Mat getColHist(cv::Mat img) {
 }
 
 //re-center around the average x coordinate of the line segment
-cv::Point centerOnLineSegment(cv::Mat imGray, cv::Point currCenter, cv::Point offset, int width, int height) {
+//returns true if he currCenter changed.
+bool centerOnLineSegment(cv::Mat imGray, cv::Point &currCenter, cv::Point offset, int width, int height) {
     cv::Point topLeft = currCenter - offset;
     int sumX = 0;
     int count = 0;
@@ -62,10 +63,10 @@ cv::Point centerOnLineSegment(cv::Mat imGray, cv::Point currCenter, cv::Point of
         //we found a line segment
         int avgX = sumX / count;
         currCenter.x = avgX;
+        return true;
     }
 
-    return currCenter;
-
+    return false;
 }
 
 //find the "center line" to follow
@@ -95,16 +96,17 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::cvtColor(frame, output, cv::COLOR_GRAY2BGR); //Doing this just for debugging
 
     setpoint = frame.cols/2; //want our center line on the center of the camera
+    cv::Point rightMaxLoc;
+    cv::Point leftMaxLoc;
 
-    //locate beginnings of lines by a large number of pixels
+    /*
+    //locate beginnings of lines by a large number of pixels in the column
     cv::Mat hist = getColHist(frame);
     //left line
     double max;
     double min;
-    cv::Point leftMaxLoc;
-    cv::Point leftMinLoc;
-    cv::Point rightMaxLoc;
     cv::Point rightMinLoc;
+    cv::Point leftMinLoc;
     cv::minMaxLoc(hist(cv::Range(0,hist.rows/2 - 1), cv::Range::all()), &min, &max, &leftMinLoc, &leftMaxLoc);
     leftMaxLoc.x = leftMaxLoc.y; //gotta flip x and y
     leftMaxLoc.y = frame.rows - 1;
@@ -114,6 +116,20 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     if (rightMaxLoc.x == frame.cols/2) {
         rightMaxLoc.x = frame.cols - 1;
+    }
+    */
+    leftMaxLoc.x = frame.cols/4;
+    rightMaxLoc.x = frame.cols/2 + frame.cols/4;
+    rightMaxLoc.y = 120;
+    leftMaxLoc.y = 120;
+    int w = (frame.cols)/2;
+    bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 16), w-1, 16);
+    bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 16), w-1, 16);
+    if (!rightFound) {
+        rightMaxLoc.x = frame.cols/2 + 40;
+    }
+    if (!leftFound) {
+        leftMaxLoc.x = frame.cols/2 - 40;
     }
 
     //debug visualization
@@ -139,7 +155,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     leftLinePoints.push_back(leftCenter);
 
     while (rightCenter.y >= 0) {
-        rightCenter = centerOnLineSegment(frame, rightCenter, offset, width, height);
+        centerOnLineSegment(frame, rightCenter, offset, width, height);
         cv::circle(output, rightCenter, 2, cv::Scalar(0, 0, 255), -1);
         cv::Point rightBox_topLeft = rightCenter - offset;
         cv::rectangle(output, rightBox_topLeft, rightCenter + offset, cv::Scalar(0,255,0), 1);
@@ -156,7 +172,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         }
         */
 
-        leftCenter = centerOnLineSegment(frame, leftCenter, offset, width, height);
+        centerOnLineSegment(frame, leftCenter, offset, width, height);
         cv::circle(output, leftCenter, 2, cv::Scalar(0, 0, 255), -1);
         cv::Point leftBox_topLeft = leftCenter - offset;
         cv::rectangle(output, leftBox_topLeft, leftCenter + offset, cv::Scalar(0,255,0), 1);
@@ -223,7 +239,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
     std::string subscription_node;
-    nhp.param("subscription_node", subscription_node, std::string("/lines/detection_img_transformed"));
+    nhp.param("subscription_node", subscription_node, std::string("/camera_center/image_color_rect/lines/detection_img_transformed"));
 
     nhp.param("PID_kP", kP, 0.0001);
     nhp.param("PID_kI", kI, 0.0);
@@ -238,7 +254,7 @@ int main(int argc, char** argv) {
     myPID.SetMode(AUTOMATIC);
     myPID.SetOutputLimits(-maxTurnLimit, maxTurnLimit);
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerlane_track", 1); //test publish of image
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
