@@ -23,6 +23,7 @@ using uchar = unsigned char;
 
 // Publisher debug_pub;
 Publisher crosses_pub;
+int blockSky_height, blockWheels_height, blockBumper_height;
 
 #define HIGH 1
 #define LOW 0
@@ -30,6 +31,23 @@ Publisher crosses_pub;
 int state = LOW;
 
 int number_of_crosses = 0;
+
+void blockEnvironment(const cv::Mat& img) {
+    cv::rectangle(img,
+                  cv::Point(0,0),
+                  cv::Point(img.cols, blockSky_height),
+                  cv::Scalar(0),CV_FILLED);
+
+    cv::rectangle(img,
+                  cv::Point(0,img.rows),
+                  cv::Point(img.cols, blockWheels_height),
+                  cv::Scalar(0),CV_FILLED);
+
+    cv::rectangle(img,
+                  cv::Point(img.cols/3,img.rows),
+                  cv::Point(2 * img.cols / 3, blockBumper_height),
+                  cv::Scalar(0),CV_FILLED);
+}
 
 int getWidth(const Mat& image) {
 
@@ -67,6 +85,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
 
     frame = cv_ptr->image;
+    blockEnvironment(frame);
 
     auto count = countNonZero(frame);
 
@@ -92,6 +111,11 @@ int main(int argc, char** argv) {
 
     string img_topic;
     nhp.getParam("img_topic", img_topic);
+
+    nhp.param("blockSky_height",    blockSky_height, 0);
+    nhp.param("blockWheels_height", blockWheels_height, 800);
+    nhp.param("blockBumper_height", blockBumper_height, 800);
+
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 
     Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
