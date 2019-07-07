@@ -46,18 +46,27 @@ double houghMinLineLength;
 double houghMaxLineGap;
 int pixels_per_meter;
 
-cv::Rect bestMatchRect(0,0,0,0);
-cv::Rect potentialMoveRect(0,0,0,0);
 const std::string RIGHT("right");
 const std::string LEFT("left");
 const std::string STRAIGHT("straight");
 const std::string NONE("none");
-std::string bestMove = NONE;
-std::string potentialMove = NONE;
-std::string lastPotentialMove = NONE;
-int potentialMoveCount = 0;
-int requiredPotentialCount;
 
+struct ArrowSign {
+    std::string direction;
+    int area;
+    int count;
+};
+
+std::vector<ArrowSign> arrowTrackList {{RIGHT,0,0}, {LEFT,0,0}, {STRAIGHT,0,0}};
+ArrowSign bestMove = {NONE, 0, 0};
+int signTriggerCount;
+
+/*
+ * This sign dectector uses contours to classified shapes
+ * as arrows and determine the direction.
+ *
+ * A sign must be seen multiple frames IN A ROW to count
+*/
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
 ros::Time start = ros::Time::now();
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
@@ -87,8 +96,9 @@ ros::Time start = ros::Time::now();
 
     cv::drawContours(crop, contours, -1, cv::Scalar(0,255,0), 2); //debug
 
+    std::vector<ArrowSign> foundArrowsList;
     for(size_t i=0; i<contours.size(); i++) {
-      std::vector<cv::Point> c = contours[i]; //curent contour reference
+      std::vector<cv::Point> c = contours[i]; //current contour reference
       double perimeter = cv::arcLength(c, true);
       double epsilon = 0.04 * perimeter;
       std::vector<cv::Point> approxC;
@@ -104,7 +114,6 @@ ros::Time start = ros::Time::now();
                 (rect.height * ratioMin <= rect.width && rect.height * ratioMax >= rect.width) ) {
 
             cv::rectangle(crop, rect, cv::Scalar(0,255,255),3); //debug
-            potentialMoveRect = rect;
 
             if (rect.width > rect.height) {
               //Sideways
@@ -119,12 +128,14 @@ ros::Time start = ros::Time::now();
                   if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
                     //left pointing arrow!
                     cv::putText(crop, LEFT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                    potentialMove = LEFT;
+                    ArrowSign move = {LEFT, rect.area(), 0};
+                    foundArrowsList.push_back(move);
 
                   } else {
                     //right pointing arrow!
                     cv::putText(crop, RIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                    potentialMove = RIGHT;
+                    ArrowSign move = {RIGHT, rect.area(), 0};
+                    foundArrowsList.push_back(move);
 
                   }
 
@@ -137,7 +148,8 @@ ros::Time start = ros::Time::now();
 
               if (matchSimilarity <= straightMatchSimilarityThreshold) {
                   cv::putText(crop, STRAIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                  potentialMove = STRAIGHT;
+                  ArrowSign move = {STRAIGHT, rect.area(), 0};
+                  foundArrowsList.push_back(move);
               }
             }
 
@@ -149,23 +161,33 @@ ros::Time start = ros::Time::now();
 
 
     //consistency checks
-    if (potentialMove == lastPotentialMove) {
-        potentialMoveCount += 1;
-    } else {
-        potentialMoveCount = 0;
-    }
-    lastPotentialMove = potentialMove;
-
-    if (potentialMoveCount >= requiredPotentialCount) {
-        bestMatchRect = potentialMoveRect;
-        bestMove = potentialMove;
+    for (int i = 0; i < arrowTrackList.size(); i++) {
+        bool wasSeen = false;
+        for (int j = 0; j < foundArrowsList.size(); j++) {
+            ArrowSign currArrow = foundArrowsList[j];
+            if (arrowTrackList[i].direction == currArrow.direction) {
+                wasSeen = true;
+                arrowTrackList[i].count += 1;
+                if (arrowTrackList[i].area > currArrow.area) { //update rect size
+                    arrowTrackList[i].area = currArrow.area;
+                }
+                int areaTolerance = 150;
+                if (arrowTrackList[i].count >= signTriggerCount && arrowTrackList[i].area + areaTolerance >= bestMove.area) {
+                    bestMove.direction = arrowTrackList[i].direction;
+                    bestMove.area = arrowTrackList[i].area;
+                }
+            }
+        }
+        if (!wasSeen) {
+            arrowTrackList[i].count = 0;
+            arrowTrackList[i].area = 0.0;
+        }
     }
 
 
     //Some debug images for us
     //show the bestMatchRect
-    //cv::rectangle(crop, bestMatchRect, cv::Scalar(255,0,255), 2, 8 ,0);
-    cv::putText(frame, bestMove, cv::Point(0,frame.rows - 1), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(255,0,255), 2);
+    cv::putText(frame, bestMove.direction, cv::Point(0,frame.rows - 1), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(255,0,255), 2);
 
     //show where we are cropped to
     cv::rectangle(crop, cv::Point(0,0), cv::Point(crop.cols-1, crop.rows-1), cv::Scalar(255, 0, 255), 2, 8 ,0);
@@ -273,20 +295,16 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightTriggerPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
     cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0,255,0),1, CV_AA);
 
-    if (stopBarDetected && bestMove != NONE) {
+    if (stopBarDetected && bestMove.direction != NONE) {
         //let the world know
         moveMsg.header.stamp = ros::Time::now();
-		moveMsg.direction = bestMove;
+		moveMsg.direction = bestMove.direction;
         moveMsg.angle = stopBarAngle;
 		pubMove.publish(moveMsg);
 
         //reset things
-        bestMove = NONE;
-        bestMatchRect.width = 0;
-        bestMatchRect.height = 0;
-        potentialMove = NONE;
-        potentialMoveRect.width = 0;
-        potentialMoveRect.height = 0;
+        bestMove.direction = NONE;
+        bestMove.area = 0.0;
 	}
 
     if (pubLine.getNumSubscribers() > 0) {
@@ -343,7 +361,7 @@ int main(int argc, char** argv) {
     nhp.param("sign_file_path_from_package", sign_file_path_from_package, std::string("/src/sign_detector/sign_forward.jpg"));
     nhp.param("minimum_contour_area", minContourArea, 300.0);
     nhp.param("maxmimum_contour_area", maxContourArea, 35000.0);
-    nhp.param("required_match_count", requiredPotentialCount, 1);
+    nhp.param("required_match_count", signTriggerCount, 1);
 
     nhp.param("straight_match_similarity_threshold", straightMatchSimilarityThreshold, 0.3);
     nhp.param("turn_match_similarity_threshold", turnMatchSimilarityThreshold, 0.3);
