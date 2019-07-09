@@ -1,0 +1,47 @@
+<launch>
+    <!-- detection -->
+    <include file="$(dirname)/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera_center"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_left"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_right"/>
+    </include>
+
+    <!-- projection -->
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_center"/>
+        <arg name="is_side_cam" value="false"/>
+    </include>
+
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_left"/>
+        <arg name="is_side_cam" value="true"/>
+    </include>
+
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+        <arg name="camera_name" value="camera_right"/>
+        <arg name="is_side_cam" value="true"/>
+    </include>
+
+    <!-- combine pointclouds -->
+    <node pkg="rr_common" type="pointcloud_combiner" name="lines_combiner" output="screen">
+        <param name="sources" value="/camera_center/lines/cloud /camera_left/lines/cloud /camera_right/lines/cloud /camera_center/cones/cloud"/>
+        <param name="destination" value="/current_obstacles"/>
+        <param name="refresh_rate" value="100"/>
+        <param name="combined_frame" value="base_footprint"/>
+
+        <!-- deprecated -->
+        <param name="ground_threshold" value="-0.1"/>
+        <param name="outlier_neighbors" value="1"/>
+        <param name="outlier_threshold" value="100.0"/>
+        <param name="vg_filter_size" value="0.05"/> <!-- used 0.1 at AVC 2018 -->
+    </node>
+</launch>

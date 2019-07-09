@@ -38,7 +38,7 @@ generate_messages(
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
 )
 
@@ -48,11 +48,10 @@ catkin_package(
 
 ## Specify additional locations of header files
 include_directories(
-  include
+#  include
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${EIGEN_INCLUDE_DIRS}
 )
 
 add_subdirectory(src/color_detector)

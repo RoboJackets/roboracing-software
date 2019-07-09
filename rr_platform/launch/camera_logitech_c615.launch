@@ -15,7 +15,7 @@
     <param name="width" value="640"/>
     <param name="height" value="480"/>
     <param name="video_mode" value="uncompressed"/> <!-- or yuyv/nv12/mjpeg -->
-    <param name="frame_rate" value="30"/>
+    <param name="frame_rate" value="20"/>
     <param name="timestamp_method" value="start"/>
 
     <!-- image quality -->

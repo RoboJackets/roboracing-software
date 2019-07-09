@@ -21,7 +21,7 @@
         <param name="required_match_count" type="int" value="4" />
 
         <!-- Stop Bar Detector Params -->
-        <param name="overhead_image_subscription" type="string" value="/camera_center/image_color_rect/lines/detection_img_transformed" />
+        <param name="overhead_image_subscription" type="string" value="/camera_center/lines/detection_img_transformed" />
         <param name="stopBarGoalAngle" type="double" value="0.0" /> <!-- angle in degrees -->
         <param name="stopBarGoalAngleRange" type="double" value="25.0" /> <!-- we can come at the line from many angles! -->
         <param name="stopBarTriggerDistance" type="double" value="1.6" /> <!-- distance in meters -->

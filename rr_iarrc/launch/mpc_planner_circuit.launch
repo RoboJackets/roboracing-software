@@ -25,14 +25,14 @@
         <param name="k_dist" value="0.9"/>
         <param name="k_speed" value="2"/>
         <param name="k_final_pose" value="40"/>
+        <param name="k_angle" value="1"/>
         <param name="backwards_penalty" value="1"/>
         <param name="collision_penalty" value="50"/>
         <param name="acceptance_scale" value="0.003"/>
 
-        <param name="input_cloud_topic" value="/camera_center/image_color_rect/lines/detection_img_transformed_cloud"/>
-        <!-- <param name="input_cloud_topic" value="/cone_detection_img_transformed_cloud"/> -->
+        <param name="input_cloud_topic" value="/current_obstacles"/>
 
-        <param name="impasse_caution_duration" value="0.1"/>
+        <param name="impasse_caution_duration" value="0.6"/>
         <param name="impasse_reverse_duration" value="0.2"/>
 
     </node>

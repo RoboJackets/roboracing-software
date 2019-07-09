@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <cmath>
 #include <boost/algorithm/string.hpp>
-#include "CameraGeometry.h"
+#include <rr_platform/CameraGeometry.h>
 
 using namespace std;
 using namespace cv;
@@ -27,7 +27,7 @@ map<string, Publisher> transform_pubs;
 
 
 /*
- * Start with a horizontal line on the groud at dmin meters horizonally in front of the 
+ * Start with a horizontal line on the groud at dmin meters horizonally in front of the
  * camera. It fills half the camera's FOV, from the center to the right edge. Then back
  * up the car so that the line is dmax meters away horizontally from the camera. The
  * apparent length of this hypothetical line (in pixels) is the output of this function.
@@ -118,6 +118,11 @@ int main(int argc, char **argv) {
     all_defined &= pnh.getParam("map_dist_max", camera_dist_max);
     all_defined &= pnh.getParam("map_dist_min", camera_dist_min);
 
+    std::string camera_info_topic;
+    all_defined &= pnh.getParam("camera_info_topic", camera_info_topic);
+    std::string camera_link_name;
+    all_defined &= pnh.getParam("camera_link_name", camera_link_name);
+
     // the launch file can provide camera information in case camera_info is not published
     all_defined &= pnh.getParam("fallback_fov_horizontal", camera_fov_horizontal);
     all_defined &= pnh.getParam("fallback_fov_vertical", camera_fov_vertical);
@@ -130,7 +135,7 @@ int main(int argc, char **argv) {
 
     // load camera geometry
     rr::CameraGeometry cam_geom;
-    cam_geom.LoadInfo(nh, "/camera_center/camera_info", "camera_center", 60.0);
+    cam_geom.LoadInfo(nh, camera_info_topic, camera_link_name, 60.0);
 
     // set relevant camera geometry fields for this node
     camera_fov_horizontal = cam_geom.GetFOVHorizontal();

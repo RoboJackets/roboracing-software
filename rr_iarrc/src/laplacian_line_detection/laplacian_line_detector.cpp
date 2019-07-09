@@ -16,7 +16,7 @@ cv::Mat getBlurredGrayImage(const cv::Mat&);
 cv::Mat kernel(int, int);
 cv::Mat floorfillAreas(const cv::Mat&, const cv::Mat&);
 cv::Mat cutSmall(const cv::Mat&, int);
-void publishMessage(const ros::Publisher, const cv::Mat&, std::string);
+void publishMessage(ros::Publisher&, const cv::Mat&, std::string, ros::Time&);
 cv::Mat overlayBinaryGreen(cv::Mat&, const cv::Mat&);
 cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth);
 cv::Mat createDebugImage(cv::Mat&, const cv::Mat&, const cv::Mat&, const cv::Mat&, const cv::Mat&);
@@ -37,6 +37,8 @@ int resize_dim = 400;
  * @param msg image input from camera
  */
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
+    auto time_stamp = msg->header.stamp;
+
     //Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
@@ -76,8 +78,8 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat img_debug = createDebugImage(frame_gray, adaptive, lapl, floodfill_blobs, ignore_color_mask);
     cv::resize(true_lines, true_lines, cv::Size(original_width, original_height));
 
-    publishMessage(pub_line_detector, true_lines, "mono8");
-    publishMessage(pub_debug_img, img_debug, "bgr8");
+    publishMessage(pub_line_detector, true_lines, "mono8", time_stamp);
+    publishMessage(pub_debug_img, img_debug, "bgr8", time_stamp);
 }
 
 int main(int argc, char** argv) {
@@ -97,21 +99,19 @@ int main(int argc, char** argv) {
     nhp.param("ignore_adaptive", ignore_adaptive, false);
     nhp.param("adaptive_mean_threshold", adaptive_mean_threshold, 1);
 
-    nhp.param("ignore_color_low_H",  ignore_color_low_H,  0);
-    nhp.param("ignore_color_high_H", ignore_color_high_H, 0);
-    nhp.param("ignore_color_low_S",  ignore_color_low_S,  0);
-    nhp.param("ignore_color_high_S", ignore_color_high_S, 0);
-    nhp.param("ignore_color_low_V",  ignore_color_low_V,  0);
-    nhp.param("ignore_color_high_V", ignore_color_high_V, 0);
+    nhp.param("ignore_color_low_H",  ignore_color_low_H,  -1);
+    nhp.param("ignore_color_high_H", ignore_color_high_H, -1);
+    nhp.param("ignore_color_low_S",  ignore_color_low_S,  -1);
+    nhp.param("ignore_color_high_S", ignore_color_high_S, -1);
+    nhp.param("ignore_color_low_V",  ignore_color_low_V,  -1);
+    nhp.param("ignore_color_high_V", ignore_color_high_V, -1);
 
-    nhp.param("subscription_node", subscription_node, std::string("/camera/image_color_rect"));
-    nhp.param("publish_detection_node", detection_node, std::string("/lines/detection_img"));
-    nhp.param("publish_debug_node", debug_node, std::string("/lines/debug_img"));
+    nhp.param("subscription_node", subscription_node, std::string("/camera_center/image_color_rect"));
 
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>(detection_node, 1); //test publish of image
-    pub_debug_img = nh.advertise<sensor_msgs::Image>(debug_node, 1);
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("lines/detection_img", 1); //test publish of image
+    pub_debug_img = nh.advertise<sensor_msgs::Image>("lines/debug_img", 1);
 
     ros::spin();
     return 0;
@@ -189,12 +189,13 @@ cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
     return contours_color;
 }
 
-void publishMessage(const ros::Publisher pub, const cv::Mat& img, std::string img_type) {
+void publishMessage(ros::Publisher& pub, const cv::Mat& img, std::string img_type, ros::Time& time_stamp) {
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptr->image = img;
         cv_ptr->encoding = img_type;
         cv_ptr->toImageMsg(outmsg);
+        outmsg.header.stamp = time_stamp;
         pub.publish(outmsg);
     }
 }

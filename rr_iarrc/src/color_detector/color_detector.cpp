@@ -111,7 +111,7 @@ namespace rr_iarrc {
         image_transport::ImageTransport it(nh);
 
         std::string camera_image_topic, detection_topic, hsv_values_topic;
-        pnh.param(string("camera_image"), camera_image_topic, string("/camera/image_color_rect"));
+        pnh.param(string("camera_image"), camera_image_topic, string("/camera_center/image_color_rect"));
         pnh.param(string("detection_topic"), detection_topic, string("/hsv_detected"));
         pnh.param(string("hsv_values_topic"), hsv_values_topic, string("/hsv_tuned"));
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
 
     <include file="$(dirname)/line_detection_3cam.launch"/>
 
@@ -9,11 +11,10 @@
         <arg name="camera_name" value="camera_center"/>
         <arg name="is_side_cam" value="false"/>
     </include>
-    <!--
+
     <include file="$(dirname)/local_mapper.launch">
         <arg name="obstacles_topic" value="/current_obstacles"/>
     </include>
-    -->
 
     <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
 </launch>

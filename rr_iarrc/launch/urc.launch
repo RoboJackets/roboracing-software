@@ -19,24 +19,12 @@
     </node>
 
 
-    <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector" output="screen">
-        <!--Minimum Area to Keep-->
-        <param name="perfect_lines_min_cut" type="int" value="50" />
-        <!--Strength of Floodfill-->
-        <param name="Laplacian_threshold" type="int" value="20" />
-        <!--Strength of Adaptive Thresholding-->
-        <param name="adaptive_mean_threshold" type="int" value="3" />
-
-        <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
-        <param name="blockSky_height" type="int" value="550" />
-        <param name="blockWheels_height" type="int" value="800" />
-        <param name="blockBumper_height" type="int" value="650" />
-
-        <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
-    </node>
+    <include file="$(find rr_iarrc)/launch/laplacian_line_detector_front.launch"/>
 
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
-        <param name="transform_topics" value="/camera_center/image_color_rect/lines/detection_img"/>
+        <param name="transform_topics" value="/camera_center/lines/detection_img"/>
+        <param name="camera_info_topic" value="/camera_center/camera_info"/>
+        <param name="camera_link_name" value="camera_center"/>
         <param name="px_per_meter" value="50"/>
         <param name="map_dist_max" value="4.0"/>
         <param name="map_dist_min" value="0.0"/>

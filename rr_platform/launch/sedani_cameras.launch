@@ -22,4 +22,6 @@
         <arg name="serial" value="FC72EDA0"/>
         <arg name="manager_launched" value="true"/>
     </include>
+
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="camera_configurator"/>
 </launch>
