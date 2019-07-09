@@ -1,10 +1,15 @@
 <launch>
   <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
       <param name="img_topic" value="/finish_line_detection_img" />
+
+      <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
+      <param name="blockSky_height" type="int" value="400" />
+      <param name="blockWheels_height" type="int" value="750" />
+      <param name="blockBumper_height" type="int" value="750" />
   </node>
 
   <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
-        args="load rr_iarrc/color_detector /camera_nodelet_manager">
+        args="load rr_iarrc/color_detector/camera_nodelet_manager">
       <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_blue.txt"/>
       <param name="camera_image" value="/camera_center/image_color_rect"/>
       <param name="detection_topic" value="/finish_line_detection_img"/>
