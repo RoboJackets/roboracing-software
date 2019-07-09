@@ -191,7 +191,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     cv::Point goal(get_pnt_on_line(frame.rows/2, midline), frame.rows/2);;
     int error = -((frame.cols/2) - goal.x);
-    printf("%d\n", goal.x);
+    //printf("%d\n", goal.x);
 
     //double steering = error * 0.01; //kP
     input = static_cast<double>(error);
@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
     std::string subscription_node;
-    nhp.param("subscription_node", subscription_node, std::string("/camera_center/image_color_rect/lines/detection_img_transformed"));
+    nhp.param("subscription_node", subscription_node, std::string("/camera_center/lines/detection_img_transformed"));
 
     nhp.param("PID_kP", kP, 0.0001);
     nhp.param("PID_kI", kI, 0.0);
@@ -233,8 +233,8 @@ int main(int argc, char** argv) {
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_debug", 1); //test publish of image
-    speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
 
     ros::spin();
     return 0;

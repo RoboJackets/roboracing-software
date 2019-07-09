@@ -3,7 +3,7 @@
 
     <include file="$(dirname)/line_detection_3cam.launch"/>
 
-    <include file="$(dirname)/cone_bottom_detection.launch"/>
+    <include file="$(dirname)/cone_bottom_detector.launch"/>
     <include file="$(dirname)/cones_projector.launch">
         <arg name="use_camera_manager" value="true"/>
         <arg name="camera_name" value="camera_center"/>
