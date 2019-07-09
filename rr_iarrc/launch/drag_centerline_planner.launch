@@ -5,7 +5,7 @@
         <param name="PID_kI" type="double" value="0.0" />
         <param name="PID_kD" type="double" value="0.000" />
 
-        <param name="speed" type="double" value="5.1" /> <!-- 3.1-->
+        <param name="speed" type="double" value="2.1" /> <!-- 3.1-->
 
         <param name="maxTurnLimitRadians" type="double" value="0.44" />
 

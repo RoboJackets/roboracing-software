@@ -45,7 +45,7 @@ void updateState() {
             }
             break;
         case FINISHED:
-            speed = 0.0;
+            speed = -1.0;
             //Continue steering until we have stopped moving.
             if (ros::Time::now() - finishTime > ros::Duration(steeringAfterFinishTime)) {
                 steering = 0.0;
