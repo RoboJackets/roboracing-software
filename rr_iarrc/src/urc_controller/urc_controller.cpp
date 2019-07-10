@@ -175,7 +175,7 @@ void updateState() {
 
         case FINISHED:
             ROS_INFO("Finished URC");
-            speed = 0.0;
+            speed = -1.0; //@note: -1 brakes, 0 coasts
             steering = 0.0;
             break;
 
