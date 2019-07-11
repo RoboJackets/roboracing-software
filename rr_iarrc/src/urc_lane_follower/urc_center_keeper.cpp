@@ -98,12 +98,43 @@ cv::Mat findLineBinary(cv::Mat image) {
 }
 
 
+std::vector<cv::Point> findLaneContour(const cv::Mat& img) {
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Point> biggestContour;
+    cv::findContours(img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    double maxArea = 0.0;
+    for (std::vector<cv::Point> cnt : contours) {
+        double currArea = cv::contourArea(cnt, false);
+        if (currArea > maxArea) {
+            biggestContour = cnt;
+            maxArea = currArea;
+        }
+    }
+    return biggestContour;
+}
+
+double findDistance(std::vector<cv::Point> contour, int yLocation) {
+    cv::Vec4f line;
+    cv::fitLine(contour, line, cv::DIST_L2, 0, 0.01, 0.01);
+
+    //find our point on the line.
+    //Let's show our math.
+    //x = x0 + (vx)t
+    //x - x0 = (vx)t
+    //(x-x0) / (vx) = t
+    double t = yLocation-line[3]/line[1];
+    return line[0] + line[2] * t;
+}
+
 
 /**
  * Reads in an image from two side cameras, determines the relative
  * position and angle of the car to the lane lines, and
- * attempts to stay in the middle of the lane. Also reports the
- * current angle to the urc dead-reckoning protocol.
+ * attempts to stay in the middle of the lane.
+ * This is done by fitting a line to seen lane blobs,
+ * then trying to keep an equal distance to each lane boundary.
+ * This does not account for our current angle relative to lines
+ * in steering.
  *
  * @param leftMsg image input from left side camera
  * @param rightMsg image input from the right side camera
@@ -122,22 +153,22 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     cv::Mat leftLine = findLineBinary(leftFrame);
     cv::Mat rightLine = findLineBinary(rightFrame);
 
-    double leftAngle = calcLineAngle(leftLine, leftFrame) + left_angle_offset;
-    double rightAngle = calcLineAngle(rightLine, rightFrame) + right_angle_offset;
+    std::vector<cv::Point> leftContour = findLaneContour(leftLine);
+    std::vector<cv::Point> rightContour = findLaneContour(rightLine);
+
+    double distToLeft = -findDistance(leftContour, leftFrame.rows/2); //negative
+    double distToRight = findDistance(rightContour, rightFrame.rows/2);
+
+    double error = std::abs(distToLeft - distToRight); //goal is them to be equal dist, that is centered
 
     double errorTolerance = 4.0; //allowable angle difference
-    if (std::fabs(std::fabs(leftAngle) - std::fabs(rightAngle)) >= errorTolerance) {
-        ROS_WARN_STREAM("URC Lane Follower: Angle mismatch");
-    }
 
-    //Try to be parallel to lanes.
-    double angleAvg = (leftAngle + rightAngle) / 2;
-    double goal = 0.0;
+    //Try to be centered
     double steering;
-    if (std::isnan(angleAvg)) {
+    if (std::isnan(error)) {
         steering = 0.0;
     } else {
-        steering = ( goal - (angleAvg)) *kP; //- angleOffset) ) * kP;
+        steering = error * kP; //- angleOffset) ) * kP;
     }
 
     auto now = ros::Time::now();
@@ -154,9 +185,6 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
     //debugging stuff
     cv::Mat debug = mergeImagesSideBySide(leftFrame, rightFrame);
 
-    cv::putText(debug, "Left: " + to_string(leftAngle), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
-    cv::putText(debug, "Right: " + to_string(rightAngle), cv::Point(20,150), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
-    cv::putText(debug, "Avg: " + to_string(angleAvg), cv::Point(20,200), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
     cv::putText(debug, "Steer: " + to_string(steering), cv::Point(20,250), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,255,0), 2);
 
 
@@ -170,7 +198,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "urc_lane_follower");
+    ros::init(argc, argv, "urc_center_keeper");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
@@ -178,7 +206,7 @@ int main(int argc, char** argv) {
     std::string rightCamera_sub_name;
     nhp.param("camera_left_subscription", leftCamera_sub_name, std::string("/camera_left/image_color_rect"));
     nhp.param("camera_right_subscription", rightCamera_sub_name, std::string("/camera_right/image_color_rect"));
-    nhp.param("speed", speed, -0.01);
+    nhp.param("speed", speed, 1.0);
     nhp.param("PID_kP", kP, -0.01);
     nhp.param("left_angle_offset", left_angle_offset, 0.0);
     nhp.param("right_angle_offset", right_angle_offset, 0.0);
