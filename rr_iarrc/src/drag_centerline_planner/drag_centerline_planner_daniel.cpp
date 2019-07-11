@@ -34,7 +34,8 @@ Point anchor(img_resize_dim / 2, img_resize_dim - 100);
 
 //PID IMPLEMENTATION SETUP
 double kP, kI, kD;
-double setpoint, input, maxTurnLimit;
+double setpoint = img_resize_dim / 2;
+double input, maxTurnLimit;
 double outputSteering, speedGoal;
 PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
@@ -190,11 +191,11 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
 
     cv::Point goal(get_pnt_on_line(frame.rows/2, midline), frame.rows/2);;
-    int error = -((frame.cols/2) - goal.x);
+//    int error = -((frame.cols/2) - goal.x);
     //printf("%d\n", goal.x);
 
     //double steering = error * 0.01; //kP
-    input = static_cast<double>(error);
+    input = static_cast<double>(goal.x);
     myPID.Compute();
     double steering = outputSteering;
 
