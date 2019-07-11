@@ -94,11 +94,10 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     if(state == LOW && count > 2000 && width > 600) {
         state = HIGH;
-    } else if(state == HIGH && count < 2000) {
-        // We crossed the line!
-        state = LOW;
-        number_of_crosses++;
+        number_of_crosses++; //DO NOT KEEP AFTER DRAG RACE COME
         ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
+    } else if(state == HIGH && count < 2000) {
+        state = LOW;
     }
 }
 

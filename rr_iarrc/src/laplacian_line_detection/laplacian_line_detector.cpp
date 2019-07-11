@@ -45,7 +45,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
     original_height = frame.rows;
     original_width = frame.cols;
-    cv::resize(frame, frame, cv::Size(resize_dim, resize_dim));
+    cv::resize(frame, frame, cv::Size(resize_dim * original_width / original_height, resize_dim));
 
     cv::Mat ignore_color_mask = getIgnoreColorMask(frame);
     cv::Mat frame_gray = getBlurredGrayImage(frame);
