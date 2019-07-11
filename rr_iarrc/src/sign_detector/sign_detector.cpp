@@ -41,6 +41,7 @@ double cannyThresholdHigh;
 double stopBarGoalAngle;
 double stopBarGoalAngleRange;
 double stopBarTriggerDistance;
+double stopBarTriggerDistanceRight;
 int houghThreshold;
 double houghMinLineLength;
 double houghMaxLineGap;
@@ -214,12 +215,13 @@ ros::Time start = ros::Time::now();
  * @param minLineLength HoughLinesP minimum length of a line segment
  * @param maxLineGap HoughLinesP maxmimum distance between points in the same line
 */
-bool findStopBarFromHough(cv::Mat &frame,
+int findStopBarFromHough(cv::Mat &frame,
                             cv::Mat &output,
                             double &stopBarAngle,
                             double stopBarGoalAngle,
                             double stopBarGoalAngleRange,
                             double triggerDistance,
+                            double triggerDistanceRight,
                             int threshold,
                             double minLineLength,
                             double maxLineGap ) {
@@ -262,16 +264,19 @@ bool findStopBarFromHough(cv::Mat &frame,
             streamDist << std::fixed << std::setprecision(2) << dist; //show distance with a couple decimals
             cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist/2), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 1);
 
-            if (dist <= triggerDistance) {
+            if (bestMove.direction == RIGHT && dist <= triggerDistanceRight) {
                 stopBarAngle = currAngle;
-                return true; //stop bar detected close to us!
+                return 2;
+            } else if (dist <= triggerDistance) {
+                stopBarAngle = currAngle;
+                return 1; //stop bar detected close to us!
             }
         }
 
 
     }
 
-    return false; //not close enough or no stop bar here
+    return 0; //not close enough or no stop bar here
 }
 
 
@@ -286,6 +291,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
                                         stopBarGoalAngle,
                                         stopBarGoalAngleRange,
                                         stopBarTriggerDistance,
+                                        stopBarTriggerDistanceRight,
                                         houghThreshold,
                                         houghMinLineLength,
                                         houghMaxLineGap );
@@ -295,7 +301,11 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightTriggerPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
     cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0,255,0),1, CV_AA);
 
-    if (stopBarDetected && bestMove.direction != NONE) {
+    cv::Point leftTriggerPoint2(0, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
+    cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
+    cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0,150,0),1, CV_AA);
+
+    if (stopBarDetected == 2 && bestMove.direction == NONE) {
         //let the world know
         moveMsg.header.stamp = ros::Time::now();
 		moveMsg.direction = bestMove.direction;
@@ -305,7 +315,17 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
         //reset things
         bestMove.direction = NONE;
         bestMove.area = 0.0;
-	}
+    } else if (stopBarDetected == 1 && bestMove.direction != NONE) {
+        //let the world know
+        moveMsg.header.stamp = ros::Time::now();
+		moveMsg.direction = bestMove.direction;
+        moveMsg.angle = stopBarAngle;
+		pubMove.publish(moveMsg);
+
+        //reset things
+        bestMove.direction = NONE;
+        bestMove.area = 0.0;
+	} else {}
 
     if (pubLine.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
@@ -373,6 +393,7 @@ int main(int argc, char** argv) {
     nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0); //angle in degrees
     nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange, 15.0); //angle in degrees
     nhp.param("stopBarTriggerDistance", stopBarTriggerDistance, 0.5); //distance in meters
+    nhp.param("stopBarTriggerDistanceRight", stopBarTriggerDistanceRight, 0.5); //distance in meters
     nhp.param("pixels_per_meter", pixels_per_meter, 100);
     nhp.param("houghThreshold", houghThreshold, 50);
     nhp.param("houghMinLineLength", houghMinLineLength, 0.0);
