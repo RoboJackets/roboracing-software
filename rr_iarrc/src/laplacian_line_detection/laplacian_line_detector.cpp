@@ -69,6 +69,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
 
         cv::erode(lapl, lapl, kernel(3,1));
         true_lines = cutSmall(lapl, min_blob_area);
+        cv::dilate(lapl, lapl, kernel(10,10));
 
         cv::Mat black(frame.rows,frame.cols,CV_8UC1,cv::Scalar::all(0));
         adaptive = black;

@@ -67,17 +67,18 @@ Point get_bottom_most_pnt(const Contour& cnt) {
 auto get_side_contours(const Mat& img) {
     Contours contours;
     Contour right_cnt, left_cnt;
-    int max_left_row = 0, max_right_row = 0;
+    int max_left_area = 0, max_right_area = 0;
     cv::findContours(img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
     for (Contour cnt : contours) {
-        if (min_contour_area < cv::contourArea(cnt, false)) {
+        int cnt_area = cv::contourArea(cnt, false);
+        if (min_contour_area < cnt_area) {
             Point bottom_most_pnt = get_bottom_most_pnt(cnt);
-            if (bottom_most_pnt.x < img.cols / 2 && max_left_row < bottom_most_pnt.y) {
-                max_left_row = bottom_most_pnt.y;
+            if (bottom_most_pnt.x < img.cols / 2 && max_left_area < cnt_area) {
+                max_left_area = cnt_area;
                 left_cnt = cnt;
-            } else if (img.cols / 2 < bottom_most_pnt.x && max_right_row < bottom_most_pnt.y) {
-                max_right_row = bottom_most_pnt.y;
+            } else if (img.cols / 2 < bottom_most_pnt.x && max_right_area < cnt_area) {
+                max_right_area = cnt_area;
                 right_cnt = cnt;
             }
         }
