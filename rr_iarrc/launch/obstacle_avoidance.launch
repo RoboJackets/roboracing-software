@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
+    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
+
+    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
+    <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
+
     <include file="$(dirname)/line_detection_3cam.launch"/>
 
     <include file="$(dirname)/cone_bottom_detector.launch"/>
@@ -10,5 +15,11 @@
         <arg name="is_side_cam" value="false"/>
     </include>
 
-    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
+    <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="1"/>
+        <param name="startSignal" type="string" value="/start_detected"/>
+        <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
+        <param name="steeringAfterFinishTime" type="double" value="0.7"/>
+    </node>
 </launch>
