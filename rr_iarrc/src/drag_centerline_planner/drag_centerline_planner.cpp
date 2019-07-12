@@ -123,8 +123,8 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     rightMaxLoc.y = 80; //120
     leftMaxLoc.y = 80;
     int w = (frame.cols)/2;
-    bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 16), w-1, 16);
-    bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 16), w-1, 16);
+    bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 32), w-1, 16);
+    bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 32), w-1, 16);
     if (!rightFound) {
         rightMaxLoc.x = frame.cols/2 + 40;
     }

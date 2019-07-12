@@ -1,14 +1,14 @@
 <launch>
     <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
         <!--PID Controller Constants-->
-        <param name="PID_kP" type="double" value="0.006" /> <!-- 0.003 -->
+        <param name="PID_kP" type="double" value="0.002" /> <!-- 0.004 @ 4, 0.003 @ 6 -->
         <param name="PID_kI" type="double" value="0.0" />
-        <param name="PID_kD" type="double" value="0.000" />
+        <param name="PID_kD" type="double" value="0.0005" /> <!-- 0.0005 @ 4 -->
 
-        <param name="speed" type="double" value="4.0" /> <!-- 3.1-->
+        <param name="speed" type="double" value="9.0" /> <!-- 3.1-->
 
-        <param name="maxTurnLimitRadians" type="double" value="0.44" />
+        <param name="maxTurnLimitRadians" type="double" value="0.16" />
 
-        <param name="subscription_node" type="string" value="/camera_center/image_color_rect/lines/detection_img_transformed"/>
+        <param name="subscription_node" type="string" value="/camera_center/lines/detection_img_transformed"/>
     </node>
 </launch>

@@ -26,6 +26,10 @@ int finishLineCrosses;
 ros::Time finishTime;
 double steeringAfterFinishTime;
 
+ros::Time startTime;
+ros::Duration slowSpeedStartTime;
+double slowSpeedFactor;
+
 void updateState() {
     switch(state) {
         case WAITING_FOR_START:
@@ -33,6 +37,7 @@ void updateState() {
             steering = 0.0;
             if(raceStarted) {
                 state = RUNNING_PLANNER;
+                startTime = ros::Time::now();
             }
             break;
         case RUNNING_PLANNER:
@@ -40,7 +45,11 @@ void updateState() {
                 state = FINISHED;
                 finishTime = ros::Time::now();
             } else {
-                speed = planSpeed;
+                if(startTime + slowSpeedStartTime < ros::Time::now()) {
+                    speed = planSpeed * slowSpeedFactor;
+                } else {
+                    speed = planSpeed;
+                }
                 steering = planSteering;
             }
             break;
@@ -97,6 +106,10 @@ int main(int argc, char** argv) {
     nhp.getParam("resetSignal", resetSignal);
     nhp.getParam("finishLineCrossesSignal", finishLineCrossesSignal);
     nhp.getParam("steeringAfterFinishTime", steeringAfterFinishTime);
+    nhp.param("slowSpeedFactor", slowSpeedFactor, 1.0);
+    double slowSpeedDuration;
+    nhp.param("slowSpeedStartTime", slowSpeedDuration, 10000.0);
+    slowSpeedStartTime = ros::Duration(slowSpeedDuration);
     ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);

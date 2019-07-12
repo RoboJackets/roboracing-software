@@ -1,6 +1,8 @@
 <launch>
     <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" output="screen" 
-          args="manager"/>
+          args="manager">
+        <!-- <param name="num_worker_threads" value="32" /> -->
+    </node>
 
     <include file="$(dirname)/camera_pipeline.launch">
         <arg name="side" value="center"/>

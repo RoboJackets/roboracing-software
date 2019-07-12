@@ -73,7 +73,7 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
     // Find circles
-    double circularityThreshold = 0.8; //@note: controls the sensitivity of circle detection
+    double circularityThreshold = 0.7; //@note: controls the sensitivity of circle detection
     std::vector<cv::Vec3f> foundCircles;
 
     for(int i = 0; i < contours.size(); i++) {

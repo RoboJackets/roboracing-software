@@ -18,7 +18,7 @@ dictitems:
   sharpness: 0.0
 
   auto_shutter: false
-  shutter_speed: 0.0006
+  shutter_speed: 0.0005
 
   auto_white_balance: false
   white_balance_blue: 800
