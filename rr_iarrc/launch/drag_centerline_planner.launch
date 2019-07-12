@@ -9,6 +9,6 @@
 
         <param name="maxTurnLimitRadians" type="double" value="0.44" />
 
-        <param name="subscription_node" type="string" value="/camera_center/lines/detection_img_transformed"/>
+        <param name="subscription_node" type="string" value="/camera_center/image_color_rect/lines/detection_img_transformed"/>
     </node>
 </launch>
