@@ -8,9 +8,9 @@
         <param name="collision_dist_side" value="0.15"/>
 
         <param name="wheel_base" value="0.485"/>
-        <param name="lateral_accel" value="1.5"/>
-        <param name="max_speed" value="1.5"/>
-        <param name="max_steering" value="0.45"/>
+        <param name="lateral_accel" value="2.5"/>
+        <param name="max_speed" value="2.5"/>
+        <param name="max_steering" value="0.42"/>
         <param name="steering_speed" value="1.2"/>
         <param name="steering_gain" value="1.1"/>
 

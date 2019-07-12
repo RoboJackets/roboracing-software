@@ -6,7 +6,7 @@
     <include file="$(find rr_iarrc)/launch/line_detection_3cam.launch"/>
 
     <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <include file="$(find rr_iarrc)/launch/color_detector.launch"/>
+
     <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">

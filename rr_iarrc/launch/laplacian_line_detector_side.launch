@@ -7,7 +7,7 @@
         <param name="laplacian_threshold_min" type="int" value="-3" />
         <param name="laplacian_threshold_max" type="int" value="7" />
         <!--Minimum Area to Keep-->
-        <param name="min_blob_area" type="int" value="300" />
+        <param name="min_blob_area" type="int" value="270" />
 
         <!--Strength of Adaptive Thresholding-->
         <param name="ignore_adaptive" type="bool" value="True" />

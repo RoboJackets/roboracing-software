@@ -53,7 +53,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat lapl, adaptive, true_lines, floodfill_blobs;
     cv::Laplacian(frame_gray, lapl, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT);
     inRange(lapl, laplacian_threshold_min, laplacian_threshold_max, lapl);
-    blockEnvironment(lapl);
+    // blockEnvironment(lapl);
     lapl.setTo(cv::Scalar(0, 0, 0), ignore_color_mask);
 
     if (!ignore_adaptive) {

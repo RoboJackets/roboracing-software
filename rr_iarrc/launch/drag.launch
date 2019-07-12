@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
     <include file="$(find rr_iarrc)/launch/drag_centerline_planner.launch"/> 
-    <!--<include file="$(find rr_iarrc)/launch/drag_centerline_planner_daniel.launch"/> -->
+    <!-- <include file="$(find rr_iarrc)/launch/drag_centerline_planner_daniel.launch"/>  -->
+
     <include file="$(find rr_iarrc)/launch/laplacian_line_detector_front.launch"/>
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/camera_center/lines/detection_img"/>

@@ -19,8 +19,8 @@
     <param name="timestamp_method" value="start"/>
 
     <!-- image quality -->
-    <param name="auto_exposure" value="0"/>  <!-- Manual = 0, Auto = 3 -->
-    <param name="exposure_absolute" value="0.005"/>
+    <param name="auto_exposure" value="3"/>  <!-- Manual = 0, Auto = 3 -->
+    <param name="exposure_absolute" value="0.001"/>
     <param name="gain" value="100"/>
     <param name="brightness" value="50"/>
     <param name="auto_focus" value="false"/>
