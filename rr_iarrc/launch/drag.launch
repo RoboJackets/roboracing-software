@@ -30,8 +30,8 @@
         <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
         <param name="steeringAfterFinishTime" type="double" value="0.7"/>
 
-        <param name="slowSpeedStartTime" type="double" value="5.0"/>
-        <param name="slowSpeedFactor" type="double" value="0.5"/>
+        <param name="slowSpeedStartTime" type="double" value="7.0"/>
+        <param name="slowSpeedFactor" type="double" value="0.6"/>
 
 
     </node>
