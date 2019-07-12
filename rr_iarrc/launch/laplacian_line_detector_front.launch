@@ -18,12 +18,12 @@
         <param name="blockWheels_height" type="int" value="750" />
         <param name="blockBumper_height" type="int" value="720" />
 
-        <param name="ignore_color_low_H" type="int" value="-1" />
-        <param name="ignore_color_high_H" type="int" value="-1" />
-        <param name="ignore_color_low_S" type="int" value="-1" />
-        <param name="ignore_color_high_S" type="int" value="-1" />
-        <param name="ignore_color_low_V" type="int" value="-1" />
-        <param name="ignore_color_high_V" type="int" value="-1" />
+        <param name="ignore_color_low_H" type="int" value="5" />
+        <param name="ignore_color_high_H" type="int" value="20" />
+        <param name="ignore_color_low_S" type="int" value="140" />
+        <param name="ignore_color_high_S" type="int" value="255" />
+        <param name="ignore_color_low_V" type="int" value="140" />
+        <param name="ignore_color_high_V" type="int" value="255" />
 
         <param name="subscription_node" type="string" value="image_color_rect"/>
         <param name="publish_detection_node" type="string" value="lines/detection_img"/>

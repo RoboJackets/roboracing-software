@@ -9,7 +9,7 @@
   </node>
 
   <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
-        args="load rr_iarrc/color_detector camera_nodelet_manager">
+        args="standalone rr_iarrc/color_detector">
       <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_magenta.txt"/>
       <param name="camera_image" value="/camera_center/image_color_rect"/>
       <param name="detection_topic" value="/finish_line_detection_img"/>

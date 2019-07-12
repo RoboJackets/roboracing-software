@@ -8,10 +8,10 @@
         <param name="collision_dist_side" value="0.15"/>
 
         <param name="wheel_base" value="0.485"/>
-        <param name="lateral_accel" value="1.5"/>
-        <param name="max_speed" value="1.0"/>
+        <param name="lateral_accel" value="2.5"/>
+        <param name="max_speed" value="1.6"/>
         <param name="max_steering" value="0.45"/>
-        <param name="steering_speed" value="1.2"/>
+        <param name="steering_speed" value="1.0"/>
         <param name="steering_gain" value="1.1"/>
 
         <param name="distance_increment" value="0.1"/>
@@ -31,8 +31,8 @@
 
         <param name="input_cloud_topic" value="/current_obstacles"/>
 
-        <param name="impasse_caution_duration" value="0.6"/>
-        <param name="impasse_reverse_duration" value="0.2"/>
+        <param name="impasse_caution_duration" value="1000000"/>
+        <param name="impasse_reverse_duration" value="3.0"/>
 
     </node>
 </launch>

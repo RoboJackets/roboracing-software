@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
-    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
-
-    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
-
     <include file="$(dirname)/line_detection_3cam.launch"/>
 
     <include file="$(dirname)/cone_bottom_detector.launch"/>
@@ -22,4 +17,9 @@
         <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
         <param name="steeringAfterFinishTime" type="double" value="0.7"/>
     </node>
+
+    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
+
+    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
+    <!-- <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/> -->
 </launch>

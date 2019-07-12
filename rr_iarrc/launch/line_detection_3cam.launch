@@ -20,13 +20,13 @@
     </include>
 
     <include file="$(dirname)/lines_projector.launch">
-        <arg name="use_camera_manager" value="true"/>
+        <arg name="use_camera_manager" value="false"/>
         <arg name="camera_name" value="camera_left"/>
         <arg name="is_side_cam" value="true"/>
     </include>
 
     <include file="$(dirname)/lines_projector.launch">
-        <arg name="use_camera_manager" value="true"/>
+        <arg name="use_camera_manager" value="false"/>
         <arg name="camera_name" value="camera_right"/>
         <arg name="is_side_cam" value="true"/>
     </include>
