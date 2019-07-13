@@ -6,21 +6,21 @@ import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-brightnessTolerance = 2
+brightnessTolerance = 5#2
 goalBrightness = -1
 brightness = -1
 shutter_speed = -1
 lastShutter = 0
 currentUpage = 0.0
-upageAmount = 0.005#0.005
+upageAmount = 0.0001#0.005
 
 def img_callback(data):
     global brightness, goalBrightness
     bridge = CvBridge()
     img = bridge.imgmsg_to_cv2(data)
     #get roi
-    r1 = int(img.shape[0]/3)
-    r2 = int(r1 + img.shape[0]/3)
+    r1 = int(img.shape[0]/2)
+    r2 = int(img.shape[0] * 5.0/6.0)
     roi = img[r1:r2,:] #rows, cols #we want the middle 3rd of image
 
     #calc brightness level
