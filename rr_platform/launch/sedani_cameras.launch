@@ -11,7 +11,7 @@
         <arg name="manager_launched" value="true"/>
     </include>
 
-    <include file="$(dirname)/camera_pipeline.launch">
+    <!-- <include file="$(dirname)/camera_pipeline.launch">
         <arg name="side" value="left"/>
         <arg name="type" value="logitech_c615"/>
         <arg name="serial" value="D0CF4CA0"/>
@@ -23,7 +23,7 @@
         <arg name="type" value="logitech_c615"/>
         <arg name="serial" value="FC72EDA0"/>
         <arg name="manager_launched" value="true"/>
-    </include>
+    </include> -->
 
     <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="camera_configurator"/>
 </launch>

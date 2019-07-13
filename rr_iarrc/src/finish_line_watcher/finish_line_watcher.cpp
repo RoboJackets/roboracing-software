@@ -92,18 +92,18 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     auto width = getWidth(frame);
 
 
-    // if(state == LOW && count > 2000 && width > 600) {
-    //     state = HIGH;
-    // } else if(state == HIGH && count < 2000) {
-    //     state = LOW;
-    //     number_of_crosses++;
-    //     ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
-    // }
-
-    if(count > 2000 && width > 600) {
-        number_of_crosses = 1;
+    if(state == LOW && count > 2000 && width > 700) {
+        state = HIGH;
+    } else if(state == HIGH && count < 2000) {
+        state = LOW;
+        number_of_crosses++;
         ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
     }
+
+    // if(count > 2000 && width > 600) {
+    //     number_of_crosses = 1;
+    //     ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
+    // }
 }
 
 int main(int argc, char** argv) {

@@ -305,7 +305,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
     cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0,150,0),1, CV_AA);
 
-    if (stopBarDetected == 2 && bestMove.direction == NONE) {
+    if (stopBarDetected == 2 && bestMove.direction != NONE) {
         //let the world know
         moveMsg.header.stamp = ros::Time::now();
 		moveMsg.direction = bestMove.direction;

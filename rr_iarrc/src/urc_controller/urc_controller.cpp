@@ -125,38 +125,43 @@ void updateState() {
             if(turn_direction.compare(LEFT) == 0){
 
                 if(imu_quadrant == 4){
-                    target_yaw = initial_yaw - 1.5*M_PI - left_offset;// + stop_bar_angle;
+                    target_yaw = initial_yaw - 1.5*M_PI - left_offset;
                 }else{
-                    target_yaw = initial_yaw + 0.5*M_PI + left_offset;// - stop_bar_angle;
+                    target_yaw = initial_yaw + 0.5*M_PI + left_offset;
                 }
 
-                while(1){
-                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                while(ros::ok()){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.1){
                         break;
                     }
+
+                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
 
                     speed = turn_speed;
                     steering = left_turn_steering;
                     publishSpeedandSteering();
-                    ros::spinOnce();
-                }
+                    ros::Duration(0.01).sleep();
+                    ros::spinOnce();                }
 
             }else if(turn_direction.compare(RIGHT) == 0){
 
                 if(imu_quadrant == 1){
-                    target_yaw = initial_yaw + 1.5*M_PI + right_offset - stop_bar_angle;
+                    target_yaw = initial_yaw + 1.5*M_PI + right_offset;
                 }else{
-                    target_yaw = initial_yaw - 0.5*M_PI - right_offset + stop_bar_angle;
+                    target_yaw = initial_yaw - 0.5*M_PI - right_offset;
                 }
 
-                while(1){
-                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                while(ros::ok()){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.1){
                         break;
                     }
+
+                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
 
                     speed = turn_speed;
                     steering = right_turn_steering;
                     publishSpeedandSteering();
+                    ros::Duration(0.01).sleep();
                     ros::spinOnce();
                 }
 

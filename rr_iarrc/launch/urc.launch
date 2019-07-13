@@ -2,24 +2,39 @@
 <launch>
 
     <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
+    <!-- <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/> -->
 
-    <include file="$(find rr_iarrc)/launch/urc_lane_follower.launch"/>
+<!--     <include file="$(find rr_iarrc)/launch/urc_lane_follower.launch"/> -->
     <include file="$(find rr_iarrc)/launch/sign_detector.launch"/>
+
+    <include file="$(find rr_iarrc)/launch/urc_sides_merger.launch"/> 
+    <include file="$(find rr_iarrc)/launch/urc_centerline_planner.launch"/> 
 
     <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
-        <param name="turn_speed" type="double" value="0.90"/>
+        <param name="turn_speed" type="double" value="1.0"/>
         <param name="left_turn_steering" type="double" value="-0.28"/>
         <param name="right_turn_steering" type="double" value="0.46"/>
-        <param name="left_offset" type="double" value="0.0"/>
-        <param name="right_offset" type="double" value="0.0"/>
-       	<param name="forward_timeout" type="double" value="10.0"/>
+        <param name="left_offset" type="double" value="-0.1"/>
+        <param name="right_offset" type="double" value="-0.1"/>
+       	<param name="forward_timeout" type="double" value="3.0"/>
     </node>
 
 
-    <include file="$(find rr_iarrc)/launch/laplacian_line_detector_front.launch"/>
+    <include file="$(dirname)/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera_center"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_left"/>
+    </include>
+
+    <include file="$(dirname)/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_right"/>
+    </include>
+
+
 
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/camera_center/lines/detection_img"/>
@@ -34,5 +49,9 @@
         <param name="fallback_image_width" value="1280"/>
         <param name="fallback_image_height" value="964"/>
     </node>
+
+
+
+
 
 </launch>

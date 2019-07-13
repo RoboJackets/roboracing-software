@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <!--
-    <remap from="/plan/steering" to="/steering"/>
-    <remap from="/plan/speed" to="/speed"/>
-    -->
+    
+    <!-- <remap from="/plan/steering" to="/steering"/> -->
+    <!-- <remap from="/plan/speed" to="/speed"/> -->
+    
 
     <node name="urc_lane_follower" pkg="rr_iarrc" type="urc_lane_follower" output="screen">
-        <param name="speed" type="double" value="1.0"/>
+        <param name="speed" type="double" value="1.1"/>
         <param name="PID_kP" type="double" value="-0.15"/>
         <param name="left_angle_offset" type="double" value="-0.6"/>
         <param name="right_angle_offset" type="double" value="-0.6"/>

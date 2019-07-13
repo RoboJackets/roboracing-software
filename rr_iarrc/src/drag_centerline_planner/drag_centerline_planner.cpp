@@ -99,7 +99,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightMaxLoc;
     cv::Point leftMaxLoc;
 
-    /*
+    
     //locate beginnings of lines by a large number of pixels in the column
     cv::Mat hist = getColHist(frame);
     //left line
@@ -117,20 +117,20 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     if (rightMaxLoc.x == frame.cols/2) {
         rightMaxLoc.x = frame.cols - 1;
     }
-    */
-    leftMaxLoc.x = frame.cols/4;
-    rightMaxLoc.x = frame.cols/2 + frame.cols/4;
-    rightMaxLoc.y = 80; //120
-    leftMaxLoc.y = 80;
-    int w = (frame.cols)/2;
-    bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 32), w-1, 16);
-    bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 32), w-1, 16);
-    if (!rightFound) {
-        rightMaxLoc.x = frame.cols/2 + 40;
-    }
-    if (!leftFound) {
-        leftMaxLoc.x = frame.cols/2 - 40;
-    }
+    
+    // leftMaxLoc.x = frame.cols/4;
+    // rightMaxLoc.x = frame.cols/2 + frame.cols/4;
+    // rightMaxLoc.y = 80; //120
+    // leftMaxLoc.y = 80;
+    // int w = (frame.cols)/2;
+    // bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 32), w-1, 16);
+    // bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 32), w-1, 16);
+    // if (!rightFound) {
+    //     rightMaxLoc.x = frame.cols/2 + 40;
+    // }
+    // if (!leftFound) {
+    //     leftMaxLoc.x = frame.cols/2 - 40;
+    // }
 
     //debug visualization
     cv::circle(output, leftMaxLoc, 8, cv::Scalar(0,0,255), -1);

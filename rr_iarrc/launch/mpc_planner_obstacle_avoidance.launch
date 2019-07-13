@@ -1,5 +1,5 @@
 <launch>
-    <arg name="n_path_segments" value="4"/>
+    <arg name="n_path_segments" value="3"/>
     <node pkg="rr_common" type="planner" name="planner" output="screen">
         <param name="planner_type" value="annealing"/>
 
@@ -9,13 +9,13 @@
 
         <param name="wheel_base" value="0.485"/>
         <param name="lateral_accel" value="2.5"/>
-        <param name="max_speed" value="1.6"/>
+        <param name="max_speed" value="2.0"/>
         <param name="max_steering" value="0.45"/>
-        <param name="steering_speed" value="1.0"/>
+        <param name="steering_speed" value="1.2"/>
         <param name="steering_gain" value="1.1"/>
 
         <param name="distance_increment" value="0.1"/>
-        <param name="segment_sections" value="$(eval ' '.join(['9'] * n_path_segments))"/>
+        <param name="segment_sections" value="$(eval ' '.join(['14'] * n_path_segments))"/>
 
         <param name="n_path_segments" value="$(arg n_path_segments)"/>
         <param name="temperature_start" value="0.2"/>
@@ -24,7 +24,7 @@
         <param name="annealing_steps" value="1000"/>
         <param name="k_dist" value="0.9"/>
         <param name="k_speed" value="1"/>
-        <param name="k_final_pose" value="20"/>
+        <param name="k_final_pose" value="15"/> <!-- 20 -->
         <param name="k_angle" value="1"/>
         <param name="collision_penalty" value="50"/>
         <param name="acceptance_scale" value="0.003"/>

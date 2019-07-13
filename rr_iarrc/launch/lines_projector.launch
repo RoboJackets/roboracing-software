@@ -17,7 +17,7 @@
         <param name="pointcloud_topic_out" value="lines/cloud"/>
         <param name="load_timeout" value="10"/>
 
-        <param unless="$(arg is_side_cam)" name="max_forward" value="4.0"/>
+        <param unless="$(arg is_side_cam)" name="max_forward" value="7.0"/>
         <param unless="$(arg is_side_cam)" name="downsample_factor" type="int" value="2"/>
 
         <param if="$(arg is_side_cam)" name="max_forward" value="10000.0"/>
