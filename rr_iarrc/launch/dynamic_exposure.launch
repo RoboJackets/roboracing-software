@@ -1,0 +1,12 @@
+<launch>
+    <node name="dynamic_exposure" pkg="rr_platform" type="dynamic_exposure.py" output="screen">
+        <param name="goal_brightness_level" type="int" value="100" />
+        <param name="brightness_tolerance" type="int" value="5" />
+        <param name="max_shutter_speed" type="double" value="1.0" />
+        <param name="min_shutter_speed" type="double" value="0.0000001" />
+        <param name="shutter_increment" type="double" value="0.0001" />
+        <param name="roi_row_min" type="int" value="100" />
+        <param name="roi_row_max" type="int" value="200" />
+
+    </node>
+</launch>
