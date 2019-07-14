@@ -30,6 +30,23 @@ int min_blob_area, laplacian_threshold_min, laplacian_threshold_max, adaptive_me
 ros::Publisher pub_line_detector, pub_debug_img;
 int resize_dim = 400;
 
+void blockBottom(const cv::Mat& img) {
+
+
+    cv::rectangle(img,
+                  cv::Point(img.cols/3,img.rows),
+                  cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height),
+                  cv::Scalar(0),CV_FILLED);
+}
+
+void blockBottom2(const cv::Mat& img) {
+
+
+    cv::rectangle(img,
+                  cv::Point(img.cols/3,img.rows),
+                  cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height-2),
+                  cv::Scalar(0),CV_FILLED);
+}
 /**
  * Performs Adaptive Threshold to find areas where we are certain there are lines then
  * those areas are floodfilled on a Laplacian that has more noise but the entirety of the line.
@@ -46,6 +63,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     original_height = frame.rows;
     original_width = frame.cols;
     cv::resize(frame, frame, cv::Size(resize_dim * original_width / original_height, resize_dim));
+    // blockBottom(frame);
 
     cv::Mat ignore_color_mask = getIgnoreColorMask(frame);
     cv::Mat frame_gray = getBlurredGrayImage(frame);
@@ -55,9 +73,11 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     inRange(lapl, laplacian_threshold_min, laplacian_threshold_max, lapl);
     // blockEnvironment(lapl);
     lapl.setTo(cv::Scalar(0, 0, 0), ignore_color_mask);
+    blockBottom2(lapl);
 
     if (!ignore_adaptive) {
         adaptive = getAdaptiveThres(frame_gray);
+        blockBottom2(adaptive);
         floodfill_blobs = cutSmall(adaptive, min_blob_area);
 
         cv::Mat fill = floorfillAreas(lapl, floodfill_blobs);
@@ -176,6 +196,7 @@ void blockEnvironment(const cv::Mat& img) {
                   cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height),
                   cv::Scalar(0),CV_FILLED);
 }
+
 
 cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
     cv::Mat contours_color(color_edges.rows,color_edges.cols,CV_8UC1,cv::Scalar::all(0));

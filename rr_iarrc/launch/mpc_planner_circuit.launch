@@ -8,12 +8,12 @@
         <param name="collision_dist_side" value="0.15"/>
 
         <param name="wheel_base" value="0.485"/>
-        <param name="lateral_accel" value="3.0"/>
-        <param name="max_speed" value="4.5"/>
+        <param name="lateral_accel" value="3.3"/>
+        <param name="max_speed" value="5.2"/>
         <param name="max_steering" value="0.44"/>
         <param name="steering_speed" value="1.2"/>
         <param name="steering_gain" value="1.1"/>
-        <param name="max_drive_accel" value="1.0"/>
+        <param name="max_drive_accel" value="6.5"/>
 
         <param name="distance_increment" value="0.1"/>
         <param name="segment_sections" value="$(eval ' '.join(['14'] * n_path_segments))"/>

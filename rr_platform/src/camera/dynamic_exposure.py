@@ -10,14 +10,14 @@ from cv_bridge import CvBridge, CvBridgeError
 maxShutterSpeed = 0.5
 minShutterSpeed = 0.0001
 brightnessTolerance = 10
-goalBrightness = 100
+goalBrightness = 85
 brightness = -1
 shutter_speed = -1
 lastShutter = 0
 currentUpage = 0.0
-upageAmount = 0.0001#0.005
-roi_row_min = 100
-roi_row_max = 200
+upageAmount = 0.00003#0.005
+roi_row_min = 480
+roi_row_max = 640
 
 def img_callback(data):
     global brightness, goalBrightness
@@ -37,8 +37,8 @@ def img_callback(data):
         #print("Changed goal brightness to " + str(goalBrightness))
 
     debug = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-    debug[r1:r2,:,0] = 0 #set b and r to zero for greenscale im
-    debug[r1:r2,:,2] = 0
+    debug[roi_row_min:roi_row_max,:,0] = 0 #set b and r to zero for greenscale im
+    debug[roi_row_min:roi_row_max,:,2] = 0
 
     msg = bridge.cv2_to_imgmsg(debug, encoding="bgr8")
     debug_publisher.publish(msg)
@@ -64,8 +64,8 @@ if __name__ == "__main__":
     rospy.get_param('~max_shutter_speed', maxShutterSpeed)
     rospy.get_param('~min_shutter_speed', minShutterSpeed)
     rospy.get_param('~shutter_increment', upageAmount)
-    rospy.get_param('~roi_row_min', roi_row_min)
-    rospy.get_param('~roi_row_max', roi_row_max)
+    # rospy.get_param('~roi_row_min', roi_row_min)
+    # rospy.get_param('~roi_row_max', roi_row_max)
 
 
     rospy.Subscriber("camera_center/image_color_rect", Image, img_callback, buff_size=10 ** 8)

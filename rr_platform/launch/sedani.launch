@@ -3,5 +3,5 @@
     <include file="$(find rr_platform)/launch/sedani_motor_relay.launch"/>
     <include file="$(find rr_platform)/launch/sedani_state_publisher.launch"/>
     <!-- <include file="$(find rr_platform)/launch/rplidar_a2.launch"/> -->
-    <include file="$(find rr_platform)/launch/razor_imu.launch"/>
+    <!-- <include file="$(find rr_platform)/launch/razor_imu.launch"/> -->
 </launch>
