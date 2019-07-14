@@ -30,8 +30,6 @@ void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vect
 }
 
 double AnnealingPlanner::GetTemperature(unsigned int t) {
-//  double progress = static_cast<double>(t) / params.annealing_steps;
-//  return params.temperature_end * progress + params.temperature_start * (1.0 - progress);
   static const double K = std::log(params.temperature_end / params.temperature_start)
                           / params.annealing_steps;
 
