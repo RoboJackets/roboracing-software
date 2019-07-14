@@ -13,6 +13,7 @@
         <param name="max_steering" value="0.45"/>
         <param name="steering_speed" value="1.2"/>
         <param name="steering_gain" value="1.1"/>
+        <param name="max_drive_accel" value="100.0"/>
 
         <param name="distance_increment" value="0.1"/>
         <param name="segment_sections" value="$(eval ' '.join(['14'] * n_path_segments))"/>

@@ -28,7 +28,7 @@ bool CameraGeometry::LoadFOV(ros::NodeHandle &nh, const std::string &camera_info
   auto cam_info_sub = nh.subscribe(camera_info_topic, 1, &CameraGeometry::CameraInfoCallback, this);
 
   ros::Time t_start = ros::Time::now();
-  while (!received_camera_info_) {
+  while (!received_camera_info_ && ros::ok()) {
     if ((ros::Time::now() - t_start).toSec() > timeout) {
       ROS_WARN("[CameraGeometry] setting camera FOV from camera_info timed out");
       break;
@@ -51,7 +51,7 @@ bool CameraGeometry::LoadCameraPose(const std::string &camera_link_name, const d
   tf::TransformListener listener;
   ros::Time t_start = ros::Time::now();
   bool success = false;
-  while (!success) {
+  while (!success && ros::ok()) {
     try {
       listener.waitForTransform("base_footprint", camera_link_name, ros::Time(0), ros::Duration(1.0));
       listener.transformPose("base_footprint", ps_src_cam, ps_dst_base);
