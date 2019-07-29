@@ -1,5 +1,5 @@
 <launch>
-    <node name="drag_centerline_planner_daniel" pkg="rr_iarrc" type="drag_centerline_planner_daniel" output="screen">
+    <node name="drag_centerline_planner_contours" pkg="rr_iarrc" type="drag_centerline_planner_contours" output="screen">
         <!--PID Controller Constants-->
         <param name="PID_kP" type="double" value="0.006" />
         <param name="PID_kI" type="double" value="0.0" />

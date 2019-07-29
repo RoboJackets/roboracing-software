@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <!--
-    <remap from="/plan/steering" to="/steering"/>
-    <remap from="/plan/speed" to="/speed"/>
-    -->
-
-    <node name="urc_center_keeper" pkg="rr_iarrc" type="urc_center_keeper" output="screen">
-        <param name="speed" type="double" value="1.0"/>
-        <param name="PID_kP" type="double" value="0.05"/>
-        <param name="left_angle_offset" type="double" value="-0.6"/>
-        <param name="right_angle_offset" type="double" value="-0.6"/>
-
-
-
+    <node name="urc_image_merger" pkg="rr_iarrc" type="urc_image_merger" output="screen">
         <param name="camera_left_subscription" type="string" value="/camera_left/lines/detection_img/"/>
         <param name="camera_right_subscription" type="string" value="/camera_right/lines/detection_img"/>
-
-
+        <param name="merged_img_publisher" type="string" value="/urc_side_lanes"/>
     </node>
 </launch>
