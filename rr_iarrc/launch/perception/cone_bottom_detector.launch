@@ -1,5 +1,8 @@
 <launch>
-    <node name="cone_bottom_detector" pkg="rr_iarrc" type="cone_bottom_detector" output="screen">
+    <arg name="camera_namespace" default="camera_center"/>
+
+    <node name="cone_bottom_detector" pkg="rr_iarrc" type="cone_bottom_detector"
+          output="screen" ns="$(arg camera_namespace)">
         <!--HSV color threshold for orange cones-->
         <param name="orange_low_H" type="int" value="0" />
         <param name="orange_high_H" type="int" value="25" />
@@ -11,8 +14,7 @@
         <param name="blockWheels_height" type="int" value="750" />
         <param name="blockBumper_height" type="int" value="720" />
 
-        <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
-
-        <remap from="/cones/bottom/detection_img" to="/camera_center/cones/detection_img"/>
+        <param name="subscription_node" type="string" value="image_color_rect"/>
     </node>
+
 </launch>

@@ -1,7 +1,7 @@
 <launch>
     <arg name="use_camera_manager" default="false"/>
-    <arg name="camera_name"/>
-    <arg name="is_side_cam"/>
+    <arg name="camera_name" default="camera_center"/>
+    <arg name="is_side_cam" default="false"/>
 
     <arg if="$(arg use_camera_manager)"     name="nodelet_command"  value="load"/>
     <arg if="$(arg use_camera_manager)"     name="manager_name"     value="/camera_nodelet_manager"/>

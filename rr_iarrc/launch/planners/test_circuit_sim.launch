@@ -3,12 +3,12 @@
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
-    <include file="$(dirname)/laplacian_line_detector_sim.launch"/>
+    <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_sim.launch"/>
 
-<!--    <include file="$(dirname)/pointcloud_converter.launch"/>-->
-    <include file="$(dirname)/lines_projector_sim.launch"/>
+<!--    <include file="$(find rr_iarrc)/launch/perception/pointcloud_converter.launch"/>-->
+    <include file="$(find rr_iarrc)/launch/perception/lines_projector_sim.launch"/>
 
-    <include file="$(dirname)/local_mapper_sim.launch">
+    <include file="$(find rr_iarrc)/launch/perception/local_mapper_sim.launch">
         <arg name="obstacles_topic" value="/lines/cloud"/>
 <!--        <arg name="obstacles_topic" value="/lines/detection_img_transformed_cloud"/>-->
     </include>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/drag_centerline_planner.launch"/> 
-    <!-- <include file="$(find rr_iarrc)/launch/drag_centerline_planner_daniel.launch"/>  -->
 
-    <include file="$(find rr_iarrc)/launch/laplacian_line_detector_front.launch"/>
+    <include file="$(dirname)/planner/drag_centerline_planner.launch"/>
+
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch"/>
+
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
         <param name="transform_topics" value="/camera_center/lines/detection_img"/>
         <param name="camera_info_topic" value="/camera_center/camera_info"/>
@@ -19,9 +20,9 @@
     </node>
 
 
-    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <!--<include file="$(find rr_iarrc)/launch/color_detector_standalone.launch"/>-->
-    <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+    <!--<include file="$(dirname)/perception/color_detector_standalone.launch"/>-->
+    <include file="$(dirname)/perception/race_end_detector.launch"/>
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
         <param name="req_finish_line_crosses" type="int" value="1"/>
@@ -32,7 +33,6 @@
 
         <param name="slowSpeedStartTime" type="double" value="7.0"/>
         <param name="slowSpeedFactor" type="double" value="0.6"/>
-
-
     </node>
+
 </launch>

@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
-    <!-- <include file="$(dirname)/line_detection_3cam.launch"/> -->
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch"/>
 
-    <include file="$(dirname)/laplacian_line_detector_front.launch">
-        <arg name="camera_namespace" value="camera_center"/>
+    <include file="$(dirname)/perception/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
     </include>
 
-    <include file="$(dirname)/lines_projector.launch">
-        <arg name="use_camera_manager" value="true"/>
-        <arg name="camera_name" value="camera_center"/>
-        <arg name="is_side_cam" value="false"/>
-    </include>
+    <include file="$(dirname)/perception/cone_bottom_detector.launch"/>
 
-    <include file="$(dirname)/cone_bottom_detector.launch"/>
-    <include file="$(dirname)/cones_projector.launch">
+    <include file="$(dirname)/perception/cones_projector.launch">
         <arg name="use_camera_manager" value="true"/>
-        <arg name="camera_name" value="camera_center"/>
-        <arg name="is_side_cam" value="false"/>
     </include>
 
     <node pkg="rr_common" type="pointcloud_combiner" name="lines_combiner" output="screen">
@@ -41,8 +34,10 @@
         <param name="steeringAfterFinishTime" type="double" value="0.7"/>
     </node>
 
-    <include file="$(dirname)/mpc_planner_obstacle_avoidance.launch"/>
+    <include file="$(dirname)/planner/mpc_planner_obstacle_avoidance.launch"/>
 
-    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <!-- <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/> -->
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+
+    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
+
 </launch>

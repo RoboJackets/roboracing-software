@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
-    <include file="$(find rr_iarrc)/launch/startlight_watcher.launch"/>
-    <!-- <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/> -->
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
 
-<!--     <include file="$(find rr_iarrc)/launch/urc_lane_follower.launch"/> -->
-    <include file="$(find rr_iarrc)/launch/sign_detector.launch"/>
+    <include file="$(dirname)/perception/sign_detector.launch"/>
 
-    <include file="$(find rr_iarrc)/launch/urc_sides_merger.launch"/> 
-    <include file="$(find rr_iarrc)/launch/urc_centerline_planner.launch"/> 
+    <include file="$(dirname)/perception/urc_sides_merger.launch"/>
+    <include file="$(dirname)/planner/urc_centerline_planner.launch"/>
 
     <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
         <param name="startSignal" type="string" value="/start_detected"/>
@@ -21,19 +20,17 @@
        	<param name="forward_timeout" type="double" value="3.0"/>
     </node>
 
-
-    <include file="$(dirname)/laplacian_line_detector_front.launch">
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch">
         <arg name="camera_namespace" value="camera_center"/>
     </include>
 
-    <include file="$(dirname)/laplacian_line_detector_side.launch">
+    <include file="$$(dirname)/perception/laplacian_line_detector_side.launch">
         <arg name="camera_namespace" value="camera_left"/>
     </include>
 
-    <include file="$(dirname)/laplacian_line_detector_side.launch">
+    <include file="$(dirname)/perception/laplacian_line_detector_side.launch">
         <arg name="camera_namespace" value="camera_right"/>
     </include>
-
 
 
     <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
@@ -49,9 +46,5 @@
         <param name="fallback_image_width" value="1280"/>
         <param name="fallback_image_height" value="964"/>
     </node>
-
-
-
-
 
 </launch>
