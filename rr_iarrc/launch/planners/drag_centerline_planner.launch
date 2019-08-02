@@ -7,6 +7,8 @@
 
         <param name="speed" type="double" value="9.0" /> <!-- 3.1-->
 
+        <param name="useHistogramFinder" type="bool" value="false" />
+
         <param name="maxTurnLimitRadians" type="double" value="0.16" />
 
         <param name="subscription_node" type="string" value="/camera_center/lines/detection_img_transformed"/>

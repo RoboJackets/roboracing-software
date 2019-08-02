@@ -31,6 +31,7 @@ double outputSteering;
 PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
 double speedGoal;
+bool useHistogramFinder;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
@@ -99,45 +100,47 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightMaxLoc;
     cv::Point leftMaxLoc;
 
-    
-    //locate beginnings of lines by a large number of pixels in the column
-    cv::Mat hist = getColHist(frame);
-    //left line
-    double max;
-    double min;
-    cv::Point rightMinLoc;
-    cv::Point leftMinLoc;
-    cv::minMaxLoc(hist(cv::Range(0,hist.rows/2 - 1), cv::Range::all()), &min, &max, &leftMinLoc, &leftMaxLoc);
-    leftMaxLoc.x = leftMaxLoc.y; //gotta flip x and y
-    leftMaxLoc.y = frame.rows - 1;
-    cv::minMaxLoc(hist(cv::Range(hist.rows/2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc, &rightMaxLoc);
-    rightMaxLoc.x = rightMaxLoc.y + hist.rows/2;
-    rightMaxLoc.y = frame.rows - 1;
+    if (useHistogramFinder) {
+        //locate beginnings of lines by a large number of pixels in the column
+        cv::Mat hist = getColHist(frame);
+        //left line
+        double max;
+        double min;
+        cv::Point rightMinLoc;
+        cv::Point leftMinLoc;
+        cv::minMaxLoc(hist(cv::Range(0,hist.rows/2 - 1), cv::Range::all()), &min, &max, &leftMinLoc, &leftMaxLoc);
+        leftMaxLoc.x = leftMaxLoc.y; //gotta flip x and y
+        leftMaxLoc.y = frame.rows - 1;
+        cv::minMaxLoc(hist(cv::Range(hist.rows/2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc, &rightMaxLoc);
+        rightMaxLoc.x = rightMaxLoc.y + hist.rows/2;
+        rightMaxLoc.y = frame.rows - 1;
 
-    if (rightMaxLoc.x == frame.cols/2) {
-        rightMaxLoc.x = frame.cols - 1;
+        if (rightMaxLoc.x == frame.cols/2) {
+            rightMaxLoc.x = frame.cols - 1; //handle line not found
+        }
+    } else {
+        //locate beginnings of lines by centering from search window
+        leftMaxLoc.x = frame.cols/4;
+        rightMaxLoc.x = frame.cols/2 + frame.cols/4;
+        rightMaxLoc.y = 80; //120
+        leftMaxLoc.y = 80;
+        int w = (frame.cols)/2;
+        bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 32), w-1, 16);
+        bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 32), w-1, 16);
+        if (!rightFound) {
+            rightMaxLoc.x = frame.cols/2 + 40;
+        }
+        if (!leftFound) {
+            leftMaxLoc.x = frame.cols/2 - 40;
+        }
     }
-    
-    // leftMaxLoc.x = frame.cols/4;
-    // rightMaxLoc.x = frame.cols/2 + frame.cols/4;
-    // rightMaxLoc.y = 80; //120
-    // leftMaxLoc.y = 80;
-    // int w = (frame.cols)/2;
-    // bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w/2, 32), w-1, 16);
-    // bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w/2, 32), w-1, 16);
-    // if (!rightFound) {
-    //     rightMaxLoc.x = frame.cols/2 + 40;
-    // }
-    // if (!leftFound) {
-    //     leftMaxLoc.x = frame.cols/2 - 40;
-    // }
 
     //debug visualization
     cv::circle(output, leftMaxLoc, 8, cv::Scalar(0,0,255), -1);
     cv::circle(output, rightMaxLoc, 8, cv::Scalar(0,255,255), -1);
 
 
-    int width = 40;
+    int width = 40; //#TODO: this will be updated to not be hardcoded.
     int height = 16;
 
     cv::Point offset(width/2, height/2);
@@ -162,15 +165,6 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         rightCenter.y -= height;
 
         rightLinePoints.push_back(rightCenter);
-
-        /*
-        //shrink the search width as we are more sure of our line
-        //#TODO: this is in progress. Could build out from "center" clump we find.
-        if (width > 11) {
-            width -= 6;
-            offset.x = width/2;
-        }
-        */
 
         centerOnLineSegment(frame, leftCenter, offset, width, height);
         cv::circle(output, leftCenter, 2, cv::Scalar(0, 0, 255), -1);
@@ -206,22 +200,6 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     speed_pub.publish(speed_message);
     steer_pub.publish(steer_message);
 
-/*
-    int width = 40;
-    int height = 16;
-
-    cv::Point offset(width/2, height/2);
-    cv::Point center = rightMaxLoc;
-    center.y = frame.rows - height/2;//frame.rows - 1;
-    for (int i = frame.rows - 1; i >= 0; i -= height) {
-        center = recenter(frame, center, offset);//findNewCenter(frame, center, offset);
-
-        cv::rectangle(output, center - offset, center + offset, cv::Scalar(0,255,0), 2);
-        center -= cv::Point(0, height);
-    }
-*/
-
-
 
     //Publish Message
     if (pub_line_detector.getNumSubscribers() > 0) {
@@ -245,6 +223,8 @@ int main(int argc, char** argv) {
     nhp.param("PID_kI", kI, 0.0);
     nhp.param("PID_kD", kD, 0.0);
     nhp.param("speed", speedGoal, 1.0);
+
+    nhp.param("useHistogramFinder", useHistogramFinder, false);
 
     double maxTurnLimit;
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
