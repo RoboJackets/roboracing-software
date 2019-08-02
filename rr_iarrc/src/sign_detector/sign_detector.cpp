@@ -75,10 +75,10 @@ ros::Time start = ros::Time::now();
 
     cv::Mat crop;
     if (roi_x == -1 || roi_y == -1 || roi_width == -1 || roi_height == -1) {
-      crop = frame;
+        crop = frame;
     } else {
-      cv::Rect roi(roi_x, roi_y, roi_width, roi_height);
-      crop = frame(roi); //note that crop is just a reference to that roi of the frame, not a copy
+        cv::Rect roi(roi_x, roi_y, roi_width, roi_height);
+        crop = frame(roi); //@Note: crop is just a reference to that roi of the frame, not a copy
     }
 
     //cv::GaussianBlur(crop, crop, cv::Size(5,5), 0, 0, cv::BORDER_DEFAULT); //may or may not help Canny
@@ -99,65 +99,60 @@ ros::Time start = ros::Time::now();
 
     std::vector<ArrowSign> foundArrowsList;
     for(size_t i=0; i<contours.size(); i++) {
-      std::vector<cv::Point> c = contours[i]; //current contour reference
-      double perimeter = cv::arcLength(c, true);
-      double epsilon = 0.04 * perimeter;
-      std::vector<cv::Point> approxC;
-      cv::approxPolyDP(c, approxC, epsilon, true);
-      //@note: if need be, you can allow size range 6-9 because it is possible one edge looks like 2 depending on epsilon
-      double contourArea = cv::contourArea(approxC);
-      if (approxC.size() == 7 && contourArea >= minContourArea && contourArea <= maxContourArea) {
-          //check the ratio is arrow-like
-          cv::Rect rect = cv::boundingRect(c);
-          double ratioMin = 1.2;//1.5; //ratio of width to height or vice versa
-          double ratioMax = 2.5;//2.2; //expanded from real to allow us to view it off angle
-          if ( (rect.width * ratioMin <= rect.height && rect.width * ratioMax >= rect.height) ||
+        std::vector<cv::Point> c = contours[i]; //current contour reference
+        double perimeter = cv::arcLength(c, true);
+        double epsilon = 0.04 * perimeter;
+        std::vector<cv::Point> approxC;
+        cv::approxPolyDP(c, approxC, epsilon, true);
+        //@note: if need be, you can allow size range 6-9 because it is possible one edge looks like 2 depending on epsilon
+        double contourArea = cv::contourArea(approxC);
+        if (approxC.size() == 7 && contourArea >= minContourArea && contourArea <= maxContourArea) {
+            //check the ratio is arrow-like
+            cv::Rect rect = cv::boundingRect(c);
+            double ratioMin = 1.2;//1.5; //ratio of width to height or vice versa
+            double ratioMax = 2.5;//2.2; //expanded from real to allow us to view it off angle
+            if ( (rect.width * ratioMin <= rect.height && rect.width * ratioMax >= rect.height) ||
                 (rect.height * ratioMin <= rect.width && rect.height * ratioMax >= rect.width) ) {
 
-            cv::rectangle(crop, rect, cv::Scalar(0,255,255),3); //debug
+                cv::rectangle(crop, rect, cv::Scalar(0,255,255),3); //debug
 
-            if (rect.width > rect.height) {
-              //Sideways
-              double matchSimilarity = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I1, 0); //#TODO: change to sideways contours
-              cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y + 25), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
+                if (rect.width > rect.height) {
+                    //Sideways
+                    double matchSimilarity = cv::matchShapes(c, template_contour_upright, CV_CONTOURS_MATCH_I1, 0); //#TODO: change to sideways contours
+                    cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y + 25), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
 
-              if (matchSimilarity <= turnMatchSimilarityThreshold) {
-                  // find top point of the arrow and test its x location
-                  auto extremeY = std::minmax_element(c.begin(), c.end(), [](cv::Point const& a, cv::Point const& b){
-                      return a.y < b.y;
-                  });
-                  if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
-                    //left pointing arrow!
-                    cv::putText(crop, LEFT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                    ArrowSign move = {LEFT, rect.area(), 0};
-                    foundArrowsList.push_back(move);
+                    if (matchSimilarity <= turnMatchSimilarityThreshold) {
+                        // find top point of the arrow and test its x location
+                        auto extremeY = std::minmax_element(c.begin(), c.end(), [](cv::Point const& a, cv::Point const& b){
+                          return a.y < b.y;
+                        });
+                        if (extremeY.first->x < rect.x + rect.width/2) {//topmost point is far left
+                            //left pointing arrow!
+                            cv::putText(crop, LEFT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                            ArrowSign move = {LEFT, rect.area(), 0};
+                            foundArrowsList.push_back(move);
+                        } else {
+                            //right pointing arrow!
+                            cv::putText(crop, RIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                            ArrowSign move = {RIGHT, rect.area(), 0};
+                            foundArrowsList.push_back(move);
+                        }
 
-                  } else {
-                    //right pointing arrow!
-                    cv::putText(crop, RIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                    ArrowSign move = {RIGHT, rect.area(), 0};
-                    foundArrowsList.push_back(move);
+                    }
+                } else {
+                    //Straight
+                    double matchSimilarity = cv::matchShapes(approxC, template_contour_upright, CV_CONTOURS_MATCH_I1, 0.0);
 
-                  }
+                    cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y +50), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
 
-              }
-            } else {
-              //Straight
-              double matchSimilarity = cv::matchShapes(approxC, template_contour_upright, CV_CONTOURS_MATCH_I1, 0.0);
-
-              cv::putText(crop, std::to_string(matchSimilarity), cv::Point(rect.x, rect.y +50), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(255,0,0), 2);
-
-              if (matchSimilarity <= straightMatchSimilarityThreshold) {
-                  cv::putText(crop, STRAIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
-                  ArrowSign move = {STRAIGHT, rect.area(), 0};
-                  foundArrowsList.push_back(move);
-              }
+                    if (matchSimilarity <= straightMatchSimilarityThreshold) {
+                        cv::putText(crop, STRAIGHT, rect.tl(), cv::FONT_HERSHEY_PLAIN, 2,  cv::Scalar(0,0,255), 2);
+                        ArrowSign move = {STRAIGHT, rect.area(), 0};
+                        foundArrowsList.push_back(move);
+                    }
+                }
             }
-
         }
-      }
-
-
     }
 
 
