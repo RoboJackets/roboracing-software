@@ -14,6 +14,9 @@
         <param name="circle_y_tolerance" type="int" value="100"/>
         <param name="circle_radius_tolerance" type="double" value="10.0"/>
 
+        <!--Controls the sensitivity of circle detection (lower = more circles detected)-->
+        <param name="circularity_threshold" type="double" value="0.7"/>
+
         <!--Number of frames to go back to look for red light after seeing green-->
         <param name="history_frame_count" type="int" value="5"/>
 

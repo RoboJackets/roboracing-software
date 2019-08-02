@@ -33,6 +33,8 @@ int yTolerance;
 double radiusTolerance;
 int thresholdGreen;
 int thresholdRed;
+double circularityThreshold;
+
 
 
 cv::Mat getRedImage(cv::Mat frame) {
@@ -73,7 +75,6 @@ std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
     cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
     // Find circles
-    double circularityThreshold = 0.7; //@note: controls the sensitivity of circle detection
     std::vector<cv::Vec3f> foundCircles;
 
     for(int i = 0; i < contours.size(); i++) {
@@ -201,6 +202,8 @@ int main(int argc, char* argv[]) {
     nhp.param("circle_x_tolerance", xTolerance, 20);
     nhp.param("circle_y_tolerance", yTolerance, 100);
     nhp.param("circle_radius_tolerance", radiusTolerance, 10.0);
+
+    nhp.param("circularity_threshold", circularityThreshold, 0.7);
 
     nhp.param("history_frame_count", history_frame_count, 5);
 
