@@ -226,9 +226,10 @@ int main(int argc, char** argv)
   ros::NodeHandle nhp("~");
 
   rr::CenteredBox box;
-  box.length_front = getParamAssert<double>(nhp, "collision_dist_front");
-  box.length_back = getParamAssert<double>(nhp, "collision_dist_back");
-  box.width_left = box.width_right = getParamAssert<double>(nhp, "collision_dist_side");
+  ros::NodeHandle nh_hitbox(nhp, "collision_hitbox");
+  box.length_front = getParamAssert<double>(nh_hitbox, "front");
+  box.length_back = getParamAssert<double>(nh_hitbox, "back");
+  box.width_left = box.width_right = getParamAssert<double>(nh_hitbox, "side");
 
   rr::CenteredBox map_dimensions;
   map_dimensions.length_front = 7;
