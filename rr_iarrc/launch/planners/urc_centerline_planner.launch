@@ -1,0 +1,16 @@
+<launch>
+    <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
+        <!--PID Controller Constants-->
+        <param name="PID_kP" type="double" value="0.004" />
+        <param name="PID_kI" type="double" value="0.0" />
+        <param name="PID_kD" type="double" value="0.0013" />
+
+        <param name="speed" type="double" value="1.9" /> <!-- 3.1-->
+
+        <param name="useHistogramFinder" type="bool" value="true" />
+
+        <param name="maxTurnLimitRadians" type="double" value="0.16" />
+
+        <param name="subscription_node" type="string" value="/urc_side_lanes"/>
+    </node>
+</launch>

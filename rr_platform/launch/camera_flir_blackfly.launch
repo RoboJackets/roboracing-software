@@ -1,0 +1,21 @@
+<launch>
+  <arg name="serial"/>
+  <arg name="side"/>
+
+  <node pkg="nodelet" type="nodelet" name="camera_nodelet_pointgrey" output="screen"
+        args="load pointgrey_camera_driver/PointGreyCameraNodelet /camera_nodelet_manager">
+    <param name="serial" value="$(arg serial)"/>
+    <param name="video_mode" value="format7_mode0"/>
+    <param name="format7_roi_width" value="1280"/>
+    <param name="format7_roi_height" value="1024"/>
+    <param name="format7_x_offset" value="0"/>
+    <param name="format7_y_offset" value="0"/>
+    <param name="frame_id" value="camera_$(arg side)_optical"/>
+    <param name="camera_info_url" value="package://rr_platform/conf/camera_calibration_flir_blackfly.yaml" />
+    <param name="enable_trigger" value="false"/>
+  </node>
+
+  <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_configurator_flir" output="screen"
+        args="load camera_nodelet_pointgrey $(find rr_platform)/conf/flir_blackfly_dynparams.yaml">
+  </node>
+</launch>

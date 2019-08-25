@@ -53,14 +53,11 @@ int main(int argc, char* argv[]) {
     while (!go && ros::ok()) {
         ros::spinOnce();
         publishSpeed(1.0);
-
-
     }
 
 
    // ros::Duration(5).sleep();
    // publishSpeed(0.0);
-
 
     return 0;
 }

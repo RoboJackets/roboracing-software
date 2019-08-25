@@ -1,0 +1,3 @@
+add_executable(local_mapper local_mapper.cpp)
+target_link_libraries(local_mapper ${catkin_LIBRARIES} ${PCL_LIBRARIES} relative_pose_history_client)
+add_dependencies(local_mapper rr_platform_generate_messages_cpp)

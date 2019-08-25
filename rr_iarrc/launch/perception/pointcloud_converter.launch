@@ -1,0 +1,21 @@
+<launch>
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="camera_center/image_color_rect/lines/detection_img /cones/bottom/detection_img"/>
+        <param name="px_per_meter" value="50"/>
+        <param name="map_dist_max" value="4.0"/>
+        <param name="map_dist_min" value="0.0"/>
+
+        <param name="camera_info_topic" value="/camera_center/camera_info"/>
+        <param name="camera_link_name" value="camera_center"/>
+
+        <param name="fallback_fov_horizontal" value="1.6955"/>
+        <param name="fallback_fov_vertical" value="1.3758"/>
+        <param name="fallback_image_width" value="1280"/>
+        <param name="fallback_image_height" value="964"/>
+    </node>
+
+    <node pkg="rr_common" type="image_pcl_converter" name="image_pcl_converter" output="screen">
+        <param name="image_topics" value="camera_center/image_color_rect/lines/detection_img /cones/bottom/detection_img_transformed"/>
+        <param name="px_per_meter" value="50"/>
+    </node>
+</launch>

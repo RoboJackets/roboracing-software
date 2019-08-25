@@ -6,14 +6,16 @@
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
+#include <rr_iarrc/urc_sign.h>
 
+#include <math.h>
 #include <stdlib.h>
 
 const int WAITING_FOR_START = 0;
 const int RUNNING_PLANNER = 1;
 const int FINISHED = 2;
-const int TURNING = 3; 
-const float PI = 3.14; 
+const int TURNING = 3;
+int state;
 
 std::string startSignal;
 std::string resetSignal;
@@ -21,35 +23,39 @@ std::string resetSignal;
 ros::Publisher steerPub;
 ros::Publisher speedPub;
 
-int state;
 double planSpeed, speed;
 double planSteering, steering;
 
 bool raceStarted;
 bool turnDetected = false;
-bool completed; 
+bool completed;
 
-int imu_quadrant; 
+int imu_quadrant;
 float imu_yaw, initial_yaw, target_yaw;
 
-double left_offset; 
-double right_offset; 
+double left_offset;
+double right_offset;
 double turn_speed;
-double left_turn_steering; 
-double right_turn_steering; 
+double left_turn_steering;
+double right_turn_steering;
 
 double forward_timeout;
 
-std::string turn_direction = "right";
+const std::string RIGHT("right");
+const std::string LEFT("left");
+const std::string STRAIGHT("straight");
+const std::string NONE("none");
+std::string turn_direction = NONE;
+double stop_bar_angle;
 
 /*
 // As you turn counterclockwise, the yaw value received from the IMU ranges from [0, 3.14] U [-3.14, 0]
-// This function returns a new yaw value in the range of [0 ,6.28]
+// This function returns a new yaw value in the range of [0, 6.28]
 */
 double setInRange(double yaw_read){
-    double new_yaw; 
+    double new_yaw;
     if(yaw_read < 0){
-        new_yaw = yaw_read + 2*PI; 
+        new_yaw = yaw_read + 2*M_PI;
         return new_yaw;
     }else{
         return yaw_read;
@@ -60,22 +66,22 @@ double setInRange(double yaw_read){
 // Checks to see in which quadrant the current yaw reading is in. Turning right while in Q1, and turning left in Q4 are special cases.
 */
 void checkQuadrant(){
-    if(imu_yaw <= 2*PI && imu_yaw >= 1.5*PI ){
+    if(imu_yaw <= 2*M_PI && imu_yaw >= 1.5*M_PI ){
         imu_quadrant = 4;
-    }else if(imu_yaw >= 0 && imu_yaw <= .5*PI){
+    }else if(imu_yaw >= 0 && imu_yaw <= .5*M_PI){
         imu_quadrant = 1;
     }
 }
 
 // Used to calculate the distance from the target IMU yaw to the current IMU yaw within range of [0 ,6.28]
-bool comp(int a, int b) { 
-    return (a < b); 
+bool comp(double a, double b) {
+    return (a < b);
 }
 
 float angleDist(float target, float current){
-    float diff = target - current;  
-    float min = std::min({std::abs(diff), std::abs(diff - 2*PI),std::abs(diff + 2*PI)}, comp); 
-    return min; 
+    double diff = static_cast<double>(target - current);
+    float min = std::min({std::fabs(diff), std::fabs(diff - 2*M_PI), std::fabs(diff + 2*M_PI)}, comp);
+    return min;
 }
 
 void publishSpeedandSteering(){
@@ -108,67 +114,75 @@ void updateState() {
                 state = TURNING;
             } else if(completed) {
                 state = FINISHED;
-            } 
+            }
             break;
 
-        case TURNING: 
+        case TURNING:
             ros::spinOnce();
-            checkQuadrant(); 
+            checkQuadrant();
             initial_yaw = imu_yaw;
 
-            if(turn_direction.compare("left") == 0){
+            if(turn_direction.compare(LEFT) == 0){
 
                 if(imu_quadrant == 4){
-                    target_yaw = initial_yaw - 1.5*PI - left_offset;
+                    target_yaw = initial_yaw - 1.5*M_PI - left_offset;
                 }else{
-                    target_yaw = initial_yaw + .5*PI + left_offset;
+                    target_yaw = initial_yaw + 0.5*M_PI + left_offset;
                 }
 
-                while(1){
-                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                while(ros::ok()){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.1){
                         break;
                     }
+
+                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
 
                     speed = turn_speed;
                     steering = left_turn_steering;
                     publishSpeedandSteering();
-                    ros::spinOnce();
-                }
+                    ros::Duration(0.01).sleep();
+                    ros::spinOnce();                }
 
-            }else if(turn_direction.compare("right") == 0){
+            }else if(turn_direction.compare(RIGHT) == 0){
 
                 if(imu_quadrant == 1){
-                    target_yaw = initial_yaw + 1.5*PI + right_offset;
+                    target_yaw = initial_yaw + 1.5*M_PI + right_offset;
                 }else{
-                    target_yaw = initial_yaw - .5*PI + right_offset;
+                    target_yaw = initial_yaw - 0.5*M_PI - right_offset;
                 }
 
-                while(1){
-                    if(angleDist(target_yaw, imu_yaw) <= 0.015){
+                while(ros::ok()){
+                    if(angleDist(target_yaw, imu_yaw) <= 0.1){
                         break;
                     }
+
+                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
 
                     speed = turn_speed;
                     steering = right_turn_steering;
                     publishSpeedandSteering();
+                    ros::Duration(0.01).sleep();
                     ros::spinOnce();
                 }
 
-            }else if(turn_direction.compare("forward") == 0){
+            }else if(turn_direction.compare(STRAIGHT) == 0){
                 ros::Time start_time = ros::Time::now();
                 ros::Duration timeout(forward_timeout); // Timeout of 2 seconds
-                while(ros::Time::now() < start_time + timeout) {
+                while (ros::Time::now() < start_time + timeout && ros::ok())
+                {
                     speed = turn_speed;
                     steering = 0;
                     publishSpeedandSteering();
+                    ros::Duration(0.01).sleep();
                 }
             }
+            turnDetected = false;
             state = RUNNING_PLANNER;
-            break; 
+            break;
 
         case FINISHED:
-            ROS_INFO("Finished");
-            speed = 0.0;
+            ROS_INFO("Finished URC");
+            speed = -1.0; //@note: -1 brakes, 0 coasts
             steering = 0.0;
             break;
 
@@ -196,7 +210,13 @@ void resetCB(const rr_platform::race_reset &reset_msg) {
     updateState();
 }
 
-void imuCB(const rr_platform::axesConstPtr& msg){
+void signCB(const rr_iarrc::urc_sign &msg){
+     turn_direction = msg.direction;
+     stop_bar_angle = msg.angle;
+     turnDetected = true;
+}
+
+void imuCB(const rr_platform::axesConstPtr &msg){
      imu_yaw = setInRange(msg->yaw);
 }
 
@@ -220,11 +240,11 @@ int main(int argc, char** argv) {
     nhp.getParam("right_offset", right_offset);
     nhp.getParam("forward_timeout", forward_timeout);
 
-    auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
-    auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
+    auto planSpeedSub = nh.subscribe("/plan/speed", 1, planSpeedCB);
+    auto planSteerSub = nh.subscribe("/plan/steering", 1, planSteerCB);
     auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
     auto imuSub = nh.subscribe("/axes", 1, imuCB);
-
+    auto signSub = nh.subscribe("/turn_detected", 1, signCB);
     auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
@@ -234,6 +254,7 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         ros::spinOnce();
         updateState();
+        ROS_INFO_STREAM("URC Current State: " + std::to_string(state));
         publishSpeedandSteering();
         rate.sleep();
     }

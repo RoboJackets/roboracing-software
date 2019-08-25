@@ -1,0 +1,19 @@
+<launch>
+    <arg name="obstacles_topic"/>
+
+    <node pkg="rr_common" type="pose_tracker_server" name="pose_tracker_server" output="screen">
+        <param name="chassis_state_topic" value="/chassis_state"/>
+        <param name="angles_topic" value="/axes"/>
+        <param name="time_horizon" value="5.0"/>
+        <param name="update_hz" value="50"/>
+        <param name="publish_resolution" value="3"/>
+    </node>
+
+    <node pkg="rr_common" type="local_mapper" name="local_mapper" output="screen">
+        <param name="current_obstacles_topic" value="$(arg obstacles_topic)"/>
+        <param name="time_horizon" value="1.0"/>
+        <param name="camera_info_topic" value="/camera_center/camera_info"/>
+        <param name="camera_link_name" value="camera_center"/>
+        <param name="keep_border_prop" value="0.01"/>
+    </node>
+</launch>

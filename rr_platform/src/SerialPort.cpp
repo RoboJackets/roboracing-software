@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <termio.h>
-#include "SerialPort.h"
+#include <rr_platform/SerialPort.h>
 
 using namespace std;
 

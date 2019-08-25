@@ -64,7 +64,7 @@ void transformedImageCB(const sensor_msgs::ImageConstPtr& msg, const string& top
     sensor_msgs::PointCloud2 cloud_msg;
     pcl_conversions::fromPCL(cloud_pc2, cloud_msg);
     cloud_msg.header.frame_id = "base_footprint";
-    cloud_msg.header.stamp = ros::Time::now();
+    cloud_msg.header.stamp = msg->header.stamp;
     cloud_pubs[topic].publish(cloud_msg);
 }
 

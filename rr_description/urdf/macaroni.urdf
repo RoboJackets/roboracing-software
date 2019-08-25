@@ -181,14 +181,14 @@
         <gravity>true</gravity>
         <sensor name="imu_sensor" type="imu">
             <always_on>true</always_on>
-            <update_rate>100</update_rate>
+            <update_rate>30</update_rate>
             <visualize>true</visualize>
             <topic>imu</topic>
             <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
                 <topicName>imu</topicName>
                 <bodyName>imu_link</bodyName>
-                <updateRateHZ>50.0</updateRateHZ>
-                <gaussianNoise>0.001</gaussianNoise>
+                <updateRateHZ>30.0</updateRateHZ>
+                <gaussianNoise>0.005</gaussianNoise>
                 <xyzOffset>0 0 0</xyzOffset>
                 <rpyOffset>0 0 0</rpyOffset>
                 <frameName>imu_link</frameName>

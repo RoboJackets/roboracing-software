@@ -1,0 +1,12 @@
+<launch>
+    <node pkg="rr_common" type="planner" name="planner" output="screen">
+        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_sedani_sim.yaml"/>
+        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_opt_sim.yaml"/>
+
+        <rosparam>
+            input_cloud_topic: /local_map
+            impasse_caution_duration: 0.3
+            impasse_reverse_duration: 4.0
+        </rosparam>
+    </node>
+</launch>

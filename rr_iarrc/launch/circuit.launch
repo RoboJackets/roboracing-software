@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-    <include file="$(find rr_iarrc)/launch/nn_planner_circuit.launch"/>
 
-    <include file="$(find rr_iarrc)/launch/color_detector_standalone.launch"/>
-    <include file="$(find rr_iarrc)/launch/race_end_detector.launch"/>
-    <include file="$(find rr_iarrc)/launch/stoplight_watcher.launch"/>
+    <include file="$(dirname)/planner/mpc_planner_circuit.launch"/>
+
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch"/>
+
+    <include file="$(dirname)/perception/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+    </include>
+
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+
+    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
-        <param name="req_finish_line_crosses" type="int" value="3"/>
+        <param name="req_finish_line_crosses" type="int" value="1"/>
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
+        <param name="steeringAfterFinishTime" type="double" value="0.7"/>
     </node>
+
 </launch>

@@ -1,0 +1,23 @@
+<launch>
+  <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
+      <param name="img_topic" value="/finish_line_detection_img" />
+
+      <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
+      <param name="blockSky_height" type="int" value="560" />
+      <param name="blockWheels_height" type="int" value="750" />
+      <param name="blockBumper_height" type="int" value="720" />
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
+        args="standalone rr_iarrc/color_detector">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_magenta.txt"/>
+      <param name="camera_image" value="/camera_center/image_color_rect"/>
+      <param name="detection_topic" value="/finish_line_detection_img"/>
+      <param name="hsv_values_topic" value="/finish_line_hsv"/>
+  </node>
+
+  <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_magenta.txt"/>
+      <param name="values_topic" value="/finish_line_hsv"/>
+  </node>
+</launch>

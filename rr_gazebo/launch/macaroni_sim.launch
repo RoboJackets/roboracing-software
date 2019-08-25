@@ -6,7 +6,7 @@
 
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
           args="-e ode $(arg world)" required="false">
-        <remap from="/camera/image_raw" to="/camera/image_rect"/>
+        <remap from="/camera_center/image_raw" to="/camera_center/image_color_rect"/>
     </node>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>

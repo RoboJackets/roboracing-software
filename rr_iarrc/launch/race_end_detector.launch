@@ -1,5 +1,0 @@
-<launch>
-  <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
-        <param name="img_topic" type="string" value="/colors_img" />
-  </node>
-</launch>

@@ -11,7 +11,9 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "CameraGeometry.h"
+#include <rr_platform/CameraGeometry.h>
+
+#include <thread>
 
 using PointT = pcl::PointXYZ;
 
@@ -22,19 +24,34 @@ private:
   image_transport::Subscriber detection_image_sub_;
   pcl::PointCloud<PointT>::Ptr cloud_unfiltered_;
   pcl::VoxelGrid<PointT> grid_filter_;
+  double x_max_;
+  int downsample_factor_;
+  bool cam_geom_ready_;
+  std::thread load_info_thread_;
 
 
   void ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
-    const cv::Mat cv_img = cv_bridge::toCvShare(msg, "mono8")->image;
-    cloud_unfiltered_->clear();
+    if (!cam_geom_ready_) {
+      NODELET_INFO("Pointcloud projector waiting for camera geometry load");
+      load_info_thread_.join();
+      NODELET_INFO("Camera geometry loaded");
+    }
 
-    for (int r = 0; r < cv_img.rows; r++) {
-      for (int c = 0; c < cv_img.cols; c++) {
-        if (cv_img.at<uint8_t>(r, c) > 0) {
-          auto [in_front, point] = cam_geom_.ProjectToWorld(r, c);
-          if (!in_front || point.x > 10) {
+    const cv::Mat cv_img = cv_bridge::toCvShare(msg, "mono8")->image;
+
+    cv::Mat cv_img_resized;
+    const auto new_width = static_cast<int>(cam_geom_.GetImageWidth() / downsample_factor_);
+    const auto new_height = static_cast<int>(cam_geom_.GetImageHeight() / downsample_factor_);
+    cv::resize(cv_img, cv_img_resized, cv::Size(new_width, new_height));
+
+    cloud_unfiltered_->clear();
+    for (int r = 0; r < cv_img_resized.rows; r++) {
+      for (int c = 0; c < cv_img_resized.cols; c++) {
+        if (cv_img_resized.at<uint8_t>(r, c) > 0) {
+          auto [in_front, point] = cam_geom_.ProjectToWorld(r * downsample_factor_, c * downsample_factor_);
+          if (!in_front || point.x > x_max_) {
             break;  // this row is above the horizon or too far away, so skip the rest of it
-          } else if (std::abs(point.y) < 10) {
+          } else {
             cloud_unfiltered_->push_back(pcl::PointXYZ(point.x, point.y, 0));
           }
         }
@@ -48,6 +65,7 @@ private:
     sensor_msgs::PointCloud2Ptr out(new sensor_msgs::PointCloud2);
     pcl::toROSMsg(filtered_cloud, *out);
     out->header.frame_id = "base_footprint";
+    out->header.stamp = msg->header.stamp;
     pointcloud_pub_.publish(out);
   }
 
@@ -69,13 +87,20 @@ private:
     all_defined &= nh_private.getParam("image_topic_in", image_topic_in);
     all_defined &= nh_private.getParam("pointcloud_topic_out", pointcloud_topic_out);
     all_defined &= nh_private.getParam("load_timeout", load_timeout);
+    all_defined &= nh_private.getParam("max_forward", x_max_);
+    all_defined &= nh_private.getParam("downsample_factor", downsample_factor_);
 
     if (!all_defined) {
       NODELET_WARN("Pointcloud projector is missing roslaunch params");
     }
 
     // load camera geometry
-    cam_geom_.LoadInfo(node_handle, camera_info_topic, camera_tf_frame, load_timeout);
+    cam_geom_ready_ = false;
+    load_info_thread_ = std::thread([this, camera_info_topic, camera_tf_frame, load_timeout]() {
+      auto nh = getNodeHandle();
+      cam_geom_.LoadInfo(nh, camera_info_topic, camera_tf_frame, load_timeout);
+      cam_geom_ready_ = true;
+    });
 
     detection_image_sub_ = image_transport.subscribe(image_topic_in, 1, &PointCloudProjector::ImageCallback, this);
 
