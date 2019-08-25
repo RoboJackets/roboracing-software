@@ -18,12 +18,7 @@
         <param name="destination" value="/current_obstacles"/>
         <param name="refresh_rate" value="100"/>
         <param name="combined_frame" value="base_footprint"/>
-
-        <!-- deprecated -->
-        <param name="ground_threshold" value="-0.1"/>
-        <param name="outlier_neighbors" value="1"/>
-        <param name="outlier_threshold" value="100.0"/>
-        <param name="vg_filter_size" value="0.05"/> <!-- used 0.1 at AVC 2018 -->
+        <param name="vg_filter_size" value="0.05"/>
     </node>
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
