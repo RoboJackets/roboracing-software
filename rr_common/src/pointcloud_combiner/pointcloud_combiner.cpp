@@ -1,9 +1,12 @@
+/**
+ * Simple program to subscribe to several pointclouds and output their combined result at
+ * a set frequency.
+ */
+
 #include <ros/ros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/filters/statistical_outlier_removal.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf/transform_listener.h>
@@ -42,19 +45,12 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh_private("~");
 
     cloud_ptr_t combo_cloud(new cloud_t);
-    cloud_ptr_t combo_cloud_filtered(new cloud_t);
     cloud_ptr_t transformed(new cloud_t);
-    cloud_ptr_t filtered_pass(new cloud_t);
-    cloud_ptr_t filtered_vg(new cloud_t);
-    cloud_ptr_t filtered_stat(new cloud_t);
 
     std::string sourceList = nh_private.param("sources", std::string());
     std::string publishName = nh_private.param("destination", std::string("/map"));
     std::string combinedFrame = nh_private.param("combined_frame", std::string("base_footprint"));
     int refreshRate = nh_private.param("refresh_rate", 30);
-    float groundThreshold = nh_private.param("ground_threshold", 0.05);
-    float outlierThreshold = nh_private.param("outlier_threshold", 2.0);
-    int outlierNeighbors = nh_private.param("outlier_neighbors", 1);
     float vgFilterSize = nh_private.param("vg_filter_size", 0.05);
 
     auto topics = split(sourceList, ' ');
@@ -72,16 +68,6 @@ int main(int argc, char** argv) {
     pcl::VoxelGrid<pcl::PointXYZ> filterVG;
     filterVG.setLeafSize(vgFilterSize, vgFilterSize, vgFilterSize);
 
-    // set up z axis value filter (supposed to take out ground)
-    pcl::PassThrough<pcl::PointXYZ> filterPass;
-    filterPass.setFilterFieldName("z");
-    filterPass.setFilterLimits(groundThreshold, 5.0);
-
-    // set up statistical outlier filter
-    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> filterOutliers;
-    filterOutliers.setMeanK(outlierNeighbors);
-    filterOutliers.setStddevMulThresh(outlierThreshold);
-
     tf::TransformListener tfListener;
 
     ROS_INFO("starting pointcloud_combiner main loop");
@@ -93,9 +79,8 @@ int main(int argc, char** argv) {
         if (has_new_info) {
 
             combo_cloud->clear();
-            combo_cloud_filtered->clear();
 
-            for (auto entry_pair : cache) {  // copy for kind-of thread safety?
+            for (std::pair<std::string, sensor_msgs::PointCloud2ConstPtr> entry_pair : cache) {  // copy for kind-of thread safety?
                 if (!entry_pair.second) {
                   continue;  // null pointer for message
                 }
@@ -118,12 +103,6 @@ int main(int argc, char** argv) {
                 tfListener.waitForTransform(cloud_msg.header.frame_id, combinedFrame, ros::Time(0), ros::Duration(5.0));
                 pcl_ros::transformPointCloud(combinedFrame, partialCloud, *transformed, tfListener);
 
-                // filter by z axis height
-                // filtered_pass->clear();
-                // filterPass.setInputCloud(transformed);
-                // filterPass.filter(*filtered_pass);
-                // *filtered_pass = *transformed;
-
                 *(combo_cloud) += *transformed;
             }
 
@@ -133,17 +112,6 @@ int main(int argc, char** argv) {
             }
 
             ROS_INFO("combo_cloud has %d points", (int)combo_cloud->points.size());
-
-            // reduce number of points using a grid
-            // filtered_vg->clear();
-            // filterVG.setInputCloud(combo_cloud);
-            // filterVG.filter(*filtered_vg);
-
-            // filter statistical outliers
-            // filtered_pass->clear();
-            // filterOutliers.setInputCloud(filtered_vg);
-            // filterOutliers.filter(*filtered_pass);
-            // *filtered_pass = *combo_cloud;
 
             // convert back to message
             if (!combo_cloud->points.empty()) {
