@@ -168,10 +168,12 @@ void updateState() {
             }else if(turn_direction.compare(STRAIGHT) == 0){
                 ros::Time start_time = ros::Time::now();
                 ros::Duration timeout(forward_timeout); // Timeout of 2 seconds
-                while(ros::Time::now() < start_time + timeout) {
+                while (ros::Time::now() < start_time + timeout && ros::ok())
+                {
                     speed = turn_speed;
                     steering = 0;
                     publishSpeedandSteering();
+                    ros::Duration(0.01).sleep();
                 }
             }
             turnDetected = false;
