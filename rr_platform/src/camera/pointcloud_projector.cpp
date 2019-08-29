@@ -33,8 +33,7 @@ private:
   void ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
     if (!cam_geom_ready_) {
       NODELET_INFO("Pointcloud projector waiting for camera geometry load");
-      load_info_thread_.join();
-      NODELET_INFO("Camera geometry loaded");
+      return;
     }
 
     const cv::Mat cv_img = cv_bridge::toCvShare(msg, "mono8")->image;
