@@ -1,6 +1,6 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/buzz_bigoli.jpg" style="max-height=400px;">
+<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.png" style="max-height=400px;">
 
 This repository contains [ROS](http://ros.org) packages for the [RoboJackets](http://robojackets.org) RoboRacing team.
 
