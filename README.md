@@ -37,28 +37,11 @@ The following files and folders enable our continuous integration system.
 
 ## Installation
 
-1. Make sure you have the appropriate ROS version installed for your version of Ubuntu.
+This repository should be cloned into the src directory of a catkin workspace. Use ```catkin_make``` in the workspace directory to build the code. 
 
-2. Clone this repo into the _src_ directory of your catkin workspace.
+For a guide on installing our code please go to [our guide](https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions).
 
-3. Also clone https://github.com/intel-ros/realsense and https://github.com/ros-drivers/pointgrey_camera_driver into the same _src_ directory
-
-4. Install the remaining dependencies with the following command in your catkin workspace folder:
-
-   ```sh
-   rosdep install --from-path src --ignore-src -y
-   ```
-
-5. Install python dependencies (for Python 2) which are not in ROS:
-
-   ```
-   pip install keras tensorflow numpy pynput matplotlib
-   ```
-
-6. Install librealsense following the instructions at https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
-
-7. You should now be able to build the project by running `catkin_make` in the catkin_ws directory.
-
+Join the our [Slack](https://robojackets.slack.com/)!
 
 ## Simulation
 
@@ -71,8 +54,4 @@ roslaunch rr_gazebo macaroni_avc.launch
 Then, the following command will start our race AI and drive the car around the track:
 ```
 roslaunch rr_avc avc_sim.launch
-```
-Alternatively, you can control the car manually with a USB gamepad with this command:
-```
-roslaunch rr_platform joystick_driver.launch
 ```
