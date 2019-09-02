@@ -12,7 +12,7 @@ Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software reposit
 
 ## Organization
 
-Most folders in this repository are ROS packages.
+This repository is comprised of multiple ROS packages and one sandbox folder for miscellaneous resources.
 
 **rr_avc**: This package contains mission code for the [Sparkfun Autonomous Vehicle Challenge](http://avc.sparkfun.com).
 
@@ -37,11 +37,11 @@ The following files and folders enable our continuous integration system.
 
 ## Installation
 
-This repository should be cloned into the src directory of a catkin workspace. Use ```catkin_make``` in the workspace directory to build the code. 
+This repository should be cloned into the src directory of a catkin workspace. Use ```catkin_make``` in the workspace directory to build the code. (NOTE: Be sure to ```source devel/setup.sh``` before referencing roboracing packages.)
 
 For a guide on installing our code please go to [our guide](https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions).
 
-Join the our [Slack](https://robojackets.slack.com/)!
+Join our [Slack](https://robojackets.slack.com/)!
 
 ## Simulation
 
