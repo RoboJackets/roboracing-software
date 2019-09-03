@@ -54,6 +54,22 @@ defaults: &load_workspace
   attach_workspace:
     at: ~/catkin_ws
 
+defaults: &submodules_update
+  run:
+    name: update submodules
+    command: |
+      cd ~/catkin_ws/src/roboracing-software
+      git submodule sync
+      git submodule update --init
+
+defaults: &compile_with_blacklist
+  run:
+    name: compile with blacklist
+    command: |
+      source /opt/ros/melodic/setup.sh
+      # semicolon-separated list of packages to avoid building
+      catkin_make -j2 -DCATKIN_BLACKLIST_PACKAGES="pointgrey_camera_driver;"
+
 version: 2
 jobs:
   compile:
@@ -63,10 +79,11 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
+      - <<: *submodules_update
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
-      - run: source /opt/ros/melodic/setup.sh && catkin_make -j2
+      - <<: *compile_with_blacklist
       - <<: *save_compile_cache
       - <<: *save_workspace
   test:
@@ -76,6 +93,7 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
+      - <<: *submodules_update
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_workspace
