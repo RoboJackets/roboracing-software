@@ -4,10 +4,11 @@
 #include <rr_platform/chassis_state.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
+#include <parameter_assertions/assertions.h>
 
-class PDController {
+class PIDController {
 public:
-    PDController(double p, double d) : P(p), D(d) { }
+    PIDController(double p, double i, double d) : P(p), I(i), D(d) { }
 
     void setDesired(double value) {
         desired = value;
@@ -15,20 +16,20 @@ public:
 
     double operator() (double current) {
         auto error = current - desired;
+        accError += error;
         auto dError = error - lastError;
-        auto ret = P * error - D * dError;
+        auto ret = P * error + I * accError - D * dError;
         lastError = error;
+        accError *= 0.999;
         return ret;
     }
 
 private:
-    double P, D;
+    double P, I, D;
     double desired = 0.0;
     double lastError = 0.0;
+    double accError = 0.0;
 };
-
-PDController left_controller{1.0, 0.05};
-PDController right_controller{1.0, 0.05};
 
 double speed_set_point = 0.0;
 double speed_measured_left = 0.0;
@@ -36,13 +37,14 @@ double speed_measured_right = 0.0;
 
 double steer_set_point = 0.0;
 
-constexpr double chassis_length = 0.33246;
-constexpr double chassis_width = 0.28732;
-constexpr double inv_chassis_length = 1.0 / chassis_length;
-constexpr double chassis_width_2 = chassis_width / 2.0;
-constexpr double max_torque = 0.25;
-
-constexpr double wheel_circumference = 2.0 * M_PI * 0.036;
+double chassis_length;
+double chassis_width;
+double inv_chassis_length;
+double chassis_width_2;
+double max_torque;
+double wheel_circumference;
+std::string left_motor_joint_name;
+std::string right_motor_joint_name;
 
 void speedCallback(const rr_platform::speedConstPtr &msg) {
     speed_set_point = -msg->speed;
@@ -54,7 +56,7 @@ void steeringCallback(const rr_platform::steeringConstPtr &msg) {
 
 void jointStateCallback(const sensor_msgs::JointStateConstPtr &msg) {
 
-    auto iter = std::find(msg->name.begin(), msg->name.end(), std::string{"axle_to_left_wheel"});
+    auto iter = std::find(msg->name.begin(), msg->name.end(), left_motor_joint_name);
 
     if(iter != msg->name.end()) {
         auto index = std::distance(msg->name.begin(),iter);
@@ -62,7 +64,7 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr &msg) {
         speed_measured_left = (-msg->velocity[index]) * ( wheel_circumference / ( 2 * M_PI ) );
     }
 
-    iter = std::find(msg->name.begin(), msg->name.end(), std::string{"axle_to_right_wheel"});
+    iter = std::find(msg->name.begin(), msg->name.end(), right_motor_joint_name);
 
     if(iter != msg->name.end()) {
         auto index = std::distance(msg->name.begin(),iter);
@@ -99,22 +101,38 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "macaroni_controller");
 
     ros::NodeHandle handle;
+    ros::NodeHandle private_handle("~");
 
-    ros::Publisher leftDrivePublisher = handle.advertise<std_msgs::Float64>("/left_wheel_effort_controller/command", 1);
+    assertions::getParam(private_handle, "wheelbase", chassis_length);
+    assertions::getParam(private_handle, "track", chassis_width);
+    assertions::getParam(private_handle, "max_torque", max_torque);
+    double wheel_radius;
+    assertions::getParam(private_handle, "wheel_radius_back", wheel_radius);
+    double speed_kP;
+    assertions::getParam(private_handle, "speed_kP", speed_kP);
+    double speed_kD;
+    assertions::getParam(private_handle, "speed_kD", speed_kD);
+    double speed_kI;
+    assertions::getParam(private_handle, "speed_kI", speed_kI);
+    assertions::getParam(private_handle, "left_motor_joint_name", left_motor_joint_name);
+    assertions::getParam(private_handle, "right_motor_joint_name", right_motor_joint_name);
 
-    ros::Publisher rightDrivePublisher = handle.advertise<std_msgs::Float64>("/right_wheel_effort_controller/command", 1);
+    inv_chassis_length = 1.0 / chassis_length;
+    chassis_width_2 = chassis_width / 2.0;
+    wheel_circumference = 2.0 * M_PI * wheel_radius;
 
-    ros::Publisher leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/left_steer_position_controller/command", 1);
-
-    ros::Publisher rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
-
-    ros::Publisher chassisStatePublisher = handle.advertise<rr_platform::chassis_state>("/chassis_state", 1);
+    auto leftDrivePublisher = handle.advertise<std_msgs::Float64>("/left_wheel_effort_controller/command", 1);
+    auto rightDrivePublisher = handle.advertise<std_msgs::Float64>("/right_wheel_effort_controller/command", 1);
+    auto leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/left_steer_position_controller/command", 1);
+    auto rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
+    auto chassisStatePublisher = handle.advertise<rr_platform::chassis_state>("/chassis_state", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
-
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
-
     auto stateSub = handle.subscribe("/joint_states", 1, jointStateCallback);
+
+    PIDController left_controller{speed_kP, speed_kI, speed_kD};
+    PIDController right_controller{speed_kP, speed_kI, speed_kD};
 
     ros::Rate rate{30};
     while(ros::ok()) {
