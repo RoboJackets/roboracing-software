@@ -1,6 +1,6 @@
-[submodule "pointgrey_camera_driver"]
-	path = pointgrey_camera_driver
+[submodule "third_party/pointgrey_camera_driver"]
+	path = third_party/pointgrey_camera_driver
 	url = https://github.com/ros-drivers/pointgrey_camera_driver.git
-[submodule "rj-ros-common"]
-	path = rj-ros-common
+[submodule "third_party/rj-ros-common"]
+	path = third_party/rj-ros-common
 	url = https://github.com/RoboJackets/rj-ros-common.git
