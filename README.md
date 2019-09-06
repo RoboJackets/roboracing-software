@@ -1,6 +1,6 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.jpeg" >
+![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.jpeg "Photo by Brian Cochran")
 
 Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software repository! This document will give you a brief outline of the repository's layout and some simple instructions for setting up the project. For more detailed information, please visit the [wiki](https://wiki.robojackets.org/RoboRacing).
 
