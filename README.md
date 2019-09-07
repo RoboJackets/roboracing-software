@@ -52,5 +52,5 @@ roslaunch rr_gazebo macaroni_avc.launch
 ```
 Then, the following command will start our race AI and drive the car around the track:
 ```
-roslaunch rr_gazebo iarrc_circuit_sim.launch
+roslaunch rr_iarrc iarrc_circuit_sim.launch
 ```
