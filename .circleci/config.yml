@@ -98,7 +98,7 @@ jobs:
           catkin_make run_tests -j2 -DCATKIN_BLACKLIST_PACKAGES="parameter_assertions;"
           catkin_test_results
       - <<: *save_test_cache
-    format:
+  format:
       working_directory: ~/catkin_ws/src/igvc-software
       <<: *image
       steps:
