@@ -104,7 +104,7 @@ jobs:
       steps:
         - <<: *load_src_cache
         - checkout:
-            path: ~/catkin_ws/src/igvc-software
+            path: ~/catkin_ws/src/roboracing-software
         - <<: *save_src_cache
         - run: |
             apt-get update -y
