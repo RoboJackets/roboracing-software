@@ -54,14 +54,8 @@ defaults: &load_workspace
   attach_workspace:
     at: ~/catkin_ws
 
-defaults: &submodules_update
-  run:
-    name: update submodules
-    command: |
-      cd ~/catkin_ws/src/roboracing-software
-      git submodule sync
-      git submodule update --init
-
+checkout_submodules: &checkout_submodules
+  run: cd ~/catkin_ws/src/roboracing-software && git submodule sync && git submodule update --init
 
 version: 2
 jobs:
@@ -72,7 +66,7 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
-      - <<: *submodules_update
+      - <<: *checkout_submodules
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
@@ -88,7 +82,7 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
-      - <<: *submodules_update
+      - <<: *checkout_submodules
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_workspace
@@ -123,6 +117,9 @@ jobs:
 
 workflows:
   version: 2
+  format:
+    jobs:
+      - format
   build_and_test:
     jobs:
       - compile
