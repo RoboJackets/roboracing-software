@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
+
+    <include file="$(find rr_iarrc)/launch/perception/local_mapper_sim.launch">
+        <arg name="obstacles_topic" value="/scan/pointcloud"/>
+    </include>
+
+    <include file="$(find rr_iarrc)/launch/planners/mpc_planner_circuit_sim.launch"/>
+</launch>
