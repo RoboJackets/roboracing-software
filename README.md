@@ -1,8 +1,8 @@
 # RoboRacing Software [![CircleCI](https://circleci.com/gh/RoboJackets/roboracing-software.svg?style=svg)](https://circleci.com/gh/RoboJackets/roboracing-software)
 
-<img src="https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.png" width="1500" height="500">
+![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.jpeg "Photo by Brian Cochran")
 
-Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software repository! This document will give you a brief outline of the repository's layout and some simple instructions for setting up the project. For more detailed information, please visit the [wiki](https://github.com/RoboJackets/roboracing-software/wiki).
+Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software repository! This document will give you a brief outline of the repository's layout and some simple instructions for setting up the project. For more detailed information, please visit the [wiki](https://wiki.robojackets.org/RoboRacing).
 
 [![Software Lead](https://img.shields.io/badge/Software%20Lead-Daniel%20Martin-blue.svg)](https://github.com/daniel-martin576)
 
@@ -41,7 +41,6 @@ This repository should be cloned into the src directory of a catkin workspace. U
 
 For a guide on installing our code please go to [our guide](https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions).
 
-Join our [Slack](https://robojackets.slack.com/)!
 
 ## Simulation
 
