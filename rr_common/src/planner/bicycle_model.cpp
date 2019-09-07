@@ -2,23 +2,19 @@
 
 #include <numeric>
 
-
 namespace rr {
 
-BicycleModel::BicycleModel(double wheel_base, double max_lateral_accel,
-             double distance_increment, double max_speed, double max_steer_rate,
-             const std::vector<int>& segment_sections)
-    : wheel_base(wheel_base),
-      max_lateral_accel(max_lateral_accel),
-      distance_increment(distance_increment),
-      max_steer_rate(max_steer_rate),
-      segment_sections(segment_sections),
-      max_speed(max_speed),
-      current_steering_(0)
-{
+BicycleModel::BicycleModel(double wheel_base, double max_lateral_accel, double distance_increment, double max_speed,
+                           double max_steer_rate, const std::vector<int>& segment_sections)
+  : wheel_base(wheel_base)
+  , max_lateral_accel(max_lateral_accel)
+  , distance_increment(distance_increment)
+  , max_steer_rate(max_steer_rate)
+  , segment_sections(segment_sections)
+  , max_speed(max_speed)
+  , current_steering_(0) {
   last_steering_update_ = ros::Time::now();
 }
-
 
 void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<PathPoint>& path_points) {
   const size_t n_path_segments = control.size();
@@ -90,8 +86,7 @@ double BicycleModel::SteeringToSpeed(double steer_angle) {
   if (steer_angle < 1e-3) {
     out = max_speed;
   } else {
-    double vRaw = std::sqrt(max_lateral_accel * wheel_base
-                            / std::sin(steer_angle));
+    double vRaw = std::sqrt(max_lateral_accel * wheel_base / std::sin(steer_angle));
     out = std::min(vRaw, max_speed);
   }
   return out;

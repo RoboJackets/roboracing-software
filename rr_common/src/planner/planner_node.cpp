@@ -1,17 +1,16 @@
-#include <ros/ros.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
-#include <pcl_conversions/pcl_conversions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/transforms.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <ros/ros.h>
 
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 
 #include "planner/annealing_planner.h"
 #include "planner/random_sample_planner.h"
-
 
 std::unique_ptr<rr::Planner> planner;
 std::unique_ptr<rr::DistanceChecker> distance_checker;
@@ -26,7 +25,7 @@ rr_platform::steeringPtr steer_message;
 sensor_msgs::PointCloud2ConstPtr last_map_msg;
 bool is_new_msg;
 
-enum reverse_state_t {OK, CAUTION, REVERSE};
+enum reverse_state_t { OK, CAUTION, REVERSE };
 
 ros::Duration caution_duration;
 ros::Duration reverse_duration;
@@ -38,7 +37,6 @@ ros::Time last_speed_time;
 double max_drive_accel;
 
 double steering_gain;
-
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
   last_map_msg = map;
@@ -93,22 +91,19 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
         caution_start_time = now;
       }
     }
-  }
-  else if (CAUTION == reverse_state) {
+  } else if (CAUTION == reverse_state) {
     if (!plan.has_collision) {
       reverse_state = OK;
     } else if (now - caution_start_time > caution_duration) {
       reverse_state = REVERSE;
       reverse_start_time = now;
     }
-  }
-  else if (REVERSE == reverse_state) {
+  } else if (REVERSE == reverse_state) {
     if (now - reverse_start_time > reverse_duration) {
       reverse_state = CAUTION;
       caution_start_time = now;
     }
-  }
-  else {
+  } else {
     ROS_WARN_STREAM("Planner encountered unknown reverse state");
   }
 
@@ -137,7 +132,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
   speed_pub.publish(speed_message);
   steer_pub.publish(steer_message);
 
-  if(path_pub.getNumSubscribers() > 0) {
+  if (path_pub.getNumSubscribers() > 0) {
     nav_msgs::Path pathMsg;
 
     for (auto path_point : plan.path) {
@@ -218,8 +213,7 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
   return params;
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   ros::init(argc, argv, "planner");
 
   ros::NodeHandle nh;
@@ -250,7 +244,7 @@ int main(int argc, char** argv)
   auto obstacle_cloud_topic = getParamAssert<std::string>(nhp, "input_cloud_topic");
   auto planner_type = getParamAssert<std::string>(nhp, "planner_type");
 
-  if (planner_type == "random_sample"){
+  if (planner_type == "random_sample") {
     auto params = getRandomSampleParams(nhp);
     planner = std::make_unique<rr::RandomSamplePlanner>(*distance_checker, model, params);
   } else if (planner_type == "annealing") {

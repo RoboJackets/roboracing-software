@@ -3,35 +3,32 @@
 #include <random>
 #include <vector>
 
+#include "bicycle_model.h"
+#include "distance_checker.h"
 #include "planner.h"
 #include "planner_types.hpp"
-#include "distance_checker.h"
-#include "bicycle_model.h"
 
 namespace rr {
 
-class AnnealingPlanner : public Planner
-{
+class AnnealingPlanner : public Planner {
 public:
-
   struct Params {
     unsigned int n_path_segments;  // number of segments in a path
     unsigned int annealing_steps;  // number of timesteps to run simulated annealing
-    double temperature_start;  // temperature parameter starts high and decreases
+    double temperature_start;      // temperature parameter starts high and decreases
     double temperature_end;
-    double k_dist;  // importance of distance in cost function
-    double k_speed;  // importance of speed/straightness in cost fn
-    double k_final_pose;  // importance of final position in cost function
-    double k_angle;  // cost penalty for not going straight
+    double k_dist;             // importance of distance in cost function
+    double k_speed;            // importance of speed/straightness in cost fn
+    double k_final_pose;       // importance of final position in cost function
+    double k_angle;            // cost penalty for not going straight
     double collision_penalty;  // cost penalty for a collision
-    double acceptance_scale;  // strictness for accepting bad paths
-    double max_steering;  // max steering angle output
+    double acceptance_scale;   // strictness for accepting bad paths
+    double max_steering;       // max steering angle output
   };
 
   AnnealingPlanner(const DistanceChecker&, const BicycleModel&, const Params&);
 
   ~AnnealingPlanner() = default;
-
 
   /**
    * Given a map of the world, find the best path through it
@@ -41,7 +38,6 @@ public:
   PlannedPath Plan(const PCLMap& map);
 
 private:
-
   /**
    * Probabilistically jiggle a vector of control inputs (steering angles) to an optimization neighbor
    * @param ctrl Out param, list of steering angles which we will test

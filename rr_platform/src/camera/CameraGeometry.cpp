@@ -1,11 +1,10 @@
 #include <rr_platform/CameraGeometry.h>
 
-#include <cmath>
-#include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
+#include <tf/transform_listener.h>
+#include <cmath>
 
 #include <rr_platform/angle_utils.hpp>
-
 
 namespace rr {
 
@@ -14,14 +13,12 @@ void CameraGeometry::CameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& m
   image_size_cols_ = msg->width;
   double fx = msg->P[0];  // horizontal focal length of rectified image, in px
   double fy = msg->P[5];  // vertical focal length
-  cam_fov_x_ = 2 * atan2(image_size_cols_, 2*fx);
-  cam_fov_y_ = 2 * atan2(image_size_rows_, 2*fy);
+  cam_fov_x_ = 2 * atan2(image_size_cols_, 2 * fx);
+  cam_fov_y_ = 2 * atan2(image_size_rows_, 2 * fy);
   received_camera_info_ = true;
 }
 
-bool CameraGeometry::LoadFOV(ros::NodeHandle &nh, const std::string &camera_info_topic,
-                             const double timeout)
-{
+bool CameraGeometry::LoadFOV(ros::NodeHandle& nh, const std::string& camera_info_topic, const double timeout) {
   received_camera_info_ = false;
 
   // temporary camera info subscriber is destroyed after one message
@@ -41,8 +38,8 @@ bool CameraGeometry::LoadFOV(ros::NodeHandle &nh, const std::string &camera_info
   return received_camera_info_;
 }
 
-bool CameraGeometry::LoadCameraPose(const std::string &camera_link_name, const double timeout) {
-  geometry_msgs::PoseStamped ps_src_cam;  // source pose, origin
+bool CameraGeometry::LoadCameraPose(const std::string& camera_link_name, const double timeout) {
+  geometry_msgs::PoseStamped ps_src_cam;   // source pose, origin
   geometry_msgs::PoseStamped ps_dst_base;  // destination pose, camera frame origin from base_footprint
 
   ps_src_cam.pose.orientation.w = 1.0;  // set orientation in x-axis direction
@@ -72,8 +69,7 @@ bool CameraGeometry::LoadCameraPose(const std::string &camera_link_name, const d
 }
 
 bool CameraGeometry::LoadInfo(ros::NodeHandle& nh, const std::string& camera_info_topic,
-                              const std::string& camera_link_name, const double timeout)
-{
+                              const std::string& camera_link_name, const double timeout) {
   // ROS simulated time is sometimes wonky when Gazebo is starting up. Make sure we actually have a time
   //   before doing anything that can time out
   while (ros::Time::now().toSec() == 0) {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ros/node_handle.h>
-#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Vector3.h>
+#include <ros/node_handle.h>
 #include <sensor_msgs/CameraInfo.h>
 
 namespace rr {
@@ -21,8 +21,8 @@ public:
    * @return Whether the information was loaded within "timeout" seconds. If false,
    *         user must publish information on the appropriate topics or make up values.
    */
-  bool LoadInfo(ros::NodeHandle& nh, const std::string& camera_info_topic,
-                const std::string& camera_link_name, double timeout);
+  bool LoadInfo(ros::NodeHandle& nh, const std::string& camera_info_topic, const std::string& camera_link_name,
+                double timeout);
 
   /**
    * Return loaded camera pose, both location and quaternion orientation.
@@ -99,7 +99,6 @@ public:
    */
   std::tuple<bool, geometry_msgs::Point> ProjectToWorld(int row, int col);
 
-
 protected:
   geometry_msgs::Pose camera_pose_;
 
@@ -110,7 +109,6 @@ protected:
   int image_size_cols_;
 
   bool received_camera_info_;
-
 
   void CameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg);
 

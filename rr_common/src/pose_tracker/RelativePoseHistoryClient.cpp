@@ -11,8 +11,7 @@ namespace rr {
  * @return pose at time t
  */
 RelativePoseHistoryClient::Pose linear_interp(const geometry_msgs::PoseStamped& p1,
-                                              const geometry_msgs::PoseStamped& p2,
-                                              const ros::Time& t) {
+                                              const geometry_msgs::PoseStamped& p2, const ros::Time& t) {
   RelativePoseHistoryClient::Pose out_pose;
 
   // lambda = similarity to p2
@@ -81,7 +80,7 @@ RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime
 
     else {
       // case 2.3: requested time is between two existing points
-      out_pose = linear_interp(poses[i], poses[i-1], t);
+      out_pose = linear_interp(poses[i], poses[i - 1], t);
     }
   }
 

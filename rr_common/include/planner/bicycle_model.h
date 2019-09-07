@@ -6,11 +6,10 @@
 
 #include "planner_types.hpp"
 
-
 namespace rr {
 
 class BicycleModel {
- public:
+public:
   /**
    * Constructor. Units are metric standard: m, m/s, m/s^2, rad/s
    * @param wheel_base Distance from front axle to back axle
@@ -32,7 +31,6 @@ class BicycleModel {
    */
   void RollOutPath(const std::vector<double>& control, std::vector<PathPoint>& path_points);
 
-
   /**
    * move the tracked steering angle of the car towards the value that
    * the car has been commanded to steer. This tracks the ROS time it is called, so it
@@ -47,8 +45,7 @@ class BicycleModel {
    */
   double GetCurrentSteeringAngle();
 
- private:
-
+private:
   /**
    * Calculate a desired speed from a steering angle based on
    * a maximum acceptable lateral acceleration. See
@@ -75,7 +72,6 @@ class BicycleModel {
    * @return Estimated steering angle of platform after dt has elapsed
    */
   double IncrementSteering(double current, double target, double dt);
-
 
   const double wheel_base;
   const double max_lateral_accel;

@@ -10,10 +10,9 @@ double last_speed = 0;
 
 namespace rr {
 
-RandomSamplePlanner::RandomSamplePlanner(
-    const DistanceChecker& distance_checker, const BicycleModel& model,
-    const Params& params_ext)
-      : distance_checker_(distance_checker), params(params_ext), model_(model) {
+RandomSamplePlanner::RandomSamplePlanner(const DistanceChecker& distance_checker, const BicycleModel& model,
+                                         const Params& params_ext)
+  : distance_checker_(distance_checker), params(params_ext), model_(model) {
   prev_steering_angles_.resize(params.smoothing_array_size, 0);
   prev_steering_angles_index_ = 0;
 
@@ -38,7 +37,7 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
   bool is_collision;
   double dist;
 
-  for(const auto& path_point : path) {
+  for (const auto& path_point : path) {
     std::tie(is_collision, dist) = distance_checker_.GetCollisionDistance(path_point.pose);
 
     if (is_collision) {
@@ -54,9 +53,7 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
   return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-std::vector<int> RandomSamplePlanner::GetLocalMinima(
-    const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
-
+std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
   std::vector<int> local_minima_indices;
   auto n_samples = plans.size();
   auto n_path_segments = plans[0].get().control.size();
@@ -64,8 +61,8 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
   if (n_samples > 0) {
     // fill flann-format sample matrix
     double sampleArray[n_samples * n_path_segments];
-    for(int i = 0; i < n_samples; i++) {
-      for(int j = 0; j < n_path_segments; j++) {
+    for (int i = 0; i < n_samples; i++) {
+      for (int j = 0; j < n_path_segments; j++) {
         sampleArray[i * n_path_segments + j] = plans[i].get().control[j];
       }
     }
@@ -93,11 +90,10 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
       }
 
       // perform radius search
-      for(int d = 0; d < n_path_segments; d++) {
+      for (int d = 0; d < n_path_segments; d++) {
         ctrl[0][d] = samples[i][d];
       }
-      int n_neighbors = flannIndex.radiusSearch(ctrl, indices, dists,
-                                                searchRadius, searchParams);
+      int n_neighbors = flannIndex.radiusSearch(ctrl, indices, dists, searchRadius, searchParams);
 
       // Iterate through neighbors, tracking if lower costs exist.
       // Any neighbors in radius that have higher costs are not local minima.
@@ -106,7 +102,7 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
       for (int j = 0; j < n_neighbors; j++) {
         int found_index = indices[0][j];
 
-        if (found_index == i) {  //handle index of query later
+        if (found_index == i) {  // handle index of query later
           continue;
         }
 
@@ -118,7 +114,7 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(
       }
 
       samples_known_status[i] = true;
-      if(!any_better_in_area) {
+      if (!any_better_in_area) {
         // includes regions with only one point
         local_minima_indices.push_back(i);
       }
@@ -143,7 +139,6 @@ double RandomSamplePlanner::FilterOutput(double this_steer) {
 }
 
 PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
-
   // allocate planned paths
   std::vector<PlannedPath> plans;
 
@@ -199,12 +194,12 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
   int best_index = -1;
   double best_curviness = 0;
   for (int i : local_minima_indices) {
-    double curviness = 0; // square of euclidean distance from zero turning
+    double curviness = 0;  // square of euclidean distance from zero turning
     for (auto x : good_plans[i].get().control) {
-      curviness += x*x;
+      curviness += x * x;
     }
 
-    if(best_index == -1 || curviness < best_curviness) {
+    if (best_index == -1 || curviness < best_curviness) {
       best_index = i;
       best_curviness = curviness;
     }
@@ -216,8 +211,7 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
   double dist;
   double min_dist = 10000;
   for (const auto& path_point : best_plan.path) {
-    std::tie(is_collision, dist)
-        = distance_checker_.GetCollisionDistance(path_point.pose);
+    std::tie(is_collision, dist) = distance_checker_.GetCollisionDistance(path_point.pose);
 
     if (dist < min_dist) {
       min_dist = dist;

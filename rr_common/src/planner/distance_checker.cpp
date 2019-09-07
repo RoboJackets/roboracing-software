@@ -3,8 +3,7 @@
 namespace rr {
 
 DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_size)
-  : hitbox_(box), map_size_(map_size), cache_resolution_(10.0)
-{
+  : hitbox_(box), map_size_(map_size), cache_resolution_(10.0) {
   cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
   cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
   cache_rows_ = cache_rows_front_ + cache_rows_back_;
@@ -27,7 +26,6 @@ DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_
   hitbox_corner_dist_ = std::sqrt(half_length * half_length + half_width * half_width);
 }
 
-
 int DistanceChecker::GetCacheIndex(double x, double y) {
   int r = static_cast<int>(x * cache_resolution_) + cache_rows_back_;
   if (r < 0 || r >= cache_rows_) {
@@ -42,7 +40,6 @@ int DistanceChecker::GetCacheIndex(double x, double y) {
   return r * cache_cols_ + c;
 }
 
-
 PCLPoint DistanceChecker::GetPointFromIndex(int i) {
   int r = i / cache_cols_;
   int c = i % cache_cols_;
@@ -53,13 +50,11 @@ PCLPoint DistanceChecker::GetPointFromIndex(int i) {
   return out;
 }
 
-
 double DistanceChecker::Dist(const PCLPoint& p1, const PCLPoint& p2) {
   double dx = p1.x - p2.x;
   double dy = p1.y - p2.y;
   return std::sqrt(dx * dx + dy * dy);
 }
-
 
 void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
   for (CacheEntry& v : cache_) {
@@ -84,7 +79,7 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     int c = i % cache_cols_;
     for (int dr = -1; dr <= 1; dr++) {
       for (int dc = -1; dc <= 1; dc++) {
-        if (r + dr < 0 || r + dr >= cache_rows_  || c + dc < 0 || c + dc >= cache_cols_) {
+        if (r + dr < 0 || r + dr >= cache_rows_ || c + dc < 0 || c + dc >= cache_cols_) {
           continue;
         }
 
@@ -124,7 +119,7 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
       int c = j % cache_cols_;
       for (int dr = -1; dr <= 1; dr++) {
         for (int dc = -1; dc <= 1; dc++) {
-          if (r + dr < 0 || r + dr >= cache_rows_  || c + dc < 0 || c + dc >= cache_cols_) {
+          if (r + dr < 0 || r + dr >= cache_rows_ || c + dc < 0 || c + dc >= cache_cols_) {
             continue;
           }
 
@@ -164,8 +159,8 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose)
       entry.might_hit_points.push_back(entry.nearest_point);
     }
 
-    for (const PCLPoint *p_ptr : entry.might_hit_points) {
-      const PCLPoint &point = *p_ptr;
+    for (const PCLPoint* p_ptr : entry.might_hit_points) {
+      const PCLPoint& point = *p_ptr;
 
       // note that this is inverse kinematics here. We have origin -> robot but
       // want robot -> origin
@@ -212,10 +207,8 @@ std::tuple<bool, double> DistanceChecker::GetCollisionDistance(const Pose& pose)
 }
 
 bool DistanceChecker::GetCollision(const PCLPoint& relative_point) {
-  return (relative_point.x < hitbox_.length_front)
-      && (relative_point.x > -hitbox_.length_back)
-      && (relative_point.y < hitbox_.width_left)
-      && (relative_point.y > -hitbox_.width_right);
+  return (relative_point.x < hitbox_.length_front) && (relative_point.x > -hitbox_.length_back) &&
+         (relative_point.y < hitbox_.width_left) && (relative_point.y > -hitbox_.width_right);
 }
 
 }  // namespace rr

@@ -1,11 +1,11 @@
 #include <deque>
 
-#include <ros/ros.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl_ros/transforms.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/transforms.h>
+#include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 
 #include <rr_common/RelativePoseHistoryClient.h>
@@ -31,8 +31,7 @@ pcl::VoxelGrid<pcl::PointXYZ> filter;
 ros::Duration time_horizon;
 std::vector<geometry_msgs::Point> in_frame_polygon;
 
-
-void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
+void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr& msg) {
   // populate new source pair
   auto& new_source = sources.emplace_front();
   pcl::fromROSMsg<pcl::PointXYZ>(*msg, new_source.cloud);
@@ -57,7 +56,7 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
 
     // construct Transform object for offset from current pose to source pose
     tf::Quaternion rotation = tf::createQuaternionFromYaw(relative_pose_2d.theta);
-    tf::Vector3 translation = {relative_pose_2d.x, relative_pose_2d.y, 0};
+    tf::Vector3 translation = { relative_pose_2d.x, relative_pose_2d.y, 0 };
     tf::Transform transform(rotation, translation);
 
     // apply linear transformation
@@ -69,7 +68,7 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     if (is_newest_source) {
       local_map_unfiltered->insert(local_map_unfiltered->end(), transformed_cloud.begin(), transformed_cloud.end());
     } else {
-      for (int point_idx = transformed_cloud.size()-1; point_idx >= 0; point_idx--) {
+      for (int point_idx = transformed_cloud.size() - 1; point_idx >= 0; point_idx--) {
         const auto& pt = transformed_cloud.points[point_idx];
         bool add;
         if (pt.x < in_frame_polygon[0].x) {
@@ -78,7 +77,7 @@ void obstacles_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
           bool inside_all = true;
           for (int i = 0; i < 4; i++) {
             const auto& border1 = in_frame_polygon[i];
-            const auto& border2 = in_frame_polygon[(i+1) % 4];
+            const auto& border2 = in_frame_polygon[(i + 1) % 4];
             Eigen::Vector2d diff(pt.x - border1.x, pt.y - border1.y);
             Eigen::Vector2d normal(border1.y - border2.y, border2.x - border1.x);
 

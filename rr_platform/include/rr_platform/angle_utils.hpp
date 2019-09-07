@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cmath>
 #include <tf/transform_datatypes.h>
+#include <cmath>
 
 namespace rr {
 
@@ -20,7 +20,6 @@ double fix_angle(double theta) {
   return theta;
 }
 
-
 /**
  * Find the smallest angle between two headings
  * @param theta1 heading at time t
@@ -33,13 +32,10 @@ double heading_diff(double theta1, double theta2) {
   double naive_diff = theta2 - theta1;
 
   // enumerate possible smallest diffs and select the lowest magnitude
-  auto diff_options = {naive_diff, naive_diff - 2*M_PI, naive_diff + 2*M_PI};
-  auto abs_compare = [](double x, double y) {
-    return std::abs(x) < std::abs(y);
-  };
+  auto diff_options = { naive_diff, naive_diff - 2 * M_PI, naive_diff + 2 * M_PI };
+  auto abs_compare = [](double x, double y) { return std::abs(x) < std::abs(y); };
   return std::min(diff_options, abs_compare);
 }
-
 
 /**
  * Get the roll, pitch, and yaw values from a pose
@@ -55,7 +51,6 @@ std::tuple<double, double, double> poseToRPY(const geometry_msgs::Pose& pose) {
 
   return std::make_tuple(roll, pitch, yaw);
 }
-
 
 /**
  * Get the yaw value from a pose

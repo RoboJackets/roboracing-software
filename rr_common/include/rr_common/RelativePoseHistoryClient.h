@@ -1,9 +1,8 @@
 #pragma once
 
-#include <ros/ros.h>
 #include <geometry_msgs/Pose2D.h>
 #include <nav_msgs/Path.h>
-
+#include <ros/ros.h>
 
 namespace rr {
 

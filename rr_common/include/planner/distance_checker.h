@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include <tuple>
 #include <deque>
+#include <tuple>
 
 #include "planner_types.hpp"
 
 namespace rr {
 
 class DistanceChecker {
- public:
+public:
   /**
    * Constructor
    * @param hitbox Hitbox of the robot
@@ -53,17 +53,16 @@ class DistanceChecker {
    */
   double Dist(const PCLPoint& p1, const PCLPoint& p2);
 
- private:
-
+private:
   /*
    * Caching system: map from discretized x, y location to its nearest neighbor in
    * the map/obstacle point cloud
    */
   struct CacheEntry {
-    PCLPoint location;  // x, y location represented by this entry
+    PCLPoint location;                              // x, y location represented by this entry
     std::vector<const PCLPoint*> might_hit_points;  // map points which are close enough to check collisions
-    const PCLPoint* nearest_point;  // nearest neighbor in obstacle map
-    const CacheEntry* parent;  // BFS parent
+    const PCLPoint* nearest_point;                  // nearest neighbor in obstacle map
+    const CacheEntry* parent;                       // BFS parent
   };
 
   /*
@@ -72,8 +71,8 @@ class DistanceChecker {
   int GetCacheIndex(double x, double y);
   PCLPoint GetPointFromIndex(int i);
 
-  std::vector<CacheEntry> cache_;  // cache storage
-  std::deque<int> cache_updates_;  // queue for updating the cache in breath-first order
+  std::vector<CacheEntry> cache_;    // cache storage
+  std::deque<int> cache_updates_;    // queue for updating the cache in breath-first order
   std::vector<char> cache_visited_;  // boolean (but not vector<bool>) mask for tracking which
                                      // locations have been updated
   int cache_rows_front_;

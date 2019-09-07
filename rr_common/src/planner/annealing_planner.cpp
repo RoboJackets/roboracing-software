@@ -3,8 +3,7 @@
 namespace rr {
 
 AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel& m, const Params& p)
-  : distance_checker_(c), model_(m), params(p)
-{
+  : distance_checker_(c), model_(m), params(p) {
   for (int i = 0; i < params.annealing_steps; i++) {
     rr::PlannedPath& path = path_pool_.emplace_back();
     path.control = std::vector<double>(params.n_path_segments, 0);
@@ -16,8 +15,7 @@ AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel&
   max_path_length_ = path_pool_[0].path.back().pose.x;
 }
 
-void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vector<double>& source,
-                                      unsigned int t) {
+void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vector<double>& source, unsigned int t) {
   auto it_ctrl = ctrl.begin();
   auto it_source = source.begin();
   for (; it_ctrl != ctrl.end(); ++it_ctrl, ++it_source) {
@@ -30,8 +28,7 @@ void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vect
 }
 
 double AnnealingPlanner::GetTemperature(unsigned int t) {
-  static const double K = std::log(params.temperature_end / params.temperature_start)
-                          / params.annealing_steps;
+  static const double K = std::log(params.temperature_end / params.temperature_start) / params.annealing_steps;
 
   return params.temperature_start * std::exp(K * t);
 }
@@ -71,9 +68,8 @@ PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
   double dist = 0;
 
   auto best_prev_control = path_pool_[best_idx].control;  // copy
-  std::for_each(path_pool_.begin(), path_pool_.end(), [&best_prev_control](rr::PlannedPath& path) {
-    path.control = best_prev_control;
-  });
+  std::for_each(path_pool_.begin(), path_pool_.end(),
+                [&best_prev_control](rr::PlannedPath& path) { path.control = best_prev_control; });
 
   distance_checker_.SetMap(map);
 

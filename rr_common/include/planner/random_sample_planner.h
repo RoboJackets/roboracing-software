@@ -4,17 +4,15 @@
 #include <tuple>
 #include <vector>
 
+#include "planner/bicycle_model.h"
+#include "planner/distance_checker.h"
 #include "planner/planner.h"
 #include "planner/planner_types.hpp"
-#include "planner/distance_checker.h"
-#include "planner/bicycle_model.h"
 
 namespace rr {
 
-class RandomSamplePlanner : public Planner
-{
+class RandomSamplePlanner : public Planner {
 public:
-
   struct Params {
     // path generation
     int n_path_segments;
@@ -40,9 +38,7 @@ public:
     double obs_dist_slow_ratio;
   };
 
-
-  RandomSamplePlanner(const DistanceChecker&, const BicycleModel&,
-                      const Params&);
+  RandomSamplePlanner(const DistanceChecker&, const BicycleModel&, const Params&);
 
   ~RandomSamplePlanner() = default;
 
@@ -52,7 +48,6 @@ public:
   PlannedPath Plan(const PCLMap& map);
 
 private:
-
   /*
    * SampleSteering: get a random steering value from a normal
    * distribution. Each path stage has a potentially different bell
@@ -74,8 +69,8 @@ private:
   std::tuple<bool, double> GetCost(const std::vector<PathPoint>& path);
 
   /*
-   * GetLocalMinima: A "clustering" function. Given a set of paths, find local 
-   * cost minima in the space of control vectors and return these indices from 
+   * GetLocalMinima: A "clustering" function. Given a set of paths, find local
+   * cost minima in the space of control vectors and return these indices from
    * the input list.
    * Params:
    * paths - list of all PlannedPaths
@@ -83,14 +78,12 @@ private:
    * Return:
    * list of indices of selected paths
    */
-  std::vector<int> GetLocalMinima(
-      const std::vector<std::reference_wrapper<PlannedPath>>& plans);
+  std::vector<int> GetLocalMinima(const std::vector<std::reference_wrapper<PlannedPath>>& plans);
 
-  /* 
+  /*
    * FilterOutput: Apply a filter to the outputs of this planner over time
    */
   double FilterOutput(double this_steer);
-
 
   // algorithm parameters
   const Params params;
@@ -102,9 +95,8 @@ private:
   std::vector<double> prev_steering_angles_;
   int prev_steering_angles_index_;
 
-  std::vector<std::normal_distribution<float> > steering_gaussians_;
+  std::vector<std::normal_distribution<float>> steering_gaussians_;
   std::mt19937 rand_gen_;
 };
-
 
 }  // namespace rr

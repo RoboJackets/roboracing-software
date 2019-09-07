@@ -1,13 +1,12 @@
 #include <deque>
 
-#include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <ros/ros.h>
 #include <tf/transform_datatypes.h>
 
-#include <rr_platform/chassis_state.h>
 #include <rr_platform/axes.h>
+#include <rr_platform/chassis_state.h>
 #include <rr_platform/angle_utils.hpp>
-
 
 // Types
 using ChassisState = rr_platform::chassis_state;
@@ -20,12 +19,10 @@ struct HistoryPoint {
   double yaw;
 };
 
-
 // globals
 double speed_;
 double yaw_;
 ros::Time most_recent_data_time;
-
 
 void chassis_state_callback(const ChassisState::ConstPtr& msg) {
   speed_ = msg->speed_mps;
@@ -37,7 +34,6 @@ void orientation_callback(const Orientation::ConstPtr& msg) {
   most_recent_data_time = msg->header.stamp;
 }
 
-
 /**
  * Work from the current time and calculate where we must have been previously
  * @param next_pose Pose at the end of this time slice
@@ -45,8 +41,8 @@ void orientation_callback(const Orientation::ConstPtr& msg) {
  * @param h2 HistoryPoint at end of time slice
  * @return Pose at the beginning of this time slice
  */
-geometry_msgs::PoseStamped step_reverse(const geometry_msgs::PoseStamped& next_pose,
-                                        const HistoryPoint& h1, const HistoryPoint& h2) {
+geometry_msgs::PoseStamped step_reverse(const geometry_msgs::PoseStamped& next_pose, const HistoryPoint& h1,
+                                        const HistoryPoint& h2) {
   // set travel heading as average between start and end of time slice
   // note that this is relative to current heading
   double travel_heading_end = rr::poseToYaw(next_pose.pose);
@@ -69,7 +65,6 @@ geometry_msgs::PoseStamped step_reverse(const geometry_msgs::PoseStamped& next_p
 
   return pose_stamped;
 }
-
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "pose_tracker_server");

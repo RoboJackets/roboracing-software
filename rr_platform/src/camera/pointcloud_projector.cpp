@@ -1,12 +1,12 @@
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
-#include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
+#include <nodelet/nodelet.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pluginlib/class_list_macros.h>
+#include <ros/ros.h>
 
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -28,7 +28,6 @@ private:
   int downsample_factor_;
   bool cam_geom_ready_;
   std::thread load_info_thread_;
-
 
   void ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
     if (!cam_geom_ready_) {
