@@ -6,31 +6,31 @@ defaults: &image
     - image: robojackets/roboracing-baseimage:latest
 
 defaults: &install_deps
-  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='realsense2_camera pointgrey_camera_driver libuvc_camera'
+  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='libuvc_camera'
 
 defaults: &save_src_cache
   save_cache:
     key: source-v1-{{ .Branch }}-{{ .Revision }}
     paths:
-    - "~/catkin_ws/src/roboracing-software/.git"
+      - "~/catkin_ws/src/roboracing-software/.git"
 defaults: &load_src_cache
   restore_cache:
     keys:
-    - source-v1-{{ .Branch }}-{{ .Revision }}
-    - source-v1-{{ .Branch }}-
-    - source-v1-
+      - source-v1-{{ .Branch }}-{{ .Revision }}
+      - source-v1-{{ .Branch }}-
+      - source-v1-
 defaults: &save_compile_cache
   save_cache:
     key: ccache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
     paths:
-    - ~/.ccache
+      - ~/.ccache
 defaults: &load_compile_cache
   restore_cache:
     keys:
-    - ccache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-    - ccache-{{ arch }}-{{ .Branch }}
-    - ccache-{{ arch }}
-    - ccache-
+      - ccache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+      - ccache-{{ arch }}-{{ .Branch }}
+      - ccache-{{ arch }}
+      - ccache-
 defaults: &save_test_cache
   save_cache:
     key: ccache-test-{{ arch }}-{{ .Branch }}-{{ .Revision }}
@@ -54,6 +54,15 @@ defaults: &load_workspace
   attach_workspace:
     at: ~/catkin_ws
 
+defaults: &submodules_update
+  run:
+    name: update submodules
+    command: |
+      cd ~/catkin_ws/src/roboracing-software
+      git submodule sync
+      git submodule update --init
+
+
 version: 2
 jobs:
   compile:
@@ -63,10 +72,13 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
+      - <<: *submodules_update
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
-      - run: source /opt/ros/melodic/setup.sh && catkin_make -j2
+      - run: |
+          source /opt/ros/melodic/setup.sh
+          catkin_make -j2 -DCATKIN_BLACKLIST_PACKAGES="pointgrey_camera_driver;"
       - <<: *save_compile_cache
       - <<: *save_workspace
   test:
@@ -76,11 +88,15 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
+      - <<: *submodules_update
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_workspace
       - <<: *load_test_cache
-      - run: source /opt/ros/melodic/setup.sh && catkin_make run_tests && catkin_test_results
+      - run: |
+          source /opt/ros/melodic/setup.sh
+          catkin_make run_tests -j2 -DCATKIN_BLACKLIST_PACKAGES="parameter_assertions;"
+          catkin_test_results
       - <<: *save_test_cache
 
 workflows:
