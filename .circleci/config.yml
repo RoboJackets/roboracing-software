@@ -99,7 +99,7 @@ jobs:
           catkin_test_results
       - <<: *save_test_cache
   format:
-      working_directory: ~/catkin_ws/src/igvc-software
+      working_directory: ~/catkin_ws/src/roboracing-software
       <<: *image
       steps:
         - <<: *load_src_cache
