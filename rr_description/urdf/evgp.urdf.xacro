@@ -6,8 +6,8 @@
 
     <xacro:macro name="null_inertia">
         <inertial>
-            <mass value="0.001"/>
-            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            <mass value="0.0001"/>
+            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
         </inertial>
     </xacro:macro>
 
@@ -79,13 +79,37 @@
         <xacro:null_inertia/>
     </link>
 
+    <link name="lidar">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <cylinder radius="0.1" length="0.1"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="camera_center">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.05 0.05 0.05"/>
+            </geometry>
+        </visual>
+        <visual>
+            <origin rpy="0 ${pi/2} 0" xyz="0.05 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.05"/>
+            </geometry>
+        </visual>
+    </link>
+
 
     <!-- ************************** Joints *************************** -->
 
     <joint name="base_footprint_to_mesh_origin" type="fixed">
         <parent link="base_footprint"/>
         <child link="body_visual_origin"/>
-        <origin xyz="1.45 0.508 -0.051"  rpy="${pi/2} 0 ${-pi/2}"/>
+        <origin xyz="1.45 0.515 -0.051"  rpy="${pi/2} 0 ${-pi/2}"/>
     </joint>
 
     <joint name="base_footprint_to_body_inertial_center" type="fixed">
@@ -128,6 +152,104 @@
     </xacro:macro>
     <xacro:steering_joints steering_link="steering_link_left" wheel_link="wheel_FL" y="${props['track'] / 2}"/>
     <xacro:steering_joints steering_link="steering_link_right" wheel_link="wheel_FR" y="${-props['track'] / 2}"/>
+
+    <joint name="base_footprint_to_lidar" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="lidar"/>
+        <origin xyz="1.2 0 0.18" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="base_footprint_to_camera_center" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="camera_center"/>
+        <origin xyz="0.1 0 0.7" rpy="0 0.2 0"/>
+    </joint>
+
+    <xacro:macro name="camera_optical_frame" params="camera_link">
+        <link name="${camera_link}_optical">
+            <xacro:null_inertia/>
+        </link>
+        <joint name="${camera_link}_to_optical" type="fixed">
+            <parent link="${camera_link}"/>
+            <child link="${camera_link}_optical"/>
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:camera_optical_frame camera_link="camera_center"/>
+
+
+    <!-- ******************* Sensors *********************** -->
+
+    <!-- SICK TiM551 -->
+    <gazebo reference="lidar">
+        <sensor type="gpu_ray" name="lidar_sensor">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>15</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>270</samples>
+                        <resolution>1</resolution>  <!-- controls interpolation, leave at 1 -->
+                        <min_angle>${-pi*0.75}</min_angle>
+                        <max_angle>${pi*0.75}</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.10</min>
+                    <max>8.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.02</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+                <topicName>/scan</topicName>
+                <frameName>lidar</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <!-- FLIR Blackfly + wide-angle lens -->
+    <gazebo reference="camera_center">
+        <sensor name="camera_sensor" type="camera">
+            <camera>
+                <horizontal_fov>1.6955</horizontal_fov>
+                <image>
+                    <width>1280</width>
+                    <height>964</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>100</far>
+                </clip>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.007</stddev>
+                </noise>
+            </camera>
+            <always_on>true</always_on>
+            <update_rate>15</update_rate>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <alwaysOn>true</alwaysOn>
+                <cameraName>camera_center</cameraName>
+                <imageTopicName>image_color_rect</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <frameName>camera_center_optical</frameName>
+                <distortionK1>0.0</distortionK1>
+                <distortionK2>0.0</distortionK2>
+                <distortionK3>0.0</distortionK3>
+                <distortionT1>0.0</distortionT1>
+                <distortionT2>0.0</distortionT2>
+            </plugin>
+        </sensor>
+    </gazebo>
 
 
     <!-- ****************** Actuators ********************** -->

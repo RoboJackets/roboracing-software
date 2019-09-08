@@ -4,7 +4,7 @@ dictitems:
   cfm: 0.0
   contact_max_correcting_vel: 100.0
   contact_surface_layer: 0.005
-  erp: 0.2
+  erp: 0.8
   gravity_x: 0.0
   gravity_y: 0.0
   gravity_z: -9.8
@@ -14,7 +14,7 @@ dictitems:
       cfm: 0.0
       contact_max_correcting_vel: 100.0
       contact_surface_layer: 0.005
-      erp: 0.2
+      erp: 0.8
       gravity_x: 0.0
       gravity_y: 0.0
       gravity_z: -9.8
@@ -27,19 +27,19 @@ dictitems:
       parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       parent: 0
-      sor_pgs_iters: 200
-      sor_pgs_precon_iters: 20
+      sor_pgs_iters: 500
+      sor_pgs_precon_iters: 50
       sor_pgs_rms_error_tol: 0.0
-      sor_pgs_w: 1.5
+      sor_pgs_w: 1.7
       state: true
       time_step: 0.002
       type: ''
     state: []
   max_contacts: 20
   max_update_rate: 500.0
-  sor_pgs_iters: 200
-  sor_pgs_precon_iters: 20
+  sor_pgs_iters: 500
+  sor_pgs_precon_iters: 50
   sor_pgs_rms_error_tol: 0.0
-  sor_pgs_w: 1.5
+  sor_pgs_w: 1.7
   time_step: 0.002
 state: []

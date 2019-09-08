@@ -1,12 +1,12 @@
-wheelbase: 1.0
-track: 1.0
+wheelbase: 0.97
+track: 1.04
 
 max_steering: 0.3
 steering_speed: 2.0
 
 body_mass: 50
 body_inertia: [1, 0, 0, 2, 0, 1]  # ixx ixy ixz iyy iyz, izz
-body_com: [0.75, 0, 0.2]  # x y z from footprint base
+body_com: [0.4, 0, 0.1]  # x y z from footprint base
 
 wheel_mass: 1
 wheel_radius_front: 0.125

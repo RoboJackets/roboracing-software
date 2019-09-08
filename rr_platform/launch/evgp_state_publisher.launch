@@ -1,4 +1,9 @@
 <launch>
     <param name="robot_description" command="cat $(find rr_description)/urdf/evgp.urdf"/>
     <node name="evgp_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
+
+    <node name="tf_pub_left_wheel" pkg="tf2_ros" type="static_transform_publisher" output="screen" required="false"
+          args="0 0 0  0 1.5708 1.5708  steering_link_left wheel_FL"/>
+    <node name="tf_pub_right_wheel" pkg="tf2_ros" type="static_transform_publisher" output="screen" required="false"
+          args="0 0 0  0 1.5708 1.5708  steering_link_right wheel_FR"/>
 </launch>

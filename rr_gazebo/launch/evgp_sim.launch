@@ -6,17 +6,22 @@
 
     <param name="/use_sim_time" value="true" />
 
+    <rosparam ns="/camera_center/image_color_rect">
+        disable_pub_plugins:
+        - "image_transport/compressed"
+        - "image_transport/theora"
+        - "image_transport/compressedDepth"
+    </rosparam>
+
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
-          args="-e ode $(arg world)" required="false">
-        <remap from="/camera_center/image_raw" to="/camera_center/image_color_rect"/>
-    </node>
+          args="-e ode $(arg world)" required="true"/>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
     <include file="$(find rr_platform)/launch/evgp_state_publisher.launch"/>
 
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
-        <param name="min_point_dist" type="double" value="0"/>
+        <param name="min_point_dist" type="double" value="0.1"/>
     </node>
 
     <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
@@ -25,7 +30,7 @@
                 right_steer_position_controller left_steer_position_controller
                 --shutdown-timeout 1"/>
 
-    <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" respawn="false" output="screen">
+    <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" required="true" output="screen">
         <rosparam command="load" file="$(find rr_description)/conf/evgp_car_params.yaml"/>
         <rosparam>
             max_torque: 20
