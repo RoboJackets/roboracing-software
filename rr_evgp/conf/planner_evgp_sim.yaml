@@ -1,0 +1,30 @@
+collision_hitbox:
+  front: 1.5
+  back: 0.1
+  side: 0.65
+
+max_speed: 2.0
+max_drive_accel: 10
+
+wheel_base: 0.97
+lateral_accel: 2.0
+max_steering: 0.3
+steering_speed: 1000
+steering_gain: 1.0
+
+planner_type: "annealing"
+
+n_path_segments: 3
+distance_increment: 0.1
+segment_sections: "20 20 20"
+
+temperature_start: 0.2
+temperature_end: 0.02
+annealing_steps: 1000
+
+k_dist: 2.0
+k_speed: 1.0
+k_final_pose: 0
+k_angle: 1.0
+collision_penalty: 100
+acceptance_scale: 0.0007

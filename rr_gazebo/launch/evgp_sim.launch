@@ -1,5 +1,5 @@
 <launch>
-    <arg name="world" default="worlds/empty.world"/>
+    <arg name="world" default="$(find rr_gazebo)/worlds/empty.world"/>
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="heading" default="0"/>

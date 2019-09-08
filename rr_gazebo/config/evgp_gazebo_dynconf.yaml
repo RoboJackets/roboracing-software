@@ -22,24 +22,24 @@ dictitems:
         state: []
       id: 0
       max_contacts: 20
-      max_update_rate: 500.0
+      max_update_rate: 400.0
       name: Default
       parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       parent: 0
-      sor_pgs_iters: 500
+      sor_pgs_iters: 300
       sor_pgs_precon_iters: 50
       sor_pgs_rms_error_tol: 0.0
       sor_pgs_w: 1.7
       state: true
-      time_step: 0.002
+      time_step: 0.0025
       type: ''
     state: []
   max_contacts: 20
-  max_update_rate: 500.0
-  sor_pgs_iters: 500
+  max_update_rate: 400.0
+  sor_pgs_iters: 300
   sor_pgs_precon_iters: 50
   sor_pgs_rms_error_tol: 0.0
   sor_pgs_w: 1.7
-  time_step: 0.002
+  time_step: 0.0025
 state: []
