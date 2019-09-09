@@ -46,7 +46,7 @@ For a guide on installing our code please go to [our guide](https://wiki.robojac
 
 You can get started with the RoboRacing code base right away by launching our simulator!
 
-The following command will load our platform in the Sparkfun AVC track:
+The following command will load our platform in the IARRC circuit track:
 ```
 roslaunch rr_gazebo macaroni_iarrc_circuit.launch
 ```
