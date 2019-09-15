@@ -9,7 +9,7 @@
 namespace rr_rviz_plugins {
 
 ExamplePanel::ExamplePanel(QWidget *parent)
-  : rviz::Panel(parent)  // Base class constructor
+    : rviz::Panel(parent)  // Base class constructor
 {
     // Panels are allowed to interact with NodeHandles directly just like ROS
     // nodes.

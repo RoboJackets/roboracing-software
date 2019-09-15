@@ -12,7 +12,7 @@ namespace rr {
 
 RandomSamplePlanner::RandomSamplePlanner(const DistanceChecker& distance_checker, const BicycleModel& model,
                                          const Params& params_ext)
-  : distance_checker_(distance_checker), params(params_ext), model_(model) {
+    : distance_checker_(distance_checker), params(params_ext), model_(model) {
     prev_steering_angles_.resize(params.smoothing_array_size, 0);
     prev_steering_angles_index_ = 0;
 

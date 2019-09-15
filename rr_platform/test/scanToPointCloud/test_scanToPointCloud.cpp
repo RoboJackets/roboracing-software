@@ -7,9 +7,9 @@
 class ScanToPointCloudTestSuite : public testing::Test {
   public:
     ScanToPointCloudTestSuite()
-      : handle()
-      , scan_pub(handle.advertise<sensor_msgs::LaserScan>("scan", 1))
-      , pc_sub(handle.subscribe("scan/pointcloud", 1, &ScanToPointCloudTestSuite::cloudCallback, this)) {}
+        : handle()
+        , scan_pub(handle.advertise<sensor_msgs::LaserScan>("scan", 1))
+        , pc_sub(handle.subscribe("scan/pointcloud", 1, &ScanToPointCloudTestSuite::cloudCallback, this)) {}
 
     void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg) {
         cloud_msg = *msg;

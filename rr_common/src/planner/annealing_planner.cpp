@@ -3,7 +3,7 @@
 namespace rr {
 
 AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel& m, const Params& p)
-  : distance_checker_(c), model_(m), params(p) {
+    : distance_checker_(c), model_(m), params(p) {
     for (int i = 0; i < params.annealing_steps; i++) {
         rr::PlannedPath& path = path_pool_.emplace_back();
         path.control = std::vector<double>(params.n_path_segments, 0);

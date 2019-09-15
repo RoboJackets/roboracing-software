@@ -7,11 +7,11 @@
 class JoystickDriverTestSuite : public testing::Test {
   public:
     JoystickDriverTestSuite()
-      : handle()
-      , handle_private("~")
-      , joy_pub(handle.advertise<sensor_msgs::Joy>("/joy", 1))
-      , speed_sub(handle.subscribe("/speed", 1, &JoystickDriverTestSuite::speedCallback, this))
-      , steering_sub(handle.subscribe("/steering", 1, &JoystickDriverTestSuite::steeringCallback, this)) {
+        : handle()
+        , handle_private("~")
+        , joy_pub(handle.advertise<sensor_msgs::Joy>("/joy", 1))
+        , speed_sub(handle.subscribe("/speed", 1, &JoystickDriverTestSuite::speedCallback, this))
+        , steering_sub(handle.subscribe("/steering", 1, &JoystickDriverTestSuite::steeringCallback, this)) {
         handle_private.param("speed_max", speed_max, 0.0f);
         handle_private.param("angle_max", angle_max, 0.0f);
         handle_private.param("speed_axis", speed_axis, 0);
