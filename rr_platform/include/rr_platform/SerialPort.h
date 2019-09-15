@@ -4,23 +4,23 @@
 #include <string>
 
 class SerialPort {
-public:
-  SerialPort() = default;
+  public:
+    SerialPort() = default;
 
-  ~SerialPort();
+    ~SerialPort();
 
-  bool Open(const std::string &device, const unsigned int baud);
+    bool Open(const std::string &device, const unsigned int baud);
 
-  void Close();
+    void Close();
 
-  void Write(std::string message);
+    void Write(std::string message);
 
-  std::string ReadLine();
+    std::string ReadLine();
 
-private:
-  int port_handle_;
+  private:
+    int port_handle_;
 
-  void SetProperties(unsigned int baud);
+    void SetProperties(unsigned int baud);
 };
 
 #endif  // SERIALPORT_H
