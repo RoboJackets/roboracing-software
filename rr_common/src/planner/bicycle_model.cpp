@@ -6,13 +6,13 @@ namespace rr {
 
 BicycleModel::BicycleModel(double wheel_base, double max_lateral_accel, double distance_increment, double max_speed,
                            double max_steer_rate, const std::vector<int>& segment_sections)
-    : wheel_base(wheel_base)
-    , max_lateral_accel(max_lateral_accel)
-    , distance_increment(distance_increment)
-    , max_steer_rate(max_steer_rate)
-    , segment_sections(segment_sections)
-    , max_speed(max_speed)
-    , current_steering_(0) {
+      : wheel_base(wheel_base)
+      , max_lateral_accel(max_lateral_accel)
+      , distance_increment(distance_increment)
+      , max_steer_rate(max_steer_rate)
+      , segment_sections(segment_sections)
+      , max_speed(max_speed)
+      , current_steering_(0) {
     last_steering_update_ = ros::Time::now();
 }
 

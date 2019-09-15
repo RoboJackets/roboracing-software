@@ -3,7 +3,7 @@
 namespace rr {
 
 DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_size)
-    : hitbox_(box), map_size_(map_size), cache_resolution_(10.0) {
+      : hitbox_(box), map_size_(map_size), cache_resolution_(10.0) {
     cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
     cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
     cache_rows_ = cache_rows_front_ + cache_rows_back_;
