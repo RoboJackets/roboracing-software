@@ -13,8 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   rr_platform
   cv_bridge
   pcl_ros
-  sick_tim
-  laser_geometry
   image_transport
   message_generation
 )

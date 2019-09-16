@@ -11,11 +11,11 @@
     </node>
 
     <node pkg="rr_common" type="planner" name="planner" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim_avc_track.yaml"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml"/>
         <rosparam>
             input_cloud_topic: /current_obstacles
-            impasse_caution_duration: 1000
-            impasse_reverse_duration: 0.1
+            impasse_caution_duration: 0.25
+            impasse_reverse_duration: 4.0
         </rosparam>
     </node>
 

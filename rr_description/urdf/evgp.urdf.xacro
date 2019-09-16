@@ -61,8 +61,8 @@
             </collision>
         </link>
         <gazebo reference="${name}">
-            <mu1>0.7</mu1>
-            <mu2>0.7</mu2>
+            <mu1>5.0</mu1>
+            <mu2>5.0</mu2>
             <kp>1000000</kp>
             <kd>1000000</kd>
         </gazebo>
