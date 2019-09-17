@@ -17,6 +17,12 @@
         </geometry>
     </xacro:macro>
 
+    <xacro:macro name="set_link_color" params="link color">
+        <gazebo reference="${link}">
+            <material>Gazebo/${color}</material>
+        </gazebo>
+    </xacro:macro>
+
     <link name="base_footprint">
         <xacro:null_inertia/>
     </link>
@@ -30,6 +36,7 @@
             <xacro:mesh_geometry/>
         </collision>
     </link>
+    <xacro:set_link_color link="body_visual_origin" color="Grey"/>
 
     <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
     <link name="body_inertial_center">
@@ -66,6 +73,7 @@
             <kp>1000000</kp>
             <kd>1000000</kd>
         </gazebo>
+        <xacro:set_link_color link="${name}" color="Black"/>
     </xacro:macro>
     <xacro:wheel_link name="wheel_BL" radius="${props['wheel_radius_back']}" width="${props['wheel_width_back']}"/>
     <xacro:wheel_link name="wheel_BR" radius="${props['wheel_radius_back']}" width="${props['wheel_width_back']}"/>
@@ -87,6 +95,7 @@
             </geometry>
         </visual>
     </link>
+    <xacro:set_link_color link="lidar" color="Gold"/>
 
     <link name="gps_link">
         <xacro:null_inertia/>
@@ -96,8 +105,9 @@
             </geometry>
         </visual>
     </link>
+    <xacro:set_link_color link="gps_link" color="Gold"/>
 
-    <link name="camera_center">
+    <link name="camera">
         <xacro:null_inertia/>
         <visual>
             <geometry>
@@ -111,6 +121,7 @@
             </geometry>
         </visual>
     </link>
+    <xacro:set_link_color link="camera" color="Gold"/>
 
 
     <!-- ************************** Joints *************************** -->
@@ -175,9 +186,9 @@
         <origin xyz="0.5 0.5 0.1" rpy="0 0 0"/>
     </joint>
 
-    <joint name="base_footprint_to_camera_center" type="fixed">
+    <joint name="base_footprint_to_camera" type="fixed">
         <parent link="base_footprint"/>
-        <child link="camera_center"/>
+        <child link="camera"/>
         <origin xyz="0.1 0 0.7" rpy="0 0.2 0"/>
     </joint>
 
@@ -192,7 +203,7 @@
         </joint>
     </xacro:macro>
 
-    <xacro:camera_optical_frame camera_link="camera_center"/>
+    <xacro:camera_optical_frame camera_link="camera"/>
 
 
     <!-- ******************* Sensors *********************** -->
@@ -231,7 +242,7 @@
     </gazebo>
 
     <!-- FLIR Blackfly + wide-angle lens -->
-    <gazebo reference="camera_center">
+    <gazebo reference="camera">
         <sensor name="camera_sensor" type="camera">
             <camera>
                 <horizontal_fov>1.6955</horizontal_fov>
@@ -254,10 +265,10 @@
             <update_rate>15</update_rate>
             <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <alwaysOn>true</alwaysOn>
-                <cameraName>camera_center</cameraName>
+                <cameraName>camera</cameraName>
                 <imageTopicName>image_color_rect</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>camera_center_optical</frameName>
+                <frameName>camera_optical</frameName>
                 <distortionK1>0.0</distortionK1>
                 <distortionK2>0.0</distortionK2>
                 <distortionK3>0.0</distortionK3>
