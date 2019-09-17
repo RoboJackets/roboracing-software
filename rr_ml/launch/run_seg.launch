@@ -7,5 +7,6 @@
         <param name="model_path" type="string" value="$(find rr_ml)/models/segmentation/$(arg model).h5" />
         <param name="image_topic" type="string" value="$(arg image_topic)"/>
         <param name="detection_topic" type="string" value="$(arg detection_topic)"/>
+        <param name="polling_rate" type="double" value="500"/>
     </node>
 </launch>

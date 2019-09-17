@@ -34,6 +34,7 @@ def main():
     path_to_model = rospy.get_param('~model_path')
     image_topic = rospy.get_param('~image_topic')
     detection_topic = rospy.get_param('~detection_topic')
+    polling_rate = rospy.get_param("~polling_rate")
 
     detect_pub = rospy.Publisher(detection_topic, Image, queue_size=1)
     visualizer_pub = rospy.Publisher("~detect_vis", Image, queue_size=1)
@@ -47,7 +48,7 @@ def main():
 
     while not rospy.is_shutdown():
         if last_msg is None:
-            time.sleep(0.01)
+            time.sleep(1.0 / polling_rate)
             continue
 
         try:
