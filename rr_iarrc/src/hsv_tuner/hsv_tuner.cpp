@@ -16,18 +16,18 @@ rr_iarrc::hsv_tuned hsv_msg;
 const int hsv_slider_max = 255;
 const int saving_slider_max = 1;
 
-int32_t white_h_low_slider;     
+int32_t white_h_low_slider;
 int32_t white_s_low_slider;
-int32_t white_v_low_slider; 
-int32_t white_h_high_slider;        
+int32_t white_v_low_slider;
+int32_t white_h_high_slider;
 int32_t white_s_high_slider;
 int32_t white_v_high_slider;
 
 int32_t saving_slider =  0;
 
-std::string package_path = ros::package::getPath("rr_iarrc");    
-std::string load_file_path; 
-    
+std::string package_path = ros::package::getPath("rr_iarrc");
+std::string load_file_path;
+
 
 // Callback for trackbar
 void on_trackbar( int, void* ){
@@ -46,7 +46,7 @@ void on_trackbar( int, void* ){
 
 void loadValues(){
     string line;
-    int value; 
+    int value;
     ifstream myfile (load_file_path);
     if (myfile.is_open()){
         ROS_INFO("Loading HSV values.");
@@ -92,22 +92,22 @@ void saveValues(int, void*){
         strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
         std::string date_time(buffer);
 
-        ofstream myfile (package_path + "/saved_hsv/"+ date_time+".txt", ios::out); 
+        ofstream myfile (package_path + "/saved_hsv/"+ date_time+".txt", ios::out);
 
         if (myfile.is_open()){
-            ROS_INFO("Saving HSV values");   
+            ROS_INFO("Saving HSV values");
             myfile << white_h_low_slider << endl;
             myfile << white_s_low_slider << endl;
             myfile << white_v_low_slider << endl;
             myfile << white_h_high_slider << endl;
-            myfile << white_s_high_slider << endl;  
+            myfile << white_s_high_slider << endl;
             myfile << white_v_high_slider << endl;
             myfile.close();
-            saving_slider = 0; 
+            saving_slider = 0;
         }else{
             ROS_INFO("Unable to open file");
-        } 
-    } 
+        }
+    }
 }
 
 int main(int argc, char **argv) {
@@ -118,9 +118,11 @@ int main(int argc, char **argv) {
     ros::NodeHandle nhp("~");
 
     std::string default_load_file_path = package_path + "/saved_hsv/example.txt" ;
-    nhp.param(std::string("load_file"), load_file_path ,default_load_file_path);
-    
-    hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>("/hsv_tuned", 1);
+    nhp.param(std::string("load_file"), load_file_path, default_load_file_path);
+
+    std::string values_topic;
+    nhp.getParam("values_topic", values_topic);
+    hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>(values_topic, 1);
 
     rr_iarrc::hsv_tuned hsv_tuned_msg;
     hsv_tuned_msg.header.frame_id = "hsv_tuned";
@@ -163,7 +165,7 @@ int main(int argc, char **argv) {
     createTrackbar(saving_slider_label, "HSV Tuner", &saving_slider, saving_slider_max, saveValues);
 
     while(ros::ok()) {
-        ros::spinOnce();       
+        ros::spinOnce();
         waitKey(1);
     }
     return 0;

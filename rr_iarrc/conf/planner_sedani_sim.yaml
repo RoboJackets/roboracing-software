@@ -1,0 +1,13 @@
+collision_hitbox:
+  front: 0.3
+  back: 0.1
+  side: 0.1
+
+max_speed: 2.0
+max_drive_accel: 10
+
+wheel_base: 0.4
+lateral_accel: 1.0
+max_steering: 0.4
+steering_speed: 1000
+steering_gain: 1.0

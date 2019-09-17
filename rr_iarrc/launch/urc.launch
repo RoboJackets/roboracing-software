@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
+
+    <include file="$(dirname)/perception/sign_detector.launch"/>
+
+    <include file="$(dirname)/perception/urc_sides_merger.launch"/>
+    <include file="$(dirname)/planner/urc_centerline_planner.launch"/>
+
+    <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
+        <param name="startSignal" type="string" value="/start_detected"/>
+        <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="turn_speed" type="double" value="1.0"/>
+        <param name="left_turn_steering" type="double" value="-0.28"/>
+        <param name="right_turn_steering" type="double" value="0.46"/>
+        <param name="left_offset" type="double" value="-0.1"/>
+        <param name="right_offset" type="double" value="-0.1"/>
+       	<param name="forward_timeout" type="double" value="3.0"/>
+    </node>
+
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera_center"/>
+    </include>
+
+    <include file="$$(dirname)/perception/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_left"/>
+    </include>
+
+    <include file="$(dirname)/perception/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_right"/>
+    </include>
+
+
+    <node pkg="rr_platform" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/camera_center/lines/detection_img"/>
+        <param name="camera_info_topic" value="/camera_center/camera_info"/>
+        <param name="camera_link_name" value="camera_center"/>
+        <param name="px_per_meter" value="50"/>
+        <param name="map_dist_max" value="4.0"/>
+        <param name="map_dist_min" value="0.0"/>
+
+        <param name="fallback_fov_horizontal" value="1.6955"/>
+        <param name="fallback_fov_vertical" value="1.3758"/>
+        <param name="fallback_image_width" value="1280"/>
+        <param name="fallback_image_height" value="964"/>
+    </node>
+
+</launch>

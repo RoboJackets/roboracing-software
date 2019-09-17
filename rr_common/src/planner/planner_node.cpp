@@ -9,8 +9,8 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 
-#include "random_sample_planner.h"
-#include "annealing_planner.h"
+#include "planner/annealing_planner.h"
+#include "planner/random_sample_planner.h"
 
 
 std::unique_ptr<rr::Planner> planner;
@@ -34,6 +34,9 @@ ros::Time caution_start_time;
 ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
+ros::Time last_speed_time;
+double max_drive_accel;
+
 double steering_gain;
 
 
@@ -54,28 +57,26 @@ void update_messages(double speed, double angle) {
 
 void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
   pcl::PCLPointCloud2 pcl_pc2;
-  pcl_conversions::toPCL(*map, pcl_pc2);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+  rr::PCLMap cloud;
 
-  for(auto point_it = cloud->begin(); point_it != cloud->end();) {
+  pcl_conversions::toPCL(*map, pcl_pc2);
+  pcl::fromPCLPointCloud2(pcl_pc2, cloud);
+
+  for (auto point_it = cloud.begin(); point_it != cloud.end();) {
     if (distance_checker->GetCollision(*point_it)) {
-      point_it = cloud->erase(point_it);
+      point_it = cloud.erase(point_it);
     } else {
       point_it++;
     }
   }
 
-  if (cloud->empty()) {
+  if (cloud.empty()) {
     // Do not publish new commands
     ROS_WARN("environment map pointcloud is empty");
     return;
   }
 
-  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree(false);
-  kdtree.setInputCloud(cloud);
-
-  rr::PlannedPath plan = planner->Plan(kdtree);
+  rr::PlannedPath plan = planner->Plan(cloud);
 
   ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
 
@@ -117,8 +118,21 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
   } else if (plan.has_collision) {
     ROS_INFO_STREAM("Planner: no path found but not reversing; reusing previous message");
   } else {
-    update_messages(plan.path[0].speed, plan.path[0].steer * steering_gain);
+    // filter/cap acceleration
+    double dt;
+    if (last_speed_time == ros::Time(0)) {
+      dt = 0;
+    } else {
+      dt = (ros::Time::now() - last_speed_time).toSec();
+    }
+
+    double max_new_speed = speed_message->speed + max_drive_accel * dt;
+    double new_speed = std::min(plan.path.front().speed, max_new_speed);
+
+    update_messages(new_speed, plan.path[0].steer * steering_gain);
   }
+
+  last_speed_time = ros::Time::now();
 
   speed_pub.publish(speed_message);
   steer_pub.publish(steer_message);
@@ -193,7 +207,7 @@ rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
   params.k_dist = getParamAssert<double>(nhp, "k_dist");
   params.k_speed = getParamAssert<double>(nhp, "k_speed");
   params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
-  params.backwards_penalty = getParamAssert<double>(nhp, "backwards_penalty");
+  params.k_angle = getParamAssert<double>(nhp, "k_angle");
   params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
   params.max_steering = getParamAssert<double>(nhp, "max_steering");
   params.acceptance_scale = getParamAssert<double>(nhp, "acceptance_scale");
@@ -212,9 +226,10 @@ int main(int argc, char** argv)
   ros::NodeHandle nhp("~");
 
   rr::CenteredBox box;
-  box.length_front = getParamAssert<double>(nhp, "collision_dist_front");
-  box.length_back = getParamAssert<double>(nhp, "collision_dist_back");
-  box.width_left = box.width_right = getParamAssert<double>(nhp, "collision_dist_side");
+  ros::NodeHandle nh_hitbox(nhp, "collision_hitbox");
+  box.length_front = getParamAssert<double>(nh_hitbox, "front");
+  box.length_back = getParamAssert<double>(nh_hitbox, "back");
+  box.width_left = box.width_right = getParamAssert<double>(nh_hitbox, "side");
 
   rr::CenteredBox map_dimensions;
   map_dimensions.length_front = 7;
@@ -251,6 +266,9 @@ int main(int argc, char** argv)
   caution_start_time = ros::Time(0);
   reverse_start_time = ros::Time(0);
   reverse_state = OK;
+
+  last_speed_time = ros::Time(0);
+  max_drive_accel = getParamAssert<double>(nhp, "max_drive_accel");
 
   steering_gain = getParamAssert<double>(nhp, "steering_gain");
 

@@ -6,7 +6,7 @@
 
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
           args="-e ode $(arg world)" required="false">
-        <remap from="/camera/image_raw" to="/camera/image_rect"/>
+        <remap from="/camera_center/image_raw" to="/camera_center/image_color_rect"/>
     </node>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
@@ -25,6 +25,9 @@
 
     <node name="sim_controller" pkg="rr_gazebo" type="macaroni_controller" respawn="false" output="screen" />
 
+    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />
+
     <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_macaroni_platform.sh" 
           args="$(arg start_pose)"/>
+
 </launch>

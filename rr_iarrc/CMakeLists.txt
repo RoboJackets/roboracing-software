@@ -26,6 +26,7 @@ find_package(PCL REQUIRED filters)
 add_message_files(
     FILES
     hsv_tuned.msg
+    urc_sign.msg
 )
 
 generate_messages(
@@ -37,7 +38,7 @@ generate_messages(
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
 )
 
@@ -47,19 +48,22 @@ catkin_package(
 
 ## Specify additional locations of header files
 include_directories(
-  include
+#  include
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${EIGEN_INCLUDE_DIRS}
 )
 
-
 add_subdirectory(src/color_detector)
-add_subdirectory(src/stoplight_watcher)
+add_subdirectory(src/startlight_watcher)
 add_subdirectory(src/finish_line_watcher)
 add_subdirectory(src/qualify)
 add_subdirectory(src/ol_reliable)
 add_subdirectory(src/hsv_tuner)
 add_subdirectory(src/laplacian_line_detection)
-
+add_subdirectory(src/drag_centerline_planner)
+add_subdirectory(src/cone_detection)
+add_subdirectory(src/urc_controller)
+add_subdirectory(src/turning_test)
+add_subdirectory(src/sign_detector)
+add_subdirectory(src/urc_image_merger)

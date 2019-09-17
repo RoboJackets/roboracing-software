@@ -50,5 +50,4 @@ include_directories(
 add_library(rr_avc src/start_detector/start_detector.cpp src/finish_detector/finish_detector.cpp)
 target_link_libraries(rr_avc ${catkin_LIBRARIES})
 
-add_subdirectory(src/obstacle_history)
 add_subdirectory(src/color_detector)

@@ -11,6 +11,7 @@ const int FINISHED = 2;
 int REQ_FINISH_LINE_CROSSES;
 std::string startSignal;
 std::string resetSignal;
+std::string finishLineCrossesSignal;
 
 
 ros::Publisher steerPub;
@@ -23,6 +24,11 @@ bool raceStarted;
 int finishLineCrosses;
 
 ros::Time finishTime;
+double steeringAfterFinishTime;
+
+ros::Time startTime;
+ros::Duration slowSpeedStartTime;
+double slowSpeedFactor;
 
 void updateState() {
     switch(state) {
@@ -31,24 +37,29 @@ void updateState() {
             steering = 0.0;
             if(raceStarted) {
                 state = RUNNING_PLANNER;
+                startTime = ros::Time::now();
             }
             break;
         case RUNNING_PLANNER:
-            speed = planSpeed;
-            steering = planSteering;
             if(finishLineCrosses >= REQ_FINISH_LINE_CROSSES) {
                 state = FINISHED;
                 finishTime = ros::Time::now();
             } else {
-                speed = planSpeed;
+                if(startTime + slowSpeedStartTime < ros::Time::now()) {
+                    speed = planSpeed * slowSpeedFactor;
+                } else {
+                    speed = planSpeed;
+                }
                 steering = planSteering;
             }
             break;
         case FINISHED:
-            //ROS_INFO("finished");
-            if( (ros::Time::now() - finishTime) > ros::Duration(0.5)) {
-                speed = 0.0;
+            speed = 0.0; //@note: -1 brakes, 0 coasts
+            //Continue steering until we have stopped moving.
+            if (ros::Time::now() - finishTime > ros::Duration(steeringAfterFinishTime)) {
                 steering = 0.0;
+            } else {
+                steering = planSteering;
             }
             break;
         default:
@@ -93,12 +104,18 @@ int main(int argc, char** argv) {
     nhp.getParam("req_finish_line_crosses", REQ_FINISH_LINE_CROSSES);
     nhp.getParam("startSignal", startSignal);
     nhp.getParam("resetSignal", resetSignal);
+    nhp.getParam("finishLineCrossesSignal", finishLineCrossesSignal);
+    nhp.getParam("steeringAfterFinishTime", steeringAfterFinishTime);
+    nhp.param("slowSpeedFactor", slowSpeedFactor, 1.0);
+    double slowSpeedDuration;
+    nhp.param("slowSpeedStartTime", slowSpeedDuration, 10000.0);
+    slowSpeedStartTime = ros::Duration(slowSpeedDuration);
     ROS_INFO("required finish line crosses = %d", REQ_FINISH_LINE_CROSSES);
 
     auto planSpeedSub = nh.subscribe("plan/speed", 1, planSpeedCB);
     auto planSteerSub = nh.subscribe("plan/steering", 1, planSteerCB);
     auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
-    auto finishLineSub = nh.subscribe("/camera/finish_line_crosses", 1, finishLineCB);
+    auto finishLineSub = nh.subscribe(finishLineCrossesSignal, 1, finishLineCB);
     auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
 
     speedPub = nh.advertise<rr_platform::speed>("/speed", 1);

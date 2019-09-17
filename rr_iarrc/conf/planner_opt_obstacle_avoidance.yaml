@@ -1,0 +1,16 @@
+planner_type: "annealing"
+
+n_path_segments: 3
+distance_increment: 0.1
+segment_sections: "14 14 14"
+
+temperature_start: 0.2
+temperature_end: 0.02
+annealing_steps: 1000
+
+k_dist: 0.9
+k_speed: 1.0
+k_final_pose: 15.0
+k_angle: 1.0
+collision_penalty: 50
+acceptance_scale: 0.003

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+
+    <include file="$(dirname)/perception/laplacian_line_detector_front.launch"/>
+
+    <include file="$(dirname)/perception/lines_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+    </include>
+
+    <include file="$(dirname)/perception/cone_bottom_detector.launch"/>
+
+    <include file="$(dirname)/perception/cones_projector.launch">
+        <arg name="use_camera_manager" value="true"/>
+    </include>
+
+    <node pkg="rr_common" type="pointcloud_combiner" name="lines_combiner" output="screen">
+        <param name="sources" value="/camera_center/lines/cloud /camera_left/lines/cloud /camera_right/lines/cloud /camera_center/cones/cloud"/>
+        <param name="destination" value="/current_obstacles"/>
+        <param name="refresh_rate" value="100"/>
+        <param name="combined_frame" value="base_footprint"/>
+        <param name="vg_filter_size" value="0.05"/>
+    </node>
+
+    <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
+        <param name="req_finish_line_crosses" type="int" value="1"/>
+        <param name="startSignal" type="string" value="/start_detected"/>
+        <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
+        <param name="steeringAfterFinishTime" type="double" value="0.7"/>
+    </node>
+
+    <include file="$(dirname)/planner/mpc_planner_obstacle_avoidance.launch"/>
+
+    <include file="$(dirname)/perception/startlight_watcher.launch"/>
+
+    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
+
+</launch>

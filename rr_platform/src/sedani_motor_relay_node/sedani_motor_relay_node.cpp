@@ -2,7 +2,7 @@
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
 #include <rr_platform/chassis_state.h>
-#include <SerialPort.h>
+#include <rr_platform/SerialPort.h>
 
 double desiredSpeed = 0;
 double desiredSteer = 0;
@@ -53,6 +53,9 @@ void publishData(const std::string &line) {
     bool is_manual = (firmware_state == 2);
     msg.mux_autonomous = static_cast<uint8_t>(!(is_manual || is_disabled));
     msg.estop_on = static_cast<uint8_t>(is_disabled);
+
+    msg.record_bag = (std::stof(data[3]) == 1);
+
     state_pub.publish(msg);
 }
 

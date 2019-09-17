@@ -8,6 +8,7 @@
         <param name="req_finish_line_crosses" type="int" value="2"/>
         <param name="startSignal" type="string" value="/start_detected"/>
         <param name="resetSignal" type="string" value="/reset_detected"/>
+        <param name="finishLineCrossesSignal" type="string" value="/finish_line_crosses"/>
     </node>
 
     <include file="$(find rr_avc)/launch/start_detector_standalone.launch"/>
@@ -45,7 +46,7 @@
         <param name="k_dist" value="0.9"/>
         <param name="k_speed" value="1"/>
         <param name="k_final_pose" value="20"/>
-        <param name="backwards_penalty" value="1"/>
+        <param name="k_angle" value="1"/>
         <param name="collision_penalty" value="50"/>
         <param name="acceptance_scale" value="0.003"/>
 

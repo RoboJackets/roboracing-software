@@ -1,0 +1,16 @@
+<launch>
+    <!-- sedani side cameras should always be run with main camera -->
+    <include file="$(dirname)/camera_pipeline.launch">
+        <arg name="side" value="left"/>
+        <arg name="type" value="logitech_c615"/>
+        <arg name="serial" value="D0CF4CA0"/>
+        <arg name="manager_launched" value="true"/>
+    </include>
+
+    <include file="$(dirname)/camera_pipeline.launch">
+        <arg name="side" value="right"/>
+        <arg name="type" value="logitech_c615"/>
+        <arg name="serial" value="FC72EDA0"/>
+        <arg name="manager_launched" value="true"/>
+    </include>
+</launch>

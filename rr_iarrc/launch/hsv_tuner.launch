@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<launch>
-    <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
-    	<param name="load_file" type="string" value= "$(find rr_iarrc)/saved_hsv/example.txt"/>
-    </node>
-</launch>
