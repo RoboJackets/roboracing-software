@@ -97,6 +97,12 @@ def data_gen_wrapper(helper, input_files, label_files, epochs, do_augmentation):
 
 
 def focal_loss(gamma):
+    """
+    Focal loss (RetinaNet) https://arxiv.org/abs/1708.02002
+    :param gamma: "focal" factor for loss function (>= 1). At exactly 1, loss function
+                  is just cross-entropy loss
+    :return: a Keras loss function for use in optimizer
+    """
     def loss(target, output):
         output /= K.sum(output, axis=-1, keepdims=True)
         eps = K.epsilon()
