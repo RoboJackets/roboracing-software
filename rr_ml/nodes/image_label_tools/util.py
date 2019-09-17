@@ -1,4 +1,3 @@
-import os
 import subprocess
 import json
 import tempfile
@@ -7,8 +6,6 @@ import labelme
 import cv2
 import numpy as np
 import yaml
-
-osp = os.path
 
 
 acceptable_image_formats = (".jpg", ".jpeg", ".bmp", ".png")

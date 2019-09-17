@@ -1,3 +1,17 @@
+"""
+extract_images.py
+
+Extract a random subset of camera images from a bag file and place
+them in a folder as image files.
+
+private params:
+- bag_file: path to bag file with images
+- image_topic: ROS topic from which to extract images
+- image_format: save format for images (".jpg", ".jpeg", ".bmp", ".png")
+- image_dir: directory in which to place output images
+- num_images: number of images to randomly pick and save
+"""
+
 import os
 import random
 

@@ -1,3 +1,11 @@
+"""
+gen_fake_data.py
+
+Generate random images for testing a segmentation network. This script
+will place 2 circles of slightly different colors on a background in each
+image.
+"""
+
 import random
 import os
 import sys

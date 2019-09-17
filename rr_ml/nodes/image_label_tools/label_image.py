@@ -1,9 +1,5 @@
-import os
-
 import rospy
 from . import util
-
-osp = os.path
 
 
 def main():
