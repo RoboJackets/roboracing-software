@@ -88,7 +88,7 @@ void fillWheelSpeeds(const double steering_angle, const double speed, double &le
         left = speed;
         right = speed;
     } else {
-        auto turning_radius = chassis_length / fabs(tan(steering_angle));
+        auto turning_radius = chassis_length / fabs(sin(steering_angle));
         auto radius_left = turning_radius - copysign(chassis_width_2, steering_angle);
         auto radius_right = turning_radius + copysign(chassis_width_2, steering_angle);
         left = speed * radius_left / turning_radius;

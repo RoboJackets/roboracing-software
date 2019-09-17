@@ -184,7 +184,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: true
       Image Rendering: background
-      Image Topic: /camera_center/image_color_rect
+      Image Topic: /camera/image_color_rect
       Name: Camera
       Overlay Alpha: 0.5
       Queue Size: 1
@@ -225,15 +225,20 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        camera_center:
+        camera:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: false
-        camera_center_optical:
+        camera_optical:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        gps_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
         lidar:
           Alpha: 1
           Show Axes: false

@@ -48,7 +48,7 @@
           args="-file $(find rr_description)/urdf/evgp.urdf
             -gazebo_namespace /gazebo
             -urdf -model evgp
-            -x $(arg x) -y $(arg y) -z 0
+            -x $(arg x) -y $(arg y) -z 0.1
             -R 0 -P 0 -Y $(arg heading)"/>
 
     <node pkg="dynamic_reconfigure" type="dynparam" name="load_gz_physics_params" required="false" output="screen"

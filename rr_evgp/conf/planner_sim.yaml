@@ -14,9 +14,9 @@ steering_gain: 1.0
 
 planner_type: "annealing"
 
-n_path_segments: 3
+n_path_segments: 4
 distance_increment: 0.1
-segment_sections: "20 20 20"
+segment_sections: "20 20 20 20"
 
 temperature_start: 0.2
 temperature_end: 0.02
@@ -27,4 +27,4 @@ k_speed: 1.0
 k_final_pose: 0
 k_angle: 2.0
 collision_penalty: 100
-acceptance_scale: 0.0007
+acceptance_scale: 0.006

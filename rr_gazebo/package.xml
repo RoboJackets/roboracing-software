@@ -33,6 +33,7 @@
   <run_depend>effort_controllers</run_depend>
   <run_depend>controller_manager</run_depend>
   <run_depend>gazebo_ros_control</run_depend>
+  <run_depend>hector_gazebo_plugins</run_depend>
 
   <export>
     <gazebo_ros gazebo_model_path="${prefix}/models"/>
