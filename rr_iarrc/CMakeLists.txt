@@ -3,56 +3,30 @@ project(rr_iarrc)
 
 set(CMAKE_CXX_STANDARD 17)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  rr_platform
-  cv_bridge
-  pcl_ros
-  sick_tim
-  laser_geometry
-  image_transport
-  message_generation
-)
+        roscpp
+        rospy
+        cv_bridge
+        pcl_ros
+        image_transport
+        rr_msgs
+        )
 
 find_package(OpenCV REQUIRED)
-find_package(PCL REQUIRED filters)
 
-## Generate messages in the 'msg' folder
-add_message_files(
-    FILES
-    hsv_tuned.msg
-    urc_sign.msg
-)
-
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-)
+include_directories(${catkin_INCLUDE_DIRS})
 
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-#  INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rospy std_msgs rr_platform message_runtime
+        CATKIN_DEPENDS roscpp rospy rr_msgs
 )
 
 ###########
 ## Build ##
 ###########
-
-## Specify additional locations of header files
-include_directories(
-#  include
-  ${PCL_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-)
 
 add_subdirectory(src/color_detector)
 add_subdirectory(src/startlight_watcher)

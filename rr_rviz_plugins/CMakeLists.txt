@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rviz
-  rr_platform
+  rr_msgs
 )
 
 find_package(Qt5Widgets REQUIRED)
@@ -17,7 +17,7 @@ find_package(Qt5Widgets REQUIRED)
 
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp rviz rr_platform
+  CATKIN_DEPENDS roscpp rviz rr_msgs
 )
 
 ###########

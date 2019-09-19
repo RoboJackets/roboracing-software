@@ -1,10 +1,10 @@
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
+#include "../../include/rr_common/CameraGeometry.h"
+#include <boost/algorithm/string.hpp>
+#include <cmath>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <cmath>
-#include <boost/algorithm/string.hpp>
-#include <rr_platform/CameraGeometry.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Image.h>
 
 using namespace std;
 using namespace cv;

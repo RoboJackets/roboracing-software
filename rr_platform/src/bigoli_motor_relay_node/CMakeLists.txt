@@ -1,8 +1,3 @@
-add_executable(bigoli_drive_relay bigoli_drive_relay.cpp)
-target_link_libraries(bigoli_drive_relay ${catkin_LIBRARIES} rr_serial)
-
-add_executable(bigoli_steer_relay bigoli_steer_relay.cpp)
-target_link_libraries(bigoli_steer_relay ${catkin_LIBRARIES} rr_serial)
-
 add_executable(bigoli_ethernet_drive_relay bigoli_ethernet_drive_relay.cpp)
 target_link_libraries(bigoli_ethernet_drive_relay ${catkin_LIBRARIES})
+add_dependencies(bigoli_ethernet_drive_relay ${catkin_EXPORTED_TARGETS})

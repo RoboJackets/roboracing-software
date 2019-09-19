@@ -6,7 +6,7 @@
 
 #include <rr_msgs/chassis_state.h>
 #include <rr_msgs/axes.h>
-#include <rr_platform/angle_utils.hpp>
+#include <rr_common/angle_utils.hpp>
 
 
 // Types

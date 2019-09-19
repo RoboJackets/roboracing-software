@@ -22,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 ###################################
 catkin_package(
         INCLUDE_DIRS include
-        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+        CATKIN_DEPENDS roscpp rospy std_msgs
 )
 
 ###########
@@ -35,7 +35,6 @@ include_directories(
         ${PCL_INCLUDE_DIRS}
         ${catkin_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
-        ${rr_platform_INCLUDE_DIRS}
 )
 
 add_library(rr_common src/image_flipper/image_flipper.cpp)
@@ -50,3 +49,5 @@ add_subdirectory(src/follower)
 add_subdirectory(src/rosbag_remote_recorder)
 add_subdirectory(src/local_mapper)
 add_subdirectory(src/pose_tracker)
+add_subdirectory(src/camera_geometry)
+add_subdirectory(src/image_transformation)

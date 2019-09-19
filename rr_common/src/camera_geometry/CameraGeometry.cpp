@@ -1,11 +1,10 @@
-#include <rr_platform/CameraGeometry.h>
+#include <rr_common/CameraGeometry.h>
 
 #include <cmath>
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
 
-#include <rr_platform/angle_utils.hpp>
-
+#include <rr_common/angle_utils.hpp>
 
 namespace rr {
 

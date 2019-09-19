@@ -16,6 +16,8 @@ add_message_files(
         camera_pose.msg
         chassis_state.msg
         axes.msg
+        hsv_tuned.msg
+        urc_sign.msg
 )
 
 generate_messages(

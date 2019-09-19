@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ros/node_handle.h>
-#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Vector3.h>
+#include <ros/node_handle.h>
 #include <sensor_msgs/CameraInfo.h>
 
 namespace rr {

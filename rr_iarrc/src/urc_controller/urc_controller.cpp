@@ -6,7 +6,7 @@
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
-#include <rr_iarrc/urc_sign.h>
+#include <rr_msgs/urc_sign.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -210,7 +210,7 @@ void resetCB(const rr_msgs::race_reset &reset_msg) {
     updateState();
 }
 
-void signCB(const rr_iarrc::urc_sign &msg){
+void signCB(const rr_msgs::urc_sign &msg){
      turn_direction = msg.direction;
      stop_bar_angle = msg.angle;
      turnDetected = true;

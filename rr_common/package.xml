@@ -25,9 +25,6 @@
     <build_depend>cv_bridge</build_depend>
     <build_depend>image_transport</build_depend>
 
-    <exec_depend>message_runtime</exec_depend>
-    <exec_depend>rr_platform</exec_depend>
-
     <export>
         <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
     </export>
