@@ -6,8 +6,8 @@
 #include <pcl_ros/transforms.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 
 #include "planner/annealing_planner.h"
 #include "planner/random_sample_planner.h"
@@ -20,8 +20,8 @@ ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 ros::Publisher path_pub;
 
-rr_platform::speedPtr speed_message;
-rr_platform::steeringPtr steer_message;
+rr_msgs::speedPtr speed_message;
+rr_msgs::steeringPtr steer_message;
 
 sensor_msgs::PointCloud2ConstPtr last_map_msg;
 bool is_new_msg;
@@ -273,12 +273,12 @@ int main(int argc, char** argv)
   steering_gain = getParamAssert<double>(nhp, "steering_gain");
 
   auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
-  speed_pub = nh.advertise<rr_platform::speed>("plan/speed", 1);
-  steer_pub = nh.advertise<rr_platform::steering>("plan/steering", 1);
+  speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
+  steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
   path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
-  speed_message.reset(new rr_platform::speed);
-  steer_message.reset(new rr_platform::steering);
+  speed_message.reset(new rr_msgs::speed);
+  steer_message.reset(new rr_msgs::steering);
   update_messages(0, 0);
 
   ROS_INFO("Planner initialized");

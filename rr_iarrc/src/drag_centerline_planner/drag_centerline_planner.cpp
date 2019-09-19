@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 
 #include "PID.h"
 
@@ -18,8 +18,8 @@ ros::Publisher pub_line_detector;
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 
-rr_platform::speed speed_message;
-rr_platform::steering steer_message;
+rr_msgs::speed speed_message;
+rr_msgs::steering steer_message;
 
 //PID IMPLEMENATION SETUP
 double kP;
@@ -237,8 +237,8 @@ int main(int argc, char** argv) {
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_track", 1); //test publish of image
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
-    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
+    speed_pub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);
 
 
     ros::spin();

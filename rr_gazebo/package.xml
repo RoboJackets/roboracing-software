@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>rr_gazebo</name>
   <version>0.0.0</version>
   <description>Gazebo simulation files for RoboRacing</description>
@@ -15,17 +15,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>gazebo_ros</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rr_platform</build_depend>
+  <depend>rr_msgs</depend>
+  <depend>gazebo_ros</depend>
+  <depend>roscpp</depend>
 
-  <run_depend>gazebo_ros</run_depend>
-  <run_depend>rr_platform</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>joint_state_controller</run_depend>
-  <run_depend>effort_controllers</run_depend>
-  <run_depend>controller_manager</run_depend>
-  <run_depend>gazebo_ros_control</run_depend>
+  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
 
   <export>
     <gazebo_ros gazebo_model_path="${prefix}/models"/>

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_platform/SerialPort.h>
 
 double desiredSpeed = 0;
@@ -24,11 +24,11 @@ std::vector <std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-void SpeedCallback(const rr_platform::speed::ConstPtr &msg) {
+void SpeedCallback(const rr_msgs::speed::ConstPtr &msg) {
     desiredSpeed = msg->speed;
 }
 
-void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
+void SteeringCallback(const rr_msgs::steering::ConstPtr &msg) {
     desiredSteer = msg->angle;
 }
 
@@ -42,7 +42,7 @@ void publishData(const std::string &line) {
         return;
     }
     std::vector <std::string> data = split(line.substr(1), ',');
-    rr_platform::chassis_state msg;
+    rr_msgs::chassis_state msg;
     msg.header.stamp = ros::Time::now();
     msg.speed_mps = std::stof(data[1]);
     msg.steer_rad = std::stof(data[2]);
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("steering_topic"), steering_topic_name, std::string("/steering"));
     ros::Subscriber steering_sub = nh.subscribe(steering_topic_name, 1, SteeringCallback);
 
-    state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
+    state_pub = nh.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
 
     ROS_INFO_STREAM("Listening for speed on " << speed_topic_name);
     ROS_INFO_STREAM("Listening for steer on " << steering_topic_name);

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_platform/SerialPort.h>
 
 using namespace std;
@@ -10,7 +10,7 @@ double output = 0;
 double maxAngleMsg;
 const double maxOutput = 1.0;
 
-void steerCallback(const rr_platform::steering::ConstPtr &msg) {
+void steerCallback(const rr_msgs::steering::ConstPtr &msg) {
     output = msg->angle / maxAngleMsg * maxOutput;
 }
 

@@ -7,8 +7,8 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/filters/passthrough.h>
 #include <string>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include "flann/flann.hpp"
 
 float MIN_FRONT_VISION;

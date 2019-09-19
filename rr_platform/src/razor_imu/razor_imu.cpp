@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/axes.h>
+#include <rr_msgs/chassis_state.h>
+#include <rr_msgs/axes.h>
 #include <rr_platform/SerialPort.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
@@ -58,7 +58,7 @@ bool set_mag(const std::string &line_in, sensor_msgs::MagneticField &mag_msg){
     }
 }
 
-bool set_axes(const std::string &line_in,rr_platform::axes &axes_msg){
+bool set_axes(const std::string &line_in,rr_msgs::axes &axes_msg){
     std::vector <std::string> data = split(line_in, ',');
     if(data[0] == "axes") {
         axes_msg.roll = std::atof(data[1].c_str());
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 
     imu_pub = handle.advertise<sensor_msgs::Imu>("/imu/data_raw", 1);
     mag_pub = handle.advertise<sensor_msgs::MagneticField>("/imu/mag", 1);
-    axes_pub = handle.advertise<rr_platform::axes>("/axes", 1);
+    axes_pub = handle.advertise<rr_msgs::axes>("/axes", 1);
 
     // Serial port setup
     std::string serial_port_name;
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 
     sensor_msgs::Imu imu_msg;
     sensor_msgs::MagneticField mag_msg;
-    rr_platform::axes axes_msg;
+    rr_msgs::axes axes_msg;
 
     imu_msg.header.frame_id = "imu";
     mag_msg.header.frame_id = "mag";
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
             }
 
             if(set_axes(line_in, axes_msg)){
-                rr_platform::axes publishable_copy = axes_msg;
+                rr_msgs::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 axes_pub.publish(publishable_copy);
             }

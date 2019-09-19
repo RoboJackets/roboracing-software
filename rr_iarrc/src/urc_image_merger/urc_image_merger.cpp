@@ -10,16 +10,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 
 using namespace std;
 
 cv_bridge::CvImagePtr cv_ptr;
 ros::Publisher image_pub;
 
-rr_platform::speed speed_message;
-rr_platform::steering steer_message;
+rr_msgs::speed speed_message;
+rr_msgs::steering steer_message;
 
 cv::Mat mergeImagesSideBySide(cv::Mat leftImg, cv::Mat rightImg) {
     int outputRows = std::max(leftImg.rows, rightImg.rows);

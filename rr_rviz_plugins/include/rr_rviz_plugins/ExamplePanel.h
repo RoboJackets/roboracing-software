@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <rviz/panel.h>
-#include <rr_platform/speed.h>
+#include <rr_msgs/speed.h>
 #include <QLabel>
 
 /*
@@ -39,7 +39,7 @@ protected:
      * @param msg The ROS message that triggers this callback.
      * @param label A QT label whose text we will update based on the message contents.
      */
-    void speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label);
+    void speed_callback(const rr_msgs::speedConstPtr &msg, QLabel *label);
 
     /**
      * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.

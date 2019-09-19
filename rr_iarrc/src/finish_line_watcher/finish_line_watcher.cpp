@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <climits>
-#include <rr_platform/speed.h>
+#include <rr_msgs/speed.h>
 #include <std_msgs/Int8.h>
 
 using namespace std;

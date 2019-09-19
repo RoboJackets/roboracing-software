@@ -1,10 +1,10 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
-#include <rr_platform/axes.h>
+#include <rr_msgs/axes.h>
 #include <math.h>      
 
 ros::Publisher axes_pub;
-rr_platform::axes axes_msg;
+rr_msgs::axes axes_msg;
 
 float w, x, y, z;
 float roll, pitch, yaw; 
@@ -25,7 +25,7 @@ static void toEulerianAngle(float w, float x, float y, float z){
   double t4 = +1.0 - 2.0 * (ysqr + z * z);  
   yaw = atan2(t3, t4);
 
-  rr_platform::axes publishable_copy = axes_msg;
+  rr_msgs::axes publishable_copy = axes_msg;
   publishable_copy.header.stamp = ros::Time::now();
   axes_pub.publish(publishable_copy);
 }
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nhp("~");
 
 
-    axes_pub = nh.advertise<rr_platform::axes>("/axes", 1);
+    axes_pub = nh.advertise<rr_msgs::axes>("/axes", 1);
     auto imuSub = nh.subscribe("/imu", 1, imuCB);    
 
     ros::Rate rate(30.0);

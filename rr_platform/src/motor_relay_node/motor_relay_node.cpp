@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_platform/SerialPort.h>
 
 double desiredSpeed = 0;
@@ -34,11 +34,11 @@ std::vector <std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-void SpeedCallback(const rr_platform::speed::ConstPtr &msg) {
+void SpeedCallback(const rr_msgs::speed::ConstPtr &msg) {
     desiredSpeed = msg->speed * ticks_per_meter * s_per_50ms;
 }
 
-void SteeringCallback(const rr_platform::steering::ConstPtr &msg) {
+void SteeringCallback(const rr_msgs::steering::ConstPtr &msg) {
     desiredSteer = msg->angle;
 }
 
@@ -58,7 +58,7 @@ void publishData(const std::string &line) {
         return;
     }
     std::vector <std::string> data = split(line.substr(1), ',');
-    rr_platform::chassis_state msg;
+    rr_msgs::chassis_state msg;
     msg.header.stamp = ros::Time::now();
     msg.speed_mps = static_cast<float>(std::stod(data[0]) / (s_per_50ms * ticks_per_meter));
     msg.mux_autonomous = static_cast<uint8_t>(data[1] == "1");
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("kD"), kD, 0.1);
     nhp.param(std::string("trim"), trim, 0);
 
-    state_pub = nh.advertise<rr_platform::chassis_state>("/chassis_state", 1);
+    state_pub = nh.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
 
     ROS_INFO_STREAM("Listening for speed on " << speed_topic_name);
     ROS_INFO_STREAM("Listening for steer on " << steering_topic_name);

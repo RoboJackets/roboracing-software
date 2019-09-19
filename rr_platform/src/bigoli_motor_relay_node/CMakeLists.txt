@@ -1,17 +1,8 @@
 add_executable(bigoli_drive_relay bigoli_drive_relay.cpp)
 target_link_libraries(bigoli_drive_relay ${catkin_LIBRARIES} rr_serial)
-add_dependencies(bigoli_drive_relay rr_platform_generate_messages_cpp)
 
 add_executable(bigoli_steer_relay bigoli_steer_relay.cpp)
 target_link_libraries(bigoli_steer_relay ${catkin_LIBRARIES} rr_serial)
-add_dependencies(bigoli_steer_relay rr_platform_generate_messages_cpp)
 
 add_executable(bigoli_ethernet_drive_relay bigoli_ethernet_drive_relay.cpp)
 target_link_libraries(bigoli_ethernet_drive_relay ${catkin_LIBRARIES})
-add_dependencies(bigoli_ethernet_drive_relay rr_platform_generate_messages_cpp)
-
-#catkin_install_python(
-#    PROGRAMS bigoli_ethernet_drive_relay.py
-#    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-#)
-

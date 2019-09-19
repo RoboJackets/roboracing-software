@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/axes.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/axes.h>
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
@@ -36,12 +36,12 @@ std::string turn_direction;
 ros::Time finishTime;
 
 void publishSpeedandSteering(){
-        rr_platform::speed speedMsg;
+        rr_msgs::speed speedMsg;
         speedMsg.speed = speed;
         speedMsg.header.stamp = ros::Time::now();
         speedPub.publish(speedMsg);
 
-        rr_platform::steering steerMsg;
+        rr_msgs::steering steerMsg;
         steerMsg.angle = steering;
         steerMsg.header.stamp = ros::Time::now();
         steerPub.publish(steerMsg);
@@ -144,7 +144,7 @@ void makeTurn(){
 
 }
 
-void imuCB(const rr_platform::axesConstPtr& msg){
+void imuCB(const rr_msgs::axesConstPtr& msg){
      imu_yaw = setInRange(msg->yaw);
 }
 
@@ -164,8 +164,8 @@ int main(int argc, char** argv) {
     nhp.getParam("turn_direction", turn_direction);
 
     auto imuSub = nh.subscribe("/axes", 1, imuCB);
-    speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
-    steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speedPub = nh.advertise<rr_msgs::speed>("/speed", 1);
+    steerPub = nh.advertise<rr_msgs::steering>("/steering", 1);
     
     ros::Rate loopRate(1.0);
     ros::spinOnce();

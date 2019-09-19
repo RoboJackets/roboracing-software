@@ -1,46 +1,34 @@
 <?xml version="1.0"?>
-<package>
-  <name>rr_common</name>
-  <version>0.0.0</version>
-  <description>The RoboRacing navigation package</description>
+<package format="2">
+    <name>rr_common</name>
+    <version>0.0.0</version>
+    <description>The RoboRacing navigation package</description>
 
-  <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
+    <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
-  <license>MIT</license>
+    <license>MIT</license>
 
-  <url type="website">http://robojackets.org</url>
-  <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
-  <url type="website">http://www.github.com/robojackets/roboracing-software</url>
-
-
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>rr_platform</build_depend>
-  <build_depend>cv_bridge</build_depend>
-  <build_depend>image_transport</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>laser_geometry</build_depend>
-  <build_depend>sound_play</build_depend>
-  <build_depend>nodelet</build_depend>
+    <url type="website">http://robojackets.org</url>
+    <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+    <url type="website">http://www.github.com/robojackets/roboracing-software</url>
 
 
-  <run_depend>laser_geometry</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>cv_bridge</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>rr_platform</run_depend>
-  <run_depend>laser_geometry</run_depend>
-  <run_depend>image_transport</run_depend>
-  <run_depend>message_generation</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>sound_play</run_depend>
-  <run_depend>nodelet</run_depend>
+    <buildtool_depend>catkin</buildtool_depend>
 
-  <export>
-    <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
-  </export>
+    <depend>roscpp</depend>
+    <depend>rospy</depend>
+    <depend>std_msgs</depend>
+    <depend>rr_msgs</depend>
+    <depend>nodelet</depend>
+    <depend>sound_play</depend>
+
+    <build_depend>cv_bridge</build_depend>
+    <build_depend>image_transport</build_depend>
+
+    <exec_depend>message_runtime</exec_depend>
+    <exec_depend>rr_platform</exec_depend>
+
+    <export>
+        <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
+    </export>
 </package>

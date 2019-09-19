@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 
 class JoystickDriverTestSuite : public testing::Test {
 
@@ -20,11 +20,11 @@ public:
         handle_private.param("angle_axis", angle_axis, 0);
     }
 
-    void speedCallback(const rr_platform::speed::ConstPtr& msg) {
+    void speedCallback(const rr_msgs::speed::ConstPtr& msg) {
         speed_msg = *msg;
         speed_received = true;
     }
-    void steeringCallback(const rr_platform::steering::ConstPtr& msg) {
+    void steeringCallback(const rr_msgs::steering::ConstPtr& msg) {
         steering_msg = *msg;
         steering_received = true;
     }
@@ -49,8 +49,8 @@ protected:
     ros::Subscriber steering_sub;
     volatile bool speed_received = false;
     volatile bool steering_received = false;
-    rr_platform::speed speed_msg;
-    rr_platform::steering steering_msg;
+    rr_msgs::speed speed_msg;
+    rr_msgs::steering steering_msg;
     float angle_max;
     float speed_max;
     int angle_axis;

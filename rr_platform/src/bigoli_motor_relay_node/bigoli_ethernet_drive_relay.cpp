@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/chassis_state.h>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <iostream>
@@ -30,11 +30,11 @@ const double maxOutput = 1.0;
 
 std::unique_ptr<tcp::socket> currentSocket;
 
-void speedCallback(const rr_platform::speed::ConstPtr &msg) {
+void speedCallback(const rr_msgs::speed::ConstPtr &msg) {
     speed = msg->speed;
 }
 
-void steerCallback(const rr_platform::steering::ConstPtr &msg) {
+void steerCallback(const rr_msgs::steering::ConstPtr &msg) {
     steeringAngle = msg->angle / maxAngleMsg * maxOutput; // Taken from old relay
 }
 

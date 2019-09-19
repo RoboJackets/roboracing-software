@@ -1,8 +1,8 @@
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/axes.h>
-#include <rr_platform/race_reset.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
+#include <rr_msgs/axes.h>
+#include <rr_msgs/race_reset.h>
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
@@ -85,12 +85,12 @@ float angleDist(float target, float current){
 }
 
 void publishSpeedandSteering(){
-        rr_platform::speed speedMsg;
+        rr_msgs::speed speedMsg;
         speedMsg.speed = speed;
         speedMsg.header.stamp = ros::Time::now();
         speedPub.publish(speedMsg);
 
-        rr_platform::steering steerMsg;
+        rr_msgs::steering steerMsg;
         steerMsg.angle = steering;
         steerMsg.header.stamp = ros::Time::now();
         steerPub.publish(steerMsg);
@@ -192,11 +192,11 @@ void updateState() {
     }
 }
 
-void planSpeedCB(const rr_platform::speed::ConstPtr &speed_msg) {
+void planSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
     planSpeed = speed_msg->speed;
 }
 
-void planSteerCB(const rr_platform::steering::ConstPtr &steer_msg) {
+void planSteerCB(const rr_msgs::steering::ConstPtr &steer_msg) {
     planSteering = steer_msg->angle;
 }
 
@@ -204,7 +204,7 @@ void startLightCB(const std_msgs::Bool::ConstPtr &bool_msg) {
     raceStarted = bool_msg->data;
 }
 
-void resetCB(const rr_platform::race_reset &reset_msg) {
+void resetCB(const rr_msgs::race_reset &reset_msg) {
     state = WAITING_FOR_START;
     raceStarted = false;
     updateState();
@@ -216,7 +216,7 @@ void signCB(const rr_iarrc::urc_sign &msg){
      turnDetected = true;
 }
 
-void imuCB(const rr_platform::axesConstPtr &msg){
+void imuCB(const rr_msgs::axesConstPtr &msg){
      imu_yaw = setInRange(msg->yaw);
 }
 
@@ -247,8 +247,8 @@ int main(int argc, char** argv) {
     auto signSub = nh.subscribe("/turn_detected", 1, signCB);
     auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
 
-    speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
-    steerPub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speedPub = nh.advertise<rr_msgs::speed>("/speed", 1);
+    steerPub = nh.advertise<rr_msgs::steering>("/steering", 1);
 
     ros::Rate rate(30.0);
     while(ros::ok()) {

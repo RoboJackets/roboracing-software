@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 #include <QPushButton>
-#include <rr_platform/race_reset.h>
+#include <rr_msgs/race_reset.h>
 
 /*
  * All of our panels need to be under the rr_rviz_plugins namespace.
