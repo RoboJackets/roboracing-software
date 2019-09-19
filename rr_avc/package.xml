@@ -4,21 +4,14 @@
   <version>0.0.0</version>
   <description>The avc package</description>
 
-  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-  <maintainer email="chsahit@gmail.com">Sahit Chintalapudi</maintainer>
-  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
-
-
+  <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
   <license>MIT</license>
-
 
   <url type="website">http://robojackets.org</url>
   <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
   <url type="website">http://www.github.com/robojackets/roboracing-software</url>
 
-
-  <author email="justinyzheng@gmail.com">Justin Zheng</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>

@@ -19,7 +19,6 @@ find_package(
     sick_tim
     laser_geometry
     image_transport
-    std_msgs
     message_generation
     geometry_msgs
 )

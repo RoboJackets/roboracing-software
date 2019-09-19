@@ -2,9 +2,9 @@
 <package>
     <name>rr_ml</name>
     <version>0.0.0</version>
-    <description>Tools for creating datasets, </description>
+    <description>Tools for creating datasets and models</description>
 
-    <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
+    <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
     <license>MIT</license>
 
@@ -12,7 +12,6 @@
     <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
     <url type="website">http://www.github.com/robojackets/roboracing-software</url>
 
-    <author email="evanbretl4@gmail.com">Evan Bretl</author>
 
     <buildtool_depend>catkin</buildtool_depend>
 
