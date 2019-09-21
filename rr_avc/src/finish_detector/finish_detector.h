@@ -1,15 +1,15 @@
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
+#include <nodelet/nodelet.h>
+#include <pluginlib/class_list_macros.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Image.h>
 #include <std_msgs/Int8.h>
 #include <opencv2/highgui.hpp>
 
 namespace rr_avc {
 class finish_detector : public nodelet::Nodelet {
-private:
+  private:
     ros::Publisher crosses_pub;
     ros::Publisher debug_pub;
     image_transport::Subscriber img_saver_sub;
@@ -36,6 +36,4 @@ private:
     ros::Time lastCross;
 };
 
-}
-
-
+}  // namespace rr_avc

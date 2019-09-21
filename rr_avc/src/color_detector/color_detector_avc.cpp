@@ -6,13 +6,12 @@ using namespace ros;
 
 using uchar = unsigned char;
 
-
-Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high) {
+Mat detectObstacleColor(const Mat& image, const Scalar& low, const Scalar& high) {
     Mat frame;
     image.copyTo(frame);
 
     Mat blurredImage;
-    GaussianBlur(frame, blurredImage, Size{blur_strength, blur_strength}, blur_strength);
+    GaussianBlur(frame, blurredImage, Size{ blur_strength, blur_strength }, blur_strength);
 
     Mat frameHSV;
     cvtColor(blurredImage, frameHSV, CV_BGR2HSV);
@@ -27,7 +26,6 @@ Mat detectObstacleColor(const Mat& image, const Scalar &low, const Scalar &high)
 }
 
 void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
-
     cv_bridge::CvImagePtr cv_ptr;
     Mat frame;
 
@@ -53,9 +51,7 @@ void ImageRectCB(const sensor_msgs::ImageConstPtr& msg) {
     img_pub.publish(outmsg);
 }
 
-
 int main(int argc, char** argv) {
-
     init(argc, argv, "color_detector_avc");
 
     NodeHandle nh;
@@ -73,18 +69,16 @@ int main(int argc, char** argv) {
     auto img_sub = nh.subscribe(image_topic, 1, ImageRectCB);
 
     int good_height = image_height - mask_px_bottom - mask_px_top;
-    vector<Mat> mask_segments = {
-            Mat::zeros(mask_px_top, image_width, CV_8UC1),
-            Mat(good_height, image_width, CV_8UC1, Scalar::all(1)),
-            Mat::zeros(mask_px_bottom, image_width, CV_8UC1)
-    };
+    vector<Mat> mask_segments = { Mat::zeros(mask_px_top, image_width, CV_8UC1),
+                                  Mat(good_height, image_width, CV_8UC1, Scalar::all(1)),
+                                  Mat::zeros(mask_px_bottom, image_width, CV_8UC1) };
     vconcat(mask_segments, mask);
 
-    lows.push_back(Scalar(0,50,0));
-    highs.push_back(Scalar(180,255,255));
+    lows.push_back(Scalar(0, 50, 0));
+    highs.push_back(Scalar(180, 255, 255));
 
-    lows.push_back(Scalar(0,0,0));
-    highs.push_back(Scalar(180,255,85));
+    lows.push_back(Scalar(0, 0, 0));
+    highs.push_back(Scalar(180, 255, 85));
 
     spin();
 
