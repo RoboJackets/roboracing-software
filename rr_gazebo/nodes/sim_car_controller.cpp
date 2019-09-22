@@ -1,20 +1,20 @@
+#include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
+#include <rr_platform/chassis_state.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
-#include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
-#include <parameter_assertions/assertions.h>
+#include <std_msgs/Float64.h>
 
 class PIDController {
-public:
-    PIDController(double p, double i, double d) : P(p), I(i), D(d) { }
+  public:
+    PIDController(double p, double i, double d) : P(p), I(i), D(d) {}
 
     void setDesired(double value) {
         desired = value;
     }
 
-    double operator() (double current) {
+    double operator()(double current) {
         auto error = current - desired;
         accError += error;
         auto dError = error - lastError;
@@ -24,7 +24,7 @@ public:
         return ret;
     }
 
-private:
+  private:
     double P, I, D;
     double desired = 0.0;
     double lastError = 0.0;
@@ -55,21 +55,20 @@ void steeringCallback(const rr_platform::steeringConstPtr &msg) {
 }
 
 void jointStateCallback(const sensor_msgs::JointStateConstPtr &msg) {
-
     auto iter = std::find(msg->name.begin(), msg->name.end(), left_motor_joint_name);
 
-    if(iter != msg->name.end()) {
-        auto index = std::distance(msg->name.begin(),iter);
+    if (iter != msg->name.end()) {
+        auto index = std::distance(msg->name.begin(), iter);
 
-        speed_measured_left = (-msg->velocity[index]) * ( wheel_circumference / ( 2 * M_PI ) );
+        speed_measured_left = (-msg->velocity[index]) * (wheel_circumference / (2 * M_PI));
     }
 
     iter = std::find(msg->name.begin(), msg->name.end(), right_motor_joint_name);
 
-    if(iter != msg->name.end()) {
-        auto index = std::distance(msg->name.begin(),iter);
+    if (iter != msg->name.end()) {
+        auto index = std::distance(msg->name.begin(), iter);
 
-        speed_measured_right = (-msg->velocity[index]) * ( wheel_circumference / ( 2 * M_PI ) );
+        speed_measured_right = (-msg->velocity[index]) * (wheel_circumference / (2 * M_PI));
     }
 }
 
@@ -78,13 +77,13 @@ constexpr double get_steer_ang(double phi) {
 }
 
 void fillSteeringPositions(const double set_angle, double &left, double &right) {
-    auto center_y = chassis_length * tan( (M_PI_2) - set_angle);
+    auto center_y = chassis_length * tan((M_PI_2)-set_angle);
     left = get_steer_ang(atan(inv_chassis_length * (center_y - chassis_width_2)));
     right = get_steer_ang(atan(inv_chassis_length * (center_y + chassis_width_2)));
 }
 
 void fillWheelSpeeds(const double steering_angle, const double speed, double &left, double &right) {
-    if(steering_angle == 0.0) {
+    if (steering_angle == 0.0) {
         left = speed;
         right = speed;
     } else {
@@ -97,7 +96,6 @@ void fillWheelSpeeds(const double steering_angle, const double speed, double &le
 }
 
 int main(int argc, char **argv) {
-
     ros::init(argc, argv, "macaroni_controller");
 
     ros::NodeHandle handle;
@@ -131,11 +129,11 @@ int main(int argc, char **argv) {
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
     auto stateSub = handle.subscribe("/joint_states", 1, jointStateCallback);
 
-    PIDController left_controller{speed_kP, speed_kI, speed_kD};
-    PIDController right_controller{speed_kP, speed_kI, speed_kD};
+    PIDController left_controller{ speed_kP, speed_kI, speed_kD };
+    PIDController right_controller{ speed_kP, speed_kI, speed_kD };
 
-    ros::Rate rate{30};
-    while(ros::ok()) {
+    ros::Rate rate{ 30 };
+    while (ros::ok()) {
         ros::spinOnce();
 
         double left_speed, right_speed;
