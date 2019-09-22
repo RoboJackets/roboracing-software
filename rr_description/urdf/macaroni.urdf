@@ -4,7 +4,7 @@
 
     <link name="chassis">
         <inertial>
-            <origin xyz="0.3 0 0"/>
+            <origin xyz="0.15 0 0"/>
             <mass value="5.0"/>
             <inertia ixx="0.10595165" ixy="-0.002487144" ixz="0.011981253" iyy="0.126271962" iyz="0.011832006" izz="0.033185337"/>
         </inertial>
@@ -45,8 +45,9 @@
             </geometry>
         </visual>
         <collision>
+            <origin xyz="0 0 0" rpy="1.5707 0 0"/>
             <geometry>
-                <mesh filename="package://rr_description/meshes/macaroni_wheel.dae"/>
+                <cylinder radius="0.0524" length="0.0445"/>
             </geometry>
         </collision>
     </link>
@@ -70,8 +71,9 @@
             </geometry>
         </visual>
         <collision>
+            <origin xyz="0 0 0" rpy="1.5707 0 0"/>
             <geometry>
-                <mesh filename="package://rr_description/meshes/macaroni_wheel.dae"/>
+                <cylinder radius="0.0524" length="0.0445"/>
             </geometry>
         </collision>
     </link>
@@ -102,8 +104,9 @@
             </geometry>
         </visual>
         <collision>
+            <origin xyz="0 0 0" rpy="1.5707 0 0"/>
             <geometry>
-                <mesh filename="package://rr_description/meshes/macaroni_wheel.dae"/>
+                <cylinder radius="0.0524" length="0.0445"/>
             </geometry>
         </collision>
     </link>
@@ -133,8 +136,9 @@
             </geometry>
         </visual>
         <collision>
+            <origin xyz="0 0 0" rpy="1.5707 0 0"/>
             <geometry>
-                <mesh filename="package://rr_description/meshes/macaroni_wheel.dae"/>
+                <cylinder radius="0.0524" length="0.0445"/>
             </geometry>
         </collision>
     </link>
