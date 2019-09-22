@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <sensor_msgs/Joy.h>
 
 class JoystickDriverTestSuite : public testing::Test {
   public:

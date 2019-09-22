@@ -2,8 +2,8 @@
 #define PROJECT_EXAMPLEPANEL_H
 
 #include <ros/ros.h>
-#include <rviz/panel.h>
 #include <rr_msgs/speed.h>
+#include <rviz/panel.h>
 #include <QLabel>
 
 /*

@@ -1,7 +1,7 @@
 #include "color_detector.h"
 #include <pluginlib/class_list_macros.h>
-#include <rr_msgs/hsv_tuned.h>
 #include <ros/package.h>
+#include <rr_msgs/hsv_tuned.h>
 #include <ctime>
 #include <fstream>
 
@@ -54,11 +54,11 @@ void color_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     img_pub.publish(cv_bridge::CvImage{ std_msgs::Header(), "mono8", output }.toImageMsg());
 }
 
-void hsvTunedCallback(const rr_msgs::hsv_tuned::ConstPtr &msg){
+void hsvTunedCallback(const rr_msgs::hsv_tuned::ConstPtr &msg) {
     white_h_low = msg->white_h_low;
     white_s_low = msg->white_s_low;
     white_v_low = msg->white_v_low;
-        
+
     white_h_low = msg->white_h_low;
     white_s_low = msg->white_s_low;
     white_v_low = msg->white_v_low;

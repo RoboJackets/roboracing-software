@@ -1,9 +1,9 @@
 #include <ros/ros.h>
+#include <rr_msgs/axes.h>
+#include <rr_msgs/chassis_state.h>
+#include <rr_platform/SerialPort.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
-#include <rr_msgs/chassis_state.h>
-#include <rr_msgs/axes.h>
-#include <rr_platform/SerialPort.h>
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
 
@@ -58,9 +58,9 @@ bool set_mag(const std::string &line_in, sensor_msgs::MagneticField &mag_msg) {
     }
 }
 
-bool set_axes(const std::string &line_in,rr_msgs::axes &axes_msg){
-    std::vector <std::string> data = split(line_in, ',');
-    if(data[0] == "axes") {
+bool set_axes(const std::string &line_in, rr_msgs::axes &axes_msg) {
+    std::vector<std::string> data = split(line_in, ',');
+    if (data[0] == "axes") {
         axes_msg.roll = std::atof(data[1].c_str());
         axes_msg.pitch = std::atof(data[2].c_str());
         axes_msg.yaw = std::atof(data[3].c_str());
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
                 mag_pub.publish(publishable_copy);
             }
 
-            if(set_axes(line_in, axes_msg)){
+            if (set_axes(line_in, axes_msg)) {
                 rr_msgs::axes publishable_copy = axes_msg;
                 publishable_copy.header.stamp = ros::Time::now();
                 axes_pub.publish(publishable_copy);

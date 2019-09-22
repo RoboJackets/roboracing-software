@@ -4,8 +4,8 @@
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
 
-#include <rr_msgs/chassis_state.h>
 #include <rr_msgs/axes.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_common/angle_utils.hpp>
 
 // Types

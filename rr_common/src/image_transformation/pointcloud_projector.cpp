@@ -11,7 +11,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "../../include/rr_common/CameraGeometry.h"
+#include <rr_common/CameraGeometry.h>
 
 #include <thread>
 

@@ -1,8 +1,8 @@
 #include <ros/ros.h>
-#include <rr_msgs/speed.h>
-#include <rr_msgs/steering.h>
 #include <rr_msgs/axes.h>
 #include <rr_msgs/race_reset.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 
 #include <rr_msgs/urc_sign.h>
 #include <std_msgs/Bool.h>
@@ -87,16 +87,16 @@ float angleDist(float target, float current) {
     return min;
 }
 
-void publishSpeedandSteering(){
-        rr_msgs::speed speedMsg;
-        speedMsg.speed = speed;
-        speedMsg.header.stamp = ros::Time::now();
-        speedPub.publish(speedMsg);
+void publishSpeedandSteering() {
+    rr_msgs::speed speedMsg;
+    speedMsg.speed = speed;
+    speedMsg.header.stamp = ros::Time::now();
+    speedPub.publish(speedMsg);
 
-        rr_msgs::steering steerMsg;
-        steerMsg.angle = steering;
-        steerMsg.header.stamp = ros::Time::now();
-        steerPub.publish(steerMsg);
+    rr_msgs::steering steerMsg;
+    steerMsg.angle = steering;
+    steerMsg.header.stamp = ros::Time::now();
+    steerPub.publish(steerMsg);
 }
 
 void updateState() {
@@ -211,14 +211,14 @@ void resetCB(const rr_msgs::race_reset &reset_msg) {
     updateState();
 }
 
-void signCB(const rr_msgs::urc_sign &msg){
-     turn_direction = msg.direction;
-     stop_bar_angle = msg.angle;
-     turnDetected = true;
+void signCB(const rr_msgs::urc_sign &msg) {
+    turn_direction = msg.direction;
+    stop_bar_angle = msg.angle;
+    turnDetected = true;
 }
 
-void imuCB(const rr_msgs::axesConstPtr &msg){
-     imu_yaw = setInRange(msg->yaw);
+void imuCB(const rr_msgs::axesConstPtr &msg) {
+    imu_yaw = setInRange(msg->yaw);
 }
 
 int main(int argc, char **argv) {

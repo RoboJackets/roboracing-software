@@ -1,7 +1,7 @@
 #include <ros/publisher.h>
+#include <ros/ros.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
 #include <string>
 
@@ -13,7 +13,7 @@ double speed_max;
 void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
     rr_msgs::speed sp_cmd;
     rr_msgs::steering st_cmd;
-    sp_cmd.speed = speed_max * ((-1*msg->axes[5] + 1.)/2.);
+    sp_cmd.speed = speed_max * ((-1 * msg->axes[5] + 1.) / 2.);
     st_cmd.angle = -(angle_max * msg->axes[0]);
 
     speed_publisher.publish(sp_cmd);

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
+#include <rr_msgs/race_reset.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <rr_msgs/race_reset.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
 

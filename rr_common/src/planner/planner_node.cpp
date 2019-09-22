@@ -266,14 +266,14 @@ int main(int argc, char** argv) {
 
     steering_gain = getParamAssert<double>(nhp, "steering_gain");
 
-  auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
-  speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
-  steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
-  path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
+    auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
+    speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
+    steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
+    path_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
-  speed_message.reset(new rr_msgs::speed);
-  steer_message.reset(new rr_msgs::steering);
-  update_messages(0, 0);
+    speed_message.reset(new rr_msgs::speed);
+    steer_message.reset(new rr_msgs::steering);
+    update_messages(0, 0);
 
     ROS_INFO("Planner initialized");
 

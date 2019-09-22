@@ -9,7 +9,7 @@ ResetPanel::ResetPanel(QWidget *parent)
 {
     reset_btn = new QPushButton("Reset!");
     reset_pub = nh.advertise<rr_msgs::race_reset>("/reset_detected", 0);
-    connect(reset_btn, SIGNAL (released()), this, SLOT (resetCallback()));
+    connect(reset_btn, SIGNAL(released()), this, SLOT(resetCallback()));
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(reset_btn);

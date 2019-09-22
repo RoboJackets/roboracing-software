@@ -1,13 +1,13 @@
 #include <cv_bridge/cv_bridge.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <rr_msgs/speed.h>
-#include <rr_msgs/steering.h>
 #include "PID.h"
 
 using namespace std;
@@ -232,7 +232,7 @@ int main(int argc, char** argv) {
 
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_debug", 1); //test publish of image
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_debug", 1);  // test publish of image
     speed_pub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);
 

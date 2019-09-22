@@ -1,7 +1,7 @@
 #include <ros/ros.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <rr_msgs/chassis_state.h>
 #include <rr_platform/SerialPort.h>
 
 double desiredSpeed = 0;
@@ -54,7 +54,7 @@ void publishData(const std::string &line) {
     if (line.empty()) {
         return;
     }
-    std::vector <std::string> data = split(line.substr(1), ',');
+    std::vector<std::string> data = split(line.substr(1), ',');
     rr_msgs::chassis_state msg;
     msg.header.stamp = ros::Time::now();
     msg.speed_mps = static_cast<float>(std::stod(data[0]) / (s_per_50ms * ticks_per_meter));
