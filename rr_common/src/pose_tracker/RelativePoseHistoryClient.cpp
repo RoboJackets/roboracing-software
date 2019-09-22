@@ -1,5 +1,5 @@
 #include <rr_common/RelativePoseHistoryClient.h>
-#include <rr_platform/angle_utils.hpp>
+#include <rr_common/angle_utils.hpp>
 
 namespace rr {
 

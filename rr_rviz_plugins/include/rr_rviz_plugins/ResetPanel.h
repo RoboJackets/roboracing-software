@@ -2,7 +2,7 @@
 #define PROJECT_RESETPANEL_H
 
 #include <ros/ros.h>
-#include <rr_platform/race_reset.h>
+#include <rr_msgs/race_reset.h>
 #include <rviz/panel.h>
 #include <QPushButton>
 

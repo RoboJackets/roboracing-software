@@ -4,14 +4,9 @@
   <version>0.0.0</version>
   <description>Platform description for RoboRacing</description>
 
-  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
   <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>MIT</license>
-
 
   <url type="website">http://robojackets.org</url>
   <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
@@ -19,15 +14,4 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
-
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
-  <depend>rr_platform</depend>
-  <depend>xacro</depend>
-
-  <exec_depend>message_runtime</exec_depend>
-
-  <export>
-
-  </export>
 </package>

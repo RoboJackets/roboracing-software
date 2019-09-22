@@ -8,7 +8,7 @@ ResetPanel::ResetPanel(QWidget *parent)
       : rviz::Panel(parent)  // Base class constructor
 {
     reset_btn = new QPushButton("Reset!");
-    reset_pub = nh.advertise<rr_platform::race_reset>("/reset_detected", 0);
+    reset_pub = nh.advertise<rr_msgs::race_reset>("/reset_detected", 0);
     connect(reset_btn, SIGNAL(released()), this, SLOT(resetCallback()));
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -17,7 +17,7 @@ ResetPanel::ResetPanel(QWidget *parent)
 }
 
 void ResetPanel::resetCallback() {
-    rr_platform::race_reset reset;
+    rr_msgs::race_reset reset;
     reset_pub.publish(reset);
 }
 

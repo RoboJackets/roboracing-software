@@ -1,10 +1,10 @@
-#include <rr_platform/CameraGeometry.h>
+#include <rr_common/CameraGeometry.h>
 
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 #include <cmath>
 
-#include <rr_platform/angle_utils.hpp>
+#include <rr_common/angle_utils.hpp>
 
 namespace rr {
 
@@ -70,8 +70,7 @@ bool CameraGeometry::LoadCameraPose(const std::string& camera_link_name, const d
 
 bool CameraGeometry::LoadInfo(ros::NodeHandle& nh, const std::string& camera_info_topic,
                               const std::string& camera_link_name, const double timeout) {
-    // ROS simulated time is sometimes wonky when Gazebo is starting up. Make sure
-    // we actually have a time
+    // ROS simulated time is sometimes wonky when Gazebo is starting up. Make sure we actually have a time
     //   before doing anything that can time out
     while (ros::Time::now().toSec() == 0) {
         ros::Duration(0.01).sleep();

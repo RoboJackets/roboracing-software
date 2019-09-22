@@ -1,18 +1,12 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>rr_gazebo</name>
   <version>0.0.0</version>
   <description>Gazebo simulation files for RoboRacing</description>
 
+  <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
-  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
-
+  <license>MIT</license>
 
   <url type="website">http://robojackets.org</url>
   <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
@@ -21,19 +15,15 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>gazebo_ros</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rr_platform</build_depend>
-  <build_depend>parameter_assertions</build_depend>
+  <depend>rr_msgs</depend>
+  <depend>gazebo_ros</depend>
+  <depend>roscpp</depend>
+  <depend>parameter_assertions<depend>
 
-  <run_depend>gazebo_ros</run_depend>
-  <run_depend>rr_platform</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>joint_state_controller</run_depend>
-  <run_depend>effort_controllers</run_depend>
-  <run_depend>controller_manager</run_depend>
-  <run_depend>gazebo_ros_control</run_depend>
-  <run_depend>hector_gazebo_plugins</run_depend>
+  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
 
   <export>
     <gazebo_ros gazebo_model_path="${prefix}/models"/>

@@ -1,8 +1,8 @@
 #include <math.h>
 #include <ros/ros.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <sensor_msgs/Imu.h>
 #include <tf/transform_datatypes.h>
 
@@ -22,18 +22,18 @@ void imuCallback(const sensor_msgs::ImuConstPtr& msg) {
     ROS_INFO_STREAM(currentYaw);
 }
 
-void chassisCB(const rr_platform::chassis_stateConstPtr& msg) {
+void chassisCB(const rr_msgs::chassis_stateConstPtr& msg) {
     go = msg->mux_autonomous;
 }
 
 void publishSpeed(const float& desiredSpeed) {
-    rr_platform::speed speedMsg;
+    rr_msgs::speed speedMsg;
     speedMsg.header.stamp = ros::Time::now();
     speedMsg.speed = desiredSpeed;
     speedPub.publish(speedMsg);
     ROS_INFO("published");
 
-    rr_platform::steering steeringMsg;
+    rr_msgs::steering steeringMsg;
     steeringMsg.header.stamp = ros::Time::now();
     steeringMsg.angle = /*-currentYaw * kP*/ 0;
     steeringPub.publish(steeringMsg);
@@ -42,8 +42,8 @@ void publishSpeed(const float& desiredSpeed) {
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "qualify");
     ros::NodeHandle nh;
-    speedPub = nh.advertise<rr_platform::speed>("/speed", 1);
-    steeringPub = nh.advertise<rr_platform::steering>("/steering", 1);
+    speedPub = nh.advertise<rr_msgs::speed>("/speed", 1);
+    steeringPub = nh.advertise<rr_msgs::steering>("/steering", 1);
 
     ros::Subscriber chassisSub = nh.subscribe("/chassis_state", 1, chassisCB);
     ros::Subscriber imuSub = nh.subscribe("/axes", 1, imuCallback);

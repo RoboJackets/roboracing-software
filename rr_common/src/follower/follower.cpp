@@ -6,8 +6,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
-    rr_platform::speedPtr speedMSG(new rr_platform::speed);
-    rr_platform::steeringPtr steerMSG(new rr_platform::steering);
+    rr_msgs::speedPtr speedMSG(new rr_msgs::speed);
+    rr_msgs::steeringPtr steerMSG(new rr_msgs::steering);
     if (cloud->empty()) {
         ROS_WARN("environment map pointcloud is empty");
         speedMSG->speed = 0;
@@ -87,8 +87,8 @@ int main(int argc, char** argv) {
     nhp.param("INPUT_CLOUD_TOPIC", obstacleCloudTopic, string("/map"));
 
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_platform::speed>("speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("steering", 1);
+    speed_pub = nh.advertise<rr_msgs::speed>("speed", 1);
+    steer_pub = nh.advertise<rr_msgs::steering>("steering", 1);
 
     ROS_INFO("follower initialized");
 

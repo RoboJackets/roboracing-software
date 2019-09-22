@@ -2,7 +2,7 @@
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
-#include <rr_iarrc/urc_sign.h>
+#include <rr_msgs/urc_sign.h>
 #include <sensor_msgs/Image.h>
 #include <stdlib.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -16,7 +16,7 @@ ros::Publisher pub;
 ros::Publisher pubLine;
 ros::Publisher pubMove;
 
-rr_iarrc::urc_sign moveMsg;
+rr_msgs::urc_sign moveMsg;
 
 int roi_x;
 int roi_y;
@@ -398,8 +398,8 @@ int main(int argc, char** argv) {
                                            1);  // debug publish of image
     pubLine = nh.advertise<sensor_msgs::Image>("/sign_detector/stop_bar",
                                                1);  // debug publish of image
-    pubMove = nh.advertise<rr_iarrc::urc_sign>("/turn_detected",
-                                               1);  // publish the turn move for Urban Challenge Controller
+    // publish the turn move for Urban Challenge Controller
+    pubMove = nh.advertise<rr_msgs::urc_sign>("/turn_detected", 1);
     auto img_real = nh.subscribe(image_sub, 1, sign_callback);
     auto stopBar = nh.subscribe(overhead_image_sub, 1, stopBar_callback);
 

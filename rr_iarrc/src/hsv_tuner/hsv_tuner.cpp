@@ -1,6 +1,6 @@
 #include <ros/package.h>
 #include <ros/ros.h>
-#include <rr_iarrc/hsv_tuned.h>
+#include <rr_msgs/hsv_tuned.h>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -11,7 +11,7 @@ using namespace cv;
 using namespace std;
 
 ros::Publisher hsv_pub;
-rr_iarrc::hsv_tuned hsv_msg;
+rr_msgs::hsv_tuned hsv_msg;
 
 const int hsv_slider_max = 255;
 const int saving_slider_max = 1;
@@ -38,7 +38,7 @@ void on_trackbar(int, void*) {
     hsv_msg.white_s_high = white_s_high_slider;
     hsv_msg.white_v_high = white_v_high_slider;
 
-    rr_iarrc::hsv_tuned publishable_copy = hsv_msg;
+    rr_msgs::hsv_tuned publishable_copy = hsv_msg;
     publishable_copy.header.stamp = ros::Time::now();
     hsv_pub.publish(publishable_copy);
 }
@@ -118,9 +118,9 @@ int main(int argc, char** argv) {
 
     std::string values_topic;
     nhp.getParam("values_topic", values_topic);
-    hsv_pub = handle.advertise<rr_iarrc::hsv_tuned>(values_topic, 1);
+    hsv_pub = handle.advertise<rr_msgs::hsv_tuned>(values_topic, 1);
 
-    rr_iarrc::hsv_tuned hsv_tuned_msg;
+    rr_msgs::hsv_tuned hsv_tuned_msg;
     hsv_tuned_msg.header.frame_id = "hsv_tuned";
     ROS_INFO("Running HSV tuner panel.");
 

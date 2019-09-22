@@ -10,4 +10,4 @@ target_link_libraries(annealing_planner kinematic_bicycle_model distance_checker
 
 add_executable(planner planner_node.cpp)
 target_link_libraries(planner random_sample_planner annealing_planner ${catkin_LIBRARIES})
-add_dependencies(planner rr_platform_generate_messages_cpp)
+add_dependencies(planner ${catkin_EXPORTED_TARGETS})
