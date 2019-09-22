@@ -1,11 +1,11 @@
-#include <ros/ros.h>
-#include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
+#include <ros/publisher.h>
+#include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include "PID.h"
@@ -34,16 +34,15 @@ Line last_midline;
 
 Point anchor;
 
-//PID IMPLEMENTATION SETUP
+// PID IMPLEMENTATION SETUP
 double kP, kI, kD;
 double setpoint;
 double input, maxTurnLimit;
 double outputSteering, speedGoal;
 PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
-
 cv::Mat kernel(int x, int y) {
-    return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
+    return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
 void publishMessage(const ros::Publisher pub, const cv::Mat& img, std::string img_type) {
@@ -57,10 +56,8 @@ void publishMessage(const ros::Publisher pub, const cv::Mat& img, std::string im
 }
 
 Point get_bottom_most_pnt(const Contour& cnt) {
-    Point extBot = *max_element(cnt.begin(), cnt.end(),
-            [](const Point& lhs, const Point& rhs) {
-                    return lhs.y < rhs.y;
-            });
+    Point extBot =
+          *max_element(cnt.begin(), cnt.end(), [](const Point& lhs, const Point& rhs) { return lhs.y < rhs.y; });
     return extBot;
 }
 
@@ -102,7 +99,7 @@ float get_pnt_on_line(int y, const Line& line) {
     float Vy = line[1];
     float x0 = line[2];
     float y0 = line[3];
-    float x  = 0;
+    float x = 0;
 
     x = (Vx / Vy) * (y - y0) + x0;
     return x;
@@ -119,21 +116,21 @@ Line get_midline(const Line& left_line, const Line& right_line) {
     Line empty;
     frame_without_two_lines++;
     if (left_line != empty && right_line != empty) {
-        auto[left_line_top, left_line_bottom]   = get_line_top_bottom_pnts(0, anchor.y, left_line );
-        auto[right_line_top, right_line_bottom] = get_line_top_bottom_pnts(0, anchor.y, right_line);
+        auto [left_line_top, left_line_bottom] = get_line_top_bottom_pnts(0, anchor.y, left_line);
+        auto [right_line_top, right_line_bottom] = get_line_top_bottom_pnts(0, anchor.y, right_line);
 
         Point midline_top = (left_line_top + right_line_top) / 2;
         Point midline_bottom = (left_line_bottom + right_line_bottom) / 2;
 
-        vector<Point> midline_endpnts{midline_top, midline_bottom};
+        vector<Point> midline_endpnts{ midline_top, midline_bottom };
         fitLine(midline_endpnts, midline, cv::DIST_L2, 0, .01, .01);
         frame_without_two_lines = 0;
     } else if (left_line != empty) {
-        midline = (Line){left_line[0], left_line[1], (float) anchor.x, (float) anchor.y} ;
+        midline = (Line){ left_line[0], left_line[1], (float)anchor.x, (float)anchor.y };
     } else if (right_line != empty) {
-        midline = (Line){right_line[0], right_line[1], (float) anchor.x, (float) anchor.y};
+        midline = (Line){ right_line[0], right_line[1], (float)anchor.x, (float)anchor.y };
     } else {
-        midline = (Line){0.0, 1.0, (float) anchor.x, (float) anchor.y};
+        midline = (Line){ 0.0, 1.0, (float)anchor.x, (float)anchor.y };
     }
 
     if (frame_without_two_lines != 0 && frame_without_two_lines < 2) {
@@ -144,14 +141,14 @@ Line get_midline(const Line& left_line, const Line& right_line) {
     return midline;
 }
 
-Mat make_debug_img(const Mat& frame, const Contour& left_cnt, const Contour& right_cnt,
-                   const Line& left_line, const Line& right_line, const Line& midline, double steering) {
+Mat make_debug_img(const Mat& frame, const Contour& left_cnt, const Contour& right_cnt, const Line& left_line,
+                   const Line& right_line, const Line& midline, double steering) {
     Mat debug_img;
     cv::cvtColor(frame, debug_img, cv::COLOR_GRAY2BGR);
     if (pub_line_detector.getNumSubscribers() > 0) {
         if (!left_cnt.empty()) {
             Point left_bottom_pnt = get_bottom_most_pnt(left_cnt);
-            auto[left_line_top, left_line_bottom] = get_line_top_bottom_pnts(0, left_bottom_pnt.y, left_line);
+            auto [left_line_top, left_line_bottom] = get_line_top_bottom_pnts(0, left_bottom_pnt.y, left_line);
 
             cv::polylines(debug_img, left_cnt, true, cv::Scalar(200, 0, 0), 2);
             cv::circle(debug_img, left_bottom_pnt, 4, cv::Scalar(255, 100, 0), -1);
@@ -160,30 +157,32 @@ Mat make_debug_img(const Mat& frame, const Contour& left_cnt, const Contour& rig
 
         if (!right_cnt.empty()) {
             Point right_bottom_pnt = get_bottom_most_pnt(right_cnt);
-            auto[right_line_top, right_line_bottom] = get_line_top_bottom_pnts(0, right_bottom_pnt.y, right_line);
+            auto [right_line_top, right_line_bottom] = get_line_top_bottom_pnts(0, right_bottom_pnt.y, right_line);
 
             cv::polylines(debug_img, right_cnt, true, cv::Scalar(0, 0, 200), 2);
             cv::circle(debug_img, right_bottom_pnt, 4, cv::Scalar(0, 100, 255), -1);
             cv::line(debug_img, right_line_bottom, right_line_top, cv::Scalar(0, 255, 150), 2);
         }
 
-        auto[midline_top, midline_bottom] = get_line_top_bottom_pnts(0, anchor.y, midline);
-        Point midline_mid(get_pnt_on_line(img_height/2, midline), img_height/2);
+        auto [midline_top, midline_bottom] = get_line_top_bottom_pnts(0, anchor.y, midline);
+        Point midline_mid(get_pnt_on_line(img_height / 2, midline), img_height / 2);
 
         cv::line(debug_img, midline_bottom, midline_top, cv::Scalar(226, 43, 138), 2);
         cv::line(debug_img, Point(anchor.x, 0), Point(anchor.x, img_height), cv::Scalar(0, 255, 255), 1);
 
-        cv::line(debug_img, Point(anchor.x, img_height/2), midline_mid, cv::Scalar(0, 0, 255), 1);
+        cv::line(debug_img, Point(anchor.x, img_height / 2), midline_mid, cv::Scalar(0, 0, 255), 1);
 
-        cv::putText(debug_img, std::to_string(steering), cv::Point(20,100), cv::FONT_HERSHEY_PLAIN, 1,  cv::Scalar(0,255,0), 2);
+        cv::putText(debug_img, std::to_string(steering), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1,
+                    cv::Scalar(0, 255, 0), 2);
     }
     return debug_img;
 }
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
-    //Convert msg to Mat image
+    // Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
-    Mat frame = cv_ptr->image;;
+    Mat frame = cv_ptr->image;
+    ;
 
     img_height = frame.rows;
     img_width = frame.cols;
@@ -193,7 +192,8 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     auto [left_line, right_line] = get_cnts_reg_line(left_cnt, right_cnt);
     Line midline = get_midline(left_line, right_line);
 
-    cv::Point goal(get_pnt_on_line(img_height / 2, midline), img_height / 2);;
+    cv::Point goal(get_pnt_on_line(img_height / 2, midline), img_height / 2);
+    ;
 
     input = static_cast<double>(goal.x);
     setpoint = img_width / 2;
@@ -223,10 +223,9 @@ int main(int argc, char** argv) {
     nhp.param("PID_kD", kD, 0.0);
     nhp.param("speed", speedGoal, 1.0);
 
-
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
 
-    //setup PID controllers
+    // setup PID controllers
     myPID.SetTunings(kP, kI, kD);
     myPID.SetMode(AUTOMATIC);
     myPID.SetOutputLimits(-maxTurnLimit, maxTurnLimit);

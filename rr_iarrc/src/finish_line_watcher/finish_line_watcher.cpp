@@ -5,15 +5,15 @@
  * finish line.
  */
 
+#include <cv_bridge/cv_bridge.h>
+#include <ros/publisher.h>
 #include <ros/ros.h>
 #include <ros/subscriber.h>
-#include <ros/publisher.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
-#include <cv_bridge/cv_bridge.h>
-#include <climits>
 #include <rr_msgs/speed.h>
 #include <std_msgs/Int8.h>
+#include <climits>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace cv;
@@ -33,36 +33,27 @@ int state = LOW;
 int number_of_crosses = 0;
 
 void blockEnvironment(const cv::Mat& img) {
-    cv::rectangle(img,
-                  cv::Point(0,0),
-                  cv::Point(img.cols, blockSky_height),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(0,img.rows),
-                  cv::Point(img.cols, blockWheels_height),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(img.cols/3,img.rows),
-                  cv::Point(2 * img.cols / 3, blockBumper_height),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(img, cv::Point(img.cols / 3, img.rows), cv::Point(2 * img.cols / 3, blockBumper_height),
+                  cv::Scalar(0), CV_FILLED);
 }
 
 int getWidth(const Mat& image) {
-
     int width = 0;
 
     bool in_line = false;
     int start;
 
-    for(int r = 0; r < image.rows; r++) {
+    for (int r = 0; r < image.rows; r++) {
         auto row = image.ptr<uchar>(r);
-        for(int c = 0; c < image.cols; c++) {
-            if(!in_line && row[c]) {
+        for (int c = 0; c < image.cols; c++) {
+            if (!in_line && row[c]) {
                 in_line = true;
                 start = c;
-            } else if(in_line && !row[c]) {
+            } else if (in_line && !row[c]) {
                 in_line = false;
                 auto my_width = c - start;
                 width = max(width, my_width);
@@ -91,10 +82,9 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     auto width = getWidth(frame);
 
-
-    if(state == LOW && count > 2000 && width > 700) {
+    if (state == LOW && count > 2000 && width > 700) {
         state = HIGH;
-    } else if(state == HIGH && count < 2000) {
+    } else if (state == HIGH && count < 2000) {
         state = LOW;
         number_of_crosses++;
         ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
@@ -102,12 +92,12 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     // if(count > 2000 && width > 600) {
     //     number_of_crosses = 1;
-    //     ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
+    //     ROS_INFO_STREAM("Finish line crossed: " <<
+    //     to_string(number_of_crosses));
     // }
 }
 
 int main(int argc, char** argv) {
-
     init(argc, argv, "finish_line_watcher");
 
     NodeHandle nh;
@@ -116,7 +106,7 @@ int main(int argc, char** argv) {
     string img_topic;
     nhp.getParam("img_topic", img_topic);
 
-    nhp.param("blockSky_height",    blockSky_height, 0);
+    nhp.param("blockSky_height", blockSky_height, 0);
     nhp.param("blockWheels_height", blockWheels_height, 800);
     nhp.param("blockBumper_height", blockBumper_height, 800);
 
@@ -127,7 +117,7 @@ int main(int argc, char** argv) {
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
 
     Rate rate(30);
-    while(ros::ok()) {
+    while (ros::ok()) {
         std_msgs::Int8 intmsg;
         intmsg.data = number_of_crosses;
         crosses_pub.publish(intmsg);

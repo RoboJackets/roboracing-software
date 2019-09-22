@@ -14,10 +14,10 @@ ros::Publisher state_pub;
 /**
  * @note http://stackoverflow.com/a/27511119
  */
-std::vector <std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string &s, char delim) {
     std::stringstream ss(s);
     std::string item;
-    std::vector <std::string> elems;
+    std::vector<std::string> elems;
     while (std::getline(ss, item, delim)) {
         elems.push_back(std::move(item));
     }
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
 
     SerialPort serial_port;
-    if(!serial_port.Open(serial_port_name, 115200)) {
+    if (!serial_port.Open(serial_port_name, 115200)) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
         return 1;
     }

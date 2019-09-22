@@ -12,19 +12,19 @@
 namespace rr_rviz_plugins {
 
 class ResetPanel : public rviz::Panel {
-Q_OBJECT
-public:
+    Q_OBJECT
+  public:
     ResetPanel(QWidget *parent = 0);
 
-protected:
+  protected:
     QPushButton *reset_btn;
     ros::NodeHandle nh;
     ros::Publisher reset_pub;
 
-private slots:
+  private slots:
     void resetCallback();
 };
 
-}
+}  // namespace rr_rviz_plugins
 
 #endif

@@ -14,7 +14,7 @@ double kI = 0;
 double kD = 0;
 int trim = 0;
 
-const boost::array<double, 9ul> unknown_covariance = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+const boost::array<double, 9ul> unknown_covariance = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 constexpr float ticks_per_meter = 1725.0f;
 constexpr float s_per_50ms = 0.05f;
@@ -24,10 +24,10 @@ ros::Publisher state_pub;
 /**
  * @note http://stackoverflow.com/a/27511119
  */
-std::vector <std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string &s, char delim) {
     std::stringstream ss(s);
     std::string item;
-    std::vector <std::string> elems;
+    std::vector<std::string> elems;
     while (std::getline(ss, item, delim)) {
         elems.push_back(std::move(item));
     }
@@ -43,11 +43,8 @@ void SteeringCallback(const rr_msgs::steering::ConstPtr &msg) {
 }
 
 void sendCommand(SerialPort &port) {
-    std::string message = "$" + std::to_string(desiredSpeed) + ", " +
-                          std::to_string(desiredSteer) + "," +
-                          std::to_string(kP) + "," +
-                          std::to_string(kI) + "," +
-                          std::to_string(kD) + "," +
+    std::string message = "$" + std::to_string(desiredSpeed) + ", " + std::to_string(desiredSteer) + "," +
+                          std::to_string(kP) + "," + std::to_string(kI) + "," + std::to_string(kD) + "," +
                           std::to_string(trim) + "\n";
 
     port.Write(message);
@@ -95,7 +92,7 @@ int main(int argc, char **argv) {
     nhp.param(std::string("serial_port"), serial_port_name, std::string("/dev/ttyACM0"));
 
     SerialPort serial_port;
-    if(!serial_port.Open(serial_port_name, 115200)) {
+    if (!serial_port.Open(serial_port_name, 115200)) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
         return 1;
     }
@@ -105,7 +102,7 @@ int main(int argc, char **argv) {
     float hz = 20;
     ros::Rate rate(hz);
     int count = 0;
-    int countLimit = (int) (hz / 10); // Limit motor commands to 10hz regardless of loop rate
+    int countLimit = (int)(hz / 10);  // Limit motor commands to 10hz regardless of loop rate
     int sequence = 0;
 
     ros::Duration(2.0).sleep();

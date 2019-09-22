@@ -1,25 +1,26 @@
-#include <ros/ros.h>
-#include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
+#include <ros/publisher.h>
+#include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 
 cv_bridge::CvImagePtr cv_ptr;
 int original_width, original_height;
 int blockSky_height, blockWheels_height, blockBumper_height;
-int ignore_color_low_H, ignore_color_high_H, ignore_color_low_S, ignore_color_high_S, ignore_color_low_V, ignore_color_high_V;
+int ignore_color_low_H, ignore_color_high_H, ignore_color_low_S, ignore_color_high_S, ignore_color_low_V,
+      ignore_color_high_V;
 bool ignore_adaptive;
 int min_blob_area, laplacian_threshold_min, laplacian_threshold_max, adaptive_mean_threshold;
 ros::Publisher pub_line_detector, pub_debug_img;
 int resize_dim = 400;
 
 cv::Mat kernel(int x, int y) {
-    return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
+    return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
 cv::Mat getIgnoreColorMask(const cv::Mat& frame) {
@@ -27,64 +28,59 @@ cv::Mat getIgnoreColorMask(const cv::Mat& frame) {
     cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
     cv::inRange(hsv_frame, cv::Scalar(ignore_color_low_H, ignore_color_low_S, ignore_color_low_V),
                 cv::Scalar(ignore_color_high_H, ignore_color_high_S, ignore_color_high_V), ignore_color_mask);
-    cv::erode(ignore_color_mask, ignore_color_mask, kernel(2,2));
+    cv::erode(ignore_color_mask, ignore_color_mask, kernel(2, 2));
     return ignore_color_mask;
 }
 
 cv::Mat getBlurredGrayImage(const cv::Mat& frame) {
     cv::Mat frame_gray, frame_blur;
-    cv::GaussianBlur(frame, frame_blur, cv::Size(5,5), 0);
+    cv::GaussianBlur(frame, frame_blur, cv::Size(5, 5), 0);
     cv::cvtColor(frame_blur, frame_gray, cv::COLOR_BGR2GRAY);
     return frame_gray;
 }
 
 void blockEnvironment(const cv::Mat& img) {
-    cv::rectangle(img,
-                  cv::Point(0,0),
-                  cv::Point(img.cols, blockSky_height * resize_dim / original_height),
-                  cv::Scalar(0, 0, 0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height * resize_dim / original_height),
+                  cv::Scalar(0, 0, 0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(0,img.rows),
-                  cv::Point(img.cols, blockWheels_height * resize_dim / original_height),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height * resize_dim / original_height),
+                  cv::Scalar(0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(img.cols/3,img.rows),
-                  cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(img, cv::Point(img.cols / 3, img.rows),
+                  cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height), cv::Scalar(0),
+                  CV_FILLED);
 }
 
 cv::Mat getAdaptiveThres(const cv::Mat& frame_gray) {
     cv::Mat thres;
-    cv::adaptiveThreshold(frame_gray, thres, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 5, -adaptive_mean_threshold);
+    cv::adaptiveThreshold(frame_gray, thres, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 5,
+                          -adaptive_mean_threshold);
     blockEnvironment(thres);
-    cv::erode(thres, thres, kernel(3,1));
+    cv::erode(thres, thres, kernel(3, 1));
     return thres;
 }
 
 cv::Mat floorfillAreas(const cv::Mat& lines, const cv::Mat& color_found) {
-    cv::Mat color_left, lines_found(lines.rows,lines.cols,CV_8UC1,cv::Scalar::all(0));
+    cv::Mat color_left, lines_found(lines.rows, lines.cols, CV_8UC1, cv::Scalar::all(0));
     cv::Mat lines_remaining = lines.clone();
     lines.copyTo(color_left, color_found);
 
     std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(color_left, contours,CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
-    for(int i = 0; i < contours.size(); i++ ) {
+    cv::findContours(color_left, contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+    for (int i = 0; i < contours.size(); i++) {
         cv::floodFill(lines_remaining, contours[i][0], cv::Scalar(0));
     }
     cv::bitwise_xor(lines, lines_remaining, lines_found);
     return lines_found;
 }
 
-
 cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
-    cv::Mat contours_color(color_edges.rows,color_edges.cols,CV_8UC1,cv::Scalar::all(0));
+    cv::Mat contours_color(color_edges.rows, color_edges.cols, CV_8UC1, cv::Scalar::all(0));
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::findContours(color_edges, contours,CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
-    for( int i = 0; i < contours.size(); i++ ) {
-        if (size_min < cv::contourArea(contours[i], false) ) {
+    cv::findContours(color_edges, contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+    for (int i = 0; i < contours.size(); i++) {
+        if (size_min < cv::contourArea(contours[i], false)) {
             cv::drawContours(contours_color, contours, i, cv::Scalar(255), CV_FILLED, 8);
         }
     }
@@ -103,16 +99,15 @@ void publishMessage(ros::Publisher& pub, const cv::Mat& img, std::string img_typ
 }
 
 cv::Mat overlayBinaryGreen(cv::Mat& frame, const cv::Mat& binary) {
-    return frame.setTo(cv::Scalar(0,255,0), binary != 0);
+    return frame.setTo(cv::Scalar(0, 255, 0), binary != 0);
 }
 
 cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth) {
-    //Removes anything that extends from the top of the image to the bottom like glare from the sun
+    // Removes anything that extends from the top of the image to the bottom like
+    // glare from the sun
     cv::Mat top = img.clone();
-    cv::rectangle(top,
-                  cv::Point(0,img.rows / 3 + blockSky_height - distanceFromEarth),
-                  cv::Point(img.cols,img.rows),
-                  cv::Scalar(0),CV_FILLED);
+    cv::rectangle(top, cv::Point(0, img.rows / 3 + blockSky_height - distanceFromEarth), cv::Point(img.cols, img.rows),
+                  cv::Scalar(0), CV_FILLED);
 
     std::vector<cv::Point> locations;
     cv::findNonZero(top, locations);
@@ -125,8 +120,8 @@ cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth) {
     return img;
 }
 
-cv::Mat createDebugImage(cv::Mat &img_debug, const cv::Mat &adaptive, const cv::Mat &lapl,
-                         const cv::Mat &cut, const cv::Mat& ignore_color) {
+cv::Mat createDebugImage(cv::Mat& img_debug, const cv::Mat& adaptive, const cv::Mat& lapl, const cv::Mat& cut,
+                         const cv::Mat& ignore_color) {
     cv::cvtColor(img_debug, img_debug, CV_GRAY2BGR);
 
     // Highlight ROI
@@ -138,7 +133,7 @@ cv::Mat createDebugImage(cv::Mat &img_debug, const cv::Mat &adaptive, const cv::
     img_ROI.setTo(cv::Scalar(0, 255, 0), img_ROI_binary == 255);
     cv::addWeighted(img_debug, alpha, img_ROI, 1 - alpha, 0.0, img_debug);
 
-    //Add highlighted section colors
+    // Add highlighted section colors
     img_debug.setTo(cv::Scalar(0, 0, 130), adaptive != 0);
     img_debug.setTo(cv::Scalar(130, 0, 50), lapl != 0);
     img_debug.setTo(cv::Scalar(204, 0, 204), cut != 0);
@@ -146,28 +141,31 @@ cv::Mat createDebugImage(cv::Mat &img_debug, const cv::Mat &adaptive, const cv::
     img_debug.setTo(cv::Scalar(0, 255, 0), floodfill_pnt != 0);
     img_debug.setTo(cv::Scalar(0, 255, 255), ignore_color != 0);
 
-    //Add Text
-    cv::putText(img_debug, "Area Visible", cv::Point(5,20), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 200, 0), 1);
-    cv::putText(img_debug, "Adaptive", cv::Point(5,40), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 0, 130), 1);
-    cv::putText(img_debug, "Adaptive (Big Enough)", cv::Point(5,60), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(204, 0, 204), 1);
-    cv::putText(img_debug, "Laplacian", cv::Point(5,80), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(130, 0, 50), 1);
-    cv::putText(img_debug, "Flood Points (Adpt. && Lapl.)", cv::Point(5,100), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 255, 0), 1);
-    cv::putText(img_debug, "Color Being Ignored", cv::Point(5,120), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 255, 255), 1);
+    // Add Text
+    cv::putText(img_debug, "Area Visible", cv::Point(5, 20), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 200, 0), 1);
+    cv::putText(img_debug, "Adaptive", cv::Point(5, 40), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(0, 0, 130), 1);
+    cv::putText(img_debug, "Adaptive (Big Enough)", cv::Point(5, 60), cv::FONT_HERSHEY_DUPLEX, .7,
+                cv::Scalar(204, 0, 204), 1);
+    cv::putText(img_debug, "Laplacian", cv::Point(5, 80), cv::FONT_HERSHEY_DUPLEX, .7, cv::Scalar(130, 0, 50), 1);
+    cv::putText(img_debug, "Flood Points (Adpt. && Lapl.)", cv::Point(5, 100), cv::FONT_HERSHEY_DUPLEX, .7,
+                cv::Scalar(0, 255, 0), 1);
+    cv::putText(img_debug, "Color Being Ignored", cv::Point(5, 120), cv::FONT_HERSHEY_DUPLEX, .7,
+                cv::Scalar(0, 255, 255), 1);
 
     return img_debug;
 }
 
-
 /**
- * Performs Adaptive Threshold to find areas where we are certain there are lines then
- * those areas are floodfilled on a Laplacian that has more noise but the entirety of the line.
+ * Performs Adaptive Threshold to find areas where we are certain there are
+ * lines then those areas are floodfilled on a Laplacian that has more noise but
+ * the entirety of the line.
  *
  * @param msg image input from camera
  */
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     auto time_stamp = msg->header.stamp;
 
-    //Convert msg to Mat image
+    // Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
@@ -195,11 +193,11 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         threshold(frame_gray, lightness, 5, 255, 0);
         lapl.setTo(cv::Scalar(0, 0, 0), lightness == 0);
 
-        cv::erode(lapl, lapl, kernel(3,1));
+        cv::erode(lapl, lapl, kernel(3, 1));
         true_lines = cutSmall(lapl, min_blob_area);
-        cv::dilate(lapl, lapl, kernel(10,10));
+        cv::dilate(lapl, lapl, kernel(10, 10));
 
-        cv::Mat black(frame.rows,frame.cols,CV_8UC1,cv::Scalar::all(0));
+        cv::Mat black(frame.rows, frame.cols, CV_8UC1, cv::Scalar::all(0));
         adaptive = black;
         floodfill_blobs = black;
     }
@@ -221,25 +219,25 @@ int main(int argc, char** argv) {
     nhp.param("laplacian_threshold_max", laplacian_threshold_max, -20);
     nhp.param("min_blob_area", min_blob_area, 60);
 
-    nhp.param("blockSky_height",    blockSky_height, 0);
+    nhp.param("blockSky_height", blockSky_height, 0);
     nhp.param("blockWheels_height", blockWheels_height, 800);
     nhp.param("blockBumper_height", blockBumper_height, 800);
 
     nhp.param("ignore_adaptive", ignore_adaptive, false);
     nhp.param("adaptive_mean_threshold", adaptive_mean_threshold, 1);
 
-    nhp.param("ignore_color_low_H",  ignore_color_low_H,  -1);
+    nhp.param("ignore_color_low_H", ignore_color_low_H, -1);
     nhp.param("ignore_color_high_H", ignore_color_high_H, -1);
-    nhp.param("ignore_color_low_S",  ignore_color_low_S,  -1);
+    nhp.param("ignore_color_low_S", ignore_color_low_S, -1);
     nhp.param("ignore_color_high_S", ignore_color_high_S, -1);
-    nhp.param("ignore_color_low_V",  ignore_color_low_V,  -1);
+    nhp.param("ignore_color_low_V", ignore_color_low_V, -1);
     nhp.param("ignore_color_high_V", ignore_color_high_V, -1);
 
     nhp.param("subscription_node", subscription_node, std::string("/camera_center/image_color_rect"));
 
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
-    pub_line_detector = nh.advertise<sensor_msgs::Image>("lines/detection_img", 1); //test publish of image
+    pub_line_detector = nh.advertise<sensor_msgs::Image>("lines/detection_img", 1);  // test publish of image
     pub_debug_img = nh.advertise<sensor_msgs::Image>("lines/debug_img", 1);
 
     ros::spin();

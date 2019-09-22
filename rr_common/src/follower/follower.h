@@ -21,5 +21,4 @@ float FOLLOWER_SPEED;
 
 ros::Publisher speed_pub, steer_pub;
 
-
-#endif //RR_COMMON_FOLLOWER_H
+#endif  // RR_COMMON_FOLLOWER_H

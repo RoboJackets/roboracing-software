@@ -1,14 +1,14 @@
-#include <ros/ros.h>
-#include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
 #include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
+#include <message_filters/synchronizer.h>
+#include <ros/publisher.h>
+#include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
@@ -24,7 +24,7 @@ rr_msgs::steering steer_message;
 cv::Mat mergeImagesSideBySide(cv::Mat leftImg, cv::Mat rightImg) {
     int outputRows = std::max(leftImg.rows, rightImg.rows);
     int outputCols = leftImg.cols + rightImg.cols;
-    cv::Mat merged(outputRows, outputCols, leftImg.type(), cv::Scalar(0,0,0));
+    cv::Mat merged(outputRows, outputCols, leftImg.type(), cv::Scalar(0, 0, 0));
     cv::Rect leftHalf(0, 0, leftImg.cols, leftImg.rows);
     cv::Rect rightHalf(leftImg.cols, 0, rightImg.cols, rightImg.rows);
     leftImg.copyTo(merged(leftHalf));
@@ -51,7 +51,7 @@ void publishMessage(const ros::Publisher pub, const cv::Mat& img, std::string im
  * @param rightMsg image input from the right side camera
  */
 void img_callback(const sensor_msgs::ImageConstPtr& leftMsg, const sensor_msgs::ImageConstPtr& rightMsg) {
-    //Convert msg to Mat image
+    // Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(leftMsg, "mono8");
     cv::Mat leftFrame = cv_ptr->image;
     cv_ptr = cv_bridge::toCvCopy(rightMsg, "mono8");
@@ -83,10 +83,12 @@ int main(int argc, char** argv) {
     message_filters::Subscriber<sensor_msgs::Image> leftCamera_sub(nh, leftCamera_sub_name, 1);
     message_filters::Subscriber<sensor_msgs::Image> rightCamera_sub(nh, rightCamera_sub_name, 1);
 
-    image_pub = nh.advertise<sensor_msgs::Image>(merged_img_publisher, 1); //publish debug image
+    image_pub = nh.advertise<sensor_msgs::Image>(merged_img_publisher,
+                                                 1);  // publish debug image
 
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MySyncPolicy;
-    // ApproximateTime takes a queue size as its constructor argument, hence MySyncPolicy(10)
+    // ApproximateTime takes a queue size as its constructor argument, hence
+    // MySyncPolicy(10)
     message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(3), leftCamera_sub, rightCamera_sub);
     sync.registerCallback(boost::bind(&img_callback, _1, _2));
 
