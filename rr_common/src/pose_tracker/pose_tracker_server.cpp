@@ -4,13 +4,13 @@
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
 
-#include <rr_platform/axes.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/angle_utils.hpp>
+#include <rr_msgs/axes.h>
+#include <rr_msgs/chassis_state.h>
+#include <rr_common/angle_utils.hpp>
 
 // Types
-using ChassisState = rr_platform::chassis_state;
-using Orientation = rr_platform::axes;
+using ChassisState = rr_msgs::chassis_state;
+using Orientation = rr_msgs::axes;
 using PoseHistoryMsg = nav_msgs::Path;
 
 struct HistoryPoint {

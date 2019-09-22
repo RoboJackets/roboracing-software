@@ -3,4 +3,4 @@ target_link_libraries(relative_pose_history_client rr_camera_geometry ${catkin_L
 
 add_executable(pose_tracker_server pose_tracker_server.cpp)
 target_link_libraries(pose_tracker_server ${catkin_LIBRARIES})
-add_dependencies(pose_tracker_server rr_platform_generate_messages_cpp)
+add_dependencies(pose_tracker_server ${catkin_EXPORTED_TARGETS})

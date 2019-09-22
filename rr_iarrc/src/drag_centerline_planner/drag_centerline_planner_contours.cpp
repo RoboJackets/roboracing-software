@@ -1,8 +1,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,8 +21,8 @@ ros::Publisher pub_line_detector;
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
 
-rr_platform::speed speed_message;
-rr_platform::steering steer_message;
+rr_msgs::speed speed_message;
+rr_msgs::steering steer_message;
 cv_bridge::CvImagePtr cv_ptr;
 
 int img_height;
@@ -233,8 +233,8 @@ int main(int argc, char** argv) {
     auto img_real = nh.subscribe(subscription_node, 1, img_callback);
 
     pub_line_detector = nh.advertise<sensor_msgs::Image>("/drag_centerline_debug", 1);  // test publish of image
-    speed_pub = nh.advertise<rr_platform::speed>("/plan/speed", 1);
-    steer_pub = nh.advertise<rr_platform::steering>("/plan/steering", 1);
+    speed_pub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
+    steer_pub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);
 
     ros::spin();
     return 0;

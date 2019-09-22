@@ -7,4 +7,3 @@ int32 white_v_low
 int32 white_h_high		
 int32 white_s_high
 int32 white_v_high
-

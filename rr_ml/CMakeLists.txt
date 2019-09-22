@@ -4,15 +4,14 @@ project(rr_ml)
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
         rospy
-        std_msgs
-        rr_platform
+        rr_msgs
         cv_bridge
         )
 
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 catkin_package(
-        CATKIN_DEPENDS rospy std_msgs rr_platform
+        CATKIN_DEPENDS rospy rr_msgs
 )
 
 add_subdirectory(nodes)

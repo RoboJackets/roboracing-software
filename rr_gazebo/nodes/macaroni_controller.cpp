@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
+#include <rr_msgs/chassis_state.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/Float64.h>
 
@@ -44,11 +44,11 @@ constexpr double max_torque = 0.25;
 
 constexpr double wheel_circumference = 2.0 * M_PI * 0.036;
 
-void speedCallback(const rr_platform::speedConstPtr &msg) {
+void speedCallback(const rr_msgs::speedConstPtr &msg) {
     speed_set_point = -msg->speed;
 }
 
-void steeringCallback(const rr_platform::steeringConstPtr &msg) {
+void steeringCallback(const rr_msgs::steeringConstPtr &msg) {
     steer_set_point = -msg->angle;
 }
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     ros::Publisher rightSteeringPublisher =
           handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
 
-    ros::Publisher chassisStatePublisher = handle.advertise<rr_platform::chassis_state>("/chassis_state", 1);
+    ros::Publisher chassisStatePublisher = handle.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
 
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
         leftSteeringPublisher.publish(leftSteerMsg);
         rightSteeringPublisher.publish(rightSteerMsg);
 
-        rr_platform::chassis_state chassisStateMsg;
+        rr_msgs::chassis_state chassisStateMsg;
         chassisStateMsg.header.stamp = ros::Time::now();
         chassisStateMsg.speed_mps = -(speed_measured_left + speed_measured_right) / 2;
         chassisStateMsg.mux_autonomous = true;

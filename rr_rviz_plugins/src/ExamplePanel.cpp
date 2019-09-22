@@ -19,11 +19,10 @@ ExamplePanel::ExamplePanel(QWidget *parent)
     QLabel *label = new QLabel("0 m/s");
 
     /* Initialize our subscriber to listen to the /speed topic.
-     * Note the use of boost::bind, which allows us to give the callback a pointer
-     * to our UI label.
+     * Note the use of boost::bind, which allows us to give the callback a pointer to our UI label.
      */
-    speed_subscriber = handle.subscribe<rr_platform::speed>(
-          "/speed", 1, boost::bind(&ExamplePanel::speed_callback, this, _1, label));
+    speed_subscriber =
+          handle.subscribe<rr_msgs::speed>("/speed", 1, boost::bind(&ExamplePanel::speed_callback, this, _1, label));
 
     /* Use QT layouts to add widgets to the panel.
      * Here, we're using a VBox layout, which allows us to stack all of our
@@ -34,7 +33,7 @@ ExamplePanel::ExamplePanel(QWidget *parent)
     setLayout(layout);
 }
 
-void ExamplePanel::speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label) {
+void ExamplePanel::speed_callback(const rr_msgs::speedConstPtr &msg, QLabel *label) {
     // Create the new contents of the label based on the speed message.
     auto text = std::to_string(msg->speed) + " m/s";
     // Set the contents of the label.

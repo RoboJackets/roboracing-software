@@ -1,6 +1,6 @@
 #include <cv_bridge/cv_bridge.h>
 #include <ros/ros.h>
-#include <rr_platform/CameraGeometry.h>
+#include <rr_common/CameraGeometry.h>
 #include <sensor_msgs/Image.h>
 #include <boost/algorithm/string.hpp>
 #include <cmath>
@@ -26,13 +26,12 @@ Mat transform_matrix;
 map<string, Publisher> transform_pubs;
 
 /*
- * Start with a horizontal line on the groud at dmin meters horizonally in front
- * of the camera. It fills half the camera's FOV, from the center to the right
- * edge. Then back up the car so that the line is dmax meters away horizontally
- * from the camera. The apparent length of this hypothetical line (in pixels) is
- * the output of this function. See https://www.desmos.com/calculator/jsofcq1bi5
- * See
- * https://drive.google.com/file/d/0Bw7-7Y3CUDw1Z0ZqdmdRZ3dUTE0/view?usp=sharing
+ * Start with a horizontal line on the groud at dmin meters horizonally in front of the
+ * camera. It fills half the camera's FOV, from the center to the right edge. Then back
+ * up the car so that the line is dmax meters away horizontally from the camera. The
+ * apparent length of this hypothetical line (in pixels) is the output of this function.
+ * See https://www.desmos.com/calculator/jsofcq1bi5
+ * See https://drive.google.com/file/d/0Bw7-7Y3CUDw1Z0ZqdmdRZ3dUTE0/view?usp=sharing
  */
 double pxFromDist_X(double dmin, double dmax) {
     double min_hyp = sqrt(dmin * dmin + cam_mount_height * cam_mount_height);
@@ -73,12 +72,10 @@ void setTransformFromGeometry() {
     };
 
     Point2f dst[4] = {
-        Point2f(mapSize.width / 2.f - rectangle_w / 2.f, 0),  // top left
-        Point2f(mapSize.width / 2.f + rectangle_w / 2.f, 0),  // top right
-        Point2f(mapSize.width / 2.f - rectangle_w / 2.f,
-                mapSize.height),  // bottom left
-        Point2f(mapSize.width / 2.f + rectangle_w / 2.f,
-                mapSize.height)  // bottom right
+        Point2f(mapSize.width / 2.f - rectangle_w / 2.f, 0),               // top left
+        Point2f(mapSize.width / 2.f + rectangle_w / 2.f, 0),               // top right
+        Point2f(mapSize.width / 2.f - rectangle_w / 2.f, mapSize.height),  // bottom left
+        Point2f(mapSize.width / 2.f + rectangle_w / 2.f, mapSize.height)   // bottom right
     };
 
     transform_matrix = getPerspectiveTransform(src, dst);
@@ -124,8 +121,7 @@ int main(int argc, char** argv) {
     std::string camera_link_name;
     all_defined &= pnh.getParam("camera_link_name", camera_link_name);
 
-    // the launch file can provide camera information in case camera_info is not
-    // published
+    // the launch file can provide camera information in case camera_info is not published
     all_defined &= pnh.getParam("fallback_fov_horizontal", camera_fov_horizontal);
     all_defined &= pnh.getParam("fallback_fov_vertical", camera_fov_vertical);
     all_defined &= pnh.getParam("fallback_image_width", imageSize.width);
