@@ -4,18 +4,18 @@ joint_state_controller:
 
 left_wheel_effort_controller:
   type: effort_controllers/JointEffortController
-  joint: axle_to_left_wheel
+  joint: base_footprint_to_wheel_BL
 
 right_wheel_effort_controller:
   type: effort_controllers/JointEffortController
-  joint: axle_to_right_wheel
+  joint: base_footprint_to_wheel_BR
 
 left_steer_position_controller:
   type: effort_controllers/JointPositionController
-  joint: chassis_to_left_steering
-  pid: {p: 10.0, i: 0.01, d: 0.1}
+  joint: base_footprint_to_steering_link_left
+  pid: {p: 20.0, i: 0.01, d: 0.5}
 
 right_steer_position_controller:
   type: effort_controllers/JointPositionController
-  joint: chassis_to_right_steering
-  pid: {p: 10.0, i: 0.01, d: 0.1}
+  joint: base_footprint_to_steering_link_right
+  pid: {p: 20.0, i: 0.01, d: 0.5}

@@ -1,6 +1,6 @@
 <launch>
     <node pkg="rr_common" type="planner" name="planner" output="screen">
-        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_sedani_sim.yaml"/>
+        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_macaroni_sim.yaml"/>
         <rosparam command="load" file="$(find rr_iarrc)/conf/planner_opt_sim.yaml"/>
 
         <rosparam>

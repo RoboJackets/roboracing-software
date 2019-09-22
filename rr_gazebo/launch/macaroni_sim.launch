@@ -23,11 +23,23 @@
 
     <rosparam file="$(find rr_gazebo)/config/macaroni_control.yaml" command="load"/>
 
-    <node name="sim_controller" pkg="rr_gazebo" type="macaroni_controller" respawn="false" output="screen" />
+    <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" respawn="false" output="screen">
+        <rosparam command="load" file="$(find rr_description)/conf/macaroni_car_params.yaml"/>
+        <rosparam>
+            max_torque: 0.25
+            speed_kP: 1.0
+            speed_kI: 0
+            speed_kD: 0.05
+            left_motor_joint_name: axle_to_left_wheel
+            right_motor_joint_name: axle_to_right_wheel
+        </rosparam>
+    </node>
 
     <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />
 
     <node name="spawn_platform_script" pkg="rr_gazebo" type="spawn_macaroni_platform.sh" 
           args="$(arg start_pose)"/>
+
+    <node name="set_physics_props" pkg="rr_gazebo" type="set_physics_props.sh"/>
 
 </launch>

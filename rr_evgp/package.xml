@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>rr_description</name>
+  <name>rr_evgp</name>
   <version>0.0.0</version>
-  <description>Platform description for RoboRacing</description>
+  <description>competition-specific configuration for EV Grand Prix</description>
 
   <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
@@ -15,5 +15,18 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>xacro</build_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>rr_common</depend>
+  <depend>rr_description</depend>
+  <depend>rr_gazebo</depend>
+  <depend>rr_platform</depend>
+
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+
+  <export>
+
+  </export>
 </package>
