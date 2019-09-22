@@ -1,6 +1,6 @@
 #include "start_detector.h"
-#include <pluginlib/class_list_macros.h>
 #include <cv_bridge/cv_bridge.h>
+#include <pluginlib/class_list_macros.h>
 #include <std_msgs/Bool.h>
 #include <numeric>
 
@@ -25,7 +25,7 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(frameBGR, frameHSV, CV_BGR2HSV);
 
     Mat blurredImage;
-    GaussianBlur(frameHSV, blurredImage, Size{11, 11}, 7);
+    GaussianBlur(frameHSV, blurredImage, Size{ 11, 11 }, 7);
 
     Mat redMask = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
     inRange(blurredImage, red_low, red_high, redMask);
@@ -65,10 +65,12 @@ void start_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
             maxSum = max(maxSum, imgSum);
         }
 
-        auto areaPercentage = static_cast<double>(maxSum) / (3.14*maxR*maxR);
+        auto areaPercentage = static_cast<double>(maxSum) / (3.14 * maxR * maxR);
         detection_ring_buffer.push_back(areaPercentage);
         detection_ring_buffer.erase(detection_ring_buffer.begin());
-        auto avgDetections = static_cast<double>(std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0.0)) / static_cast<double>(detection_ring_buffer.size());
+        auto avgDetections =
+              static_cast<double>(std::accumulate(detection_ring_buffer.begin(), detection_ring_buffer.end(), 0.0)) /
+              static_cast<double>(detection_ring_buffer.size());
 
         std_msgs::Bool start;
         start.data = (avgDetections > 0.8);
@@ -99,12 +101,12 @@ void start_detector::onInit() {
     pnh.param("red_low_r", red_low_r, 100.0);
     pnh.param("red_low_g", red_low_g, 0.0);
     pnh.param("red_low_b", red_low_b, 0.0);
-    red_low = Scalar{red_low_b, red_low_g, red_low_r};
+    red_low = Scalar{ red_low_b, red_low_g, red_low_r };
 
     pnh.param("red_high_r", red_high_r, 255.0);
     pnh.param("red_high_g", red_high_g, 100.0);
     pnh.param("red_high_b", red_high_b, 100.0);
-    red_high = Scalar{red_high_b, red_high_g, red_high_r};
+    red_high = Scalar{ red_high_b, red_high_g, red_high_r };
 
     pnh.param("dp", dp, 1);
     pnh.param("minDist", minDist, 150);
@@ -122,6 +124,6 @@ void start_detector::onInit() {
     ROS_INFO("Start Detector Ready!");
 }
 
-}
+}  // namespace rr_avc
 
 PLUGINLIB_EXPORT_CLASS(rr_avc::start_detector, nodelet::Nodelet)

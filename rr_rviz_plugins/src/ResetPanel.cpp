@@ -1,15 +1,15 @@
+#include <pluginlib/class_list_macros.h>
 #include <rr_rviz_plugins/ResetPanel.h>
 #include <QVBoxLayout>
-#include <pluginlib/class_list_macros.h>
 
 namespace rr_rviz_plugins {
 
 ResetPanel::ResetPanel(QWidget *parent)
-  : rviz::Panel(parent) // Base class constructor
-{   
+      : rviz::Panel(parent)  // Base class constructor
+{
     reset_btn = new QPushButton("Reset!");
     reset_pub = nh.advertise<rr_platform::race_reset>("/reset_detected", 0);
-    connect(reset_btn, SIGNAL (released()), this, SLOT (resetCallback()));
+    connect(reset_btn, SIGNAL(released()), this, SLOT(resetCallback()));
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(reset_btn);
@@ -21,6 +21,6 @@ void ResetPanel::resetCallback() {
     reset_pub.publish(reset);
 }
 
-}
+}  // namespace rr_rviz_plugins
 
-PLUGINLIB_EXPORT_CLASS( rr_rviz_plugins::ResetPanel, rviz::Panel)
+PLUGINLIB_EXPORT_CLASS(rr_rviz_plugins::ResetPanel, rviz::Panel)

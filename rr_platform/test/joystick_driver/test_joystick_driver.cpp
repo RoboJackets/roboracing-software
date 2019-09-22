@@ -1,19 +1,17 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
+#include <sensor_msgs/Joy.h>
 
 class JoystickDriverTestSuite : public testing::Test {
-
-public:
+  public:
     JoystickDriverTestSuite()
-            : handle(),
-              handle_private("~"),
-              joy_pub(handle.advertise<sensor_msgs::Joy>("/joy", 1)),
-              speed_sub(handle.subscribe("/speed", 1, &JoystickDriverTestSuite::speedCallback, this)),
-              steering_sub(handle.subscribe("/steering", 1, &JoystickDriverTestSuite::steeringCallback, this))
-    {
+          : handle()
+          , handle_private("~")
+          , joy_pub(handle.advertise<sensor_msgs::Joy>("/joy", 1))
+          , speed_sub(handle.subscribe("/speed", 1, &JoystickDriverTestSuite::speedCallback, this))
+          , steering_sub(handle.subscribe("/steering", 1, &JoystickDriverTestSuite::steeringCallback, this)) {
         handle_private.param("speed_max", speed_max, 0.0f);
         handle_private.param("angle_max", angle_max, 0.0f);
         handle_private.param("speed_axis", speed_axis, 0);
@@ -29,9 +27,9 @@ public:
         steering_received = true;
     }
 
-protected:
+  protected:
     virtual void SetUp() override {
-        while(!IsNodeReady()) {
+        while (!IsNodeReady()) {
             ros::spinOnce();
         }
     }
@@ -39,7 +37,8 @@ protected:
     virtual void TearDown() override {}
 
     bool IsNodeReady() {
-        return (joy_pub.getNumSubscribers() > 0) && (speed_sub.getNumPublishers() > 0) && (steering_sub.getNumPublishers() > 0);
+        return (joy_pub.getNumSubscribers() > 0) && (speed_sub.getNumPublishers() > 0) &&
+               (steering_sub.getNumPublishers() > 0);
     }
 
     ros::NodeHandle handle;
@@ -57,19 +56,18 @@ protected:
     int speed_axis;
 };
 
-TEST_F(JoystickDriverTestSuite, FullForward)  {
-
+TEST_F(JoystickDriverTestSuite, FullForward) {
     speed_received = false;
     steering_received = false;
 
     sensor_msgs::Joy joy_msg;
-    joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0}; //8 axes
-    joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //11 buttons
+    joy_msg.axes = { 0, 0, 0, 0, 0, 0, 0, 0 };              // 8 axes
+    joy_msg.buttons = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };  // 11 buttons
     joy_msg.axes[angle_axis] = 0.0;
     joy_msg.axes[speed_axis] = -1.0;
     joy_pub.publish(joy_msg);
 
-    while(!speed_received || !steering_received) {
+    while (!speed_received || !steering_received) {
         ros::spinOnce();
     }
 
@@ -77,7 +75,7 @@ TEST_F(JoystickDriverTestSuite, FullForward)  {
     EXPECT_FLOAT_EQ(0.0, steering_msg.angle);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     ros::init(argc, argv, "test_joystick_driver");
     testing::InitGoogleTest(&argc, argv);
 

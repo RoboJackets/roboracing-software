@@ -1,14 +1,14 @@
 #include <ros/ros.h>
+#include <rr_platform/SerialPort.h>
+#include <rr_platform/chassis_state.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/SerialPort.h>
 
 using namespace std;
 
 double output = 0;
 
-void speedCallback(const rr_platform::speed::ConstPtr &msg) {
+void speedCallback(const rr_platform::speed::ConstPtr& msg) {
     output = msg->speed;
 }
 
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     string serial_port_name;
     nhp.param(string("serial_port"), serial_port_name, string("/dev/ttyACM0"));
     SerialPort serial_port;
-    if(!serial_port.Open(serial_port_name, 9600)) {
+    if (!serial_port.Open(serial_port_name, 9600)) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
         return 1;
     }
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 
     ros::Rate rate(10);
 
-    while(ros::ok()) {
+    while (ros::ok()) {
         ros::spinOnce();
 
         stringstream ss;
@@ -49,7 +49,8 @@ int main(int argc, char** argv) {
 
         serial_port.Write(command);
         string response = serial_port.ReadLine();
-        //ROS_INFO_STREAM("drive relay sent " << command << ", received " << response);
+        // ROS_INFO_STREAM("drive relay sent " << command << ", received " <<
+        // response);
         rate.sleep();
     }
 

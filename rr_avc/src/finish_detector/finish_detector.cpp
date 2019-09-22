@@ -1,7 +1,6 @@
 #include "finish_detector.h"
 #include <climits>
 
-
 using namespace std;
 using namespace cv;
 using namespace ros;
@@ -27,7 +26,7 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(frame, frameHSV, CV_BGR2HSV);
 
     Mat blurredImage;
-    GaussianBlur(frameHSV, blurredImage, Size{7, 7}, 7);
+    GaussianBlur(frameHSV, blurredImage, Size{ 7, 7 }, 7);
 
     Mat redMask1 = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
     Mat redMask2 = Mat::zeros(blurredImage.rows, blurredImage.cols, CV_8U);
@@ -36,11 +35,11 @@ void finish_detector::ImageCB(const sensor_msgs::ImageConstPtr &msg) {
 
     Mat mask;
     bitwise_or(redMask1, redMask2, mask);
-    //imshow("filtered", mask);
-    //waitKey(10);
+    // imshow("filtered", mask);
+    // waitKey(10);
 
     auto count = countNonZero(mask);
-    //NODELET_FATAL_STREAM("red " << count << endl);
+    // NODELET_FATAL_STREAM("red " << count << endl);
 
     if (state == LOW && count > 1000) {
         state = HIGH;
@@ -82,15 +81,14 @@ void finish_detector::onInit() {
     nhp.param("red_low_h", red_low_h, 160.f);
     nhp.param("red_low_s", red_low_s, 130.0f);
     nhp.param("red_low_v", red_low_v, 0.0f);
-    red_low1 = Scalar{red_low_h, red_low_s, red_low_v};
-    red_low2 = Scalar{0, red_low_s, red_low_v};
+    red_low1 = Scalar{ red_low_h, red_low_s, red_low_v };
+    red_low2 = Scalar{ 0, red_low_s, red_low_v };
 
     nhp.param("red_high_h", red_high_h, 15.0f);
     nhp.param("red_high_s", red_high_s, 255.0f);
     nhp.param("red_high_v", red_high_v, 255.0f);
-    red_high1 = Scalar{180, red_high_s, red_high_v};
-    red_high2 = Scalar{red_high_h, red_high_s, red_high_v};
-
+    red_high1 = Scalar{ 180, red_high_s, red_high_v };
+    red_high2 = Scalar{ red_high_h, red_high_s, red_high_v };
 }
-}
+}  // namespace rr_avc
 PLUGINLIB_EXPORT_CLASS(rr_avc::finish_detector, nodelet::Nodelet)

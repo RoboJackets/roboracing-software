@@ -1,11 +1,11 @@
-#include <ros/ros.h>
 #include <ros/package.h>
+#include <ros/ros.h>
 #include <rr_iarrc/hsv_tuned.h>
+#include <ctime>
+#include <fstream>
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <iostream>
-#include <fstream>
-#include <ctime>
 
 using namespace cv;
 using namespace std;
@@ -23,14 +23,13 @@ int32_t white_h_high_slider;
 int32_t white_s_high_slider;
 int32_t white_v_high_slider;
 
-int32_t saving_slider =  0;
+int32_t saving_slider = 0;
 
 std::string package_path = ros::package::getPath("rr_iarrc");
 std::string load_file_path;
 
-
 // Callback for trackbar
-void on_trackbar( int, void* ){
+void on_trackbar(int, void*) {
     hsv_msg.white_h_low = white_h_low_slider;
     hsv_msg.white_s_low = white_s_low_slider;
     hsv_msg.white_v_low = white_v_low_slider;
@@ -44,57 +43,55 @@ void on_trackbar( int, void* ){
     hsv_pub.publish(publishable_copy);
 }
 
-void loadValues(){
+void loadValues() {
     string line;
     int value;
-    ifstream myfile (load_file_path);
-    if (myfile.is_open()){
+    ifstream myfile(load_file_path);
+    if (myfile.is_open()) {
         ROS_INFO("Loading HSV values.");
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_h_low_slider = value;
 
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_s_low_slider = value;
 
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_v_low_slider = value;
 
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_h_high_slider = value;
 
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_s_high_slider = value;
 
-        getline(myfile,line);
+        getline(myfile, line);
         value = stoi(line);
         white_v_high_slider = value;
 
         myfile.close();
-    }
-    else{
+    } else {
         ROS_INFO("Unable to load HSV values.");
     }
 }
 
-void saveValues(int, void*){
-
-    if(saving_slider == 1){
+void saveValues(int, void*) {
+    if (saving_slider == 1) {
         time_t rawtime;
-        struct tm * timeinfo;
+        struct tm* timeinfo;
         char buffer[80];
-        time (&rawtime);
+        time(&rawtime);
         timeinfo = localtime(&rawtime);
-        strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
+        strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
         std::string date_time(buffer);
 
-        ofstream myfile (package_path + "/saved_hsv/"+ date_time+".txt", ios::out);
+        ofstream myfile(package_path + "/saved_hsv/" + date_time + ".txt", ios::out);
 
-        if (myfile.is_open()){
+        if (myfile.is_open()) {
             ROS_INFO("Saving HSV values");
             myfile << white_h_low_slider << endl;
             myfile << white_s_low_slider << endl;
@@ -104,20 +101,19 @@ void saveValues(int, void*){
             myfile << white_v_high_slider << endl;
             myfile.close();
             saving_slider = 0;
-        }else{
+        } else {
             ROS_INFO("Unable to open file");
         }
     }
 }
 
-int main(int argc, char **argv) {
-
+int main(int argc, char** argv) {
     ros::init(argc, argv, "hsv_tuner");
     ros::NodeHandle handle;
     ros::NodeHandle private_handle("~");
     ros::NodeHandle nhp("~");
 
-    std::string default_load_file_path = package_path + "/saved_hsv/example.txt" ;
+    std::string default_load_file_path = package_path + "/saved_hsv/example.txt";
     nhp.param(std::string("load_file"), load_file_path, default_load_file_path);
 
     std::string values_topic;
@@ -142,17 +138,17 @@ int main(int argc, char **argv) {
 
     /// Create Trackbars
     char white_h_low[50];
-    sprintf( white_h_low, "White Hue Low: %d", hsv_slider_max);
+    sprintf(white_h_low, "White Hue Low: %d", hsv_slider_max);
     char white_s_low[50];
-    sprintf( white_s_low, "White Saturation Low: %d", hsv_slider_max);
+    sprintf(white_s_low, "White Saturation Low: %d", hsv_slider_max);
     char white_v_low[50];
-    sprintf( white_v_low, "White Value Low: %d", hsv_slider_max);
+    sprintf(white_v_low, "White Value Low: %d", hsv_slider_max);
     char white_h_high[50];
-    sprintf( white_h_high, "White Hue High: %d", hsv_slider_max);
+    sprintf(white_h_high, "White Hue High: %d", hsv_slider_max);
     char white_s_high[50];
-    sprintf( white_s_high, "White Saturation High: %d", hsv_slider_max);
+    sprintf(white_s_high, "White Saturation High: %d", hsv_slider_max);
     char white_v_high[50];
-    sprintf( white_v_high, "White Value High: %d", hsv_slider_max);
+    sprintf(white_v_high, "White Value High: %d", hsv_slider_max);
     char saving_slider_label[50];
     sprintf(saving_slider_label, "Save: %d", saving_slider_max);
 
@@ -164,7 +160,7 @@ int main(int argc, char **argv) {
     createTrackbar(white_v_high, "HSV Tuner", &white_v_high_slider, hsv_slider_max, on_trackbar);
     createTrackbar(saving_slider_label, "HSV Tuner", &saving_slider, saving_slider_max, saveValues);
 
-    while(ros::ok()) {
+    while (ros::ok()) {
         ros::spinOnce();
         waitKey(1);
     }

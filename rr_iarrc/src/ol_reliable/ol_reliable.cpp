@@ -1,8 +1,8 @@
-#include <ros/ros.h>
-#include <image_transport/image_transport.h>
-#include <rr_platform/steering.h>
-#include <rr_platform/speed.h>
 #include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
+#include <ros/ros.h>
+#include <rr_platform/speed.h>
+#include <rr_platform/steering.h>
 
 ros::Publisher steering_pub;
 ros::Publisher speed_pub;
@@ -17,7 +17,6 @@ double steering_rate;
 
 double center_discount;
 
-
 void image_callback(const sensor_msgs::ImageConstPtr &msg) {
     cv_bridge::CvImagePtr cv_ptr;
 
@@ -30,20 +29,20 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
 
     Mat &frame = cv_ptr->image;
     Mat blue_mask;
-    inRange(frame, Scalar(255,0,0), Scalar(255,0,0), blue_mask);
+    inRange(frame, Scalar(255, 0, 0), Scalar(255, 0, 0), blue_mask);
 
     blue_mask = ~blue_mask;
 
-    //frame *= blue_mask;
+    // frame *= blue_mask;
 
     Mat frame_1channel;
 
-    cvtColor(frame , frame_1channel, CV_BGR2GRAY);
+    cvtColor(frame, frame_1channel, CV_BGR2GRAY);
 
     vector<int> counts;
     counts.reserve(regions.size());
 
-    for(const auto &region : regions) {
+    for (const auto &region : regions) {
         counts.push_back(countNonZero(frame_1channel(region)));
     }
 
@@ -66,17 +65,16 @@ void image_callback(const sensor_msgs::ImageConstPtr &msg) {
     if (steering_msg.angle == 0) {
         speed_msg.speed = 1.5;
     } else {
-    speed_msg.speed = 1.0;
+        speed_msg.speed = 1.0;
     }
     speed_pub.publish(speed_msg);
 }
 
 int main(int argc, char **argv) {
-
     ros::init(argc, argv, "ol_reliable");
 
     ros::NodeHandle nh;
-    ros::NodeHandle pnh{"~"};
+    ros::NodeHandle pnh{ "~" };
 
     pnh.param("center_discount", center_discount, 0.85);
 
@@ -98,7 +96,7 @@ int main(int argc, char **argv) {
     steering_pub = nh.advertise<rr_platform::steering>("/steering", 1);
     speed_pub = nh.advertise<rr_platform::speed>("/speed", 1);
 
-    image_transport::ImageTransport imageTransport{nh};
+    image_transport::ImageTransport imageTransport{ nh };
 
     auto img_sub = imageTransport.subscribe("/colors_img", 1, image_callback);
 

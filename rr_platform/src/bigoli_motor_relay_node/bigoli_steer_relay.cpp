@@ -1,8 +1,8 @@
 #include <ros/ros.h>
+#include <rr_platform/SerialPort.h>
+#include <rr_platform/chassis_state.h>
 #include <rr_platform/speed.h>
 #include <rr_platform/steering.h>
-#include <rr_platform/chassis_state.h>
-#include <rr_platform/SerialPort.h>
 
 using namespace std;
 
@@ -10,7 +10,7 @@ double output = 0;
 double maxAngleMsg;
 const double maxOutput = 1.0;
 
-void steerCallback(const rr_platform::steering::ConstPtr &msg) {
+void steerCallback(const rr_platform::steering::ConstPtr& msg) {
     output = msg->angle / maxAngleMsg * maxOutput;
 }
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     string serial_port_name;
     nhp.param(string("serial_port"), serial_port_name, string("/dev/ttyACM0"));
     SerialPort serial_port;
-    if(!serial_port.Open(serial_port_name, 9600)) {
+    if (!serial_port.Open(serial_port_name, 9600)) {
         ROS_FATAL_STREAM("Unable to open serial port: " << serial_port_name);
         return 1;
     }
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     // wait for microcontroller to start
     ros::Duration(2.0).sleep();
 
-    while(ros::ok()) {
+    while (ros::ok()) {
         ros::spinOnce();
 
         stringstream ss;
@@ -53,7 +53,8 @@ int main(int argc, char** argv) {
 
         serial_port.Write(command);
         string response = serial_port.ReadLine();
-        //ROS_INFO_STREAM("steer relay sent " << command << ", received " << response);
+        // ROS_INFO_STREAM("steer relay sent " << command << ", received " <<
+        // response);
         rate.sleep();
     }
 
