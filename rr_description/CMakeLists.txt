@@ -10,7 +10,7 @@ find_package(catkin
 catkin_package(
 #        INCLUDE_DIRS include
 #        LIBRARIES ${PROJECT_NAME}
-        CATKIN_DEPENDS xacro
+#        CATKIN_DEPENDS xacro
 #        DEPENDS eigen opencv
 )
 
