@@ -1,4 +1,4 @@
-# minimum configuration of robot_localization to publish world->map and map->odom transforms
+# a degenerate configuration of robot_localization which just publishes the odom->base_footprint transform
 
 frequency: 20.0
 sensor_timeout: 1.0
@@ -6,7 +6,7 @@ two_d_mode: false
 
 map_frame: map
 odom_frame: odom
-world_frame: odom  # world -> odom mode
+world_frame: odom  # odom -> robot mode
 base_link_frame: base_footprint
 
 transform_time_offset: 0.0
