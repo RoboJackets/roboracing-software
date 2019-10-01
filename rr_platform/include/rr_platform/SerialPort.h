@@ -4,8 +4,7 @@
 #include <string>
 
 class SerialPort {
-public:
-
+  public:
     SerialPort() = default;
 
     ~SerialPort();
@@ -18,12 +17,10 @@ public:
 
     std::string ReadLine();
 
-private:
-
+  private:
     int port_handle_;
 
     void SetProperties(unsigned int baud);
-
 };
 
-#endif //SERIALPORT_H
+#endif  // SERIALPORT_H

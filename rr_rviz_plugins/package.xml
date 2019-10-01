@@ -1,24 +1,23 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>rr_rviz_plugins</name>
   <version>0.0.0</version>
   <description>Rviz plugins for RoboRacing</description>
 
-  <maintainer email="matthew.barulic@gmail.com">Matthew Barulic</maintainer>
-  <maintainer email="chsahit@gmail.com">Sahit Chintalapudi</maintainer>
-  <maintainer email="evanbretl4@gmail.com">Evan Bretl</maintainer>
+  <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
 
   <license>MIT</license>
 
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+  <url type="website">http://www.github.com/robojackets/roboracing-software</url>
+
+
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>rviz</build_depend>
-  <build_depend>rr_platform</build_depend>
-
-  <run_depend>roscpp</run_depend>
-  <run_depend>rviz</run_depend>
-  <run_depend>rr_platform</run_depend>
+  <depend>roscpp</depend>
+  <depend>rviz</depend>
+  <depend>rr_msgs</depend>
 
   <export>
     <rviz plugin="${prefix}/plugin_description.xml"/>

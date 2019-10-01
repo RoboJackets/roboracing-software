@@ -1,27 +1,24 @@
 #include <gtest/gtest.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
 
 class ScanToPointCloudTestSuite : public testing::Test {
-
-public:
+  public:
     ScanToPointCloudTestSuite()
-            : handle(),
-              scan_pub(handle.advertise<sensor_msgs::LaserScan>("scan", 1)),
-              pc_sub(handle.subscribe("scan/pointcloud", 1, &ScanToPointCloudTestSuite::cloudCallback, this))
-    {
-    }
+          : handle()
+          , scan_pub(handle.advertise<sensor_msgs::LaserScan>("scan", 1))
+          , pc_sub(handle.subscribe("scan/pointcloud", 1, &ScanToPointCloudTestSuite::cloudCallback, this)) {}
 
     void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg) {
         cloud_msg = *msg;
         cloud_received = true;
     }
 
-protected:
+  protected:
     void SetUp() override {
-        while(!IsNodeReady()) {
+        while (!IsNodeReady()) {
             ros::spinOnce();
         }
     }
@@ -39,8 +36,7 @@ protected:
     sensor_msgs::PointCloud2 cloud_msg;
 };
 
-TEST_F(ScanToPointCloudTestSuite, EmptyScan)  {
-
+TEST_F(ScanToPointCloudTestSuite, EmptyScan) {
     // Empty scans should result in empty PointClouds
 
     cloud_received = false;
@@ -52,7 +48,7 @@ TEST_F(ScanToPointCloudTestSuite, EmptyScan)  {
     scan.angle_max = 3.92699f;
     scan.angle_increment = 0.0174533f;
     scan.time_increment = 0.0001852f;
-    scan.scan_time = 1.0f/15.0f; // 15 Hz.
+    scan.scan_time = 1.0f / 15.0f;  // 15 Hz.
     scan.range_min = 0.05f;
     scan.range_max = 10.0f;
     scan.ranges = {};
@@ -60,15 +56,14 @@ TEST_F(ScanToPointCloudTestSuite, EmptyScan)  {
 
     scan_pub.publish(scan);
 
-    while(!cloud_received) {
+    while (!cloud_received) {
         ros::spinOnce();
     }
 
     EXPECT_TRUE(cloud_msg.data.empty());
 }
 
-TEST_F(ScanToPointCloudTestSuite, RemoveClosePoints)  {
-
+TEST_F(ScanToPointCloudTestSuite, RemoveClosePoints) {
     // Points less than 1m from LIDAR should be filtered out
 
     cloud_received = false;
@@ -80,23 +75,22 @@ TEST_F(ScanToPointCloudTestSuite, RemoveClosePoints)  {
     scan.angle_max = 3.92699f;
     scan.angle_increment = 0.0174533f;
     scan.time_increment = 0.0001852f;
-    scan.scan_time = 1.0f/15.0f; // 15 Hz.
+    scan.scan_time = 1.0f / 15.0f;  // 15 Hz.
     scan.range_min = 0.05f;
     scan.range_max = 10.0f;
-    scan.ranges = {0.5};
+    scan.ranges = { 0.5 };
     scan.intensities = {};
 
     scan_pub.publish(scan);
 
-    while(!cloud_received) {
+    while (!cloud_received) {
         ros::spinOnce();
     }
 
     EXPECT_TRUE(cloud_msg.data.empty());
 }
 
-TEST_F(ScanToPointCloudTestSuite, NormalScan)  {
-
+TEST_F(ScanToPointCloudTestSuite, NormalScan) {
     // Normal points should be converted to cartesian coordinates correctly
 
     cloud_received = false;
@@ -108,7 +102,7 @@ TEST_F(ScanToPointCloudTestSuite, NormalScan)  {
     scan.angle_max = 3.92699f;
     scan.angle_increment = 0.0174533f;
     scan.time_increment = 0.0001852f;
-    scan.scan_time = 1.0f/15.0f; // 15 Hz.
+    scan.scan_time = 1.0f / 15.0f;  // 15 Hz.
     scan.range_min = 0.05f;
     scan.range_max = 10.0f;
     scan.ranges.resize(271);
@@ -124,7 +118,7 @@ TEST_F(ScanToPointCloudTestSuite, NormalScan)  {
 
     scan_pub.publish(scan);
 
-    while(!cloud_received) {
+    while (!cloud_received) {
         ros::spinOnce();
     }
 
@@ -166,4 +160,3 @@ int main(int argc, char **argv) {
     ros::shutdown();
     return ret;
 }
-

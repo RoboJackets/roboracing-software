@@ -1,0 +1,57 @@
+<launch>
+    <arg name="world" default="$(find rr_gazebo)/worlds/empty.world"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="heading" default="0"/>
+
+    <param name="/use_sim_time" value="true" />
+
+    <rosparam ns="/camera_center/image_color_rect">
+        disable_pub_plugins:
+        - "image_transport/compressed"
+        - "image_transport/theora"
+        - "image_transport/compressedDepth"
+    </rosparam>
+
+    <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
+          args="-e ode $(arg world)" required="true"/>
+
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
+
+    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch"/>
+
+    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
+        <param name="min_point_dist" type="double" value="0.1"/>
+    </node>
+
+    <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
+    <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
+          args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
+                right_steer_position_controller left_steer_position_controller
+                --shutdown-timeout 1"/>
+
+    <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" required="true" output="screen">
+        <rosparam command="load" file="$(find rr_description)/conf/evgp_car_params.yaml"/>
+        <rosparam>
+            max_torque: 20
+            speed_kP: 5
+            speed_kI: 0.01
+            speed_kD: 3
+            left_motor_joint_name: base_footprint_to_wheel_BL
+            right_motor_joint_name: base_footprint_to_wheel_BR
+        </rosparam>
+    </node>
+
+<!--    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />-->
+
+    <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
+          args="-file $(find rr_description)/urdf/evgp.urdf
+            -gazebo_namespace /gazebo
+            -urdf -model evgp
+            -x $(arg x) -y $(arg y) -z 0.1
+            -R 0 -P 0 -Y $(arg heading)"/>
+
+    <node pkg="dynamic_reconfigure" type="dynparam" name="load_gz_physics_params" required="false" output="screen"
+          args="load /gazebo $(find rr_gazebo)/config/evgp_gazebo_dynconf.yaml"/>
+
+</launch>

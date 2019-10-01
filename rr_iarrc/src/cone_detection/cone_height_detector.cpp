@@ -1,21 +1,21 @@
-#include <ros/ros.h>
-#include <ros/publisher.h>
 #include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/Image.h>
-#include "std_msgs/Float64MultiArray.h"
-#include <opencv2/opencv.hpp>
-#include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <boost/asio.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/math/constants/constants.hpp>
-#include <algorithm>
 #include <pcl_ros/point_cloud.h>
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
+#include <ros/publisher.h>
+#include <ros/ros.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Float32.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <boost/asio.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include "std_msgs/Float64MultiArray.h"
 
 using namespace std;
 
@@ -38,7 +38,6 @@ int low_H, high_H, low_S, low_V;
 int canny_cut_min_threshold, minimum_area_cut;
 double percent_max_distance_transform;
 
-
 // PointCloud Processing
 pcl::PointCloud<pcl::PointXYZ> draw_cone_circles();
 void drawCircle(pcl::PointCloud<pcl::PointXYZ>&, pcl::PointXYZ, double, int);
@@ -55,9 +54,8 @@ bool fov_callback_called;
 double angle_constant;
 vector<pcl::PointXYZ> cone_points;
 
-
 void publish_closest_point() {
-    if (cone_points.size() != 0){
+    if (cone_points.size() != 0) {
         double min = cone_points[0].x;
         for (pcl::PointXYZ cone_point : cone_points) {
             if (cone_point.x < min) {
@@ -70,16 +68,14 @@ void publish_closest_point() {
     }
 }
 
-
 void fovCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-    double fx = msg->P[0]; //horizontal focal length of rectified image, in px
-//    fy = msg->P[5]; //vertical focal length
+    double fx = msg->P[0];  // horizontal focal length of rectified image, in px
+    //    fy = msg->P[5]; //vertical focal length
     imageSize = cv::Size(msg->width, msg->height);
-    camera_fov_horizontal = 2 * atan2(imageSize.width, 2*fx);
+    camera_fov_horizontal = 2 * atan2(imageSize.width, 2 * fx);
     fov_callback_called = true;
-    angle_constant = camera_fov_horizontal / 2.0 /imageSize.width;
+    angle_constant = camera_fov_horizontal / 2.0 / imageSize.width;
 }
-
 
 void loadCameraFOV(ros::NodeHandle& nh) {
     auto infoSub = nh.subscribe("/camera/camera_info", 1, fovCallback);
@@ -92,31 +88,29 @@ void loadCameraFOV(ros::NodeHandle& nh) {
     ROS_INFO("Using horizontal FOV %f ", camera_fov_horizontal);
 }
 
-
-void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
+void publishPointCloud(pcl::PointCloud<pcl::PointXYZ>& cloud) {
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(cloud, outmsg);
     outmsg.header.frame_id = "base_footprint";
     pub_pointcloud.publish(outmsg);
 }
 
-
-void drawCircle(pcl::PointCloud<pcl::PointXYZ> &cloud, pcl::PointXYZ point, double radius, int numPoints) {
+void drawCircle(pcl::PointCloud<pcl::PointXYZ>& cloud, pcl::PointXYZ point, double radius, int numPoints) {
     const double pi = boost::math::constants::pi<double>();
     double angleStep = (2.0 * pi) / numPoints;
 
-    double angle = 0; //start angle
+    double angle = 0;  // start angle
 
     for (int i = 0; i < numPoints; i++) {
-        //draw a circle
+        // draw a circle
         double x = radius * cos(angle);
         double y = radius * sin(angle);
 
-        cloud.push_back(pcl::PointXYZ(point.x + x, point.y + y , 0)); //point.x + radius is center of circle
+        cloud.push_back(pcl::PointXYZ(point.x + x, point.y + y,
+                                      0));  // point.x + radius is center of circle
         angle = angle + angleStep;
     }
 }
-
 
 pcl::PointCloud<pcl::PointXYZ> draw_cone_circles() {
     pcl::PointCloud<pcl::PointXYZ> cone_cloud;
@@ -125,7 +119,6 @@ pcl::PointCloud<pcl::PointXYZ> draw_cone_circles() {
     }
     return cone_cloud;
 }
-
 
 void publishImage(ros::Publisher pub, Mat img, std::string img_type) {
     if (pub.getNumSubscribers() > 0) {
@@ -137,14 +130,13 @@ void publishImage(ros::Publisher pub, Mat img, std::string img_type) {
     }
 }
 
-
 cv::Mat draw_box_and_calc_dist(const cv::Mat& frame, const cv::Mat& sure_bodies) {
     vector<vector<Point>> contours;
     findContours(sure_bodies, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
     vector<cv::Rect> rect(contours.size());
     cone_points.clear();
 
-    for( int i = 0; i < contours.size(); i++ ) {
+    for (int i = 0; i < contours.size(); i++) {
         rect[i] = boundingRect(contours[i]);
         if (rect[i].height < 10 || rect[i].width < 5 || rect[i].width > 4 * rect[i].height) {
             continue;
@@ -167,28 +159,28 @@ cv::Mat draw_box_and_calc_dist(const cv::Mat& frame, const cv::Mat& sure_bodies)
         // Black Line Down Middle
         line(frame, Point(frame.cols / 2, 0), Point(frame.cols / 2, frame.rows), (0, 255, 0), 2);
 
-        //Debugging Printing
-        //printf("Pixels: (%d, %d) Real: (%.2f, %.2f)\n", rect[i].height, px_horz_dist, distance, horz_dist);
+        // Debugging Printing
+        // printf("Pixels: (%d, %d) Real: (%.2f, %.2f)\n", rect[i].height,
+        // px_horz_dist, distance, horz_dist);
 
         stringstream stream_dist, stream_horz_dist;
         stream_dist << fixed << setprecision(1) << distance;
         stream_horz_dist << fixed << setprecision(1) << horz_dist;
-        string position = "(" + stream_dist.str() + ", " + stream_horz_dist.str() +")";
+        string position = "(" + stream_dist.str() + ", " + stream_horz_dist.str() + ")";
 
-        drawContours( frame, contours, i, cv::Scalar(0, 255), 1, 8, vector<cv::Vec4i>(), 0, Point() );
+        drawContours(frame, contours, i, cv::Scalar(0, 255), 1, 8, vector<cv::Vec4i>(), 0, Point());
         rectangle(frame, rect[i].tl(), rect[i].br(), cv::Scalar(0, 255), 3, 8, 0);
-        circle(frame, center, 5,  cv::Scalar(255,0,255), CV_FILLED, 8, 0);
-        putText(frame,position, Point(center.x-80,center.y-30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2,true);
+        circle(frame, center, 5, cv::Scalar(255, 0, 255), CV_FILLED, 8, 0);
+        putText(frame, position, Point(center.x - 80, center.y - 30), cv::FONT_HERSHEY_SIMPLEX, 1,
+                cv::Scalar(255, 255, 255), 2, true);
     }
 
     return frame;
 }
 
-
 cv::Mat kernel(int x, int y) {
-    return cv::getStructuringElement(cv::MORPH_RECT,cv::Size(x,y));
+    return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
-
 
 cv::Mat find_unique_centers(const cv::Mat& img, double thres_value) {
     Mat dist_transform, thres, dist_mask, mask;
@@ -199,7 +191,7 @@ cv::Mat find_unique_centers(const cv::Mat& img, double thres_value) {
     distanceTransform(img, dist_transform, CV_DIST_L2, 3);
     findContours(img, contours1, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
-    for( int i = 0; i < contours1.size(); i++ ) {
+    for (int i = 0; i < contours1.size(); i++) {
         mask = Mat::zeros(img.size(), CV_8UC1);
         dist_mask = cv::Scalar::all(0);
 
@@ -217,14 +209,13 @@ cv::Mat find_unique_centers(const cv::Mat& img, double thres_value) {
     return sure_front;
 }
 
-
 cv::Mat perform_watershed(const cv::Mat& frame, const cv::Mat& orange_found, const cv::Mat& detected_bodies) {
     Mat sure_back, dist_transform, unknown, markers;
 
     Mat sure_front = find_unique_centers(detected_bodies, percent_max_distance_transform);
     sure_front.convertTo(sure_front, CV_8UC1);
 
-    dilate(orange_found, sure_back, kernel(3,3));
+    dilate(orange_found, sure_back, kernel(3, 3));
 
     subtract(sure_back, sure_front, unknown);
 
@@ -236,10 +227,10 @@ cv::Mat perform_watershed(const cv::Mat& frame, const cv::Mat& orange_found, con
 
     Mat lines = Mat::zeros(orange_found.size(), CV_8UC1);
     lines.setTo(cv::Scalar(255), markers == -1);
-    rectangle(lines, Point(0,0), Point(frame.cols, frame.rows), cv::Scalar(0), 2);
+    rectangle(lines, Point(0, 0), Point(frame.cols, frame.rows), cv::Scalar(0), 2);
 
-    dilate(lines, lines, kernel(2,1));
-    floodFill(lines, Point(0,0), cv::Scalar(255));
+    dilate(lines, lines, kernel(2, 1));
+    floodFill(lines, Point(0, 0), cv::Scalar(255));
 
     Mat sure_body;
     bitwise_not(lines, sure_body);
@@ -249,41 +240,38 @@ cv::Mat perform_watershed(const cv::Mat& frame, const cv::Mat& orange_found, con
     return sure_body;
 }
 
-
 cv::Mat canny_cut_bodies(const cv::Mat& frame, const cv::Mat& orange_found) {
     Mat frame_gray, detected_edges, detected_bodies;
 
     cv::Mat frame_copy = frame.clone();
-    GaussianBlur(frame_copy, frame_copy, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT );
-    cv::cvtColor(frame_copy, frame_gray, cv::COLOR_BGR2GRAY );
+    GaussianBlur(frame_copy, frame_copy, cv::Size(3, 3), 0, 0, cv::BORDER_DEFAULT);
+    cv::cvtColor(frame_copy, frame_gray, cv::COLOR_BGR2GRAY);
     bitwise_and(frame_gray, orange_found, frame_gray);
 
-    cv::Canny(frame_gray, detected_edges, canny_cut_min_threshold, canny_cut_min_threshold*3, 3);
-    dilate(detected_edges, detected_edges,kernel(2,2));
+    cv::Canny(frame_gray, detected_edges, canny_cut_min_threshold, canny_cut_min_threshold * 3, 3);
+    dilate(detected_edges, detected_edges, kernel(2, 2));
 
-    floodFill(detected_edges, Point(0,0), cv::Scalar(255));
+    floodFill(detected_edges, Point(0, 0), cv::Scalar(255));
 
     bitwise_not(detected_edges, detected_bodies);
-    morphologyEx(detected_bodies, detected_bodies, cv::MORPH_OPEN, kernel(3,3));
+    morphologyEx(detected_bodies, detected_bodies, cv::MORPH_OPEN, kernel(3, 3));
     detected_bodies = cutSmall(detected_bodies, minimum_area_cut);
 
     return detected_bodies;
 }
 
-
 cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
-    cv::Mat contours_color(color_edges.rows,color_edges.cols,CV_8UC1,cv::Scalar::all(0));
+    cv::Mat contours_color(color_edges.rows, color_edges.cols, CV_8UC1, cv::Scalar::all(0));
     std::vector<std::vector<cv::Point>> contours;
 
-    cv::findContours(color_edges, contours,CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
-    for( int i = 0; i < contours.size(); i++ ) {
-        if (size_min < cv::arcLength(contours[i], false) ) {
+    cv::findContours(color_edges, contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+    for (int i = 0; i < contours.size(); i++) {
+        if (size_min < cv::arcLength(contours[i], false)) {
             cv::drawContours(contours_color, contours, i, cv::Scalar(255), CV_FILLED, 8);
         }
     }
     return contours_color;
 }
-
 
 cv::Mat find_orange_in_ROI(const cv::Mat& img) {
     cv::Mat hsv_frame, orange_found, frame_cut;
@@ -295,52 +283,42 @@ cv::Mat find_orange_in_ROI(const cv::Mat& img) {
     return orange_found;
 }
 
-
 void blockEnvironment(const cv::Mat& img) {
-    cv::rectangle(img,
-                  cv::Point(0,0),
-                  cv::Point(img.cols, blockSky_height),
-                  cv::Scalar(0,0,0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0, 0, 0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(0,img.rows),
-                  cv::Point(img.cols, blockWheels_height),
-                  cv::Scalar(0,0,0),CV_FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0, 0, 0), CV_FILLED);
 
-    cv::rectangle(img,
-                  cv::Point(img.cols/3,img.rows),
-                  cv::Point(2 * img.cols / 3, blockBumper_height),
-                  cv::Scalar(0,0,0),CV_FILLED);
+    cv::rectangle(img, cv::Point(img.cols / 3, img.rows), cv::Point(2 * img.cols / 3, blockBumper_height),
+                  cv::Scalar(0, 0, 0), CV_FILLED);
 }
 
-
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {
-    //Convert msg to Mat image
+    // Convert msg to Mat image
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
-    //Find Orange HSV in Region of interest
+    // Find Orange HSV in Region of interest
     cv::Mat orange_found = find_orange_in_ROI(frame);
 
-    //Cut HSV to find individual cones
-//    cv::Mat detected_bodies = canny_cut_bodies(frame, orange_found);
-//    cv::Mat sure_bodies = perform_watershed(frame, orange_found, detected_bodies);
+    // Cut HSV to find individual cones
+    //    cv::Mat detected_bodies = canny_cut_bodies(frame, orange_found);
+    //    cv::Mat sure_bodies = perform_watershed(frame, orange_found,
+    //    detected_bodies);
 
-    //Find Distance
+    // Find Distance
     frame = draw_box_and_calc_dist(frame, orange_found);
 
-    //publish Images
+    // publish Images
     publishImage(pub_debug_pos, frame, "bgr8");
     publishImage(pub_debug_mask, orange_found, "mono8");
 
-    //Add Circles for cones to PointCloud and Publish
+    // Add Circles for cones to PointCloud and Publish
     pcl::PointCloud<pcl::PointXYZ> cone_cloud = draw_cone_circles();
     publishPointCloud(cone_cloud);
 
-    //Publish Closest Point
+    // Publish Closest Point
     publish_closest_point();
 }
-
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "coneDetectionHeight");

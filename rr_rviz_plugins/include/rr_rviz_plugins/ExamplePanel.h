@@ -2,8 +2,8 @@
 #define PROJECT_EXAMPLEPANEL_H
 
 #include <ros/ros.h>
+#include <rr_msgs/speed.h>
 #include <rviz/panel.h>
-#include <rr_platform/speed.h>
 #include <QLabel>
 
 /*
@@ -15,40 +15,43 @@ namespace rr_rviz_plugins {
  * Each panel is a subclass of rviz::Panel
  */
 class ExamplePanel : public rviz::Panel {
-/*
- * rviz is based on QT, so our panels need to be QObjects, which requires this macro keyword.
- */
-Q_OBJECT
-public:
-
+    /*
+     * rviz is based on QT, so our panels need to be QObjects, which requires this
+     * macro keyword.
+     */
+    Q_OBJECT
+  public:
     /**
      * This is a standard QWidget constructor.
-     * @param parent The parent widget, which will be responsible for the lifetime of this widget.
+     * @param parent The parent widget, which will be responsible for the lifetime
+     * of this widget.
      */
     ExamplePanel(QWidget *parent = 0);
 
-protected:
+  protected:
     /*
-     * Be sure to make any publishers / subscribers members of the class. This will keep them alive throughout
-     * the lifetime of the widget.
+     * Be sure to make any publishers / subscribers members of the class. This
+     * will keep them alive throughout the lifetime of the widget.
      */
     ros::Subscriber speed_subscriber;
 
     /**
-     * Declare any ROS callbacks you need here. Be sure to create a parameter for any UI elements you need to update.
+     * Declare any ROS callbacks you need here. Be sure to create a parameter for
+     * any UI elements you need to update.
      * @param msg The ROS message that triggers this callback.
-     * @param label A QT label whose text we will update based on the message contents.
+     * @param label A QT label whose text we will update based on the message
+     * contents.
      */
-    void speed_callback(const rr_platform::speedConstPtr &msg, QLabel *label);
+    void speed_callback(const rr_msgs::speedConstPtr &msg, QLabel *label);
 
     /**
-     * If you need to paint custom graphics on your panel, uncomment and implement the paintEvent method.
-     * You can find out more about this method here: http://doc.qt.io/qt-5/qwidget.html#paintEvent
+     * If you need to paint custom graphics on your panel, uncomment and implement
+     * the paintEvent method. You can find out more about this method here:
+     * http://doc.qt.io/qt-5/qwidget.html#paintEvent
      */
-//    void paintEvent(QPaintEvent *event) override;
-
+    //    void paintEvent(QPaintEvent *event) override;
 };
 
-}
+}  // namespace rr_rviz_plugins
 
-#endif //PROJECT_EXAMPLEPANEL_H
+#endif  // PROJECT_EXAMPLEPANEL_H

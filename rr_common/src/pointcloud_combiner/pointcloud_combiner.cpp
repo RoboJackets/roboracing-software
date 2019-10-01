@@ -1,17 +1,16 @@
 /**
- * Simple program to subscribe to several pointclouds and output their combined result at
- * a set frequency.
+ * Simple program to subscribe to several pointclouds and output their combined
+ * result at a set frequency.
  */
 
-#include <ros/ros.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
-
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <tf/transform_listener.h>
 
 using cloud_t = pcl::PointCloud<pcl::PointXYZ>;
 using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
@@ -19,8 +18,7 @@ using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 std::map<std::string, sensor_msgs::PointCloud2ConstPtr> cache;
 bool has_new_info;
 
-
-void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topic) {
+void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg, std::string topic) {
     cache[topic] = msg;
     has_new_info = true;
 }
@@ -28,10 +26,10 @@ void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg, std::string topi
 /**
  * @note http://stackoverflow.com/a/27511119
  */
-std::vector <std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string& s, char delim) {
     std::stringstream ss(s);
     std::string item;
-    std::vector <std::string> elems;
+    std::vector<std::string> elems;
     while (std::getline(ss, item, delim)) {
         elems.push_back(std::move(item));
     }
@@ -57,8 +55,9 @@ int main(int argc, char** argv) {
 
     std::vector<ros::Subscriber> partial_Subscribers;
 
-    for(const auto& topic : topics) {
-        partial_Subscribers.push_back(nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
+    for (const auto& topic : topics) {
+        partial_Subscribers.push_back(
+              nh.subscribe<sensor_msgs::PointCloud2>(topic, 1, boost::bind(cloudCallback, _1, topic)));
         ROS_INFO_STREAM("Mapper subscribed to " << topic);
     }
 
@@ -77,12 +76,12 @@ int main(int argc, char** argv) {
         ros::spinOnce();
 
         if (has_new_info) {
-
             combo_cloud->clear();
 
-            for (std::pair<std::string, sensor_msgs::PointCloud2ConstPtr> entry_pair : cache) {  // copy for kind-of thread safety?
+            for (std::pair<std::string, sensor_msgs::PointCloud2ConstPtr> entry_pair :
+                 cache) {  // copy for kind-of thread safety?
                 if (!entry_pair.second) {
-                  continue;  // null pointer for message
+                    continue;  // null pointer for message
                 }
 
                 const auto& cloud_msg = *(entry_pair.second);
@@ -107,7 +106,7 @@ int main(int argc, char** argv) {
             }
 
             // make 2D
-            for(auto& pt : combo_cloud->points) {
+            for (auto& pt : combo_cloud->points) {
                 pt.z = 0;
             }
 

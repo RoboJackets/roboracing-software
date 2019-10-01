@@ -1,14 +1,14 @@
 #ifndef RR_COMMON_FOLLOWER_H
 #define RR_COMMON_FOLLOWER_H
 
-#include <ros/ros.h>
-#include <pcl/point_cloud.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <ros/ros.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <string>
-#include <rr_platform/speed.h>
-#include <rr_platform/steering.h>
 #include "flann/flann.hpp"
 
 float MIN_FRONT_VISION;
@@ -21,5 +21,4 @@ float FOLLOWER_SPEED;
 
 ros::Publisher speed_pub, steer_pub;
 
-
-#endif //RR_COMMON_FOLLOWER_H
+#endif  // RR_COMMON_FOLLOWER_H

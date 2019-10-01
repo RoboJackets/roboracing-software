@@ -54,14 +54,8 @@ defaults: &load_workspace
   attach_workspace:
     at: ~/catkin_ws
 
-defaults: &submodules_update
-  run:
-    name: update submodules
-    command: |
-      cd ~/catkin_ws/src/roboracing-software
-      git submodule sync
-      git submodule update --init
-
+checkout_submodules: &checkout_submodules
+  run: cd ~/catkin_ws/src/roboracing-software && git submodule sync && git submodule update --init
 
 version: 2
 jobs:
@@ -72,7 +66,7 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
-      - <<: *submodules_update
+      - <<: *checkout_submodules
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_compile_cache
@@ -88,7 +82,7 @@ jobs:
       - <<: *load_src_cache
       - checkout:
           path: ~/catkin_ws/src/roboracing-software
-      - <<: *submodules_update
+      - <<: *checkout_submodules
       - <<: *save_src_cache
       - <<: *install_deps
       - <<: *load_workspace
@@ -98,9 +92,34 @@ jobs:
           catkin_make run_tests -j2 -DCATKIN_BLACKLIST_PACKAGES="parameter_assertions;"
           catkin_test_results
       - <<: *save_test_cache
+  format:
+      working_directory: ~/catkin_ws/src/roboracing-software
+      <<: *image
+      steps:
+        - <<: *load_src_cache
+        - checkout:
+            path: ~/catkin_ws/src/roboracing-software
+        - <<: *save_src_cache
+        - run: |
+            apt-get update -y
+            apt-get install -y clang-format-6.0
+            ln -s /usr/bin/clang-format-6.0 /usr/bin/clang-format
+            clang-format -dump-config
+            SOURCE_FILES=`find . -name '*.h' -or -name '*.hpp' -or -name '*.cpp'`
+            for SOURCE_FILE in $SOURCE_FILES
+            do
+              export FORMATTING_ISSUE_COUNT=`clang-format -output-replacements-xml $SOURCE_FILE | grep offset | wc -l`
+              if [ "$FORMATTING_ISSUE_COUNT" -gt "0" ]; then
+                echo "Source file $SOURCE_FILE contains formatting issues. Please use clang-format tool to resolve found issues."
+                exit 1
+              fi
+            done
 
 workflows:
   version: 2
+  format:
+    jobs:
+      - format
   build_and_test:
     jobs:
       - compile
