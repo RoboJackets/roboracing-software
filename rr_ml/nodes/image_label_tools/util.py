@@ -28,7 +28,7 @@ def get_label_name_to_value(config_file):
 def label_image(img_path, label_path, cfg_file):
     name_to_value = get_label_name_to_value(cfg_file)
 
-    with tempfile.NamedTemporaryFile() as json_file:
+    with tempfile.NamedTemporaryFile(suffix=".json") as json_file:
         subprocess.call(["labelme", img_path, "--config", cfg_file, "--output", json_file.name])
 
         with open(json_file.name) as f:

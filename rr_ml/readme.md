@@ -9,9 +9,9 @@ Installed via pip:
 - labelme
 - pyyaml
 
-`sudo python -m pip install keras tensorflow-gpu numpy labelme pyyaml` \
+`sudo python -m pip install keras tensorflow-gpu tensorboard numpy labelme pyyaml` \
 OR \
-`python -m pip install --user keras tensorflow-gpu numpy labelme pyyaml`
+`python -m pip install --user keras tensorflow-gpu tensorboard numpy labelme pyyaml`
 
 
 ## Image Labeling Pipeline
@@ -21,10 +21,9 @@ OR \
 1. Label all unlabeled images from iarrc_lines dataset: `roslaunch label_folder_iarrc_lines.launch`
     1. Ctrl+S to save, next image will open automatically
     1. Close the window and/or Ctrl-C in the terminal to cancel labeling (will resume from same point next time)
-1. Train segmentation network: `roslaunch rr_ml train_seg_iarrc_lines.launch epochs:=1000`
 
 ## Training script
 
-- `roslaunch rr_ml train_seg_iarrc_lines epochs:=1000`
+- Train segmentation network: `roslaunch rr_ml train_seg_iarrc_lines.launch epochs:=1000`
 - In separate terminal: `tensorboard --logdir rr_ml/tensorboard_logs/ --host localhost --port 6006`
 - Training script will stop after 'epochs' epochs or when the loss on the validation set stops going down
