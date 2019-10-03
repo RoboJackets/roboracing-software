@@ -1,0 +1,5 @@
+<library path="lib/librr_evgp_plugins">
+    <class type="rr::TestLayer" base_class_type="costmap_2d::Layer">
+        <description> l a y e r </description>
+    </class>
+</library>

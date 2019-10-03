@@ -307,7 +307,7 @@
             <updateRate>50.0</updateRate>
             <bodyName>base_footprint</bodyName>
             <topicName>/odometry/ground_truth</topicName>
-            <gaussianNoise>0.0</gaussianNoise>
+            <gaussianNoise>0.2</gaussianNoise>
             <frameName>world</frameName>
             <xyzOffsets>0 0 0</xyzOffsets>
             <rpyOffsets>0 0 0</rpyOffsets>
