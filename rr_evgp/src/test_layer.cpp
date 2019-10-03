@@ -65,10 +65,6 @@ class TestLayer : public costmap_2d::Layer {
                     probs_[i] = p_occupied / (p_occupied + p_empty);
                 }
 
-                //                double wx, wy;
-                //                master_grid.mapToWorld(mx, my, wx, wy);
-                //                if (std::pow(wx - robot_x_, 2) + std::pow(wy - robot_y_, 2) < 5.0)
-
                 if (obstacle_layer_cost != costmap_2d::NO_INFORMATION) {
                     master_grid.setCost(mx, my, 1 + static_cast<uint8_t>(probs_[i] * 99));
                 }

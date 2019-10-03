@@ -23,6 +23,7 @@ costmap:
         track_unknown_space: true
         observation_sources: laserscan
         combination_method: 0
+
         laserscan:
             data_type: LaserScan
             topic: /scan
@@ -40,6 +41,6 @@ costmap:
         cost_scaling_factor: 1.0
 
     test:
-        prob_false_pos: 0.1
-        prob_false_neg: 0.3
-        prob_grid_prior: 0.1
+        prob_false_pos: 0.3
+        prob_false_neg: 0.4
+        prob_grid_prior: 0.49
