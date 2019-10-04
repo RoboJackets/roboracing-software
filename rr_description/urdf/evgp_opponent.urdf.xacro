@@ -1,6 +1,6 @@
 <robot name="evgp_opponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="evgp_body.sdf.xacro"/>
+    <xacro:include filename="evgp_body.urdf.xacro"/>
 
     <gazebo reference="base_footprint">
         <kinematic>true</kinematic>

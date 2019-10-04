@@ -2,7 +2,7 @@
 
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
 
-    <xacro:include filename="evgp_body.sdf.xacro"/>
+    <xacro:include filename="evgp_body.urdf.xacro"/>
 
     <!-- ************************** Links *************************** -->
 
