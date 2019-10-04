@@ -15,4 +15,4 @@ catkin_package(
 )
 
 file(GLOB xacro_files urdf/*.urdf.xacro)
-xacro_add_files(${xacro_files} TARGET xacro_files)
+xacro_add_files(${xacro_files} TARGET gen_xacro_files)

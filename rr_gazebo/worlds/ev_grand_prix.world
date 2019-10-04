@@ -27,8 +27,5 @@
             <uri>model://EVGPTrack1</uri>
             <pose>29 22 -25.5 0 0 -1.5707</pose>
         </include>
-        <include>
-            <uri>model://Opponent</uri>
-        </include>
     </world>
 </sdf>
