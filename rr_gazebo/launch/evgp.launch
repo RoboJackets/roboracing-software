@@ -1,4 +1,6 @@
 <launch>
+    <env name="GAZEBO_MODEL_PATH" value="$(optenv GAZEBO_MODEL_PATH):$(find rr_description)"/>
+
     <include file="$(dirname)/evgp_sim.launch">
         <arg name="world" value="$(find rr_gazebo)/worlds/ev_grand_prix.world"/>
         <arg name="x" value="0"/>
