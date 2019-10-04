@@ -14,8 +14,5 @@ catkin_package(
 #        DEPENDS eigen opencv
 )
 
-xacro_add_files(
-        urdf/evgp.urdf.xacro
-        urdf/evgp_opponent.urdf.xacro
-        TARGET gen_xacro_files
-)
+file(GLOB xacro_files urdf/evgp.urdf.xacro urdf/evgp_opponent.urdf.xacro)
+xacro_add_files(${xacro_files} TARGET xacro_files)
