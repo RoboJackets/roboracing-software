@@ -1,5 +1,5 @@
 <launch>
-    <arg name="map_size" value="1000.0"/>
+    <arg name="map_size" value="5000.0"/>
 
     <!-- identity transform from world -> map -> odom to make localization/mapping happy -->
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_static_world_to_map"

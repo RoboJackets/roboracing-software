@@ -1,5 +1,3 @@
-#include <valarray>
-
 #include <costmap_2d/GenericPluginConfig.h>
 #include <costmap_2d/layer.h>
 #include <dynamic_reconfigure/server.h>
@@ -14,15 +12,13 @@ namespace rr {
 
 class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
   public:
-    BinaryBayesFilterObstacleLayer() : tf_(), tf_listener_(tf_), ready_(false) {}
-
     void onInitialize() override {
         dsrv_ = std::make_unique<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>>();
         dsrv_->setCallback(boost::bind(&BinaryBayesFilterObstacleLayer::reconfigureCB, this, _1, _2));
 
         ros::NodeHandle global_nh;
         ros::NodeHandle costmap_nh("~costmap");
-        ros::NodeHandle private_nh("~" + name_);
+        ros::NodeHandle private_nh("~" + getName());
 
         assertions::Assertion<double> assert_is_prob([](double x) { return x > 0 && x < 1; }, "probability in (0, 1) "
                                                                                               "range");
@@ -41,23 +37,28 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         assertions::getParam(costmap_nh, "robot_base_frame", robot_base_frame);
 
         std::string err;
-        while (!tf_.canTransform(robot_base_frame, lidar_frame, ros::Time(0), ros::Duration(1.0), &err)) {
+        while (!tf_->canTransform(robot_base_frame, lidar_frame, ros::Time(0), ros::Duration(1.0), &err)) {
             ROS_WARN_STREAM(err);
             ros::WallDuration(0.1).sleep();
         }
 
-        auto transform_stamped = tf_.lookupTransform(robot_base_frame, lidar_frame, ros::Time(0), ros::Duration(1.0));
+        auto transform_stamped = tf_->lookupTransform(robot_base_frame, lidar_frame, ros::Time(0), ros::Duration(1.0));
         lidar_offset_x_ = transform_stamped.transform.translation.x;
         lidar_offset_y_ = transform_stamped.transform.translation.y;
         lidar_offset_yaw_ = tf2::getYaw(transform_stamped.transform.rotation);
 
-        ready_ = true;
+        last_grid_size_x_ = last_grid_size_y_ = last_origin_x_ = last_origin_y_ = 0;
+        current_ = true;
     }
 
     void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
                       double* max_y) override {
-        if (!enabled_ || !ready_ || !most_recent_scan_) {
+        if (!enabled_ || !most_recent_scan_) {
             return;
+        }
+
+        if (layered_costmap_->isRolling()) {
+            matchSize();
         }
 
         lidar_x_ = robot_x + (lidar_offset_x_ * std::cos(robot_yaw) - lidar_offset_y_ * std::sin(robot_yaw));
@@ -65,6 +66,8 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         lidar_yaw_ = robot_yaw + lidar_offset_yaw_;
 
         scan_ = most_recent_scan_;
+        auto* costmap = layered_costmap_->getCostmap();
+        double resolution = costmap->getResolution();
 
         double angle = scan_->angle_min;
         for (double range : scan_->ranges) {
@@ -75,47 +78,23 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
             double wy = lidar_y_ + range * std::sin(lidar_yaw_ + angle);
             angle += scan_->angle_increment;
 
-            if (wx < *min_x)
-                *min_x = wx;
-            if (wx > *max_x)
-                *max_x = wx;
-            if (wy < *min_y)
-                *min_y = wy;
-            if (wy > *max_y)
-                *max_y = wy;
+            double fudge = 2 * resolution;
+            if (wx - fudge < *min_x)
+                *min_x = std::max(costmap->getOriginX(), wx - fudge);
+            if (wx + fudge > *max_x)
+                *max_x = std::min(costmap->getOriginX() + costmap->getSizeInMetersX(), wx + fudge);
+            if (wy - fudge < *min_y)
+                *min_y = std::max(costmap->getOriginY(), wy - fudge);
+            if (wy + fudge > *max_y)
+                *max_y = std::min(costmap->getOriginY() + costmap->getSizeInMetersY(), wy + fudge);
         }
-
-        double resolution = layered_costmap_->getCostmap()->getResolution();
-        *min_x = std::max(*min_x - 3 * resolution, 0.0);
-        *max_x = std::min(*max_x + 3 * resolution, layered_costmap_->getCostmap()->getSizeInMetersX() - 0.0001);
-        *min_y = std::max(*min_y - 3 * resolution, 0.0);
-        *max_y = std::min(*max_y + 3 * resolution, layered_costmap_->getCostmap()->getSizeInMetersY() - 0.0001);
     }
 
     void updateCosts(costmap_2d::Costmap2D& master_grid, int min_cell_x, int min_cell_y, int max_cell_x,
                      int max_cell_y) override {
-        if (!enabled_ || !ready_ || !scan_) {
+        if (!enabled_ || !scan_) {
             return;
         }
-
-        // TODO don't assume master map is stationary
-        if (probs_.size() != master_grid.getSizeInCellsX() * master_grid.getSizeInCellsY()) {
-            probs_.resize(master_grid.getSizeInCellsX() * master_grid.getSizeInCellsY());
-            for (double& p : probs_) {
-                p = prob_grid_prior_;
-            }
-            updates_.resize(probs_.size());
-            ROS_INFO("resized probability map");
-        }
-
-        if (min_cell_x < 0)
-            min_cell_x = 0;
-        if (min_cell_y < 0)
-            min_cell_y = 0;
-        if (max_cell_x >= master_grid.getSizeInCellsX())
-            max_cell_x = (int)master_grid.getSizeInCellsX() - 1;
-        if (max_cell_y >= master_grid.getSizeInCellsY())
-            max_cell_y = (int)master_grid.getSizeInCellsY() - 1;
 
         const double resolution = master_grid.getResolution();
         const double world_min_x = master_grid.getOriginX();
@@ -123,8 +102,8 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         const double world_min_y = master_grid.getOriginY();
         const double world_max_y = world_min_y + master_grid.getSizeInMetersY();
 
-        for (int mx = min_cell_x; mx <= max_cell_x; mx++) {
-            for (int my = min_cell_y; my <= max_cell_y; my++) {
+        for (int mx = min_cell_x; mx < max_cell_x; mx++) {
+            for (int my = min_cell_y; my < max_cell_y; my++) {
                 updates_[master_grid.getIndex(mx, my)] = -1;
             }
         }
@@ -171,8 +150,8 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         }
 
         uint8_t* costmap_data = master_grid.getCharMap();
-        for (int mx = min_cell_x; mx <= max_cell_x; mx++) {
-            for (int my = min_cell_y; my <= max_cell_y; my++) {
+        for (int mx = min_cell_x; mx < max_cell_x; mx++) {
+            for (int my = min_cell_y; my < max_cell_y; my++) {
                 const auto i = master_grid.getIndex(mx, my);
                 const char update = updates_[i];
 
@@ -192,6 +171,42 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                 costmap_data[i] = static_cast<uint8_t>(probs_[i] * 255.999);
             }
         }
+    }
+
+    void matchSize(const costmap_2d::Costmap2D& master_grid) {
+        if (last_grid_size_x_ == master_grid.getSizeInCellsX() && last_grid_size_y_ == master_grid.getSizeInCellsY() &&
+            last_origin_x_ == master_grid.getOriginX() && last_origin_y_ == master_grid.getOriginY()) {
+            return;
+        }
+
+        std::vector<double> new_probs(master_grid.getSizeInCellsX() * master_grid.getSizeInCellsY(), prob_grid_prior_);
+        int old_origin_new_mx, old_origin_new_my;
+        master_grid.worldToMapNoBounds(last_origin_x_, last_origin_y_, old_origin_new_mx, old_origin_new_my);
+        int new_start_x = std::max(0, old_origin_new_mx);
+        int new_start_y = std::max(0, old_origin_new_my);
+        int old_start_x = std::max(0, -old_origin_new_mx);
+        int old_start_y = std::max(0, -old_origin_new_my);
+        int old_end_x = std::min(last_grid_size_x_, -old_origin_new_mx + master_grid.getSizeInCellsX());
+        int old_end_y = std::min(last_grid_size_y_, -old_origin_new_my + master_grid.getSizeInCellsY());
+        std::cout << (old_end_x - old_start_x) << " " << (old_end_y - old_start_y) << std::endl;
+        if (old_end_x > old_start_x && old_end_y > old_start_y) {
+            for (int old_my = old_start_y, new_my = new_start_y; old_my < old_end_y; old_my++, new_my++) {
+                size_t old_i = old_my * last_grid_size_x_;
+                size_t new_i = new_my * master_grid.getSizeInCellsX();
+                std::copy(probs_.begin() + old_i + old_start_x, probs_.begin() + old_i + old_end_x,
+                          new_probs.begin() + new_i + new_start_x);
+            }
+        }
+        probs_ = std::move(new_probs);
+        last_grid_size_x_ = master_grid.getSizeInCellsX();
+        last_grid_size_y_ = master_grid.getSizeInCellsY();
+        last_origin_x_ = master_grid.getOriginX();
+        last_origin_y_ = master_grid.getOriginY();
+        updates_.resize(probs_.size());
+    }
+
+    void matchSize() override {
+        matchSize(*layered_costmap_->getCostmap());
     }
 
   private:
@@ -214,7 +229,10 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
     double lidar_offset_x_;
     double lidar_offset_y_;
     double lidar_offset_yaw_;
-    bool ready_;
+    unsigned int last_grid_size_x_;
+    unsigned int last_grid_size_y_;
+    double last_origin_x_;
+    double last_origin_y_;
 
     // params
     double prob_false_pos_;
@@ -225,8 +243,6 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
     ros::Subscriber scan_sub_;
-    tf2_ros::Buffer tf_;
-    tf2_ros::TransformListener tf_listener_;
 };
 
 }  // namespace rr
