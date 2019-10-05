@@ -6,6 +6,8 @@ import csv
 import time
 import itertools
 import math
+import signal
+import sys
 
 import rospy
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest
@@ -18,6 +20,12 @@ def smallest_angle(a0, a1):
 
 def main():
     rospy.init_node("opponent_trajectory_controller")
+
+    def handler(signum, frame):
+        print("shutting down", rospy.get_name())
+        sys.exit(signum)
+
+    signal.signal(signal.SIGINT, handler)  # set_model_state won't terminate without this
 
     in_csv = rospy.get_param("~trajectory_csv")
     model_name = rospy.get_param("~model_name")
@@ -67,8 +75,6 @@ def main():
             request.model_state.twist.angular.x = smallest_angle(Y0, Y1) / dt
 
             set_model_state(request)
-
-    rospy.spin()
 
 
 if __name__ == '__main__':
