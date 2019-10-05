@@ -1,5 +1,5 @@
 <library path="lib/librr_evgp_plugins">
-    <class type="rr::TestLayer" base_class_type="costmap_2d::Layer">
-        <description> l a y e r </description>
+    <class type="rr::BinaryBayesFilterObstacleLayer" base_class_type="costmap_2d::Layer">
+        <description>Probabilistic mapping or something</description>
     </class>
 </library>

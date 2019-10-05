@@ -63,7 +63,7 @@ Visualization Manager:
       Axis: X
       Channel Name: intensity
       Class: rviz/PointCloud2
-      Color: 239; 41; 41
+      Color: 255; 0; 0
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
@@ -77,9 +77,9 @@ Visualization Manager:
       Queue Size: 1
       Selectable: false
       Size (Pixels): 3
-      Size (m): 0.10000000149011612
+      Size (m): 0.20000000298023224
       Style: Spheres
-      Topic: /current_obstacles
+      Topic: /scan/pointcloud
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: false
@@ -280,7 +280,7 @@ Visualization Manager:
       Visual Enabled: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
-      Color Scheme: map
+      Color Scheme: raw
       Draw Behind: false
       Enabled: true
       Name: Map
@@ -316,16 +316,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 135.52346801757812
+      Distance: 171.1180419921875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 25.895864486694336
-        Y: 11.399711608886719
-        Z: 1.395212173461914
+        X: 31.121200561523438
+        Y: 17.68122673034668
+        Z: 3.0245304107666016
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -334,7 +334,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.095400810241699
+      Yaw: 3.1254007816314697
     Saved: ~
 Window Geometry:
   Camera:
