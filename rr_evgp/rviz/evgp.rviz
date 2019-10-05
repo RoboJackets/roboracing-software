@@ -57,8 +57,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 8.988818168640137
-        Min Value: -2.6101577281951904
+        Max Value: 0.13157415390014648
+        Min Value: -12.11644172668457
         Value: true
       Axis: X
       Channel Name: intensity
@@ -76,9 +76,9 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 1
       Selectable: false
-      Size (Pixels): 3
-      Size (m): 0.20000000298023224
-      Style: Spheres
+      Size (Pixels): 4
+      Size (m): 0.30000001192092896
+      Style: Points
       Topic: /scan/pointcloud
       Unreliable: false
       Use Fixed Frame: true
@@ -316,16 +316,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 171.1180419921875
+      Distance: 140.3189697265625
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 31.121200561523438
-        Y: 17.68122673034668
-        Z: 3.0245304107666016
+        X: 29.343753814697266
+        Y: 16.73333168029785
+        Z: 2.7308239936828613
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -334,7 +334,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1254007816314697
+      Yaw: 3.1054015159606934
     Saved: ~
 Window Geometry:
   Camera:

@@ -123,13 +123,17 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         const double world_min_y = master_grid.getOriginY();
         const double world_max_y = world_min_y + master_grid.getSizeInMetersY();
 
-        updates_ = -1;
+        for (int mx = min_cell_x; mx <= max_cell_x; mx++) {
+            for (int my = min_cell_y; my <= max_cell_y; my++) {
+                updates_[master_grid.getIndex(mx, my)] = -1;
+            }
+        }
 
         double angle = scan_->angle_min;
         for (double raw_range : scan_->ranges) {
             bool is_hit = (!std::isinf(raw_range) && raw_range <= scan_range_);
             double range = is_hit ? raw_range : scan_range_;
-            double trace_range = range + resolution;
+            double trace_range = range + (resolution * 0.7);
             double wx = lidar_x_ + trace_range * std::cos(lidar_yaw_ + angle);
             double wy = lidar_y_ + trace_range * std::sin(lidar_yaw_ + angle);
 
@@ -138,19 +142,28 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                 continue;
             }
 
-            const double step_size = resolution * 0.5;
+            const double step_size = resolution * 0.25;
             const double step_x = step_size * (wx - lidar_x_) / range;
             const double step_y = step_size * (wy - lidar_y_) / range;
             int mx, my;
-            unsigned int i = 0;
-            for (double d = 0, march_x = lidar_x_, march_y = lidar_y_; d <= trace_range;
-                 d += step_size, march_x += step_x, march_y += step_y) {
+            double d = 0;
+            double march_x = lidar_x_;
+            double march_y = lidar_y_;
+            const double last_clear = range - resolution;
+            while (d < last_clear) {
                 master_grid.worldToMapNoBounds(march_x, march_y, mx, my);
-                i = master_grid.getIndex(mx, my);
-                if (d + step_size >= range && is_hit) {
-                    updates_[i] = 1;
-                } else if (updates_[i] < 0) {
-                    updates_[i] = 0;
+                updates_[master_grid.getIndex(mx, my)] = 0;
+                d += step_size;
+                march_x += step_x;
+                march_y += step_y;
+            }
+            if (is_hit) {
+                while (d <= trace_range) {
+                    master_grid.worldToMapNoBounds(march_x, march_y, mx, my);
+                    updates_[master_grid.getIndex(mx, my)] = 1;
+                    d += step_size;
+                    march_x += step_x;
+                    march_y += step_y;
                 }
             }
 
@@ -192,7 +205,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
 
     // state
     std::vector<double> probs_;
-    std::valarray<char> updates_;
+    std::vector<char> updates_;
     sensor_msgs::LaserScanConstPtr most_recent_scan_;
     sensor_msgs::LaserScanConstPtr scan_;
     double lidar_x_;

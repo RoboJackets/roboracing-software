@@ -19,7 +19,7 @@ costmap:
 
     grid_filter:
         prob_false_pos: 0.3  # small -> quick addition
-        prob_false_neg: 0.1  # small -> quick subtraction
+        prob_false_neg: 0.3  # small -> quick subtraction
         prob_grid_prior: 0.01
         max_confidence: 0.9999
         scan_range: 8.0
