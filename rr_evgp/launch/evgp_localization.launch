@@ -1,0 +1,11 @@
+<launch>
+    <node pkg="robot_localization" type="ekf_localization_node" name="perfect_localization" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/robot_localization_from_sensors.yaml"
+                  subst_value="True"/>
+    </node>
+    <!--
+    <node pkg="costmap_2d" type="costmap_2d_node" name="basic_mapper" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/costmap_2d_basic_mapping.yaml" subst_value="True"/>
+    </node>
+    -->
+</launch>

@@ -27,6 +27,7 @@
 
   <exec_depend>robot_localization</exec_depend>
   <exec_depend>costmap_2d</exec_depend>
+  <exec_depend>hector_gazebo_plugins</exec_depend>
 
   <export>
 
