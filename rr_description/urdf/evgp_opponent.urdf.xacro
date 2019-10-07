@@ -2,6 +2,8 @@
 
     <xacro:include filename="evgp_body.urdf.xacro"/>
 
+    <xacro:evgp_body collide="false" color="Blue"/>
+
     <gazebo reference="base_footprint">
         <kinematic>true</kinematic>
     </gazebo>

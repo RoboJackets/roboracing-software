@@ -1,8 +1,8 @@
 <launch>
     <include file="$(dirname)/evgp_sim.launch">
         <arg name="world" value="$(find rr_gazebo)/worlds/ev_grand_prix.world"/>
-        <arg name="x" value="0"/>
-        <arg name="y" value="0"/>
+        <arg name="x" value="14"/>
+        <arg name="y" value="-2"/>
         <arg name="heading" value="0"/>
     </include>
 
@@ -17,5 +17,6 @@
         <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat.csv"/>
         <param name="model_name" value="evgp_opponent"/>
         <param name="time_warp" value="0.9"/>
+        <param name="start_delay" value="5.0"/>
     </node>
 </launch>
