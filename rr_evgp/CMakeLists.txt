@@ -6,10 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
-        rr_common
-        rr_description
-        rr_gazebo
-        rr_platform
+        rr_msgs
         sensor_msgs
         geometry_msgs
 )
