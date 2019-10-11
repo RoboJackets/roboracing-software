@@ -27,5 +27,5 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(rr_evgp_plugins src/binary_bayes_filter_obstacle_layer.cpp)
+add_library(rr_evgp_plugins src/binary_bayes_filter_obstacle_layer.cpp src/track_closing_layer.cpp)
 target_link_libraries(rr_evgp_plugins ${catkin_LIBRARIES})

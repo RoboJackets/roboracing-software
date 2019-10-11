@@ -15,6 +15,7 @@ costmap:
   plugins:
     - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
     - {name: "inflation", type: "costmap_2d::InflationLayer"}
+    - {name: "track_closing", type: "rr::TrackClosingLayer"}
 
   obstacles:
     max_obstacle_height: 100
@@ -36,3 +37,7 @@ costmap:
     inflation_radius: 0.25
     cost_scaling_factor: 1.0
     lethal_cost_threshold: 1
+
+  track_closing:
+    extrapolate_dist: 5.0
+    interpolate_dist: 10.0
