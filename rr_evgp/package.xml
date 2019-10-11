@@ -22,10 +22,11 @@
 
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>parameter_assertions</build_depend>
 
   <exec_depend>robot_localization</exec_depend>
 
   <export>
-
+    <costmap_2d plugin="${prefix}/plugins.xml"/>
   </export>
 </package>

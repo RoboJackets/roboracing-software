@@ -2,6 +2,10 @@
 
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
 
+    <xacro:include filename="evgp_body.urdf.xacro"/>
+
+    <xacro:evgp_body collide="true" color="Grey"/>
+
     <!-- ************************** Links *************************** -->
 
     <xacro:macro name="null_inertia">
@@ -22,31 +26,6 @@
             <material>Gazebo/${color}</material>
         </gazebo>
     </xacro:macro>
-
-    <link name="base_footprint">
-        <xacro:null_inertia/>
-    </link>
-
-    <link name="body_visual_origin">
-        <xacro:null_inertia/>
-        <visual>
-            <xacro:mesh_geometry/>
-        </visual>
-        <collision>
-            <xacro:mesh_geometry/>
-        </collision>
-    </link>
-    <xacro:set_link_color link="body_visual_origin" color="Grey"/>
-
-    <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
-    <link name="body_inertial_center">
-        <inertial>
-            <mass value="${props['body_mass']}"/>
-            <inertia ixx="${body_inertia[0]}" ixy="${body_inertia[1]}" ixz="${body_inertia[2]}"
-                     iyy="${body_inertia[3]}" iyz="${body_inertia[4]}" izz="${body_inertia[5]}"/>
-        </inertial>
-    </link>
-    <gazebo reference="body_inertial_center"/>
 
 
     <xacro:macro name="wheel_link" params="name radius width">
@@ -125,18 +104,6 @@
 
 
     <!-- ************************** Joints *************************** -->
-
-    <joint name="base_footprint_to_mesh_origin" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_visual_origin"/>
-        <origin xyz="1.45 0.515 -0.051" rpy="${pi/2} 0 ${-pi/2}"/>
-    </joint>
-
-    <joint name="base_footprint_to_body_inertial_center" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_inertial_center"/>
-        <origin xyz="${' '.join(str(x) for x in props['body_com'])}"/>
-    </joint>
 
     <xacro:property name="joint_flop_distance" value="0.02"/>
     <xacro:macro name="back_wheel_joint" params="dest_link y">

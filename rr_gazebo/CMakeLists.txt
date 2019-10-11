@@ -12,14 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
 )
 
-# Try to find Protobuf and fix if needed
-#include(FindProtobuf)
-#find_package(Protobuf)
-#if (NOT Protobuf_INCLUDE_DIR)
-#    set(Protobuf_INCLUDE_DIR /usr/include/)
-#endif ()
-
-#include_directories(${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${SDFormat_INCLUDE_DIRS})
 include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package(
@@ -36,14 +28,3 @@ add_dependencies(sim_car_controller ${catkin_EXPORTED_TARGETS})
 add_executable(imu_axes nodes/imu_axes.cpp)
 target_link_libraries(imu_axes ${catkin_LIBRARIES})
 add_dependencies(imu_axes ${catkin_EXPORTED_TARGETS})
-
-catkin_install_python(
-        PROGRAMS
-        scripts/controller_spawner.py
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-install(PROGRAMS
-        scripts/spawn_macaroni_platform.sh
-        scripts/controller_spawner.py
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

@@ -1,2 +1,3 @@
 # ignore URDF generated from xacro
 evgp.urdf
+evgp_opponent.urdf
