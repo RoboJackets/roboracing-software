@@ -6,7 +6,7 @@
 
     <param name="/use_sim_time" value="true" />
 
-    <rosparam ns="/camera_center/image_color_rect">
+    <rosparam ns="/camera/image_color_rect">
         disable_pub_plugins:
         - "image_transport/compressed"
         - "image_transport/theora"
