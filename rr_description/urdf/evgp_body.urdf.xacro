@@ -1,8 +1,7 @@
 <robot name="evgp" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
-
-    <!-- ************************** Links *************************** -->
+    <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
 
     <xacro:macro name="null_inertia">
         <inertial>
@@ -23,44 +22,52 @@
         </gazebo>
     </xacro:macro>
 
-    <link name="base_footprint">
-        <xacro:null_inertia/>
-    </link>
+    <!-- leave 'name' empty for ego robot -->
+    <xacro:macro name="evgp_body" params="collide color">
 
-    <link name="body_visual_origin">
-        <xacro:null_inertia/>
-        <visual>
-            <xacro:mesh_geometry/>
-        </visual>
-        <collision>
-            <xacro:mesh_geometry/>
-        </collision>
-    </link>
-    <xacro:set_link_color link="body_visual_origin" color="Grey"/>
+        <!-- ************************** Links *************************** -->
 
-    <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
-    <link name="body_inertial_center">
-        <inertial>
-            <mass value="${props['body_mass']}"/>
-            <inertia ixx="${body_inertia[0]}" ixy="${body_inertia[1]}" ixz="${body_inertia[2]}"
-                     iyy="${body_inertia[3]}" iyz="${body_inertia[4]}" izz="${body_inertia[5]}"/>
-        </inertial>
-    </link>
-    <gazebo reference="body_inertial_center"/>
+        <link name="base_footprint">
+            <xacro:null_inertia/>
+        </link>
+
+        <link name="body_visual_origin">
+            <xacro:null_inertia/>
+            <visual>
+                <xacro:mesh_geometry/>
+            </visual>
+            <xacro:if value="${collide}">
+                <collision>
+                    <xacro:mesh_geometry/>
+                </collision>
+            </xacro:if>
+        </link>
+        <xacro:set_link_color link="body_visual_origin" color="${color}"/>
+
+        <link name="body_inertial_center">
+            <inertial>
+                <mass value="${props['body_mass']}"/>
+                <inertia ixx="${body_inertia[0]}" ixy="${body_inertia[1]}" ixz="${body_inertia[2]}"
+                         iyy="${body_inertia[3]}" iyz="${body_inertia[4]}" izz="${body_inertia[5]}"/>
+            </inertial>
+        </link>
+        <gazebo reference="body_inertial_center"/>
 
 
-    <!-- ************************** Joints *************************** -->
+        <!-- ************************** Joints *************************** -->
 
-    <joint name="base_footprint_to_mesh_origin" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_visual_origin"/>
-        <origin xyz="1.45 0.515 -0.051" rpy="${pi/2} 0 ${-pi/2}"/>
-    </joint>
+        <joint name="base_footprint_to_mesh_origin" type="fixed">
+            <parent link="base_footprint"/>
+            <child link="body_visual_origin"/>
+            <origin xyz="1.45 0.515 -0.051" rpy="${pi/2} 0 ${-pi/2}"/>
+        </joint>
 
-    <joint name="base_footprint_to_body_inertial_center" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_inertial_center"/>
-        <origin xyz="${' '.join(str(x) for x in props['body_com'])}"/>
-    </joint>
+        <joint name="base_footprint_to_body_inertial_center" type="fixed">
+            <parent link="base_footprint"/>
+            <child link="body_inertial_center"/>
+            <origin xyz="${' '.join(str(x) for x in props['body_com'])}"/>
+        </joint>
+
+    </xacro:macro>
 
 </robot>

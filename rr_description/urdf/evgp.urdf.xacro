@@ -4,6 +4,8 @@
 
     <xacro:include filename="evgp_body.urdf.xacro"/>
 
+    <xacro:evgp_body collide="true" color="Grey"/>
+
     <!-- ************************** Links *************************** -->
 
     <xacro:macro name="null_inertia">
