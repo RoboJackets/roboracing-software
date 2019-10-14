@@ -11,17 +11,21 @@
         <rosparam command="load" file="$(find rr_evgp)/conf/robot_localization_from_sensors.yaml"
                   subst_value="True"/>
     </node>
-<!--
-    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
-      <! magnetic declination is -5° 17' of the Robojackets shop >
-      <param name="magnetic_declination_radians" value="0"/>
-      <param name="yaw_offset" value="0"/>
 
-      <remap from="/imu/data" to="/imu" />
-      <remap from="/gps/fix" to="/gps/fix" />
-      <remap from="/odometry/filtered" to="/odometry/filtered" />
+    <!-- see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
+    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
+        <param name="magnetic_declination_radians" value="0"/> <!-- #TODO: mag declination of shop / speedway -->
+        <param name="yaw_offset" value="1.5708"/> <!-- offset by 90 degrees for ENU-->
+        <param name="zero_altitude" value="true"/>
+
+        <param name="use_odometry_yaw" value="false"/>
+        <param name="wait_for_datum" value="false"/>
+
+        <remap from="/imu/data" to="/imu" />
+        <remap from="/gps/fix" to="/gps/fix" />
+        <remap from="/odometry/filtered" to="/odometry/filtered" />
     </node>
--->
+
     <!-- -->
     <node pkg="costmap_2d" type="costmap_2d_node" name="basic_mapper" output="screen">
         <rosparam command="load" file="$(find rr_evgp)/conf/costmap_2d_basic_mapping.yaml" subst_value="True"/>

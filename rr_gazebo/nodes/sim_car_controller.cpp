@@ -181,7 +181,9 @@ int main(int argc, char **argv) {
         odometryMsg.child_frame_id = "base_footprint";
         odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
         odometryMsg.twist.twist.linear.y = 0.0; //can't move sideways instantaneously
-        //TODO: calculate the z rotation from steering and post that
+        //#TODO: set twist covariance?
+        //#TODO: if need be, use steering for extra data
+        //#see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
         odometryPublisher.publish(odometryMsg);
 
         rate.sleep();
