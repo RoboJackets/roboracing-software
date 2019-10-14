@@ -1,3 +1,6 @@
+#include <geometry_msgs/PoseWithCovariance.h>
+#include <geometry_msgs/TwistWithCovariance.h>
+#include <nav_msgs/Odometry.h>
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
 #include <rr_msgs/chassis_state.h>
@@ -96,7 +99,7 @@ void fillWheelSpeeds(const double steering_angle, const double speed, double &le
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "macaroni_controller");
+    ros::init(argc, argv, "sim_car_controller");
 
     ros::NodeHandle handle;
     ros::NodeHandle private_handle("~");
@@ -124,6 +127,7 @@ int main(int argc, char **argv) {
     auto leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/left_steer_position_controller/command", 1);
     auto rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
     auto chassisStatePublisher = handle.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
+    auto odometryPublisher = handle.advertise<nav_msgs::Odometry>("/odometry_encoder", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
@@ -166,6 +170,19 @@ int main(int argc, char **argv) {
         chassisStateMsg.mux_autonomous = true;
         chassisStateMsg.estop_on = false;
         chassisStatePublisher.publish(chassisStateMsg);
+
+        //Pose and Twist Odometry Information for EKF localization
+        geometry_msgs::PoseWithCovariance poseMsg;
+        geometry_msgs::TwistWithCovariance twistMsg;
+
+        nav_msgs::Odometry odometryMsg;
+        odometryMsg.header.stamp = ros::Time::now();
+        odometryMsg.header.frame_id = "odom";
+        odometryMsg.child_frame_id = "base_footprint";
+        odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
+        odometryMsg.twist.twist.linear.y = 0.0; //can't move sideways instantaneously
+        //TODO: calculate the z rotation from steering and post that
+        odometryPublisher.publish(odometryMsg);
 
         rate.sleep();
     }
