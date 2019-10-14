@@ -210,7 +210,7 @@
 
     <!-- SICK TiM551 -->
     <gazebo reference="lidar">
-        <sensor type="gpu_ray" name="lidar_sensor">
+        <sensor type="ray" name="lidar_sensor">
             <pose>0 0 0 0 0 0</pose>
             <visualize>false</visualize>
             <update_rate>15</update_rate>
@@ -234,7 +234,7 @@
                     <stddev>0.02</stddev>
                 </noise>
             </ray>
-            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
                 <topicName>/scan</topicName>
                 <frameName>lidar</frameName>
             </plugin>
