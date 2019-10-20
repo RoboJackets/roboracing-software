@@ -12,7 +12,7 @@
                   subst_value="True"/>
     </node>
 
-    <!-- see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
+    <!-- @Note: see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
         <param name="magnetic_declination_radians" value="0"/> <!-- #TODO: mag declination of shop / speedway -->
         <param name="yaw_offset" value="1.5708"/> <!-- offset by 90 degrees for ENU-->
@@ -26,9 +26,9 @@
         <remap from="/odometry/filtered" to="/odometry/filtered" />
     </node>
 
-    <!-- -->
+
     <node pkg="costmap_2d" type="costmap_2d_node" name="basic_mapper" output="screen">
         <rosparam command="load" file="$(find rr_evgp)/conf/costmap_2d_basic_mapping.yaml" subst_value="True"/>
     </node>
-    <!-- -->
+
 </launch>

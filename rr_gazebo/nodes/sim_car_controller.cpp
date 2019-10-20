@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
         chassisStateMsg.estop_on = false;
         chassisStatePublisher.publish(chassisStateMsg);
 
-        //Pose and Twist Odometry Information for EKF localization
+        // Pose and Twist Odometry Information for EKF localization
         geometry_msgs::PoseWithCovariance poseMsg;
         geometry_msgs::TwistWithCovariance twistMsg;
 
@@ -180,10 +180,10 @@ int main(int argc, char **argv) {
         odometryMsg.header.frame_id = "odom";
         odometryMsg.child_frame_id = "base_footprint";
         odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
-        odometryMsg.twist.twist.linear.y = 0.0; //can't move sideways instantaneously
-        //#TODO: set twist covariance?
-        //#TODO: if need be, use steering for extra data
-        //#see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
+        odometryMsg.twist.twist.linear.y = 0.0;  // can't move sideways instantaneously
+        // #TODO: set twist covariance?
+        // #TODO: if need be, use steering for extra data
+        // #see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
         odometryPublisher.publish(odometryMsg);
 
         rate.sleep();
