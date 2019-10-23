@@ -4,6 +4,7 @@ costmap:
 
   update_frequency: 30.0
   publish_frequency: 10.0
+  always_send_full_costmap: true
   transform_tolerance: 1.0
 
   static_map: false
