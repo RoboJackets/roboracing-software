@@ -1,5 +1,7 @@
 <robot name="evgp" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+    <xacro:property name="use_gpu" value="false"/>
+
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
 
     <xacro:include filename="evgp_body.urdf.xacro"/>
@@ -176,8 +178,9 @@
     <!-- ******************* Sensors *********************** -->
 
     <!-- SICK TiM551 -->
+    <xacro:property name="gpu_string" value="${'gpu_' if use_gpu else ''}"/>
     <gazebo reference="lidar">
-        <sensor type="gpu_ray" name="lidar_sensor">
+        <sensor type="${gpu_string}ray" name="lidar_sensor">
             <pose>0 0 0 0 0 0</pose>
             <visualize>false</visualize>
             <update_rate>15</update_rate>
@@ -201,7 +204,7 @@
                     <stddev>0.02</stddev>
                 </noise>
             </ray>
-            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+            <plugin name="laser_controller" filename="libgazebo_ros_${gpu_string}laser.so">
                 <topicName>/scan</topicName>
                 <frameName>lidar</frameName>
             </plugin>
