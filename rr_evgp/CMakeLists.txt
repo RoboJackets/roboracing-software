@@ -6,12 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
-        rr_common
-        rr_description
-        rr_gazebo
-        rr_platform
+        rr_msgs
         sensor_msgs
         geometry_msgs
+        costmap_2d
+        parameter_assertions
 )
 
 
@@ -28,4 +27,5 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
+add_library(rr_evgp_plugins src/binary_bayes_filter_obstacle_layer.cpp src/track_closing_layer.cpp)
+target_link_libraries(rr_evgp_plugins ${catkin_LIBRARIES})

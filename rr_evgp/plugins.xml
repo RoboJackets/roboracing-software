@@ -1,0 +1,8 @@
+<library path="lib/librr_evgp_plugins">
+    <class type="rr::BinaryBayesFilterObstacleLayer" base_class_type="costmap_2d::Layer">
+        <description>Probabilistic mapping or something</description>
+    </class>
+    <class type="rr::TrackClosingLayer" base_class_type="costmap_2d::Layer">
+        <description> c l o s i n g </description>
+    </class>
+</library>
