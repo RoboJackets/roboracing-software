@@ -12,8 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
         rr_platform
         sensor_msgs
         geometry_msgs
-        costmap_2d
-        parameter_assertions
 )
 
 
@@ -30,5 +28,4 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(rr_evgp_plugins src/binary_bayes_filter_obstacle_layer.cpp)
-target_link_libraries(rr_evgp_plugins ${catkin_LIBRARIES})
+

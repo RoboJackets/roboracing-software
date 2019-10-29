@@ -21,15 +21,14 @@
   <depend>rr_description</depend>
   <depend>rr_gazebo</depend>
   <depend>rr_platform</depend>
-  <depend>costmap_2d</depend>
 
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <build_depend>parameter_assertions</build_depend>
 
   <exec_depend>robot_localization</exec_depend>
+  <exec_depend>costmap_2d</exec_depend>
 
   <export>
-    <costmap_2d plugin="${prefix}/plugins.xml"/>
+
   </export>
 </package>
