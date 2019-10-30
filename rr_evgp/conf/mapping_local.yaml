@@ -6,7 +6,7 @@ costmap:
     rolling_window: true
     width: 30.0
     height: 30.0
-    resolution: 0.1
+    resolution: 0.25
     track_unknown_space: false
 
     plugins:
@@ -31,13 +31,13 @@ costmap:
             expected_update_rate: 15.0
             observation_persistence: 0.0
             marking: true
-            clearing: false
+            clearing: true
             inf_is_valid: false
-            obstacle_range: 1000.0
-            raytrace_range: 0
+            obstacle_range: 7.99
+            raytrace_range: 7.98
 
     inflation:
-        inflation_radius: 0.2
+        inflation_radius: 0.3
         cost_scaling_factor: 1.0
         lethal_cost_threshold: 1
 

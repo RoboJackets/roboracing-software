@@ -117,11 +117,73 @@ cv::Mat thinObstacles(const costmap_2d::Costmap2D& grid) {
     } while (changed_pixels > 0);
 
     // now tmp_a holds our solution
-    cv::Mat out(rows, cols, CV_8UC1);
+    cv::Mat img(rows, cols, CV_8UC1);
     for (size_t i = 0; i < tmp_a.size(); i++) {
-        out.at<uint8_t>(i) = tmp_a[i];
+        img.at<uint8_t>(i) = 255 * (int)tmp_a[i];
     }
-    return out;
+
+    // remove staircases
+    // shamelessly borrowed from https://github.com/yati-sagade/zhang-suen-thinning/blob/master/zhangsuen.cpp
+    for (int iter = 0; iter < 2; iter++) {
+        for (int i = 1; i < img.rows - 1; i++) {
+            for (int j = 1; j < img.cols - 1; j++) {
+                int c = img.at<uint8_t>(i, j);
+                if (!c) {
+                    continue;
+                }
+                int e = img.at<uint8_t>(i, j + 1), ne = img.at<uint8_t>(i - 1, j + 1), n = img.at<uint8_t>(i - 1, j),
+                    nw = img.at<uint8_t>(i - 1, j - 1), w = img.at<uint8_t>(i, j - 1),
+                    sw = img.at<uint8_t>(i + 1, j - 1), s = img.at<uint8_t>(i + 1, j),
+                    se = img.at<uint8_t>(i + 1, j + 1);
+
+                if (iter == 0) {
+                    // North biased staircase removal
+                    if ((n && ((e && !ne && !sw && (!w || !s)) || (w && !nw && !se && (!e || !s))))) {
+                        img.at<uint8_t>(i, j) = 0;
+                    }
+                } else {
+                    // South bias staircase removal
+                    if ((s && ((e && !se && !nw && (!w || !n)) || (w && !sw && !ne && (!e || !n))))) {
+                        img.at<uint8_t>(i, j) = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return img;
+}
+
+// take a skeletonized image and remove the small branches
+cv::Mat removeSmallBranches(const cv::Mat& img) {
+    constexpr int min_branch_length = 5;
+
+    cv::Mat line_kernel(3, 3, CV_8U, cv::Scalar(1));
+    line_kernel.at<uint8_t>(1, 1) = 10;
+
+    cv::Mat filtered_img;
+    cv::filter2D(img / 255, filtered_img, CV_16S, line_kernel);
+
+    cv::Mat branches;
+    cv::inRange(filtered_img, cv::Scalar(11), cv::Scalar(12), branches);
+
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_TC89_KCOS);
+
+    cv::Mat big_branches(img.rows, img.cols, CV_8U, cv::Scalar(0));
+    for (size_t i = 0; i < contours.size(); i++) {
+        if (cv::arcLength(contours[i], false) >= min_branch_length) {
+            cv::drawContours(big_branches, contours, i, cv::Scalar(255), 1);
+        }
+    }
+
+    for (size_t i = 0; i < img.rows * img.cols; i++) {
+        if (filtered_img.at<int16_t>(i) >= 13) {
+            big_branches.at<uint8_t>(i) = 255;
+        }
+    }
+
+    return big_branches;
 }
 
 void TrackClosingLayer::onInitialize() {
@@ -152,7 +214,11 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         return;
     }
 
-    cv::imshow("test", thinObstacles(master_grid) * 255);
+    auto skel = thinObstacles(master_grid);
+    auto branches = removeSmallBranches(skel);
+
+    cv::imshow("skel", skel);
+    cv::imshow("branch", branches);
     cv::waitKey(10);
 }
 

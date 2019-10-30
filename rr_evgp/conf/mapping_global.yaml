@@ -1,12 +1,12 @@
 costmap:
     update_frequency: 15.0
-    publish_frequency: 1.0
+    publish_frequency: 15.0
     always_send_full_costmap: false
 
     rolling_window: false
     width: $(arg global_map_size)
     height: $(arg global_map_size)
-    resolution: 0.25
+    resolution: 0.5
     track_unknown_space: true
 
     plugins:
