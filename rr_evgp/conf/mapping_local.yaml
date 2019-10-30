@@ -1,0 +1,50 @@
+costmap:
+    update_frequency: 15.0
+    publish_frequency: 15.0
+    always_send_full_costmap: true
+
+    rolling_window: true
+    width: 30.0
+    height: 30.0
+    resolution: 0.1
+    track_unknown_space: false
+
+    plugins:
+        - {name: "static_global", type: "costmap_2d::StaticLayer"}
+        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+        - {name: "inflation", type: "costmap_2d::InflationLayer"}
+        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
+        - {name: "track_closing", type: "rr::TrackClosingLayer"}
+
+    static_global:
+        map_topic: "/global_mapper/costmap/costmap"
+        subscribe_to_updates: true
+        trinary_costmap: false
+
+    obstacles:
+        observation_sources: laserscan
+        combination_method: 1
+        laserscan:
+            data_type: LaserScan
+            topic: /scan
+            frame_name: lidar
+            expected_update_rate: 15.0
+            observation_persistence: 0.0
+            marking: true
+            clearing: false
+            inf_is_valid: false
+            obstacle_range: 1000.0
+
+    inflation:
+        inflation_radius: 0.2
+        cost_scaling_factor: 1.0
+        lethal_cost_threshold: 1
+
+    distance_field:
+        inflation_radius: 10.0
+        cost_scaling_factor: 0.1
+        lethal_cost_threshold: 255
+
+    track_closing:
+        extrapolate_dist: 5.0
+        interpolate_dist: 10.0

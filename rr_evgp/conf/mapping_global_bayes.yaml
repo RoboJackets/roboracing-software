@@ -1,18 +1,12 @@
 costmap:
-    global_frame: map
-    robot_base_frame: base_footprint
-
-    update_frequency: 15
-    publish_frequency: 10
-    transform_tolerance: 1.0
-
-    static_map: false
-    rolling_window: false
+    update_frequency: 30.0
+    publish_frequency: 10.0
     always_send_full_costmap: false
-    width: $(arg map_size)
-    height: $(arg map_size)
-    resolution: 0.5
-    track_unknown_space: false
+
+    rolling_window: false
+    width: $(arg global_map_size)
+    height: $(arg global_map_size)
+    resolution: 0.25
 
     plugins:
         - {name: "grid_filter", type: "rr::BinaryBayesFilterObstacleLayer"}
