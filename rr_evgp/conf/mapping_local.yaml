@@ -19,7 +19,7 @@ costmap:
     static_global:
         map_topic: "/global_mapper/costmap/costmap"
         subscribe_to_updates: true
-        trinary_costmap: false
+        trinary_costmap: true
 
     obstacles:
         observation_sources: laserscan
@@ -34,6 +34,7 @@ costmap:
             clearing: false
             inf_is_valid: false
             obstacle_range: 1000.0
+            raytrace_range: 0
 
     inflation:
         inflation_radius: 0.2

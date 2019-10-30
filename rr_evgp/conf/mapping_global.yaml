@@ -15,7 +15,7 @@ costmap:
 
     obstacles:
         observation_sources: laserscan
-        combination_method: 1
+        combination_method: 0
         laserscan:
             data_type: LaserScan
             topic: /scan
