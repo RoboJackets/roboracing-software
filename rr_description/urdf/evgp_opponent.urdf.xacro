@@ -2,7 +2,7 @@
 
     <xacro:include filename="evgp_body.urdf.xacro"/>
 
-    <xacro:evgp_body collide="false" color="Blue"/>
+    <xacro:evgp_body collision_bitmask="0x2" color="Blue"/>
 
     <gazebo reference="base_footprint">
         <kinematic>true</kinematic>

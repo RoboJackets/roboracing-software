@@ -6,7 +6,7 @@
 
     <xacro:include filename="evgp_body.urdf.xacro"/>
 
-    <xacro:evgp_body collide="true" color="Grey"/>
+    <xacro:evgp_body collision_bitmask="0x1" color="Grey"/>
 
     <!-- ************************** Links *************************** -->
 
@@ -53,6 +53,13 @@
             <mu2>0.7</mu2>
             <kp>1000000</kp>
             <kd>1000000</kd>
+            <collision>
+                <surface>
+                    <contact>
+                        <collide_bitmask>0x1</collide_bitmask>
+                    </contact>
+                </surface>
+            </collision>
         </gazebo>
         <xacro:set_link_color link="${name}" color="Black"/>
     </xacro:macro>
@@ -228,41 +235,41 @@
     </gazebo>
 
     <!-- FLIR Blackfly + wide-angle lens -->
-    <gazebo reference="camera">
-        <sensor name="camera_sensor" type="camera">
-            <camera>
-                <horizontal_fov>1.6955</horizontal_fov>
-                <image>
-                    <width>1280</width>
-                    <height>964</height>
-                    <format>R8G8B8</format>
-                </image>
-                <clip>
-                    <near>0.05</near>
-                    <far>100</far>
-                </clip>
-                <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.007</stddev>
-                </noise>
-            </camera>
-            <always_on>true</always_on>
-            <update_rate>15</update_rate>
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-                <alwaysOn>true</alwaysOn>
-                <cameraName>camera</cameraName>
-                <imageTopicName>image_color_rect</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>camera_optical</frameName>
-                <distortionK1>0.0</distortionK1>
-                <distortionK2>0.0</distortionK2>
-                <distortionK3>0.0</distortionK3>
-                <distortionT1>0.0</distortionT1>
-                <distortionT2>0.0</distortionT2>
-            </plugin>
-        </sensor>
-    </gazebo>
+<!--    <gazebo reference="camera">-->
+<!--        <sensor name="camera_sensor" type="camera">-->
+<!--            <camera>-->
+<!--                <horizontal_fov>1.6955</horizontal_fov>-->
+<!--                <image>-->
+<!--                    <width>1280</width>-->
+<!--                    <height>964</height>-->
+<!--                    <format>R8G8B8</format>-->
+<!--                </image>-->
+<!--                <clip>-->
+<!--                    <near>0.05</near>-->
+<!--                    <far>100</far>-->
+<!--                </clip>-->
+<!--                <noise>-->
+<!--                    <type>gaussian</type>-->
+<!--                    <mean>0.0</mean>-->
+<!--                    <stddev>0.007</stddev>-->
+<!--                </noise>-->
+<!--            </camera>-->
+<!--            <always_on>true</always_on>-->
+<!--            <update_rate>15</update_rate>-->
+<!--            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">-->
+<!--                <alwaysOn>true</alwaysOn>-->
+<!--                <cameraName>camera</cameraName>-->
+<!--                <imageTopicName>image_color_rect</imageTopicName>-->
+<!--                <cameraInfoTopicName>camera_info</cameraInfoTopicName>-->
+<!--                <frameName>camera_optical</frameName>-->
+<!--                <distortionK1>0.0</distortionK1>-->
+<!--                <distortionK2>0.0</distortionK2>-->
+<!--                <distortionK3>0.0</distortionK3>-->
+<!--                <distortionT1>0.0</distortionT1>-->
+<!--                <distortionT2>0.0</distortionT2>-->
+<!--            </plugin>-->
+<!--        </sensor>-->
+<!--    </gazebo>-->
 
     <!-- IMU -->
     <gazebo reference="imu_link">
@@ -308,18 +315,18 @@
     </gazebo>
 
     <!-- ground-truth localization plugin -->
-    <gazebo>
-        <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">
-            <alwaysOn>true</alwaysOn>
-            <updateRate>50.0</updateRate>
-            <bodyName>base_footprint</bodyName>
-            <topicName>/odometry/ground_truth</topicName>
-            <gaussianNoise>0.0</gaussianNoise>
-            <frameName>world</frameName>
-            <xyzOffsets>0 0 0</xyzOffsets>
-            <rpyOffsets>0 0 0</rpyOffsets>
-        </plugin>
-    </gazebo>
+<!--    <gazebo>-->
+<!--        <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">-->
+<!--            <alwaysOn>true</alwaysOn>-->
+<!--            <updateRate>10.0</updateRate>-->
+<!--            <bodyName>base_footprint</bodyName>-->
+<!--            <topicName>/odometry/ground_truth</topicName>-->
+<!--            <gaussianNoise>0.0</gaussianNoise>-->
+<!--            <frameName>world</frameName>-->
+<!--            <xyzOffsets>0 0 0</xyzOffsets>-->
+<!--            <rpyOffsets>0 0 0</rpyOffsets>-->
+<!--        </plugin>-->
+<!--    </gazebo>-->
 
 
     <!-- ****************** Actuators ********************** -->
