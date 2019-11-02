@@ -123,6 +123,16 @@
     </link>
     <xacro:set_link_color link="camera" color="Gold"/>
 
+    <link name="imu_link">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.05 0.05 0.05"/>
+            </geometry>
+        </visual>
+    </link>
+    <xacro:set_link_color link="imu_link" color="Gold"/>
+
 
     <!-- ************************** Joints *************************** -->
 
@@ -205,6 +215,12 @@
 
     <xacro:camera_optical_frame camera_link="camera"/>
 
+    <joint name="base_footprint_to_imu" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="imu_link"/>
+        <origin xyz="0.75 0.5 0.1" rpy="0 0 0"/>
+    </joint>
+
 
     <!-- ******************* Sensors *********************** -->
 
@@ -275,6 +291,27 @@
                 <distortionT1>0.0</distortionT1>
                 <distortionT2>0.0</distortionT2>
             </plugin>
+        </sensor>
+    </gazebo>
+
+    <!-- IMU -->
+    <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>__default_topic__</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>imu</topicName>
+                <bodyName>imu_link</bodyName>
+                <updateRateHZ>20.0</updateRateHZ>
+                <gaussianNoise>0.005</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
         </sensor>
     </gazebo>
 
