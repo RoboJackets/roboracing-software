@@ -6,7 +6,7 @@ costmap:
     rolling_window: true
     width: 30.0
     height: 30.0
-    resolution: 0.25
+    resolution: 0.1
     track_unknown_space: false
 
     plugins:
@@ -47,5 +47,5 @@ costmap:
         lethal_cost_threshold: 255
 
     track_closing:
-        extrapolate_dist: 5.0
-        interpolate_dist: 10.0
+        branch_pruning_size: 20
+        dilate_size: 17

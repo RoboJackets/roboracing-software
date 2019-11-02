@@ -6,12 +6,12 @@ costmap:
     rolling_window: false
     width: $(arg global_map_size)
     height: $(arg global_map_size)
-    resolution: 0.5
+    resolution: 0.25
     track_unknown_space: true
 
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
-        - {name: "inflation", type: "costmap_2d::InflationLayer"}
+#        - {name: "inflation", type: "costmap_2d::InflationLayer"}
 
     obstacles:
         observation_sources: laserscan
@@ -28,7 +28,7 @@ costmap:
             obstacle_range: 7.99  # must be smaller than scan msg max range
             raytrace_range: 4.0  # explore this distance
 
-    inflation:
-        inflation_radius: 0.25
-        cost_scaling_factor: 1.0
-        lethal_cost_threshold: 1
+#    inflation:
+#        inflation_radius: 0.25
+#        cost_scaling_factor: 1.0
+#        lethal_cost_threshold: 1
