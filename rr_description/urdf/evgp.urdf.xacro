@@ -315,18 +315,18 @@
     </gazebo>
 
     <!-- ground-truth localization plugin -->
-<!--    <gazebo>-->
-<!--        <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">-->
-<!--            <alwaysOn>true</alwaysOn>-->
-<!--            <updateRate>10.0</updateRate>-->
-<!--            <bodyName>base_footprint</bodyName>-->
-<!--            <topicName>/odometry/ground_truth</topicName>-->
-<!--            <gaussianNoise>0.0</gaussianNoise>-->
-<!--            <frameName>world</frameName>-->
-<!--            <xyzOffsets>0 0 0</xyzOffsets>-->
-<!--            <rpyOffsets>0 0 0</rpyOffsets>-->
-<!--        </plugin>-->
-<!--    </gazebo>-->
+    <gazebo>
+        <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>10.0</updateRate>
+            <bodyName>base_footprint</bodyName>
+            <topicName>/odometry/ground_truth</topicName>
+            <gaussianNoise>0.0</gaussianNoise>
+            <frameName>world</frameName>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+        </plugin>
+    </gazebo>
 
 
     <!-- ****************** Actuators ********************** -->
