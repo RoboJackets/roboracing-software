@@ -29,3 +29,8 @@ include_directories(
 )
 
 
+###########
+## Build ##
+###########
+
+add_subdirectory(src/center_path_finder)
