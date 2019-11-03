@@ -1,6 +1,12 @@
 <robot name="evgp" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+    <xacro:property name="use_gpu" value="false"/>
+
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
+
+    <xacro:include filename="evgp_body.urdf.xacro"/>
+
+    <xacro:evgp_body collision_bitmask="0x1" color="Grey"/>
 
     <!-- ************************** Links *************************** -->
 
@@ -22,31 +28,6 @@
             <material>Gazebo/${color}</material>
         </gazebo>
     </xacro:macro>
-
-    <link name="base_footprint">
-        <xacro:null_inertia/>
-    </link>
-
-    <link name="body_visual_origin">
-        <xacro:null_inertia/>
-        <visual>
-            <xacro:mesh_geometry/>
-        </visual>
-        <collision>
-            <xacro:mesh_geometry/>
-        </collision>
-    </link>
-    <xacro:set_link_color link="body_visual_origin" color="Grey"/>
-
-    <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
-    <link name="body_inertial_center">
-        <inertial>
-            <mass value="${props['body_mass']}"/>
-            <inertia ixx="${body_inertia[0]}" ixy="${body_inertia[1]}" ixz="${body_inertia[2]}"
-                     iyy="${body_inertia[3]}" iyz="${body_inertia[4]}" izz="${body_inertia[5]}"/>
-        </inertial>
-    </link>
-    <gazebo reference="body_inertial_center"/>
 
 
     <xacro:macro name="wheel_link" params="name radius width">
@@ -72,6 +53,13 @@
             <mu2>0.7</mu2>
             <kp>1000000</kp>
             <kd>1000000</kd>
+            <collision>
+                <surface>
+                    <contact>
+                        <collide_bitmask>0x1</collide_bitmask>
+                    </contact>
+                </surface>
+            </collision>
         </gazebo>
         <xacro:set_link_color link="${name}" color="Black"/>
     </xacro:macro>
@@ -135,18 +123,6 @@
 
 
     <!-- ************************** Joints *************************** -->
-
-    <joint name="base_footprint_to_mesh_origin" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_visual_origin"/>
-        <origin xyz="1.45 0.515 -0.051" rpy="${pi/2} 0 ${-pi/2}"/>
-    </joint>
-
-    <joint name="base_footprint_to_body_inertial_center" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="body_inertial_center"/>
-        <origin xyz="${' '.join(str(x) for x in props['body_com'])}"/>
-    </joint>
 
     <xacro:property name="joint_flop_distance" value="0.02"/>
     <xacro:macro name="back_wheel_joint" params="dest_link y">
@@ -225,8 +201,9 @@
     <!-- ******************* Sensors *********************** -->
 
     <!-- SICK TiM551 -->
+    <xacro:property name="gpu_string" value="${'gpu_' if use_gpu else ''}"/>
     <gazebo reference="lidar">
-        <sensor type="ray" name="lidar_sensor">
+        <sensor type="${gpu_string}ray" name="lidar_sensor">
             <pose>0 0 0 0 0 0</pose>
             <visualize>false</visualize>
             <update_rate>15</update_rate>
@@ -250,7 +227,7 @@
                     <stddev>0.02</stddev>
                 </noise>
             </ray>
-            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+            <plugin name="laser_controller" filename="libgazebo_ros_${gpu_string}laser.so">
                 <topicName>/scan</topicName>
                 <frameName>lidar</frameName>
             </plugin>
@@ -258,41 +235,41 @@
     </gazebo>
 
     <!-- FLIR Blackfly + wide-angle lens -->
-    <gazebo reference="camera">
-        <sensor name="camera_sensor" type="camera">
-            <camera>
-                <horizontal_fov>1.6955</horizontal_fov>
-                <image>
-                    <width>1280</width>
-                    <height>964</height>
-                    <format>R8G8B8</format>
-                </image>
-                <clip>
-                    <near>0.05</near>
-                    <far>100</far>
-                </clip>
-                <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.007</stddev>
-                </noise>
-            </camera>
-            <always_on>true</always_on>
-            <update_rate>15</update_rate>
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-                <alwaysOn>true</alwaysOn>
-                <cameraName>camera</cameraName>
-                <imageTopicName>image_color_rect</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>camera_optical</frameName>
-                <distortionK1>0.0</distortionK1>
-                <distortionK2>0.0</distortionK2>
-                <distortionK3>0.0</distortionK3>
-                <distortionT1>0.0</distortionT1>
-                <distortionT2>0.0</distortionT2>
-            </plugin>
-        </sensor>
-    </gazebo>
+<!--    <gazebo reference="camera">-->
+<!--        <sensor name="camera_sensor" type="camera">-->
+<!--            <camera>-->
+<!--                <horizontal_fov>1.6955</horizontal_fov>-->
+<!--                <image>-->
+<!--                    <width>1280</width>-->
+<!--                    <height>964</height>-->
+<!--                    <format>R8G8B8</format>-->
+<!--                </image>-->
+<!--                <clip>-->
+<!--                    <near>0.05</near>-->
+<!--                    <far>100</far>-->
+<!--                </clip>-->
+<!--                <noise>-->
+<!--                    <type>gaussian</type>-->
+<!--                    <mean>0.0</mean>-->
+<!--                    <stddev>0.007</stddev>-->
+<!--                </noise>-->
+<!--            </camera>-->
+<!--            <always_on>true</always_on>-->
+<!--            <update_rate>15</update_rate>-->
+<!--            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">-->
+<!--                <alwaysOn>true</alwaysOn>-->
+<!--                <cameraName>camera</cameraName>-->
+<!--                <imageTopicName>image_color_rect</imageTopicName>-->
+<!--                <cameraInfoTopicName>camera_info</cameraInfoTopicName>-->
+<!--                <frameName>camera_optical</frameName>-->
+<!--                <distortionK1>0.0</distortionK1>-->
+<!--                <distortionK2>0.0</distortionK2>-->
+<!--                <distortionK3>0.0</distortionK3>-->
+<!--                <distortionT1>0.0</distortionT1>-->
+<!--                <distortionT2>0.0</distortionT2>-->
+<!--            </plugin>-->
+<!--        </sensor>-->
+<!--    </gazebo>-->
 
     <!-- IMU -->
     <gazebo reference="imu_link">
