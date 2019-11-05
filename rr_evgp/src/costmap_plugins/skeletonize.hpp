@@ -36,14 +36,14 @@ cv::Mat thinObstacles(const cv::Mat& grid_in) {
 
     auto B = [](const cv::Mat& data, int r, int c) -> int {
         int sum = 0;
-        sum += (bool) data.at<uint8_t>(r - 1, c);
-        sum += (bool) data.at<uint8_t>(r - 1, c + 1);
-        sum += (bool) data.at<uint8_t>(r, c + 1);
-        sum += (bool) data.at<uint8_t>(r + 1, c + 1);
-        sum += (bool) data.at<uint8_t>(r + 1, c);
-        sum += (bool) data.at<uint8_t>(r + 1, c - 1);
-        sum += (bool) data.at<uint8_t>(r, c - 1);
-        sum += (bool) data.at<uint8_t>(r - 1, c - 1);
+        sum += (bool)data.at<uint8_t>(r - 1, c);
+        sum += (bool)data.at<uint8_t>(r - 1, c + 1);
+        sum += (bool)data.at<uint8_t>(r, c + 1);
+        sum += (bool)data.at<uint8_t>(r + 1, c + 1);
+        sum += (bool)data.at<uint8_t>(r + 1, c);
+        sum += (bool)data.at<uint8_t>(r + 1, c - 1);
+        sum += (bool)data.at<uint8_t>(r, c - 1);
+        sum += (bool)data.at<uint8_t>(r - 1, c - 1);
         return sum;
     };
 
