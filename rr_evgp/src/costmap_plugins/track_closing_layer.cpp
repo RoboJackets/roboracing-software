@@ -104,9 +104,9 @@ bool TrackClosingLayer::IsConnectable(const WallEndpointContext& current, const 
     angle_between_lines = std::min(angle_between_lines, 180 - angle_between_lines);
 //    ROS_INFO_STREAM("angle " << angle_between_lines);
     cv::Point closest_endB_to_lineA =
-          intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 1000, vyA * 1000) , true);
+          intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500) , true);
     cv::Point closest_endA_to_lineB =
-          intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 1000, vyB * 1000) , true);
+          intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500) , true);
     double dist_a = norm(closest_endA_to_lineB - endpntA);
     double dist_b = norm(closest_endB_to_lineA - endpntB);
 //    ROS_INFO_STREAM("dists " << dist_a << " " << dist_b);
@@ -129,6 +129,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
             mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] == costmap_2d::LETHAL_OBSTACLE) ? 255 : 0;
         }
     }
+//    ROS_INFO_STREAM(mat_grid.rows << " " << mat_grid.cols);
 
     ros::Time done_make_map = ros::Time::now();
 
@@ -256,11 +257,11 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
 
     ros::Time end = ros::Time::now();
 
-//    ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
-//                            << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
-//                            << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
-//                            << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
-//                            << "\n Make end: " << (end - done_make_cnt).toSec());
+    ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
+                            << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
+                            << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
+                            << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
+                            << "\n total : " << (end - begin).toSec());
 
 //    cv::imshow("closing", debug_img);
 //    cv::waitKey(1);

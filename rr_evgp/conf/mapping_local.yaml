@@ -4,9 +4,10 @@ costmap:
     always_send_full_costmap: true
 
     rolling_window: true
-    width: 100
-    height: 100
+    width: 25
+    height: 25
     resolution: 0.1
+    origin_y: 100
     track_unknown_space: false
 
     plugins:
@@ -48,7 +49,7 @@ costmap:
 
     track_closing:
         branch_pruning_size: 30
-        dilate_size: 7
+        dilate_size: 5
         min_enclosing_radius: 10
         reg_bounding_box_size: 30
         extrapolate_distance: 20
