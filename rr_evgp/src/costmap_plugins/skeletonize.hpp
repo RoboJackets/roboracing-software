@@ -138,11 +138,7 @@ cv::Mat removeSmallBranches(const cv::Mat& img, const int min_branch_length) {
         }
     }
 
-    for (size_t i = 0; i < img.rows * img.cols; i++) {
-        if (filtered_img.at<int16_t>(i) >= 13) {
-            big_branches.at<uint8_t>(i) = 255;
-        }
-    }
+    big_branches.setTo(cv::Scalar(255), filtered_img >= 13);
 
     return big_branches;
 }
