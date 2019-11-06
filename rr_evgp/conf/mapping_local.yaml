@@ -48,7 +48,7 @@ costmap:
 
     track_closing:
         branch_pruning_size: 30
-        dilate_size: 5
+        dilate_size: 7
         min_enclosing_radius: 10
         reg_bounding_box_size: 30
         extrapolate_distance: 20

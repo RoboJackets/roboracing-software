@@ -3,26 +3,14 @@
 namespace rr {
 
     cv::Mat thinObstacles(const cv::Mat& grid_in) {
-
-//        distanceTransform(grid_in1, blank, cv::DIST_L2, 3);
-//        cv::Laplacian(blank, blank, 5, 5);
-//        cv::normalize(blank, blank, 0, 255, cv::NORM_MINMAX, CV_8U);
-//        cv::threshold(blank, blank, 1, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-//
-//        auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
-//        cv::morphologyEx(blank, blank, cv::MORPH_OPEN, dilate_kernel);
-//        cv::morphologyEx(blank, blank, cv::MORPH_CLOSE, dilate_kernel);
-
         std::vector<cv::Point> points;
         cv::findNonZero(grid_in, points);
         cv::Rect r = cv::boundingRect(points);
 
-//        cv::Mat grid_in = blank;
         // Zhang thinning "A Fast Parallel Algorithm for Thinning Digital Patterns"
         // ref https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm#C.2B.2B
-
-    cv::Mat grid, grid_copy;
-    grid_in(r).copyTo(grid);
+        cv::Mat grid, grid_copy;
+        grid_in(r).copyTo(grid);
 
         // eliminate border
         for (int r = 0; r < grid.rows; r++) {
@@ -156,6 +144,7 @@ cv::Mat removeSmallBranches(const cv::Mat& img, const int min_branch_length) {
     }
 
     big_branches.setTo(cv::Scalar(255), filtered_img >= 13);
+    thinObstacles(big_branches);
 
     return big_branches;
 }

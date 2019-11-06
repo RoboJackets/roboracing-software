@@ -126,9 +126,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     uint8_t* charMap = master_grid.getCharMap();
     for (int r = 0; r < mat_grid.rows; r++) {
         for (int c = 0; c < mat_grid.cols; c++) {
-            // I think the conversion is done like this, at least this what I did in the past to convert between maps and images
-            unsigned int index = (mat_grid.rows - r - 1) * mat_grid.cols + c;
-            mat_grid.at<uint8_t>(r, c) = (charMap[index] == costmap_2d::LETHAL_OBSTACLE) ? 255 : 0;
+            mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] == costmap_2d::LETHAL_OBSTACLE) ? 255 : 0;
         }
     }
 
@@ -142,109 +140,86 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
 
     ros::Time done_make_skel = ros::Time::now();
 
-//
-//    const int max_debug_img_slots = 4;
-//    cv::Mat display_img(mat_grid.rows, mat_grid.cols * max_debug_img_slots, CV_8UC1, cv::Scalar(127));
-//
-//    // I image this is just for debug so we can remove it
-//    auto blit_gray_debug_img = [&](const cv::Mat& m, int slot) {
-//        cv::Rect roi(0, 0, mat_grid.cols, mat_grid.rows);
-//        m.copyTo(display_img(roi));
-//    };
-//    blit_gray_debug_img(mat_grid, 1);
-//    blit_gray_debug_img(mat_grid, 0);
-//    blit_gray_debug_img(skel, 2);
-//    blit_gray_debug_img(branches, 3);
-//
-
     cv::Mat debug_img;
     cv::cvtColor(branches * 255, debug_img, CV_GRAY2BGR);
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+    cv::Mat contour_img(skel.rows, skel.cols, CV_8UC1, cv::Scalar(0));
+    for (size_t i = 0; i < contours.size(); i++) {
+//        cv::Point2f center;
+//        float radius = 0;
+//        cv::minEnclosingCircle(contours[i], center, radius);
+//        if (radius > min_enclosing_radius_)
+//        minEnclosingCircle was starting to take .2 sec for all cnt for some reason as whole map got more full
+        if (cv::arcLength(contours[i], false) >= min_enclosing_radius_) {
+            cv::drawContours(contour_img, contours, i, cv::Scalar(1), 1);
+        }
+    }
+    ros::Time done_make_endpnts = ros::Time::now();
+
     std::vector<WallEndpointContext> endpnt_line;
 
-    for (size_t contour_id = 0; contour_id < contours.size(); contour_id++) {
-        const std::vector<cv::Point>& contour = contours[contour_id];
+    cv::Mat line_kernel(3, 3, CV_8UC1, cv::Scalar(1));
+    line_kernel.at<uint8_t>(1, 1) = 10;
+    cv::Mat filtered;
+    cv::filter2D(contour_img, filtered, CV_16SC1, line_kernel);
 
-        cv::Point2f center;
-        float radius = 0;
-        cv::minEnclosingCircle(contour, center, radius);
+    std::vector<cv::Point> endpoints;
+    cv::inRange(filtered, cv::Scalar(11), cv::Scalar(11), filtered);
+    cv::findNonZero(filtered, endpoints);
 
-        if (radius < min_enclosing_radius_)
-            continue;
+    const size_t half_size = reg_bounding_box_size_ / 2;
+    const cv::Point half_size_point(half_size, half_size);
 
-        cv::Mat contour_img(skel.rows, skel.cols, CV_8UC1, cv::Scalar(0));
-        cv::drawContours(contour_img, contours, contour_id, cv::Scalar(1), 1);
+    ros::Time done_make_cnt = ros::Time::now();
 
-        cv::Mat line_kernel(3, 3, CV_8UC1, cv::Scalar(1));
-        line_kernel.at<uint8_t>(1, 1) = 10;
-        cv::Mat filtered;
-        cv::filter2D(contour_img, filtered, CV_16SC1, line_kernel);
+    for (const cv::Point& endpnt : endpoints) {
+        cv::Point tl = endpnt - half_size_point;
+        cv::Point br = endpnt + half_size_point;
+        tl.x = std::max(tl.x, 0);
+        tl.y = std::max(tl.y, 0);
+        br.x = std::min(br.x, contour_img.cols - 1);
+        br.y = std::min(br.y, contour_img.rows - 1);
 
-        std::vector<cv::Point> endpoints;
-        cv::inRange(filtered, cv::Scalar(11), cv::Scalar(11), filtered);
-        cv::findNonZero(filtered, endpoints);
+        cv::rectangle(debug_img, tl, br, cv::Scalar(255, 0, 0), 1);
 
-        // np.where
-//        std::vector<cv::Point> endpoints;
-//        for (size_t r = 0; r < filtered.rows; r++)
-//            for (size_t c = 0; c < filtered.cols; c++)
-//                if (filtered.at<int16_t>(r, c) == 11)
-//                    endpoints.emplace_back(c, r);
+        cv::Mat endpnt_box = contour_img(cv::Rect(tl, br));
+        std::vector<cv::Point> box_points;
+        cv::findNonZero(endpnt_box, box_points);
 
-        const size_t half_size = reg_bounding_box_size_ / 2;
-        const cv::Point half_size_point(half_size, half_size);
-
-        for (const cv::Point& endpnt : endpoints) {
-            cv::Point tl = endpnt - half_size_point;
-            cv::Point br = endpnt + half_size_point;
-            tl.x = std::max(tl.x, 0);
-            tl.y = std::max(tl.y, 0);
-            br.x = std::min(br.x, contour_img.cols - 1);
-            br.y = std::min(br.y, contour_img.rows - 1);
-
-            cv::rectangle(debug_img, tl, br, cv::Scalar(255, 0, 0), 1);
-
-            cv::Mat endpnt_box = contour_img(cv::Rect(tl, br));
-            std::vector<cv::Point> box_points;
-            cv::findNonZero(endpnt_box, box_points);
-
-            cv::Vec4f line;
-            cv::fitLine(box_points, line, CV_DIST_L2, 0, 0.01, 0.01);
-            double vx = line(0);
-            double vy = line(1);
-            double x = line(2) + tl.x;
-            double y = line(3) + tl.y;
+        cv::Vec4f line;
+        cv::fitLine(box_points, line, CV_DIST_L2, 0, 0.01, 0.01);
+        double vx = line(0);
+        double vy = line(1);
+        double x = line(2) + tl.x;
+        double y = line(3) + tl.y;
 
 //            ROS_INFO_STREAM("line " << x << " " << y << " " << vx << " " << vy);
 
-            cv::Point2d new_endpnt =
-                  intersect_point_line(endpnt, cv::Point2d(x, y), cv::Point2d(x + vx, y + vy), false);
+        cv::Point2d new_endpnt =
+              intersect_point_line(endpnt, cv::Point2d(x, y), cv::Point2d(x + vx, y + vy), false);
 
-            cv::Vec2d avg_pnt;
-            for (const cv::Point& pnt : box_points) {
-                avg_pnt(0) += pnt.x + tl.x;
-                avg_pnt(1) += pnt.y + tl.y;
-            }
-            avg_pnt /= static_cast<double>(box_points.size());
-
-            cv::Vec2d v(vx, vy);
-            double projection = (cv::Vec2d(new_endpnt) - avg_pnt).dot(v);
-            if (projection < 0) {
-                vx *= -1;
-                vy *= -1;
-            }
-
-            cv::circle(debug_img, new_endpnt, 2, cv::Scalar(0, 255, 0));
-            cv::Point2d point;
-            point.x = new_endpnt.x + extrapolate_distance_ * vx;
-            point.y = new_endpnt.y + extrapolate_distance_ * vy;
-            endpnt_line.emplace_back(new_endpnt, point, vx, vy);
+        cv::Vec2d avg_pnt;
+        for (const cv::Point& pnt : box_points) {
+            avg_pnt(0) += pnt.x + tl.x;
+            avg_pnt(1) += pnt.y + tl.y;
         }
-    }
+        avg_pnt /= static_cast<double>(box_points.size());
 
-    ros::Time done_make_endpnts = ros::Time::now();
+        cv::Vec2d v(vx, vy);
+        double projection = (cv::Vec2d(new_endpnt) - avg_pnt).dot(v);
+        if (projection < 0) {
+            vx *= -1;
+            vy *= -1;
+        }
+
+        cv::circle(debug_img, new_endpnt, 2, cv::Scalar(0, 255, 0));
+        cv::Point2d point;
+        point.x = new_endpnt.x + extrapolate_distance_ * vx;
+        point.y = new_endpnt.y + extrapolate_distance_ * vy;
+        endpnt_line.emplace_back(new_endpnt, point, vx, vy);
+    }
 
     cv::Mat walls(mat_grid.rows, mat_grid.cols, CV_8UC1, cv::Scalar(0));
     std::valarray<bool> have_connection(false, endpnt_line.size());
@@ -270,24 +245,25 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         }
     }
 
-    ros::Time done_make_cnt = ros::Time::now();
-
-    ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
-                            << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
-                            << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
-                            << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec());
-
     cv::morphologyEx(walls, walls, cv::MORPH_DILATE, dilate_kernel);
     for (int r = 0; r < mat_grid.rows; r++) {
         for (int c = 0; c < mat_grid.cols; c++) {
-            unsigned int index = (mat_grid.rows - r - 1) * mat_grid.cols + c;
-            charMap[index] = walls.at<uint8_t>(r, c) > 0 ? 255 : charMap[index];
+            if (walls.at<uint8_t>(r, c) > 0) {
+                charMap[r * mat_grid.cols + c] = 255;
+            }
         }
     }
 
-    // cv::imshow("closing", display_img);
-    cv::imshow("closing", debug_img);
-    cv::waitKey(1);
+    ros::Time end = ros::Time::now();
+
+//    ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
+//                            << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
+//                            << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
+//                            << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
+//                            << "\n Make end: " << (end - done_make_cnt).toSec());
+
+//    cv::imshow("closing", debug_img);
+//    cv::waitKey(1);
 }
 
 }  // namespace rr
