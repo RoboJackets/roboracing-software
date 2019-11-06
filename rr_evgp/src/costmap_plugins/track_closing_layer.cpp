@@ -98,18 +98,16 @@ bool TrackClosingLayer::IsConnectable(const WallEndpointContext& current, const 
     const auto& [endpntA, pntA, vxA, vyA] = current;
     const auto& [endpntB, pntB, vxB, vyB] = prev;
 
-//    ROS_INFO_STREAM("comparing " << endpntA << " with " << endpntB);
+    //    ROS_INFO_STREAM("comparing " << endpntA << " with " << endpntB);
 
     double angle_between_lines = std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI;
     angle_between_lines = std::min(angle_between_lines, 180 - angle_between_lines);
-//    ROS_INFO_STREAM("angle " << angle_between_lines);
-    cv::Point closest_endB_to_lineA =
-          intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500) , true);
-    cv::Point closest_endA_to_lineB =
-          intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500) , true);
+    //    ROS_INFO_STREAM("angle " << angle_between_lines);
+    cv::Point closest_endB_to_lineA = intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500), true);
+    cv::Point closest_endA_to_lineB = intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500), true);
     double dist_a = norm(closest_endA_to_lineB - endpntA);
     double dist_b = norm(closest_endB_to_lineA - endpntB);
-//    ROS_INFO_STREAM("dists " << dist_a << " " << dist_b);
+    //    ROS_INFO_STREAM("dists " << dist_a << " " << dist_b);
     return angle_between_lines <= max_angle_between_lines_ && dist_a < max_dist_between_lines_ &&
            dist_b < max_dist_between_lines_;
 }
@@ -129,7 +127,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
             mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] == costmap_2d::LETHAL_OBSTACLE) ? 255 : 0;
         }
     }
-//    ROS_INFO_STREAM(mat_grid.rows << " " << mat_grid.cols);
+    //    ROS_INFO_STREAM(mat_grid.rows << " " << mat_grid.cols);
 
     ros::Time done_make_map = ros::Time::now();
 
@@ -148,11 +146,11 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     cv::Mat contour_img(skel.rows, skel.cols, CV_8UC1, cv::Scalar(0));
     for (size_t i = 0; i < contours.size(); i++) {
-//        cv::Point2f center;
-//        float radius = 0;
-//        cv::minEnclosingCircle(contours[i], center, radius);
-//        if (radius > min_enclosing_radius_)
-//        minEnclosingCircle was starting to take .2 sec for all cnt for some reason as whole map got more full
+        //        cv::Point2f center;
+        //        float radius = 0;
+        //        cv::minEnclosingCircle(contours[i], center, radius);
+        //        if (radius > min_enclosing_radius_)
+        //        minEnclosingCircle was starting to take .2 sec for all cnt for some reason as whole map got more full
         if (cv::arcLength(contours[i], false) >= min_enclosing_radius_) {
             cv::drawContours(contour_img, contours, i, cv::Scalar(1), 1);
         }
@@ -196,10 +194,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         double x = line(2) + tl.x;
         double y = line(3) + tl.y;
 
-//            ROS_INFO_STREAM("line " << x << " " << y << " " << vx << " " << vy);
-
-        cv::Point2d new_endpnt =
-              intersect_point_line(endpnt, cv::Point2d(x, y), cv::Point2d(x + vx, y + vy), false);
+        cv::Point2d new_endpnt = intersect_point_line(endpnt, cv::Point2d(x, y), cv::Point2d(x + vx, y + vy), false);
 
         cv::Vec2d avg_pnt;
         for (const cv::Point& pnt : box_points) {
@@ -258,13 +253,13 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     ros::Time end = ros::Time::now();
 
     ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
-                            << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
-                            << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
-                            << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
-                            << "\n total : " << (end - begin).toSec());
+                                    << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
+                                    << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
+                                    << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
+                                    << "\n total : " << (end - begin).toSec());
 
-//    cv::imshow("closing", debug_img);
-//    cv::waitKey(1);
+    //    cv::imshow("closing", debug_img);
+    //    cv::waitKey(1);
 }
 
 }  // namespace rr

@@ -7,7 +7,6 @@ costmap:
     width: 25
     height: 25
     resolution: 0.1
-    origin_y: 100
     track_unknown_space: false
 
     plugins:
