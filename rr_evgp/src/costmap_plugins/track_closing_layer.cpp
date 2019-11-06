@@ -135,7 +135,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     ros::Time done_make_map = ros::Time::now();
 
     auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(dilate_size_, dilate_size_));
-    cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_DILATE, dilate_kernel);
+    cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_CLOSE, dilate_kernel);
 
     auto skel = rr::thinObstacles(mat_grid);
     auto branches = rr::removeSmallBranches(skel, branch_pruning_size_);
@@ -182,12 +182,16 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         cv::Mat filtered;
         cv::filter2D(contour_img, filtered, CV_16SC1, line_kernel);
 
-        // np.where
         std::vector<cv::Point> endpoints;
-        for (size_t r = 0; r < filtered.rows; r++)
-            for (size_t c = 0; c < filtered.cols; c++)
-                if (filtered.at<int16_t>(r, c) == 11)
-                    endpoints.emplace_back(c, r);
+        cv::inRange(filtered, cv::Scalar(11), cv::Scalar(11), filtered);
+        cv::findNonZero(filtered, endpoints);
+
+        // np.where
+//        std::vector<cv::Point> endpoints;
+//        for (size_t r = 0; r < filtered.rows; r++)
+//            for (size_t c = 0; c < filtered.cols; c++)
+//                if (filtered.at<int16_t>(r, c) == 11)
+//                    endpoints.emplace_back(c, r);
 
         const size_t half_size = reg_bounding_box_size_ / 2;
         const cv::Point half_size_point(half_size, half_size);
@@ -273,6 +277,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
                             << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
                             << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec());
 
+    cv::morphologyEx(walls, walls, cv::MORPH_DILATE, dilate_kernel);
     for (int r = 0; r < mat_grid.rows; r++) {
         for (int c = 0; c < mat_grid.cols; c++) {
             unsigned int index = (mat_grid.rows - r - 1) * mat_grid.cols + c;
