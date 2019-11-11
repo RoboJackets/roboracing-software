@@ -3,6 +3,8 @@
 #include <random>
 #include <vector>
 
+#include <ros/node_handle.h>
+
 #include "bicycle_model.h"
 #include "distance_checker.h"
 #include "planner.h"
@@ -13,10 +15,10 @@ namespace rr {
 class AnnealingPlanner : public Planner {
   public:
     struct Params {
-        unsigned int n_path_segments;  // number of segments in a path
-        unsigned int annealing_steps;  // number of timesteps to run simulated annealing
-        double temperature_start;      // temperature parameter starts high and decreases
-        double temperature_end;
+        int n_path_segments;       // number of segments in a path
+        int annealing_steps;       // number of timesteps to run simulated annealing
+        double temperature_start;  // temperature parameter starts high and decreases
+        double temperature_end;    // temperature at last iteration
         double k_dist;             // importance of distance in cost function
         double k_speed;            // importance of speed/straightness in cost fn
         double k_final_pose;       // importance of final position in cost function
@@ -26,7 +28,7 @@ class AnnealingPlanner : public Planner {
         double max_steering;       // max steering angle output
     };
 
-    AnnealingPlanner(const DistanceChecker&, const BicycleModel&, const Params&);
+    AnnealingPlanner(const ros::NodeHandle& nh, const DistanceChecker&, const BicycleModel&);
 
     ~AnnealingPlanner() = default;
 
@@ -35,7 +37,7 @@ class AnnealingPlanner : public Planner {
      * @param map A point cloud representation of the world around the car
      * @return PlannedPath object representing the plan for movement
      */
-    PlannedPath Plan(const PCLMap& map);
+    PlannedPath Plan(const PCLMap& map) override;
 
   private:
     /**
@@ -65,8 +67,7 @@ class AnnealingPlanner : public Planner {
      */
     double GetCost(const PlannedPath& path, const PCLMap& map);
 
-    const Params params;
-
+    Params params;
     DistanceChecker distance_checker_;
     BicycleModel model_;
 

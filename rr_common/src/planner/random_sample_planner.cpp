@@ -4,15 +4,30 @@
 #include <cmath>
 #include <iostream>
 
+#include <parameter_assertions/assertions.h>
 #include <flann/flann.hpp>
 
 double last_speed = 0;
 
 namespace rr {
 
-RandomSamplePlanner::RandomSamplePlanner(const DistanceChecker& distance_checker, const BicycleModel& model,
-                                         const Params& params_ext)
-      : distance_checker_(distance_checker), params(params_ext), model_(model) {
+RandomSamplePlanner::RandomSamplePlanner(const ros::NodeHandle& nh, const DistanceChecker& distance_checker,
+                                         const BicycleModel& model)
+      : distance_checker_(distance_checker), model_(model) {
+    using assertions::getParam;
+
+    getParam(nh, "n_path_segments", params.n_path_segments);
+    getParam(nh, "steer_limits", params.steer_limits);
+    getParam(nh, "steer_stddevs", params.steer_stddevs);
+    getParam(nh, "path_similarity_cutoff", params.path_similarity_cutoff);
+    getParam(nh, "max_relative_cost", params.max_relative_cost);
+    getParam(nh, "k_dist", params.k_dist);
+    getParam(nh, "k_speed", params.k_speed);
+    getParam(nh, "n_control_samples", params.n_control_samples);
+    getParam(nh, "smoothing_array_size", params.smoothing_array_size);
+    getParam(nh, "obs_dist_slow_thresh", params.obs_dist_slow_thresh);
+    getParam(nh, "obs_dist_slow_ratio", params.obs_dist_slow_ratio);
+
     prev_steering_angles_.resize(params.smoothing_array_size, 0);
     prev_steering_angles_index_ = 0;
 
@@ -34,16 +49,16 @@ double RandomSamplePlanner::SampleSteering(int stage) {
 
 std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoint>& path) {
     double denominator = 0;
-    bool is_collision;
-    double dist;
+    bool is_collision = false;
 
     for (const auto& path_point : path) {
-        std::tie(is_collision, dist) = distance_checker_.GetCollisionDistance(path_point.pose);
+        auto opt_dist = distance_checker_.GetCollisionDistance(path_point.pose);
 
-        if (is_collision) {
+        if (!opt_dist) {
+            is_collision = true;
             break;
         }
-        denominator += params.k_dist * dist + params.k_speed * path_point.speed;
+        denominator += params.k_dist * opt_dist.value() + params.k_speed * path_point.speed;
     }
 
     if (denominator == 0.0) {
@@ -209,13 +224,12 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
     PlannedPath& best_plan = good_plans[best_index];
 
     bool is_collision;
-    double dist;
     double min_dist = 10000;
     for (const auto& path_point : best_plan.path) {
-        std::tie(is_collision, dist) = distance_checker_.GetCollisionDistance(path_point.pose);
+        auto opt_dist = distance_checker_.GetCollisionDistance(path_point.pose);
 
-        if (dist < min_dist) {
-            min_dist = dist;
+        if (*opt_dist < min_dist) {
+            min_dist = *opt_dist;
         }
     }
 

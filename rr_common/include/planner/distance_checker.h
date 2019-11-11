@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <tuple>
+#include <valarray>
 
 #include "planner_types.hpp"
 
@@ -29,7 +30,7 @@ class DistanceChecker {
      * @return bool - collision detected
      *         double - clearing distance to nearest obstacle
      */
-    std::tuple<bool, double> GetCollisionDistance(const Pose& pose);
+    [[nodiscard]] std::optional<double> GetCollisionDistance(const Pose& pose) const;
 
     /**
      * Given a map, cache the nearest neighbors. Fill the cache outwards from
@@ -44,7 +45,7 @@ class DistanceChecker {
      * @param relative_point Point in robot's coordinate frame
      * @return true if point is inside robot's hitbox, false otherwise
      */
-    bool GetCollision(const PCLPoint& relative_point);
+    [[nodiscard]] bool GetCollision(const PCLPoint& relative_point) const;
 
     /**
      * Convenience method for the distance between two PointCloud points
@@ -52,7 +53,7 @@ class DistanceChecker {
      * @param p2 Point 2
      * @return Euclidean distance between the points
      */
-    double Dist(const PCLPoint& p1, const PCLPoint& p2);
+    [[nodiscard]] double Dist(const PCLPoint& p1, const PCLPoint& p2) const;
 
   private:
     /*
@@ -70,13 +71,12 @@ class DistanceChecker {
     /*
      * Get the index of a cache element from the x, y location and vice versa
      */
-    int GetCacheIndex(double x, double y);
-    PCLPoint GetPointFromIndex(int i);
+    [[nodiscard]] int GetCacheIndex(double x, double y) const;
+    [[nodiscard]] PCLPoint GetPointFromIndex(int i) const;
 
-    std::vector<CacheEntry> cache_;    // cache storage
-    std::deque<int> cache_updates_;    // queue for updating the cache in breath-first order
-    std::vector<char> cache_visited_;  // boolean (but not vector<bool>) mask for tracking which
-                                       // locations have been updated
+    std::vector<CacheEntry> cache_;      // cache storage
+    std::deque<int> cache_updates_;      // queue for updating the cache in breadth-first order
+    std::valarray<bool> cache_visited_;  // boolean mask for tracking which locations have been updated
     int cache_rows_front_;
     int cache_rows_back_;
     int cache_rows_;

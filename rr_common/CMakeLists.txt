@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
         image_transport
         sound_play
         rr_msgs
+        parameter_assertions
         )
 
 #find_package(OpenCV REQUIRED)
