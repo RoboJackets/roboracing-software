@@ -11,8 +11,8 @@
 #include <rr_msgs/steering.h>
 
 #include <planner/annealing_planner.h>
-#include <planner/random_sample_planner.h>
 #include <planner/hill_climb_planner.h>
+#include <planner/random_sample_planner.h>
 
 std::unique_ptr<rr::Planner> planner;
 std::unique_ptr<rr::DistanceChecker> distance_checker;
@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
     } else if (planner_type == "annealing") {
         planner = std::make_unique<rr::AnnealingPlanner>(nhp, *distance_checker, model);
     } else if (planner_type == "hill_climbing") {
-          planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, model);
+        planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, model);
     } else {
         ROS_ERROR_STREAM("[Planner] Error: unknown planner type \"" << planner_type << "\"");
         ros::shutdown();
