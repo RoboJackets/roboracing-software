@@ -172,23 +172,27 @@ std::optional<double> DistanceChecker::GetCollisionDistance(const Pose& pose) co
 
     // find distance, in several cases
     double dist;
-    auto [x, y] = point_in_local_frame(*entry.nearest_point);
-    if (std::abs(x) > half_length) {
-        // not alongside the robot
-        if (std::abs(y) > half_width) {
-            // closest to a corner
-            double cornerX = half_length * ((x < 0) ? -1 : 1);
-            double cornerY = half_width * ((y < 0) ? -1 : 1);
-            double dx = x - cornerX;
-            double dy = y - cornerY;
-            dist = std::sqrt(dx * dx + dy * dy);
-        } else {
-            // directly in front of or behind robot
-            dist = std::abs(x) - half_length;
-        }
+    if (nullptr == entry.nearest_point) {  // empty map (?)
+        dist = std::pow(10.0, 10);
     } else {
-        // directly to the side of the robot
-        dist = std::abs(y) - half_width;
+        auto [x, y] = point_in_local_frame(*entry.nearest_point);
+        if (std::abs(x) > half_length) {
+            // not alongside the robot
+            if (std::abs(y) > half_width) {
+                // closest to a corner
+                double cornerX = half_length * ((x < 0) ? -1 : 1);
+                double cornerY = half_width * ((y < 0) ? -1 : 1);
+                double dx = x - cornerX;
+                double dy = y - cornerY;
+                dist = std::sqrt(dx * dx + dy * dy);
+            } else {
+                // directly in front of or behind robot
+                dist = std::abs(x) - half_length;
+            }
+        } else {
+            // directly to the side of the robot
+            dist = std::abs(y) - half_width;
+        }
     }
 
     return std::make_optional(dist);
