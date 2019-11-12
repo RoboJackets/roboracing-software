@@ -168,7 +168,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                     }
                 }
 
-                costmap_data[i] = static_cast<uint8_t>(probs_[i] * 255.999);
+                costmap_data[i] = static_cast<uint8_t>(probs_[i] * 255);
             }
         }
     }
