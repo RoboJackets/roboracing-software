@@ -28,7 +28,7 @@
 
 
     <node pkg="costmap_2d" type="costmap_2d_node" name="basic_mapper" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/costmap_2d_basic_mapping.yaml" subst_value="True"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_basic.yaml" subst_value="True"/>
     </node>
 
 </launch>

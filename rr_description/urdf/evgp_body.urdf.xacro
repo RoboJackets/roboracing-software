@@ -22,8 +22,7 @@
         </gazebo>
     </xacro:macro>
 
-    <!-- leave 'name' empty for ego robot -->
-    <xacro:macro name="evgp_body" params="collide color">
+    <xacro:macro name="evgp_body" params="collision_bitmask color">
 
         <!-- ************************** Links *************************** -->
 
@@ -36,13 +35,20 @@
             <visual>
                 <xacro:mesh_geometry/>
             </visual>
-            <xacro:if value="${collide}">
-                <collision>
-                    <xacro:mesh_geometry/>
-                </collision>
-            </xacro:if>
+            <collision>
+                <xacro:mesh_geometry/>
+            </collision>
         </link>
         <xacro:set_link_color link="body_visual_origin" color="${color}"/>
+        <gazebo reference="body_visual_origin">
+            <collision>
+                <surface>
+                    <contact>
+                        <collide_bitmask>${collision_bitmask}</collide_bitmask>
+                    </contact>
+                </surface>
+            </collision>
+        </gazebo>
 
         <link name="body_inertial_center">
             <inertial>
