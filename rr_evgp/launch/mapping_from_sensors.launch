@@ -21,14 +21,15 @@
         <param name="use_odometry_yaw" value="false"/>
         <param name="wait_for_datum" value="false"/>
 
-        <remap from="/imu/data" to="/imu" />
-        <remap from="/gps/fix" to="/gps/fix" />
-        <remap from="/odometry/filtered" to="/odometry/filtered" />
+        <remap from="/imu/data" to="/imu"/>
+        <remap from="/gps/fix" to="/gps/fix"/>
+        <remap from="/odometry/filtered" to="/odometry/filtered"/>
     </node>
 
 
     <node pkg="costmap_2d" type="costmap_2d_node" name="basic_mapper" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_basic.yaml" subst_value="True"/>
+        <!--<rosparam command="load" file="$(find rr_evgp)/conf/mapping_basic.yaml" subst_value="True"/>-->
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_filtered.yaml" subst_value="True"/>
     </node>
 
 </launch>
