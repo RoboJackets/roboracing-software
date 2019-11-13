@@ -1,0 +1,28 @@
+costmap:
+    global_frame: map
+    robot_base_frame: base_footprint
+
+    update_frequency: 15
+    publish_frequency: 10
+    transform_tolerance: 1.0
+
+    static_map: false
+    rolling_window: false
+    always_send_full_costmap: false
+    width: $(arg map_size)
+    height: $(arg map_size)
+    resolution: 0.5
+    track_unknown_space: false
+
+    plugins:
+        - {name: "grid_filter", type: "rr::BinaryBayesFilterObstacleLayer"}
+
+    grid_filter:
+        prob_false_pos: 0.2  # small -> quick addition
+        prob_false_neg: 0.3  # small -> quick subtraction
+        prob_grid_prior: 0.01
+        max_confidence: 0.9999
+        scan_range: 8.0
+        obstacle_depth: 0.5
+        scan_topic: /scan
+        lidar_frame: lidar
