@@ -24,6 +24,7 @@
 
     <build_depend>cv_bridge</build_depend>
     <build_depend>image_transport</build_depend>
+    <build_depend>parameter_assertions</build_depend>
 
     <export>
         <nodelet plugin="${prefix}/nodelet_plugins.xml"/>

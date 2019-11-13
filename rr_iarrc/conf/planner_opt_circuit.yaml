@@ -2,7 +2,7 @@ planner_type: "annealing"
 
 n_path_segments: 3
 distance_increment: 0.1
-segment_sections: "14 14 14"
+segment_sections: [14, 14, 14]
 
 temperature_start: 0.2
 temperature_end: 0.02

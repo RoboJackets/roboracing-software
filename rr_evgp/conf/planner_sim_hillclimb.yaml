@@ -1,0 +1,30 @@
+collision_hitbox:
+    front: 1.5
+    back: 0.1
+    side: 0.65
+
+max_speed: 5.0
+max_drive_accel: 10
+
+wheel_base: 0.97
+lateral_accel: 2.0
+max_steering: 0.3
+steering_speed: 1000
+steering_gain: 1.0
+
+planner_type: "hill_climbing"
+
+segment_sections: [20, 20, 20, 20]
+distance_increment: 0.12
+
+k_dist: 5.0
+k_speed: 1.0
+#k_final_pose: 0
+k_steering: 0.1
+k_angle: 0.5
+collision_penalty: 100
+
+num_workers: 4
+num_restarts: 4
+neighbor_stddev: 0.03
+local_optimum_tries: 30

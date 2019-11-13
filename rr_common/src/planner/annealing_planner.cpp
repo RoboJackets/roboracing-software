@@ -1,9 +1,26 @@
 #include "planner/annealing_planner.h"
 
+#include <parameter_assertions/assertions.h>
+
 namespace rr {
 
-AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel& m, const Params& p)
-      : distance_checker_(c), model_(m), params(p) {
+AnnealingPlanner::AnnealingPlanner(const ros::NodeHandle& nh, const DistanceChecker& c, const BicycleModel& m)
+      : distance_checker_(c), model_(m) {
+    using assertions::getParam;
+
+    getParam(nh, "n_path_segments", params.n_path_segments, { assertions::greater(0) });
+    getParam(nh, "annealing_steps", params.annealing_steps, { assertions::greater(0) });
+    getParam(nh, "k_dist", params.k_dist, { assertions::greater_eq(0.0) });
+    getParam(nh, "k_speed", params.k_speed, { assertions::greater_eq(0.0) });
+    getParam(nh, "k_final_pose", params.k_final_pose, { assertions::greater_eq(0.0) });
+    getParam(nh, "k_angle", params.k_angle, { assertions::greater_eq(0.0) });
+    getParam(nh, "collision_penalty", params.collision_penalty, { assertions::greater_eq(0.0) });
+    getParam(nh, "max_steering", params.max_steering, { assertions::greater(0.0) });
+    getParam(nh, "acceptance_scale", params.acceptance_scale, { assertions::greater(0.0) });
+    getParam(nh, "temperature_start", params.temperature_start, { assertions::greater(0.0) });
+    getParam(nh, "temperature_end", params.temperature_end,
+             { assertions::greater(0.0), assertions::less(params.temperature_start) });
+
     for (int i = 0; i < params.annealing_steps; i++) {
         rr::PlannedPath& path = path_pool_.emplace_back();
         path.control = std::vector<double>(params.n_path_segments, 0);
@@ -16,14 +33,10 @@ AnnealingPlanner::AnnealingPlanner(const DistanceChecker& c, const BicycleModel&
 }
 
 void AnnealingPlanner::SampleControls(std::vector<double>& ctrl, const std::vector<double>& source, unsigned int t) {
-    auto it_ctrl = ctrl.begin();
-    auto it_source = source.begin();
-    for (; it_ctrl != ctrl.end(); ++it_ctrl, ++it_source) {
+    for (size_t i = 0; i < ctrl.size(); ++i) {
         double stddev = GetTemperature(t);
-        *it_ctrl = *it_source + steering_gaussian_(rand_gen_) * stddev;
-        if (std::abs(*it_ctrl) > params.max_steering) {
-            *it_ctrl = std::copysign(params.max_steering, *it_ctrl);
-        }
+        double new_control_i = source[i] + (steering_gaussian_(rand_gen_) * stddev);
+        ctrl[i] = std::clamp(new_control_i, -params.max_steering, params.max_steering);
     }
 }
 
@@ -39,7 +52,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& 
     const std::vector<PathPoint>& path = planned_path.path;
     const auto& last_path = path_pool_[last_path_idx_].path;
 
-    for (auto i = 0; i < path.size(); i++) {
+    for (size_t i = 0; i < path.size(); i++) {
         double dist = planned_path.dists[i];
         bool collision_here = (dist <= 0);
 
@@ -64,12 +77,11 @@ PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
 
     unsigned int best_idx = 0;
     unsigned int state_idx = 0;
-    bool collision = false;
-    double dist = 0;
 
-    auto best_prev_control = path_pool_[best_idx].control;  // copy
-    std::for_each(path_pool_.begin(), path_pool_.end(),
-                  [&best_prev_control](rr::PlannedPath& path) { path.control = best_prev_control; });
+    auto best_prev_control = path_pool_[best_idx].control;
+    for (auto& path : path_pool_) {
+        path.control = best_prev_control;
+    }
 
     distance_checker_.SetMap(map);
 
@@ -85,28 +97,24 @@ PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
 
         model_.RollOutPath(path.control, path.path);
 
-        // Check collisions and adjust path speeds based on distance to obstacles
-        bool has_been_too_close = false;
-        bool has_collided = false;
-        for (int i = static_cast<int>(path.path.size()) - 1; i >= 0; i--) {
-            std::tie(collision, dist) = distance_checker_.GetCollisionDistance(path.path[i].pose);
-            has_collided |= collision;
+        // Check collisions
+        path.has_collision = false;
+        for (size_t i = 0; i < path.path.size(); ++i) {
+            double dist = distance_checker_.GetCollisionDistance(path.path[i].pose);
+            path.has_collision |= (dist <= 0);
             path.dists[i] = dist;
-
-            has_been_too_close |= (collision || dist < 0.5);
-            if (has_been_too_close) {
-                path.path[i].speed *= 0.7;
-            }
         }
-
-        path.has_collision = has_collided;
 
         path.cost = GetCost(path, map);
         double dcost = path.cost - path_pool_[state_idx].cost;
-        double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
 
-        if (uniform_01_(rand_gen_) < p_accept) {
+        if (dcost < 0) {
             state_idx = t;
+        } else {
+            double p_accept = std::exp(-params.acceptance_scale * dcost / GetTemperature(t));
+            if (uniform_01_(rand_gen_) < p_accept) {
+                state_idx = t;
+            }
         }
 
         if (path.cost < path_pool_[best_idx].cost) {

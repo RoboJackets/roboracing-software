@@ -4,6 +4,8 @@
 #include <tuple>
 #include <vector>
 
+#include <ros/node_handle.h>
+
 #include "planner/bicycle_model.h"
 #include "planner/distance_checker.h"
 #include "planner/planner.h"
@@ -38,14 +40,14 @@ class RandomSamplePlanner : public Planner {
         double obs_dist_slow_ratio;
     };
 
-    RandomSamplePlanner(const DistanceChecker&, const BicycleModel&, const Params&);
+    RandomSamplePlanner(const ros::NodeHandle& nh, const DistanceChecker&, const BicycleModel&);
 
     ~RandomSamplePlanner() = default;
 
     /*
      * Plan: given a map of the world, find the best path through it
      */
-    PlannedPath Plan(const PCLMap& map);
+    PlannedPath Plan(const PCLMap& map) override;
 
   private:
     /*
@@ -86,7 +88,7 @@ class RandomSamplePlanner : public Planner {
     double FilterOutput(double this_steer);
 
     // algorithm parameters
-    const Params params;
+    Params params;
 
     DistanceChecker distance_checker_;
     BicycleModel model_;
