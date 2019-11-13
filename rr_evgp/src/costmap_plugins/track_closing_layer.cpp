@@ -98,16 +98,14 @@ bool TrackClosingLayer::IsConnectable(const WallEndpointContext& current, const 
     const auto& [endpntA, pntA, vxA, vyA] = current;
     const auto& [endpntB, pntB, vxB, vyB] = prev;
 
-    //    ROS_INFO_STREAM("comparing " << endpntA << " with " << endpntB);
-
     double angle_between_lines = std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI;
     angle_between_lines = std::min(angle_between_lines, 180 - angle_between_lines);
-    //    ROS_INFO_STREAM("angle " << angle_between_lines);
+
     cv::Point closest_endB_to_lineA = intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500), true);
     cv::Point closest_endA_to_lineB = intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500), true);
     double dist_a = norm(closest_endA_to_lineB - endpntA);
     double dist_b = norm(closest_endB_to_lineA - endpntB);
-    //    ROS_INFO_STREAM("dists " << dist_a << " " << dist_b);
+
     return angle_between_lines <= max_angle_between_lines_ && dist_a < max_dist_between_lines_ &&
            dist_b < max_dist_between_lines_;
 }
@@ -117,7 +115,6 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     if (!enabled_) {
         return;
     }
-    ros::Time begin = ros::Time::now();
 
     // populate OpenCV Mat as grid
     cv::Mat mat_grid(master_grid.getSizeInCellsX(), master_grid.getSizeInCellsY(), CV_8UC1);
@@ -127,38 +124,28 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
             mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] == costmap_2d::LETHAL_OBSTACLE) ? 255 : 0;
         }
     }
-    //    ROS_INFO_STREAM(mat_grid.rows << " " << mat_grid.cols);
-
-    ros::Time done_make_map = ros::Time::now();
 
     auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(dilate_size_, dilate_size_));
     cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_CLOSE, dilate_kernel);
 
+    // Make Skeleton
     auto skel = rr::thinObstacles(mat_grid);
     auto branches = rr::removeSmallBranches(skel, branch_pruning_size_);
 
-    ros::Time done_make_skel = ros::Time::now();
+    // cv::Mat debug_img;
+    // cv::cvtColor(branches * 255, debug_img, CV_GRAY2BGR);
 
-    cv::Mat debug_img;
-    cv::cvtColor(branches * 255, debug_img, CV_GRAY2BGR);
-
+    // Remove small objects (cars and noise)
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     cv::Mat contour_img(skel.rows, skel.cols, CV_8UC1, cv::Scalar(0));
     for (size_t i = 0; i < contours.size(); i++) {
-        //        cv::Point2f center;
-        //        float radius = 0;
-        //        cv::minEnclosingCircle(contours[i], center, radius);
-        //        if (radius > min_enclosing_radius_)
-        //        minEnclosingCircle was starting to take .2 sec for all cnt for some reason as whole map got more full
         if (cv::arcLength(contours[i], false) >= min_enclosing_radius_) {
             cv::drawContours(contour_img, contours, i, cv::Scalar(1), 1);
         }
     }
-    ros::Time done_make_endpnts = ros::Time::now();
 
-    std::vector<WallEndpointContext> endpnt_line;
-
+    // Get end points
     cv::Mat line_kernel(3, 3, CV_8UC1, cv::Scalar(1));
     line_kernel.at<uint8_t>(1, 1) = 10;
     cv::Mat filtered;
@@ -168,10 +155,9 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     cv::inRange(filtered, cv::Scalar(11), cv::Scalar(11), filtered);
     cv::findNonZero(filtered, endpoints);
 
+    std::vector<WallEndpointContext> endpnt_line;
     const size_t half_size = reg_bounding_box_size_ / 2;
     const cv::Point half_size_point(half_size, half_size);
-
-    ros::Time done_make_cnt = ros::Time::now();
 
     for (const cv::Point& endpnt : endpoints) {
         cv::Point tl = endpnt - half_size_point;
@@ -181,12 +167,14 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         br.x = std::min(br.x, contour_img.cols - 1);
         br.y = std::min(br.y, contour_img.rows - 1);
 
-        cv::rectangle(debug_img, tl, br, cv::Scalar(255, 0, 0), 1);
+        // cv::rectangle(debug_img, tl, br, cv::Scalar(255, 0, 0), 1);
 
+        // Find surrounding points
         cv::Mat endpnt_box = contour_img(cv::Rect(tl, br));
         std::vector<cv::Point> box_points;
         cv::findNonZero(endpnt_box, box_points);
 
+        // Get regression line
         cv::Vec4f line;
         cv::fitLine(box_points, line, CV_DIST_L2, 0, 0.01, 0.01);
         double vx = line(0);
@@ -194,6 +182,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         double x = line(2) + tl.x;
         double y = line(3) + tl.y;
 
+        // Get direction of line from end point
         cv::Point2d new_endpnt = intersect_point_line(endpnt, cv::Point2d(x, y), cv::Point2d(x + vx, y + vy), false);
 
         cv::Vec2d avg_pnt;
@@ -210,13 +199,14 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
             vy *= -1;
         }
 
-        cv::circle(debug_img, new_endpnt, 2, cv::Scalar(0, 255, 0));
+        // cv::circle(debug_img, new_endpnt, 2, cv::Scalar(0, 255, 0));
         cv::Point2d point;
         point.x = new_endpnt.x + extrapolate_distance_ * vx;
         point.y = new_endpnt.y + extrapolate_distance_ * vy;
         endpnt_line.emplace_back(new_endpnt, point, vx, vy);
     }
 
+    // Connect end points
     cv::Mat walls(mat_grid.rows, mat_grid.cols, CV_8UC1, cv::Scalar(0));
     std::valarray<bool> have_connection(false, endpnt_line.size());
     for (size_t i = 0; i < endpnt_line.size(); i++) {
@@ -228,7 +218,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
                 have_connection[j] = true;
                 const auto& point_a = std::get<0>(curr_line_context);
                 const auto& point_b = std::get<0>(comp_line_context);
-                cv::line(debug_img, point_a, point_b, cv::Scalar(255, 0, 255));
+                // cv::line(debug_img, point_a, point_b, cv::Scalar(255, 0, 255));
                 cv::line(walls, point_a, point_b, cv::Scalar(255));
             }
         }
@@ -236,30 +226,23 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         if (!have_connection[i]) {
             const auto& endpnt = std::get<0>(curr_line_context);
             const auto& extrapolated_pnt = std::get<1>(curr_line_context);
-            cv::line(debug_img, endpnt, extrapolated_pnt, cv::Scalar(0, 0, 255));
+            // cv::line(debug_img, endpnt, extrapolated_pnt, cv::Scalar(0, 0, 255));
             cv::line(walls, endpnt, extrapolated_pnt, cv::Scalar(255));
         }
     }
 
+    // Make map from image
     cv::morphologyEx(walls, walls, cv::MORPH_DILATE, dilate_kernel);
-    for (int r = 0; r < mat_grid.rows; r++) {
-        for (int c = 0; c < mat_grid.cols; c++) {
+    for (int r = 0; r < walls.rows; r++) {
+        for (int c = 0; c < walls.cols; c++) {
             if (walls.at<uint8_t>(r, c) > 0) {
-                charMap[r * mat_grid.cols + c] = 255;
+                charMap[r * walls.cols + c] = 255;
             }
         }
     }
 
-    ros::Time end = ros::Time::now();
-
-    ROS_INFO_STREAM("\n Make img: " << (done_make_map - begin).toSec()
-                                    << "\n Make skel: " << (done_make_skel - done_make_map).toSec()
-                                    << "\n Make endpnt: " << (done_make_endpnts - done_make_skel).toSec()
-                                    << "\n Make connect: " << (done_make_cnt - done_make_endpnts).toSec()
-                                    << "\n total : " << (end - begin).toSec());
-
-    //    cv::imshow("closing", debug_img);
-    //    cv::waitKey(1);
+    // cv::imshow("closing", debug_img);
+    // cv::waitKey(1);
 }
 
 }  // namespace rr
