@@ -110,8 +110,6 @@ int main(int argc, char** argv) {
                 pt.z = 0;
             }
 
-            ROS_INFO("combo_cloud has %d points", (int)combo_cloud->points.size());
-
             // convert back to message
             if (!combo_cloud->points.empty()) {
                 pcl::PCLPointCloud2 combo_pc2;

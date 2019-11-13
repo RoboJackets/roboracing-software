@@ -1,5 +1,6 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
+#include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -9,8 +10,9 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 
-#include "planner/annealing_planner.h"
-#include "planner/random_sample_planner.h"
+#include <planner/annealing_planner.h>
+#include <planner/hill_climb_planner.h>
+#include <planner/random_sample_planner.h>
 
 std::unique_ptr<rr::Planner> planner;
 std::unique_ptr<rr::DistanceChecker> distance_checker;
@@ -34,9 +36,12 @@ ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
 ros::Time last_speed_time;
-double max_drive_accel;
 
+double max_drive_accel;
 double steering_gain;
+
+double total_planning_time;
+size_t total_plans;
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     last_map_msg = map;
@@ -147,124 +152,67 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
     }
 }
 
-template <typename T>
-T getParamAssert(const ros::NodeHandle& nhp, const std::string& name) {
-    T out;
-    if (!nhp.getParam(name, out)) {
-        ROS_ERROR_STREAM("[Planner] Param name " << name << " needs to be defined");
-        std::exit(-1);
-    }
-    return out;
-}
-
-template <typename T>
-std::vector<T> getNumericListParam(const ros::NodeHandle& nhp, const std::string& name, char delim) {
-    auto listAsString = getParamAssert<std::string>(nhp, name);
-    std::vector<T> out;
-
-    std::stringstream ss(listAsString);
-    std::string s;
-    while (std::getline(ss, s, delim)) {
-        out.push_back(static_cast<T>(std::stod(s)));
-    }
-
-    return out;
-}
-
-rr::RandomSamplePlanner::Params getRandomSampleParams(const ros::NodeHandle& nhp) {
-    rr::RandomSamplePlanner::Params params;
-
-    params.n_path_segments = getParamAssert<int>(nhp, "n_path_segments");
-    params.steer_limits = getNumericListParam<double>(nhp, "steer_limits", ' ');
-    params.steer_stddevs = getNumericListParam<double>(nhp, "steer_stddevs", ' ');
-
-    params.path_similarity_cutoff = getParamAssert<double>(nhp, "path_similarity_cutoff");
-    params.max_relative_cost = getParamAssert<double>(nhp, "max_relative_cost");
-    params.k_dist = getParamAssert<double>(nhp, "k_dist");
-    params.k_speed = getParamAssert<double>(nhp, "k_speed");
-
-    params.n_control_samples = getParamAssert<int>(nhp, "n_control_samples");
-
-    params.smoothing_array_size = getParamAssert<int>(nhp, "smoothing_array_size");
-
-    params.obs_dist_slow_thresh = getParamAssert<double>(nhp, "obs_dist_slow_thresh");
-    params.obs_dist_slow_ratio = getParamAssert<double>(nhp, "obs_dist_slow_ratio");
-
-    return params;
-}
-
-rr::AnnealingPlanner::Params getAnnealingParams(const ros::NodeHandle& nhp) {
-    rr::AnnealingPlanner::Params params;
-
-    params.n_path_segments = static_cast<unsigned int>(getParamAssert<int>(nhp, "n_path_segments"));
-    params.annealing_steps = static_cast<unsigned int>(getParamAssert<int>(nhp, "annealing_steps"));
-
-    params.k_dist = getParamAssert<double>(nhp, "k_dist");
-    params.k_speed = getParamAssert<double>(nhp, "k_speed");
-    params.k_final_pose = getParamAssert<double>(nhp, "k_final_pose");
-    params.k_angle = getParamAssert<double>(nhp, "k_angle");
-    params.collision_penalty = getParamAssert<double>(nhp, "collision_penalty");
-    params.max_steering = getParamAssert<double>(nhp, "max_steering");
-    params.acceptance_scale = getParamAssert<double>(nhp, "acceptance_scale");
-
-    params.temperature_start = getParamAssert<double>(nhp, "temperature_start");
-    params.temperature_end = getParamAssert<double>(nhp, "temperature_end");
-
-    return params;
-}
-
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    rr::CenteredBox box;
+    rr::CenteredBox hitbox;
     ros::NodeHandle nh_hitbox(nhp, "collision_hitbox");
-    box.length_front = getParamAssert<double>(nh_hitbox, "front");
-    box.length_back = getParamAssert<double>(nh_hitbox, "back");
-    box.width_left = box.width_right = getParamAssert<double>(nh_hitbox, "side");
+    assertions::getParam(nh_hitbox, "front", hitbox.length_front);
+    assertions::getParam(nh_hitbox, "back", hitbox.length_back);
+    assertions::getParam(nh_hitbox, "side", hitbox.width_left);
+    hitbox.width_right = hitbox.width_left;
 
     rr::CenteredBox map_dimensions;
-    map_dimensions.length_front = 7;
+    map_dimensions.length_front = 15;
     map_dimensions.length_back = 5;
-    map_dimensions.width_right = map_dimensions.width_left = 6;
+    map_dimensions.width_right = map_dimensions.width_left = 8;
 
-    distance_checker = std::make_unique<rr::DistanceChecker>(box, map_dimensions);
+    distance_checker = std::make_unique<rr::DistanceChecker>(hitbox, map_dimensions);
 
-    auto wheel_base = getParamAssert<double>(nhp, "wheel_base");
-    auto lateral_accel = getParamAssert<double>(nhp, "lateral_accel");
-    auto distance_increment = getParamAssert<double>(nhp, "distance_increment");
-    auto max_speed = getParamAssert<double>(nhp, "max_speed");
-    auto steering_speed = getParamAssert<double>(nhp, "steering_speed");
-    auto segment_sections = getNumericListParam<int>(nhp, "segment_sections", ' ');
+    double wheel_base;
+    assertions::getParam(nhp, "wheel_base", wheel_base);
+    double lateral_accel;
+    assertions::getParam(nhp, "lateral_accel", lateral_accel);
+    double distance_increment;
+    assertions::getParam(nhp, "distance_increment", distance_increment);
+    double max_speed;
+    assertions::getParam(nhp, "max_speed", max_speed);
+    double steering_speed;
+    assertions::getParam(nhp, "steering_speed", steering_speed);
+    std::vector<int> segment_sections;
+    assertions::getParam(nhp, "segment_sections", segment_sections);
 
     rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, steering_speed, segment_sections);
 
-    auto obstacle_cloud_topic = getParamAssert<std::string>(nhp, "input_cloud_topic");
-    auto planner_type = getParamAssert<std::string>(nhp, "planner_type");
+    std::string obstacle_cloud_topic;
+    assertions::getParam(nhp, "input_cloud_topic", obstacle_cloud_topic);
+    std::string planner_type;
+    assertions::getParam(nhp, "planner_type", planner_type);
 
     if (planner_type == "random_sample") {
-        auto params = getRandomSampleParams(nhp);
-        planner = std::make_unique<rr::RandomSamplePlanner>(*distance_checker, model, params);
+        planner = std::make_unique<rr::RandomSamplePlanner>(nhp, *distance_checker, model);
     } else if (planner_type == "annealing") {
-        auto params = getAnnealingParams(nhp);
-        planner = std::make_unique<rr::AnnealingPlanner>(*distance_checker, model, params);
+        planner = std::make_unique<rr::AnnealingPlanner>(nhp, *distance_checker, model);
+    } else if (planner_type == "hill_climbing") {
+        planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, model);
     } else {
         ROS_ERROR_STREAM("[Planner] Error: unknown planner type \"" << planner_type << "\"");
-        std::exit(-2);
+        ros::shutdown();
     }
 
-    caution_duration = ros::Duration(getParamAssert<double>(nhp, "impasse_caution_duration"));
-    reverse_duration = ros::Duration(getParamAssert<double>(nhp, "impasse_reverse_duration"));
+    caution_duration = ros::Duration(assertions::param(nhp, "impasse_caution_duration", 0.0));
+    reverse_duration = ros::Duration(assertions::param(nhp, "impasse_reverse_duration", 0.0));
     caution_start_time = ros::Time(0);
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
 
     last_speed_time = ros::Time(0);
-    max_drive_accel = getParamAssert<double>(nhp, "max_drive_accel");
+    max_drive_accel = assertions::param(nhp, "max_drive_accel", 1000.0);
 
-    steering_gain = getParamAssert<double>(nhp, "steering_gain");
+    steering_gain = assertions::param(nhp, "steering_gain", 1.0);
 
     auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
@@ -275,6 +223,9 @@ int main(int argc, char** argv) {
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
 
+    total_planning_time = 0;
+    total_plans = 0;
+
     ROS_INFO("Planner initialized");
 
     ros::Rate rate(30);
@@ -284,12 +235,15 @@ int main(int argc, char** argv) {
 
         if (is_new_msg) {
             is_new_msg = false;
-            auto start = ros::Time::now();
+            auto start = ros::WallTime::now();
 
             processMap(last_map_msg);
 
-            double seconds = (ros::Time::now() - start).toSec();
-            ROS_INFO("Planner took %0.1fms", seconds * 1000);
+            double seconds = (ros::WallTime::now() - start).toSec();
+            total_planning_time += seconds;
+            total_plans++;
+            double sec_avg = total_planning_time / total_plans;
+            ROS_INFO("Planner took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
 
         rate.sleep();

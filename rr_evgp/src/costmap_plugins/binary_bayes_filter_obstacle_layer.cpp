@@ -27,6 +27,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         assertions::getParam(private_nh, "prob_grid_prior", prob_grid_prior_, { assert_is_prob });
         assertions::getParam(private_nh, "max_confidence", max_prob_, { assert_is_prob });
         assertions::getParam(private_nh, "scan_range", scan_range_, { assertions::greater<double>(0) });
+        assertions::getParam(private_nh, "obstacle_depth", obstacle_depth_, { assertions::greater<double>(0) });
 
         std::string scan_topic;
         assertions::getParam(private_nh, "scan_topic", scan_topic);
@@ -111,10 +112,10 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         double angle = scan_->angle_min;
         for (double raw_range : scan_->ranges) {
             bool is_hit = (!std::isinf(raw_range) && raw_range <= scan_range_);
-            double range = is_hit ? raw_range : scan_range_;
-            double trace_range = range + (resolution * 0.7);
-            double wx = lidar_x_ + trace_range * std::cos(lidar_yaw_ + angle);
-            double wy = lidar_y_ + trace_range * std::sin(lidar_yaw_ + angle);
+            double clear_range = is_hit ? raw_range : scan_range_;
+            double obstacle_range = clear_range + obstacle_depth_;
+            double wx = lidar_x_ + obstacle_range * std::cos(lidar_yaw_ + angle);
+            double wy = lidar_y_ + obstacle_range * std::sin(lidar_yaw_ + angle);
 
             if (wx < world_min_x || wx >= world_max_x || wy < world_min_y || wy >= world_max_y) {
                 ROS_WARN_THROTTLE(1.0, "trying to scan outside the map");
@@ -122,14 +123,13 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
             }
 
             const double step_size = resolution * 0.25;
-            const double step_x = step_size * (wx - lidar_x_) / range;
-            const double step_y = step_size * (wy - lidar_y_) / range;
+            const double step_x = step_size * std::cos(lidar_yaw_ + angle);
+            const double step_y = step_size * std::sin(lidar_yaw_ + angle);
             int mx, my;
             double d = 0;
             double march_x = lidar_x_;
             double march_y = lidar_y_;
-            const double last_clear = range - resolution;
-            while (d < last_clear) {
+            while (d < clear_range) {
                 master_grid.worldToMapNoBounds(march_x, march_y, mx, my);
                 updates_[master_grid.getIndex(mx, my)] = 0;
                 d += step_size;
@@ -137,13 +137,13 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                 march_y += step_y;
             }
             if (is_hit) {
-                while (d <= trace_range) {
+                do {
                     master_grid.worldToMapNoBounds(march_x, march_y, mx, my);
                     updates_[master_grid.getIndex(mx, my)] = 1;
                     d += step_size;
                     march_x += step_x;
                     march_y += step_y;
-                }
+                } while (d <= obstacle_range);
             }
 
             angle += scan_->angle_increment;
@@ -168,7 +168,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                     }
                 }
 
-                costmap_data[i] = static_cast<uint8_t>(probs_[i] * 255.999);
+                costmap_data[i] = static_cast<uint8_t>(probs_[i] * 255);
             }
         }
     }
@@ -188,7 +188,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
         int old_start_y = std::max(0, -old_origin_new_my);
         int old_end_x = std::min(last_grid_size_x_, -old_origin_new_mx + master_grid.getSizeInCellsX());
         int old_end_y = std::min(last_grid_size_y_, -old_origin_new_my + master_grid.getSizeInCellsY());
-        std::cout << (old_end_x - old_start_x) << " " << (old_end_y - old_start_y) << std::endl;
+
         if (old_end_x > old_start_x && old_end_y > old_start_y) {
             for (int old_my = old_start_y, new_my = new_start_y; old_my < old_end_y; old_my++, new_my++) {
                 size_t old_i = old_my * last_grid_size_x_;
@@ -197,6 +197,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
                           new_probs.begin() + new_i + new_start_x);
             }
         }
+
         probs_ = std::move(new_probs);
         last_grid_size_x_ = master_grid.getSizeInCellsX();
         last_grid_size_y_ = master_grid.getSizeInCellsY();
@@ -240,6 +241,7 @@ class BinaryBayesFilterObstacleLayer : public costmap_2d::Layer {
     double prob_grid_prior_;
     double max_prob_;
     double scan_range_;
+    double obstacle_depth_;  // assumed thickness of an observed obstacle point. Ray-trace this much farther
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
     ros::Subscriber scan_sub_;

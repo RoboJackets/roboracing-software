@@ -1,0 +1,24 @@
+<launch>
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
+
+    <node pkg="rr_common" type="pointcloud_combiner" name="transform_scan" output="screen">
+        <param name="sources" value="/scan/pointcloud"/>
+        <param name="destination" value="/current_obstacles"/>
+        <param name="refresh_rate" value="50"/>
+        <param name="combined_frame" value="base_footprint"/>
+        <param name="vg_filter_size" value="0.05"/>
+    </node>
+
+    <node pkg="rr_common" type="planner" name="planner" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim_hillclimb.yaml"/>
+        <rosparam>
+            input_cloud_topic: /current_obstacles
+            impasse_caution_duration: 0.25
+            impasse_reverse_duration: 4.0
+        </rosparam>
+    </node>
+
+    <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false"
+          args="-d $(find rr_evgp)/rviz/evgp.rviz"/>
+</launch>
