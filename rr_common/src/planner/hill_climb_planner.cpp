@@ -42,7 +42,7 @@ void HillClimbPlanner::FillObstacleCosts(PlannedPath& plan) const {
             plan.cost += k_dist_ * std::exp(-dist);
             plan.cost -= k_speed_ * plan.path[i].speed;
             plan.cost += k_steering_ * plan.path[i].steer;
-            plan.cost += std::abs(plan.path[i].pose.theta) * k_angle_;
+            plan.cost += k_angle_ * std::abs(plan.path[i].pose.theta);
             plan.dists[i] = dist;
         } else {
             plan.cost += collision_penalty_ * (plan.path.size() - i);
@@ -67,9 +67,7 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
         plan.has_collision = false;
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
-        int step_counter = 0;
         while (stuck_counter > 0) {
-            ++step_counter;
             const auto last_ctrl = plan.control;  // copy
             JitterControls(plan.control, neighbor_stddev_);
             model_.RollOutPath(plan.control, plan.path);
@@ -83,24 +81,19 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
                 best_cost = plan.cost;
             }
         }
-
-        // ROS_INFO_STREAM("descent took " << step_counter << " optimization steps");
     };
 
-    PlannedPath best_plan;
-    best_plan.cost = std::numeric_limits<double>::max();
+    PlannedPath global_best_plan;
+    global_best_plan.cost = std::numeric_limits<double>::max();
     int plan_count = 0;
-    std::mutex plan_count_mutex;
+    std::mutex plan_count_mutex, global_best_plan_mutex;
 
     auto worker = [&, this](int thread_idx) {
-        PlannedPath plan;
-        plan.cost = best_plan.cost;
+        PlannedPath plan, best_plan;
+        plan.cost = best_plan.cost = global_best_plan.cost;
         while (true) {
             {
                 std::lock_guard lock(plan_count_mutex);
-                if (plan.cost < best_plan.cost) {
-                    best_plan = plan;
-                }
                 if (plan_count >= num_restarts_) {
                     break;
                 }
@@ -118,6 +111,15 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
             }
 
             descend_hill(plan);
+
+            if (plan.cost < best_plan.cost) {
+                best_plan = plan;
+            }
+        }
+
+        std::lock_guard lock(global_best_plan_mutex);
+        if (best_plan.cost < global_best_plan.cost) {
+            global_best_plan = best_plan;
         }
     };
 
@@ -129,9 +131,9 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
         t.join();
     }
 
-    model_.UpdateSteeringAngle(best_plan.control[0]);
-    previous_best_plan_ = best_plan;
-    return best_plan;
+    model_.UpdateSteeringAngle(global_best_plan.control[0]);
+    previous_best_plan_ = global_best_plan;
+    return global_best_plan;
 }
 
 }  // namespace rr
