@@ -87,18 +87,20 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
         // ROS_INFO_STREAM("descent took " << step_counter << " optimization steps");
     };
 
-    std::vector<PlannedPath> best_plans(num_workers_);
-    for (PlannedPath& plan : best_plans) {
-        plan.cost = std::numeric_limits<double>::max();
-    }
+    PlannedPath best_plan;
+    best_plan.cost = std::numeric_limits<double>::max();
     int plan_count = 0;
     std::mutex plan_count_mutex;
 
     auto worker = [&, this](int thread_idx) {
         PlannedPath plan;
+        plan.cost = best_plan.cost;
         while (true) {
             {
                 std::lock_guard lock(plan_count_mutex);
+                if (plan.cost < best_plan.cost) {
+                    best_plan = plan;
+                }
                 if (plan_count >= num_restarts_) {
                     break;
                 }
@@ -116,10 +118,6 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
             }
 
             descend_hill(plan);
-
-            if (plan.cost < best_plans[thread_idx].cost) {
-                best_plans[thread_idx] = plan;
-            }
         }
     };
 
@@ -131,16 +129,9 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
         t.join();
     }
 
-    int best_worker = 0;
-    for (int i = 1; i < num_workers_; ++i) {
-        if (best_plans[i].cost < best_plans[best_worker].cost) {
-            best_worker = i;
-        }
-    }
-
-    model_.UpdateSteeringAngle(best_plans[best_worker].control[0]);
-    previous_best_plan_ = best_plans[best_worker];
-    return best_plans[best_worker];
+    model_.UpdateSteeringAngle(best_plan.control[0]);
+    previous_best_plan_ = best_plan;
+    return best_plan;
 }
 
 }  // namespace rr
