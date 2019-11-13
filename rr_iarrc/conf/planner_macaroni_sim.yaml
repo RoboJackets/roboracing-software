@@ -3,7 +3,7 @@ collision_hitbox:
   back: 0.1
   side: 0.1
 
-max_speed: 2.0
+max_speed: 1.0
 max_drive_accel: 10
 
 wheel_base: 0.4
