@@ -135,7 +135,7 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     }
 }
 
-std::optional<double> DistanceChecker::GetCollisionDistance(const Pose& pose) const {
+double DistanceChecker::GetCollisionDistance(const Pose& pose) const {
     double cos_th = std::cos(pose.theta);
     double sin_th = std::sin(pose.theta);
 
@@ -149,7 +149,7 @@ std::optional<double> DistanceChecker::GetCollisionDistance(const Pose& pose) co
 
     int i = GetCacheIndex(pose.x, pose.y);
     if (i < 0) {
-        return std::nullopt;
+        return -1.0;
     }
 
     const CacheEntry& entry = cache_[i];
@@ -166,7 +166,7 @@ std::optional<double> DistanceChecker::GetCollisionDistance(const Pose& pose) co
     for (const PCLPoint* p_ptr : entry.might_hit_points) {
         auto [x, y] = point_in_local_frame(*p_ptr);
         if (std::abs(x) <= half_length && std::abs(y) <= half_width) {
-            return std::nullopt;
+            return -1.0;
         }
     }
 
@@ -195,7 +195,7 @@ std::optional<double> DistanceChecker::GetCollisionDistance(const Pose& pose) co
         }
     }
 
-    return std::make_optional(dist);
+    return dist;
 }
 
 bool DistanceChecker::GetCollision(const PCLPoint& relative_point) const {

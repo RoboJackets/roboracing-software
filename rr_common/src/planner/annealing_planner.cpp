@@ -100,9 +100,9 @@ PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
         // Check collisions
         path.has_collision = false;
         for (size_t i = 0; i < path.path.size(); ++i) {
-            auto opt_dist = distance_checker_.GetCollisionDistance(path.path[i].pose);
-            path.has_collision |= !opt_dist.has_value();
-            path.dists[i] = opt_dist ? *opt_dist : -1;
+            double dist = distance_checker_.GetCollisionDistance(path.path[i].pose);
+            path.has_collision |= (dist <= 0);
+            path.dists[i] = dist;
         }
 
         path.cost = GetCost(path, map);

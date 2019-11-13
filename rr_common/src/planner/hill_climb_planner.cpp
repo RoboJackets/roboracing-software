@@ -37,16 +37,16 @@ void HillClimbPlanner::FillObstacleCosts(PlannedPath& plan) const {
     plan.cost = 0;
     plan.has_collision = false;
     for (size_t i = 0; i < plan.path.size(); ++i) {
-        auto opt_dist = distance_checker_.GetCollisionDistance(plan.path[i].pose);
-        if (opt_dist) {
-            plan.cost += k_dist_ * std::exp(-std::max(0.01, opt_dist.value()));
+        auto dist = distance_checker_.GetCollisionDistance(plan.path[i].pose);
+        if (dist > 0) {
+            plan.cost += k_dist_ * std::exp(-dist);
             plan.cost -= k_speed_ * plan.path[i].speed;
             plan.cost += k_steering_ * plan.path[i].steer;
             plan.cost += std::abs(plan.path[i].pose.theta) * k_angle_;
-            plan.dists[i] = opt_dist.value();
+            plan.dists[i] = dist;
         } else {
             plan.cost += collision_penalty_ * (plan.path.size() - i);
-            std::fill(plan.dists.begin() + i, plan.dists.end(), 0);
+            std::fill(plan.dists.begin() + i, plan.dists.end(), -1);
             plan.has_collision = true;
             break;
         }
@@ -95,6 +95,7 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
     std::mutex plan_count_mutex;
 
     auto worker = [&, this](int thread_idx) {
+        PlannedPath plan;
         while (true) {
             {
                 std::lock_guard lock(plan_count_mutex);
@@ -104,7 +105,6 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
                 plan_count++;
             }
 
-            PlannedPath plan;
             if (plan_count == 1 && !previous_best_plan_.control.empty()) {
                 // for one start, init to previous best controls
                 plan.control = previous_best_plan_.control;

@@ -18,8 +18,8 @@ class DistanceChecker {
     /**
      * Constructor
      * @param hitbox Hitbox of the robot
-     * @param map_size Map size limits for cached distances. Set this so that it
-     * is not possible for paths to leave this box
+     * @param map_size Map size limits for cached distances. Set this so that it is not possible for paths to leave this
+     * box.
      */
     DistanceChecker(const CenteredBox& hitbox, const CenteredBox& map_size);
 
@@ -27,21 +27,18 @@ class DistanceChecker {
      * Calculate the shortest distance from any part of the robot to any obstacle
      * point in the map
      * @param pose Future pose relative to current/origin (0,0,0)
-     * @return bool - collision detected
-     *         double - clearing distance to nearest obstacle
+     * @return clearing distance to nearest obstacle, or (<= 0) if collision
      */
-    [[nodiscard]] std::optional<double> GetCollisionDistance(const Pose& pose) const;
+    [[nodiscard]] double GetCollisionDistance(const Pose& pose) const;
 
     /**
-     * Given a map, cache the nearest neighbors. Fill the cache outwards from
-     * locations containing obstacle points.
+     * Given a map, cache the nearest neighbors. Fill the cache outwards from locations containing obstacle points.
      * @param map Point cloud map representation
      */
     void SetMap(const PCLMap& map);
 
     /**
-     * Determine if a point is in collision with the robot's current position. If
-     * true, something is fishy.
+     * Determine if a point is in collision with the robot's current position. If true, something is fishy.
      * @param relative_point Point in robot's coordinate frame
      * @return true if point is inside robot's hitbox, false otherwise
      */
@@ -57,8 +54,7 @@ class DistanceChecker {
 
   private:
     /*
-     * Caching system: map from discretized x, y location to its nearest neighbor
-     * in the map/obstacle point cloud
+     * Caching system: map from discretized x, y location to its nearest neighbor in the map/obstacle point cloud
      */
     struct CacheEntry {
         PCLPoint location;                              // x, y location represented by this entry

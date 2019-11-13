@@ -52,13 +52,13 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
     bool is_collision = false;
 
     for (const auto& path_point : path) {
-        auto opt_dist = distance_checker_.GetCollisionDistance(path_point.pose);
+        double dist = distance_checker_.GetCollisionDistance(path_point.pose);
 
-        if (!opt_dist) {
+        if (dist <= 0) {
             is_collision = true;
             break;
         }
-        denominator += params.k_dist * opt_dist.value() + params.k_speed * path_point.speed;
+        denominator += params.k_dist * dist + params.k_speed * path_point.speed;
     }
 
     if (denominator == 0.0) {
@@ -223,13 +223,12 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
 
     PlannedPath& best_plan = good_plans[best_index];
 
-    bool is_collision;
     double min_dist = 10000;
     for (const auto& path_point : best_plan.path) {
-        auto opt_dist = distance_checker_.GetCollisionDistance(path_point.pose);
+        double dist = distance_checker_.GetCollisionDistance(path_point.pose);
 
-        if (*opt_dist < min_dist) {
-            min_dist = *opt_dist;
+        if (dist > 0 && dist < min_dist) {
+            min_dist = dist;
         }
     }
 
