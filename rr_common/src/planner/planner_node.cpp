@@ -36,9 +36,12 @@ ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
 ros::Time last_speed_time;
-double max_drive_accel;
 
+double max_drive_accel;
 double steering_gain;
+
+double total_planning_time;
+size_t total_plans;
 
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     last_map_msg = map;
@@ -220,6 +223,9 @@ int main(int argc, char** argv) {
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
 
+    total_planning_time = 0;
+    total_plans = 0;
+
     ROS_INFO("Planner initialized");
 
     ros::Rate rate(30);
@@ -234,7 +240,10 @@ int main(int argc, char** argv) {
             processMap(last_map_msg);
 
             double seconds = (ros::WallTime::now() - start).toSec();
-            ROS_INFO("Planner took %0.1fms", seconds * 1000);
+            total_planning_time += seconds;
+            total_plans++;
+            double sec_avg = total_planning_time / total_plans;
+            ROS_INFO("Planner took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
 
         rate.sleep();
