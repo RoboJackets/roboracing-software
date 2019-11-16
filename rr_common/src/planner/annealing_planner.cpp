@@ -4,7 +4,7 @@
 
 namespace rr {
 
-AnnealingPlanner::AnnealingPlanner(const ros::NodeHandle& nh, const DistanceChecker& c, const BicycleModel& m)
+AnnealingPlanner::AnnealingPlanner(const ros::NodeHandle& nh, const NearestPointCache& c, const BicycleModel& m)
       : distance_checker_(c), model_(m) {
     using assertions::getParam;
 
@@ -22,7 +22,7 @@ AnnealingPlanner::AnnealingPlanner(const ros::NodeHandle& nh, const DistanceChec
              { assertions::greater(0.0), assertions::less(params.temperature_start) });
 
     for (int i = 0; i < params.annealing_steps; i++) {
-        rr::PlannedPath& path = path_pool_.emplace_back();
+        rr::OptimizedTrajectory& path = path_pool_.emplace_back();
         path.control = std::vector<double>(params.n_path_segments, 0);
         model_.RollOutPath(path.control, path.path);
         path.dists = std::vector<double>(path.path.size(), 0.0);
@@ -46,7 +46,7 @@ double AnnealingPlanner::GetTemperature(unsigned int t) {
     return params.temperature_start * std::exp(K * t);
 }
 
-double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& map) {
+double AnnealingPlanner::GetCost(const OptimizedTrajectory& planned_path, const PCLMap& map) {
     double cost = 0;
 
     const std::vector<PathPoint>& path = planned_path.path;
@@ -72,7 +72,7 @@ double AnnealingPlanner::GetCost(const PlannedPath& planned_path, const PCLMap& 
     return cost;
 }
 
-PlannedPath AnnealingPlanner::Plan(const PCLMap& map) {
+OptimizedTrajectory AnnealingPlanner::Optimize(const PCLMap& map) {
     path_pool_[0] = path_pool_[last_path_idx_];
 
     unsigned int best_idx = 0;

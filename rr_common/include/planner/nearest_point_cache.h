@@ -1,6 +1,5 @@
 /**
- * DistanceChecker: utility class for quickly evaluating feasibility of
- * trajectories
+ * DistanceChecker: utility class for quickly evaluating feasibility of trajectories
  */
 
 #pragma once
@@ -13,7 +12,7 @@
 
 namespace rr {
 
-class DistanceChecker {
+class NearestPointCache {
   public:
     /**
      * Constructor
@@ -21,7 +20,7 @@ class DistanceChecker {
      * @param map_size Map size limits for cached distances. Set this so that it is not possible for paths to leave this
      * box.
      */
-    DistanceChecker(const CenteredBox& hitbox, const CenteredBox& map_size);
+    NearestPointCache(const CenteredBox& hitbox, const CenteredBox& map_size);
 
     /**
      * Calculate the shortest distance from any part of the robot to any obstacle

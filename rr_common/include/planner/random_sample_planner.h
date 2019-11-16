@@ -7,13 +7,13 @@
 #include <ros/node_handle.h>
 
 #include "planner/bicycle_model.h"
-#include "planner/distance_checker.h"
-#include "planner/planner.h"
+#include "planner/nearest_point_cache.h"
 #include "planner/planner_types.hpp"
+#include "planner/planning_optimizer.h"
 
 namespace rr {
 
-class RandomSamplePlanner : public Planner {
+class RandomSamplePlanner : public PlanningOptimizer {
   public:
     struct Params {
         // path generation
@@ -40,14 +40,14 @@ class RandomSamplePlanner : public Planner {
         double obs_dist_slow_ratio;
     };
 
-    RandomSamplePlanner(const ros::NodeHandle& nh, const DistanceChecker&, const BicycleModel&);
+    RandomSamplePlanner(const ros::NodeHandle& nh, const NearestPointCache&, const BicycleModel&);
 
     ~RandomSamplePlanner() = default;
 
     /*
-     * Plan: given a map of the world, find the best path through it
+     * Optimize: given a map of the world, find the best path through it
      */
-    PlannedPath Plan(const PCLMap& map) override;
+    OptimizedTrajectory Optimize(const PCLMap& map) override;
 
   private:
     /*
@@ -76,11 +76,11 @@ class RandomSamplePlanner : public Planner {
      * the input list.
      * Params:
      * paths - list of all PlannedPaths
-     * mask - true if PlannedPath should be considered (false if collision)
+     * mask - true if OptimizedTrajectory should be considered (false if collision)
      * Return:
      * list of indices of selected paths
      */
-    std::vector<int> GetLocalMinima(const std::vector<std::reference_wrapper<PlannedPath>>& plans);
+    std::vector<int> GetLocalMinima(const std::vector<std::reference_wrapper<OptimizedTrajectory>>& plans);
 
     /*
      * FilterOutput: Apply a filter to the outputs of this planner over time
@@ -90,7 +90,7 @@ class RandomSamplePlanner : public Planner {
     // algorithm parameters
     Params params;
 
-    DistanceChecker distance_checker_;
+    NearestPointCache distance_checker_;
     BicycleModel model_;
 
     // mutable state

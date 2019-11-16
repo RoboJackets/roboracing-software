@@ -24,8 +24,6 @@ class BicycleModel {
     BicycleModel(double wheel_base, double max_lateral_accel, double distance_increment, double max_speed,
                  double max_steer_rate, const std::vector<int>& segment_sections);
 
-    BicycleModel() = default;
-
     /**
      * roll out a trajectory through the world
      * @param control Vector of steering angles

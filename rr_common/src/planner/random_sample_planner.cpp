@@ -11,7 +11,7 @@ double last_speed = 0;
 
 namespace rr {
 
-RandomSamplePlanner::RandomSamplePlanner(const ros::NodeHandle& nh, const DistanceChecker& distance_checker,
+RandomSamplePlanner::RandomSamplePlanner(const ros::NodeHandle& nh, const NearestPointCache& distance_checker,
                                          const BicycleModel& model)
       : distance_checker_(distance_checker), model_(model) {
     using assertions::getParam;
@@ -68,7 +68,7 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
     return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::reference_wrapper<PlannedPath>>& plans) {
+std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::reference_wrapper<OptimizedTrajectory>>& plans) {
     std::vector<int> local_minima_indices;
     auto n_samples = plans.size();
     auto n_path_segments = plans[0].get().control.size();
@@ -154,9 +154,9 @@ double RandomSamplePlanner::FilterOutput(double this_steer) {
     return median;
 }
 
-PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
+OptimizedTrajectory RandomSamplePlanner::Optimize(const PCLMap& map) {
     // allocate planned paths
-    std::vector<PlannedPath> plans;
+    std::vector<OptimizedTrajectory> plans;
 
     distance_checker_.SetMap(map);
 
@@ -183,7 +183,7 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
         best_cost = std::min(best_cost, plan.cost);
     }
 
-    std::vector<std::reference_wrapper<PlannedPath>> good_plans;
+    std::vector<std::reference_wrapper<OptimizedTrajectory>> good_plans;
 
     // filter by cost (compared to best cost)
     for (auto& plan : plans) {
@@ -196,7 +196,7 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
         std::cout << "[Planner] Warning: found " << good_plans.size() << " good paths" << std::endl;
     }
 
-    PlannedPath fallback_plan;
+    OptimizedTrajectory fallback_plan;
     fallback_plan.has_collision = true;
 
     if (good_plans.empty()) {
@@ -221,7 +221,7 @@ PlannedPath RandomSamplePlanner::Plan(const PCLMap& map) {
         }
     }
 
-    PlannedPath& best_plan = good_plans[best_index];
+    OptimizedTrajectory& best_plan = good_plans[best_index];
 
     double min_dist = 10000;
     for (const auto& path_point : best_plan.path) {

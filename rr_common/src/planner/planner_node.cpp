@@ -14,8 +14,8 @@
 #include <planner/hill_climb_planner.h>
 #include <planner/random_sample_planner.h>
 
-std::unique_ptr<rr::Planner> planner;
-std::unique_ptr<rr::DistanceChecker> distance_checker;
+std::unique_ptr<rr::PlanningOptimizer> planner;
+std::unique_ptr<rr::NearestPointCache> distance_checker;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
@@ -79,7 +79,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
         return;
     }
 
-    rr::PlannedPath plan = planner->Plan(cloud);
+    rr::OptimizedTrajectory plan = planner->Optimize(cloud);
 
     ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
 
@@ -109,14 +109,14 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
             caution_start_time = now;
         }
     } else {
-        ROS_WARN_STREAM("Planner encountered unknown reverse state");
+        ROS_WARN_STREAM("PlanningOptimizer encountered unknown reverse state");
     }
 
     if (REVERSE == reverse_state) {
         update_messages(-0.8, 0);
-        ROS_INFO_STREAM("Planner reversing");
+        ROS_INFO_STREAM("PlanningOptimizer reversing");
     } else if (plan.has_collision) {
-        ROS_INFO_STREAM("Planner: no path found but not reversing; reusing previous message");
+        ROS_INFO_STREAM("PlanningOptimizer: no path found but not reversing; reusing previous message");
     } else {
         // filter/cap acceleration
         double dt;
@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
     map_dimensions.length_back = 5;
     map_dimensions.width_right = map_dimensions.width_left = 8;
 
-    distance_checker = std::make_unique<rr::DistanceChecker>(hitbox, map_dimensions);
+    distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
 
     double wheel_base;
     assertions::getParam(nhp, "wheel_base", wheel_base);
@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
     } else if (planner_type == "hill_climbing") {
         planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, model);
     } else {
-        ROS_ERROR_STREAM("[Planner] Error: unknown planner type \"" << planner_type << "\"");
+        ROS_ERROR_STREAM("[PlanningOptimizer] Error: unknown planner type \"" << planner_type << "\"");
         ros::shutdown();
     }
 
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
     total_planning_time = 0;
     total_plans = 0;
 
-    ROS_INFO("Planner initialized");
+    ROS_INFO("PlanningOptimizer initialized");
 
     ros::Rate rate(30);
     is_new_msg = false;
@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
             total_planning_time += seconds;
             total_plans++;
             double sec_avg = total_planning_time / total_plans;
-            ROS_INFO("Planner took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
+            ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
 
         rate.sleep();

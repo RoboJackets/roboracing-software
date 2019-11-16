@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& out, const PathPoint& p) {
 /**
  * PlannedPath: object representing a planned trajectory
  */
-struct PlannedPath {
+struct OptimizedTrajectory {
     std::vector<double> control;  // input to a path
     std::vector<PathPoint> path;  // results of path rollout
     std::vector<double> dists;    // results of collision checking

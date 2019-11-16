@@ -8,14 +8,14 @@
 
 namespace rr {
 
-class Planner {
+class PlanningOptimizer {
   public:
     /**
      * Given a map of the world, find the best path through it
      * @param map Point cloud map
      * @return Object representing the planned trajectory
      */
-    virtual PlannedPath Plan(const PCLMap& map) = 0;
+    virtual OptimizedTrajectory Optimize(const PCLMap& map) = 0;
 };
 
 }  // namespace rr

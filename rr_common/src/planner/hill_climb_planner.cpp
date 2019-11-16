@@ -10,7 +10,7 @@ namespace rr {
 template <class T>
 assertions::Assertion<T> container_not_empty{ [](const T& v) { return !v.empty(); }, "container not empty" };
 
-HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, const rr::DistanceChecker& distanceChecker,
+HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, const rr::NearestPointCache& distanceChecker,
                                    const rr::BicycleModel& bicycleModel)
       : distance_checker_(distanceChecker), model_(bicycleModel), rand_gen_(), normal_distribution_(0, 1) {
     std::vector<int> segment_sections;
@@ -29,7 +29,7 @@ HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, const rr::Distance
     assertions::getParam(nh, "local_optimum_tries", local_optimum_tries_, { assertions::greater(0) });
 }
 
-void HillClimbPlanner::FillObstacleCosts(PlannedPath& plan) const {
+void HillClimbPlanner::FillObstacleCosts(OptimizedTrajectory& plan) const {
     if (plan.dists.size() != plan.path.size()) {
         plan.dists.resize(plan.path.size());
     }
@@ -59,11 +59,11 @@ void HillClimbPlanner::JitterControls(std::vector<double>& ctrl, double stddev) 
     }
 }
 
-PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
+OptimizedTrajectory HillClimbPlanner::Optimize(const rr::PCLMap& map) {
     distance_checker_.SetMap(map);
 
     // precondition: plan.control is initialized
-    auto descend_hill = [this, &map](PlannedPath& plan) {
+    auto descend_hill = [this, &map](OptimizedTrajectory& plan) {
         plan.has_collision = false;
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
@@ -83,13 +83,13 @@ PlannedPath HillClimbPlanner::Plan(const rr::PCLMap& map) {
         }
     };
 
-    PlannedPath global_best_plan;
+    OptimizedTrajectory global_best_plan;
     global_best_plan.cost = std::numeric_limits<double>::max();
     int plan_count = 0;
     std::mutex plan_count_mutex, global_best_plan_mutex;
 
     auto worker = [&, this](int thread_idx) {
-        PlannedPath plan, best_plan;
+        OptimizedTrajectory plan, best_plan;
         plan.cost = best_plan.cost = global_best_plan.cost;
         while (true) {
             {

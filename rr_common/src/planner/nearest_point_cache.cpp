@@ -1,8 +1,8 @@
-#include "planner/distance_checker.h"
+#include "planner/nearest_point_cache.h"
 
 namespace rr {
 
-DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_size)
+NearestPointCache::NearestPointCache(const CenteredBox& box, const CenteredBox& map_size)
       : hitbox_(box), map_size_(map_size), cache_resolution_(10.0) {
     cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
     cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
@@ -26,7 +26,7 @@ DistanceChecker::DistanceChecker(const CenteredBox& box, const CenteredBox& map_
     hitbox_corner_dist_ = std::sqrt(half_length * half_length + half_width * half_width);
 }
 
-int DistanceChecker::GetCacheIndex(double x, double y) const {
+int NearestPointCache::GetCacheIndex(double x, double y) const {
     int r = static_cast<int>(x * cache_resolution_) + cache_rows_back_;
     if (r < 0 || r >= cache_rows_) {
         return -1;
@@ -40,7 +40,7 @@ int DistanceChecker::GetCacheIndex(double x, double y) const {
     return r * cache_cols_ + c;
 }
 
-PCLPoint DistanceChecker::GetPointFromIndex(int i) const {
+PCLPoint NearestPointCache::GetPointFromIndex(int i) const {
     int r = i / cache_cols_;
     int c = i % cache_cols_;
 
@@ -50,13 +50,13 @@ PCLPoint DistanceChecker::GetPointFromIndex(int i) const {
     return out;
 }
 
-double DistanceChecker::Dist(const PCLPoint& p1, const PCLPoint& p2) const {
+double NearestPointCache::Dist(const PCLPoint& p1, const PCLPoint& p2) const {
     double dx = p1.x - p2.x;
     double dy = p1.y - p2.y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
-void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
+void NearestPointCache::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     for (CacheEntry& v : cache_) {
         v.might_hit_points.clear();
         v.nearest_point = nullptr;
@@ -135,7 +135,7 @@ void DistanceChecker::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     }
 }
 
-double DistanceChecker::GetCollisionDistance(const Pose& pose) const {
+double NearestPointCache::GetCollisionDistance(const Pose& pose) const {
     double cos_th = std::cos(pose.theta);
     double sin_th = std::sin(pose.theta);
 
@@ -198,7 +198,7 @@ double DistanceChecker::GetCollisionDistance(const Pose& pose) const {
     return dist;
 }
 
-bool DistanceChecker::GetCollision(const PCLPoint& relative_point) const {
+bool NearestPointCache::GetCollision(const PCLPoint& relative_point) const {
     return (relative_point.x < hitbox_.length_front) && (relative_point.x > -hitbox_.length_back) &&
            (relative_point.y < hitbox_.width_left) && (relative_point.y > -hitbox_.width_right);
 }
