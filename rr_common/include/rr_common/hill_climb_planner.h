@@ -14,7 +14,7 @@ namespace rr {
 
 class HillClimbPlanner : public PlanningOptimizer {
   public:
-    HillClimbPlanner(const ros::NodeHandle& nh, const NearestPointCache&, const BicycleModel&);
+    HillClimbPlanner(const ros::NodeHandle& nh, NearestPointCache, BicycleModel);
 
     OptimizedTrajectory Optimize(const PCLMap& map) override;
 
@@ -37,8 +37,8 @@ class HillClimbPlanner : public PlanningOptimizer {
     NearestPointCache distance_checker_;
     BicycleModel model_;
 
-    std::normal_distribution<double> normal_distribution_;
     std::mt19937 rand_gen_;
+    std::normal_distribution<double> normal_distribution_;
 
     OptimizedTrajectory previous_best_plan_;
 };

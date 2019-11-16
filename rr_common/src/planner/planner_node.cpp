@@ -7,15 +7,15 @@
 #include <pcl_ros/transforms.h>
 #include <ros/ros.h>
 
+#include <rr_common/annealing_planner.h>
+#include <rr_common/hill_climb_planner.h>
+#include <rr_common/random_sample_planner.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 
-#include <planner/annealing_planner.h>
-#include <planner/hill_climb_planner.h>
-#include <planner/random_sample_planner.h>
-
 std::unique_ptr<rr::PlanningOptimizer> planner;
 std::unique_ptr<rr::NearestPointCache> distance_checker;
+std::unique_ptr<rr::LinearTrackingFilter> speed_filter;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
@@ -35,9 +35,6 @@ ros::Time caution_start_time;
 ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
-ros::Time last_speed_time;
-
-double max_drive_accel;
 double steering_gain;
 
 double total_planning_time;
@@ -74,9 +71,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
     }
 
     if (cloud.empty()) {
-        // Do not publish new commands
         ROS_WARN("environment map pointcloud is empty");
-        return;
     }
 
     rr::OptimizedTrajectory plan = planner->Optimize(cloud);
@@ -109,30 +104,18 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
             caution_start_time = now;
         }
     } else {
-        ROS_WARN_STREAM("PlanningOptimizer encountered unknown reverse state");
+        ROS_ERROR_STREAM("PlanningOptimizer encountered unknown reverse state");
     }
 
     if (REVERSE == reverse_state) {
         update_messages(-0.8, 0);
-        ROS_INFO_STREAM("PlanningOptimizer reversing");
+        ROS_WARN_STREAM("PlanningOptimizer reversing");
     } else if (plan.has_collision) {
-        ROS_INFO_STREAM("PlanningOptimizer: no path found but not reversing; reusing previous message");
+        ROS_WARN_STREAM("PlanningOptimizer: no path found but not reversing; reusing previous message");
     } else {
-        // filter/cap acceleration
-        double dt;
-        if (last_speed_time == ros::Time(0)) {
-            dt = 0;
-        } else {
-            dt = (ros::Time::now() - last_speed_time).toSec();
-        }
-
-        double max_new_speed = speed_message->speed + max_drive_accel * dt;
-        double new_speed = std::min(plan.path.front().speed, max_new_speed);
-
-        update_messages(new_speed, plan.path[0].steer * steering_gain);
+        speed_filter->Update(plan.path[0].speed, now.toSec());
+        update_messages(speed_filter->GetValue(), plan.path[0].steer * steering_gain);
     }
-
-    last_speed_time = ros::Time::now();
 
     speed_pub.publish(speed_message);
     steer_pub.publish(steer_message);
@@ -172,20 +155,10 @@ int main(int argc, char** argv) {
 
     distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
 
-    double wheel_base;
-    assertions::getParam(nhp, "wheel_base", wheel_base);
-    double lateral_accel;
-    assertions::getParam(nhp, "lateral_accel", lateral_accel);
-    double distance_increment;
-    assertions::getParam(nhp, "distance_increment", distance_increment);
-    double max_speed;
-    assertions::getParam(nhp, "max_speed", max_speed);
-    double steering_speed;
-    assertions::getParam(nhp, "steering_speed", steering_speed);
-    std::vector<int> segment_sections;
-    assertions::getParam(nhp, "segment_sections", segment_sections);
+    auto steering_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "steering_filter"));
+    rr::BicycleModel vehicle_model(ros::NodeHandle(nhp, "bicycle_model"), steering_model);
 
-    rr::BicycleModel model(wheel_base, lateral_accel, distance_increment, max_speed, steering_speed, segment_sections);
+    speed_filter = std::make_unique<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "speed_filter"));
 
     std::string obstacle_cloud_topic;
     assertions::getParam(nhp, "input_cloud_topic", obstacle_cloud_topic);
@@ -193,11 +166,11 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "planner_type", planner_type);
 
     if (planner_type == "random_sample") {
-        planner = std::make_unique<rr::RandomSamplePlanner>(nhp, *distance_checker, model);
+        planner = std::make_unique<rr::RandomSamplePlanner>(nhp, *distance_checker, vehicle_model);
     } else if (planner_type == "annealing") {
-        planner = std::make_unique<rr::AnnealingPlanner>(nhp, *distance_checker, model);
+        planner = std::make_unique<rr::AnnealingPlanner>(nhp, *distance_checker, vehicle_model);
     } else if (planner_type == "hill_climbing") {
-        planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, model);
+        planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, vehicle_model);
     } else {
         ROS_ERROR_STREAM("[PlanningOptimizer] Error: unknown planner type \"" << planner_type << "\"");
         ros::shutdown();
@@ -208,9 +181,6 @@ int main(int argc, char** argv) {
     caution_start_time = ros::Time(0);
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
-
-    last_speed_time = ros::Time(0);
-    max_drive_accel = assertions::param(nhp, "max_drive_accel", 1000.0);
 
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
 
@@ -226,27 +196,31 @@ int main(int argc, char** argv) {
     total_planning_time = 0;
     total_plans = 0;
 
-    ROS_INFO("PlanningOptimizer initialized");
+    steering_model->Reset(0, ros::Time::now().toSec());
+    speed_filter->Reset(0, ros::Time::now().toSec());
+
+    ROS_INFO("planner initialized");
 
     ros::Rate rate(30);
     is_new_msg = false;
     while (ros::ok()) {
+        rate.sleep();
         ros::spinOnce();
+
+        steering_model->Update(steer_message->angle, ros::Time::now().toSec());
 
         if (is_new_msg) {
             is_new_msg = false;
+
             auto start = ros::WallTime::now();
-
             processMap(last_map_msg);
-
             double seconds = (ros::WallTime::now() - start).toSec();
+
             total_planning_time += seconds;
             total_plans++;
             double sec_avg = total_planning_time / total_plans;
             ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
-
-        rate.sleep();
     }
 
     return 0;

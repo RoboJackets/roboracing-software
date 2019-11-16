@@ -1,4 +1,4 @@
-#include "planner/random_sample_planner.h"
+#include "rr_common/random_sample_planner.h"
 
 #include <algorithm>
 #include <cmath>
@@ -68,7 +68,8 @@ std::tuple<bool, double> RandomSamplePlanner::GetCost(const std::vector<PathPoin
     return std::make_tuple(is_collision, 1.0 / denominator);
 }
 
-std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::reference_wrapper<OptimizedTrajectory>>& plans) {
+std::vector<int>
+RandomSamplePlanner::GetLocalMinima(const std::vector<std::reference_wrapper<OptimizedTrajectory>>& plans) {
     std::vector<int> local_minima_indices;
     auto n_samples = plans.size();
     auto n_path_segments = plans[0].get().control.size();
@@ -76,8 +77,8 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::refe
     if (n_samples > 0) {
         // fill flann-format sample matrix
         double sampleArray[n_samples * n_path_segments];
-        for (int i = 0; i < n_samples; i++) {
-            for (int j = 0; j < n_path_segments; j++) {
+        for (size_t i = 0; i < n_samples; i++) {
+            for (size_t j = 0; j < n_path_segments; j++) {
                 sampleArray[i * n_path_segments + j] = plans[i].get().control[j];
             }
         }
@@ -93,19 +94,19 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::refe
         std::vector<bool> samples_known_status(n_samples, false);
 
         // initialize input/output parameters for radius searches
-        flann::Matrix<int> indices(new int[n_samples], 1, n_samples);
+        flann::Matrix<size_t> indices(new size_t[n_samples], 1, n_samples);
         flann::Matrix<double> dists(new double[n_samples], 1, n_samples);
         flann::Matrix<double> ctrl(new double[n_path_segments], 1, n_path_segments);
         flann::SearchParams searchParams(1);
         const double& searchRadius = params.path_similarity_cutoff;
 
-        for (int i = 0; i < n_samples; i++) {
+        for (size_t i = 0; i < n_samples; i++) {
             if (samples_known_status[i]) {
                 continue;
             }
 
             // perform radius search
-            for (int d = 0; d < n_path_segments; d++) {
+            for (size_t d = 0; d < n_path_segments; d++) {
                 ctrl[0][d] = samples[i][d];
             }
             int n_neighbors = flannIndex.radiusSearch(ctrl, indices, dists, searchRadius, searchParams);
@@ -115,7 +116,7 @@ std::vector<int> RandomSamplePlanner::GetLocalMinima(const std::vector<std::refe
             // i is the query, j is a neighbor
             bool any_better_in_area = false;
             for (int j = 0; j < n_neighbors; j++) {
-                int found_index = indices[0][j];
+                auto found_index = indices[0][j];
 
                 if (found_index == i) {  // handle index of query later
                     continue;

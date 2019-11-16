@@ -53,7 +53,7 @@ RelativePoseHistoryClient::Pose RelativePoseHistoryClient::GetRelativePoseAtTime
         auto& poses = history_->poses;
 
         // find the index of the last pose before the requested time
-        int i = 0;
+        size_t i = 0;
         while (poses[i].header.stamp > t && i < poses.size()) {
             i++;
         }

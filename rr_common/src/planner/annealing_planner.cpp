@@ -1,11 +1,11 @@
-#include "planner/annealing_planner.h"
+#include <rr_common/annealing_planner.h>
 
 #include <parameter_assertions/assertions.h>
 
 namespace rr {
 
 AnnealingPlanner::AnnealingPlanner(const ros::NodeHandle& nh, const NearestPointCache& c, const BicycleModel& m)
-      : distance_checker_(c), model_(m) {
+      : distance_checker_(c), model_(m), rand_gen_(42) {
     using assertions::getParam;
 
     getParam(nh, "n_path_segments", params.n_path_segments, { assertions::greater(0) });
@@ -50,7 +50,6 @@ double AnnealingPlanner::GetCost(const OptimizedTrajectory& planned_path, const 
     double cost = 0;
 
     const std::vector<PathPoint>& path = planned_path.path;
-    const auto& last_path = path_pool_[last_path_idx_].path;
 
     for (size_t i = 0; i < path.size(); i++) {
         double dist = planned_path.dists[i];
@@ -86,9 +85,9 @@ OptimizedTrajectory AnnealingPlanner::Optimize(const PCLMap& map) {
     distance_checker_.SetMap(map);
 
     // update our steering angle estimate using the last output
-    model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
+    //    model_.UpdateSteeringAngle(path_pool_[best_idx].path[0].steer);
 
-    for (unsigned int t = 0; t < params.annealing_steps; t++) {
+    for (int t = 0; t < params.annealing_steps; t++) {
         auto& path = path_pool_[t];
 
         if (t > 0) {

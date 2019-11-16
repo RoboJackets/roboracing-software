@@ -1,9 +1,9 @@
-#include "planner/nearest_point_cache.h"
+#include <rr_common/nearest_point_cache.h>
 
 namespace rr {
 
 NearestPointCache::NearestPointCache(const CenteredBox& box, const CenteredBox& map_size)
-      : hitbox_(box), map_size_(map_size), cache_resolution_(10.0) {
+      : map_size_(map_size), cache_resolution_(10.0), hitbox_(box) {
     cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
     cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
     cache_rows_ = cache_rows_front_ + cache_rows_back_;

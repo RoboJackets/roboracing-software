@@ -6,10 +6,10 @@
 
 #include <ros/node_handle.h>
 
-#include "planner/bicycle_model.h"
-#include "planner/nearest_point_cache.h"
-#include "planner/planner_types.hpp"
-#include "planner/planning_optimizer.h"
+#include "bicycle_model.h"
+#include "nearest_point_cache.h"
+#include "planner_types.hpp"
+#include "planning_optimizer.h"
 
 namespace rr {
 

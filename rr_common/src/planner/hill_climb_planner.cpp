@@ -1,22 +1,19 @@
+#include <rr_common/hill_climb_planner.h>
+
 #include <mutex>
 #include <thread>
-
-#include <planner/hill_climb_planner.h>
 
 #include <parameter_assertions/assertions.h>
 
 namespace rr {
 
-template <class T>
-assertions::Assertion<T> container_not_empty{ [](const T& v) { return !v.empty(); }, "container not empty" };
-
-HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, const rr::NearestPointCache& distanceChecker,
-                                   const rr::BicycleModel& bicycleModel)
-      : distance_checker_(distanceChecker), model_(bicycleModel), rand_gen_(), normal_distribution_(0, 1) {
-    std::vector<int> segment_sections;
-    assertions::getParam(nh, "segment_sections", segment_sections, { container_not_empty<std::vector<int>> });
-    state_dim_ = segment_sections.size();
-
+HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, rr::NearestPointCache distanceChecker,
+                                   rr::BicycleModel bicycleModel)
+      : distance_checker_(std::move(distanceChecker))
+      , model_(std::move(bicycleModel))
+      , rand_gen_(0)
+      , normal_distribution_(0, 1) {
+    assertions::getParam(nh, "n_segments", state_dim_, { assertions::greater<int>(0) });
     assertions::getParam(nh, "k_dist", k_dist_, { assertions::greater_eq(0.0) });
     assertions::getParam(nh, "k_speed", k_speed_, { assertions::greater_eq(0.0) });
     assertions::getParam(nh, "k_angle", k_angle_, { assertions::greater_eq(0.0) });
@@ -63,7 +60,7 @@ OptimizedTrajectory HillClimbPlanner::Optimize(const rr::PCLMap& map) {
     distance_checker_.SetMap(map);
 
     // precondition: plan.control is initialized
-    auto descend_hill = [this, &map](OptimizedTrajectory& plan) {
+    auto descend_hill = [this](OptimizedTrajectory& plan) {
         plan.has_collision = false;
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
@@ -131,7 +128,6 @@ OptimizedTrajectory HillClimbPlanner::Optimize(const rr::PCLMap& map) {
         t.join();
     }
 
-    model_.UpdateSteeringAngle(global_best_plan.control[0]);
     previous_best_plan_ = global_best_plan;
     return global_best_plan;
 }
