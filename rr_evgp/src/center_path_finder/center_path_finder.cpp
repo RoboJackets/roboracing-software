@@ -1,6 +1,7 @@
 #include <ros/publisher.h>
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <nav_msgs/MapMetaData.h>
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/Header.h>
 #include <stdio.h>
@@ -30,6 +31,15 @@ ros::Publisher pub_path;
 struct Point {
     int x;
     int y;
+    bool operator<(const Point& n) const {
+        return false;
+    }
+    bool operator>(const Point& n) const {
+        return true;
+    }
+    bool operator==(const Point& n) const {
+        return x == n.x && y == n.y;
+    }
 };
 
 struct State {
@@ -68,8 +78,11 @@ bool isEndState(State s) {
     test++;
     return test > 2000;
 }
- int distanceMapWidth; //#TODO
- float distanceMap[];
+//int distanceMapWidth; //#TODO
+//float distanceMap[];
+
+vector<vector<float>> distanceMapVector;
+
 // returns a list of States. Each state only has a pt and a cost
 vector<State> getSuccessors(Point pt) {
     vector<State> successors;
@@ -81,7 +94,8 @@ vector<State> getSuccessors(Point pt) {
         for (int xi = 1; xi >= -1; xi--) {
             State t;
             t.pt = {pt.x+xi, pt.y+yi};
-            t.cost = getItem(t.pt, distanceMapWidth, distanceMap);
+            //t.cost = getItem(t.pt, distanceMapWidth, distanceMap);
+            t.cost = distanceMapVector.at(t.pt.x).at(t.pt.y); //#TODO!
             successors.push_back(t);
         }
     }
@@ -94,7 +108,7 @@ vector<Point> uniformCostSearch() {
     set<Point> visited;
 
     pq.push(start);
-    visited.insert(start);
+    visited.insert(start.pt);
 
     //uniform cost search
     while (!pq.empty()) {
@@ -111,7 +125,7 @@ vector<Point> uniformCostSearch() {
             newState.path = e.path;
             newState.path.push_back(s.pt);
             newState.cost = e.cost + s.cost;
-            pq.push(newState)
+            pq.push(newState);
         }
         visited.insert(e.pt);
         pq.pop(); //remove it now that we are done
@@ -126,26 +140,31 @@ nav_msgs::Path convertPath(vector<Point> pointPath) {
         geometry_msgs::PoseStamped poseStamped;
         //poseStamped.header.stamp =
         //{x,y,z} in real map
-        poseStamped.pose.position.x = p.x; //#TODO: convert to meters map
+        poseStamped.pose.position.x = p.x; //#TODO: convert to real worl meters map
         poseStamped.pose.position.y = p.y;
-        path.poses.push_back(poseStamped)
+        pathMsg.poses.push_back(poseStamped);
     }
     return pathMsg;
 }
 
 
-//void map_callback(const nav_msgs::Path& msg) {
-void map_callback(const distance_map_msgs::DistanceMap& msg)
+void map_callback(const distance_map_msgs::DistanceMap& msg) {
     //make 1d array accessible
-    distanceMap = msg->data;
+    //distanceMap = msg->data; //#TODO: handle
+    //make 1d array into 2d vector for ease of use right now #TODO: can we not?
+    distanceMapVector.resize(msg.info.width);
+    for (int i = 0; i < msg.info.width; i++) {
+        distanceMapVector[i].resize(msg.info.height);
+        for (int j = 0; j < msg.info.height; j++) {
+            distanceMapVector[i][j] = msg.data[(j * msg.info.height) + i]; //#TODO: check if out of bounds
+        }
+    }
 
-    vector<Point> pointPath = UniformCostSearch();
+    vector<Point> pointPath = uniformCostSearch();
     nav_msgs::Path pathMsg = convertPath(pointPath);
 
     //#TODO: header and stuff
     pub_path.publish(pathMsg);
-
-
 }
 
 int main(int argc, char** argv) {
@@ -157,12 +176,9 @@ int main(int argc, char** argv) {
     std::string distance_map_info_sub_node;
     nhp.param("distance_map_sub", distance_map_sub_node,
               string("/basic_mapper/costmap/costmap"));
-    nhp.param("distance_map_info_sub", distance_map_info_sub_node,
-            string("/basic_mapper/costmap/info"));
 
     pub_path = nh.advertise<nav_msgs::Path>("/center_path", 1);
     auto distance_map_sub = nh.subscribe(distance_map_sub_node, 1, map_callback);
-    auto distance_map_info_sub = nh.subscribe(subscription_node, 1, map_info_callback);
 
 
     ros::spin();
