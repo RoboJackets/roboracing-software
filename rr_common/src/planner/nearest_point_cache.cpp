@@ -1,14 +1,14 @@
-#include <rr_common/nearest_point_cache.h>
+#include <rr_common/planning/nearest_point_cache.h>
 
 namespace rr {
 
 NearestPointCache::NearestPointCache(const CenteredBox& box, const CenteredBox& map_size)
       : map_size_(map_size), cache_resolution_(10.0), hitbox_(box) {
-    cache_rows_front_ = static_cast<int>(map_size_.length_front * cache_resolution_);
-    cache_rows_back_ = static_cast<int>(map_size_.length_back * cache_resolution_);
+    cache_rows_front_ = static_cast<int>(map_size_.front * cache_resolution_);
+    cache_rows_back_ = static_cast<int>(map_size_.back * cache_resolution_);
     cache_rows_ = cache_rows_front_ + cache_rows_back_;
-    cache_cols_left_ = static_cast<int>(map_size_.width_left * cache_resolution_);
-    cache_cols_right_ = static_cast<int>(map_size_.width_right * cache_resolution_);
+    cache_cols_left_ = static_cast<int>(map_size_.left * cache_resolution_);
+    cache_cols_right_ = static_cast<int>(map_size_.right * cache_resolution_);
     cache_cols_ = cache_cols_left_ + cache_cols_right_;
 
     size_t cache_size = cache_rows_ * cache_cols_;
@@ -21,8 +21,8 @@ NearestPointCache::NearestPointCache(const CenteredBox& box, const CenteredBox& 
         cache_visited_[i] = false;
     }
 
-    double half_length = (hitbox_.length_front + hitbox_.length_back) / 2.;
-    double half_width = (hitbox_.width_left + hitbox_.width_right) / 2.;
+    double half_length = (hitbox_.front + hitbox_.back) / 2.;
+    double half_width = (hitbox_.left + hitbox_.right) / 2.;
     hitbox_corner_dist_ = std::sqrt(half_length * half_length + half_width * half_width);
 }
 
@@ -40,23 +40,23 @@ int NearestPointCache::GetCacheIndex(double x, double y) const {
     return r * cache_cols_ + c;
 }
 
-PCLPoint NearestPointCache::GetPointFromIndex(int i) const {
+NearestPointCache::point_t NearestPointCache::GetPointFromIndex(int i) const {
     int r = i / cache_cols_;
     int c = i % cache_cols_;
 
-    PCLPoint out;
+    point_t out;
     out.x = (r - cache_rows_back_ + 0.5) / cache_resolution_;
     out.y = (c - cache_cols_right_ + 0.5) / cache_resolution_;
     return out;
 }
 
-double NearestPointCache::Dist(const PCLPoint& p1, const PCLPoint& p2) const {
+double NearestPointCache::Dist(const point_t& p1, const point_t& p2) const {
     double dx = p1.x - p2.x;
     double dy = p1.y - p2.y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
-void NearestPointCache::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
+void NearestPointCache::SetMap(const pcl::PointCloud<point_t>& pointcloud) {
     for (CacheEntry& v : cache_) {
         v.might_hit_points.clear();
         v.nearest_point = nullptr;
@@ -65,7 +65,7 @@ void NearestPointCache::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
     cache_updates_.clear();
     cache_visited_ = false;
 
-    for (const PCLPoint& p : pointcloud.points) {
+    for (const point_t& p : pointcloud.points) {
         int i = GetCacheIndex(p.x, p.y);
         if (i < 0) {
             continue;
@@ -101,13 +101,13 @@ void NearestPointCache::SetMap(const pcl::PointCloud<PCLPoint>& pointcloud) {
         const CacheEntry& parent = *entry.parent;
 
         size_t size_start = entry.might_hit_points.size();
-        const PCLPoint* nearest_point_start = entry.nearest_point;
+        const point_t* nearest_point_start = entry.nearest_point;
 
         if (entry.nearest_point == nullptr) {
             entry.nearest_point = parent.nearest_point;
         }
 
-        for (const PCLPoint* p : parent.might_hit_points) {
+        for (const point_t* p : parent.might_hit_points) {
             double d = Dist(*p, entry.location);
             if (d <= hitbox_corner_dist_) {
                 entry.might_hit_points.push_back(p);
@@ -139,13 +139,13 @@ double NearestPointCache::GetCollisionDistance(const Pose& pose) const {
     double cos_th = std::cos(pose.theta);
     double sin_th = std::sin(pose.theta);
 
-    double center_x = (hitbox_.length_front - hitbox_.length_back) / 2.;
-    double center_y = (hitbox_.width_left - hitbox_.width_right) / 2.;
+    double center_x = (hitbox_.front - hitbox_.back) / 2.;
+    double center_y = (hitbox_.left - hitbox_.right) / 2.;
     double search_x = pose.x + center_x * cos_th - center_y * sin_th;
     double search_y = pose.y + center_x * sin_th + center_y * cos_th;
 
-    double half_length = (hitbox_.length_front + hitbox_.length_back) / 2.;
-    double half_width = (hitbox_.width_left + hitbox_.width_right) / 2.;
+    double half_length = (hitbox_.front + hitbox_.back) / 2.;
+    double half_width = (hitbox_.left + hitbox_.right) / 2.;
 
     int i = GetCacheIndex(pose.x, pose.y);
     if (i < 0) {
@@ -154,7 +154,7 @@ double NearestPointCache::GetCollisionDistance(const Pose& pose) const {
 
     const CacheEntry& entry = cache_[i];
 
-    auto point_in_local_frame = [search_x, search_y, cos_th, sin_th](const PCLPoint& p) {
+    auto point_in_local_frame = [search_x, search_y, cos_th, sin_th](const point_t& p) {
         double offsetX = p.x - search_x;
         double offsetY = p.y - search_y;
         double x = cos_th * offsetX + sin_th * offsetY;
@@ -163,7 +163,7 @@ double NearestPointCache::GetCollisionDistance(const Pose& pose) const {
     };
 
     // collisions
-    for (const PCLPoint* p_ptr : entry.might_hit_points) {
+    for (const point_t* p_ptr : entry.might_hit_points) {
         auto [x, y] = point_in_local_frame(*p_ptr);
         if (std::abs(x) <= half_length && std::abs(y) <= half_width) {
             return -1.0;
@@ -198,9 +198,9 @@ double NearestPointCache::GetCollisionDistance(const Pose& pose) const {
     return dist;
 }
 
-bool NearestPointCache::GetCollision(const PCLPoint& relative_point) const {
-    return (relative_point.x < hitbox_.length_front) && (relative_point.x > -hitbox_.length_back) &&
-           (relative_point.y < hitbox_.width_left) && (relative_point.y > -hitbox_.width_right);
+bool NearestPointCache::GetCollision(const point_t& relative_point) const {
+    return (relative_point.x < hitbox_.front) && (relative_point.x > -hitbox_.back) &&
+           (relative_point.y < hitbox_.left) && (relative_point.y > -hitbox_.right);
 }
 
 }  // namespace rr

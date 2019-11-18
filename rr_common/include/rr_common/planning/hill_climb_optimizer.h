@@ -5,9 +5,9 @@
 
 #include <ros/node_handle.h>
 
-#include "bicycle_model.h"
 #include "nearest_point_cache.h"
-#include "planner_types.hpp"
+#include "rr_common/planning/bicycle_model.h"
+//#include "planner_types.hpp"
 #include "planning_optimizer.h"
 
 namespace rr {
@@ -16,12 +16,9 @@ class HillClimbPlanner : public PlanningOptimizer {
   public:
     HillClimbPlanner(const ros::NodeHandle& nh, NearestPointCache, BicycleModel);
 
-    OptimizedTrajectory Optimize(const PCLMap& map) override;
+    std::vector<double> Optimize(const CostFunction& cost_fn, const std::vector<double>& init_controls) override;
 
   private:
-    void FillObstacleCosts(OptimizedTrajectory& planned_path) const;
-    void JitterControls(std::vector<double>& ctrl, double stddev);
-
     int state_dim_;             // number of control inputs in state
     double k_dist_;             // importance of distance in cost function
     double k_speed_;            // importance of speed/straightness in cost fn
@@ -34,11 +31,7 @@ class HillClimbPlanner : public PlanningOptimizer {
     double neighbor_stddev_;    // standard deviation of noise added in neighbor function
     int local_optimum_tries_;   // we are at a local optimum if we try this many times with no improvement
 
-    NearestPointCache distance_checker_;
-    BicycleModel model_;
-
     std::mt19937 rand_gen_;
-    std::normal_distribution<double> normal_distribution_;
 
     OptimizedTrajectory previous_best_plan_;
 };

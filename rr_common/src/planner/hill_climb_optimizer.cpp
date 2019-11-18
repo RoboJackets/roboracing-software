@@ -1,4 +1,4 @@
-#include <rr_common/hill_climb_planner.h>
+#include <rr_common/planning/hill_climb_optimizer.h>
 
 #include <mutex>
 #include <thread>
@@ -27,10 +27,6 @@ HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, rr::NearestPointCa
 }
 
 void HillClimbPlanner::FillObstacleCosts(OptimizedTrajectory& plan) const {
-    if (plan.dists.size() != plan.path.size()) {
-        plan.dists.resize(plan.path.size());
-    }
-
     plan.cost = 0;
     plan.has_collision = false;
     for (size_t i = 0; i < plan.path.size(); ++i) {
@@ -40,10 +36,8 @@ void HillClimbPlanner::FillObstacleCosts(OptimizedTrajectory& plan) const {
             plan.cost -= k_speed_ * plan.path[i].speed;
             plan.cost += k_steering_ * plan.path[i].steer;
             plan.cost += k_angle_ * std::abs(plan.path[i].pose.theta);
-            plan.dists[i] = dist;
         } else {
             plan.cost += collision_penalty_ * (plan.path.size() - i);
-            std::fill(plan.dists.begin() + i, plan.dists.end(), -1);
             plan.has_collision = true;
             break;
         }
@@ -56,38 +50,34 @@ void HillClimbPlanner::JitterControls(std::vector<double>& ctrl, double stddev) 
     }
 }
 
-OptimizedTrajectory HillClimbPlanner::Optimize(const rr::PCLMap& map) {
-    distance_checker_.SetMap(map);
-
-    // precondition: plan.control is initialized
-    auto descend_hill = [this](OptimizedTrajectory& plan) {
-        plan.has_collision = false;
+std::vector<double> HillClimbPlanner::Optimize(const CostFunction& cost_fn, const std::vector<double>& init_controls) {
+    auto descend_hill = [this, &cost_fn](std::vector<double> controls) {
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
         while (stuck_counter > 0) {
-            const auto last_ctrl = plan.control;  // copy
-            JitterControls(plan.control, neighbor_stddev_);
-            model_.RollOutPath(plan.control, plan.path);
-            FillObstacleCosts(plan);
+            const auto last_ctrl = controls;  // copy
+            JitterControls(controls, neighbor_stddev_);
+            auto cost = cost_fn(controls);
 
-            if (plan.cost >= best_cost) {
+            if (cost >= best_cost) {
                 --stuck_counter;
-                plan.control = last_ctrl;
+                controls = last_ctrl;
             } else {
                 stuck_counter = local_optimum_tries_;
-                best_cost = plan.cost;
+                best_cost = cost;
             }
         }
+        return std::make_tuple(best_cost, std::move(controls));
     };
 
-    OptimizedTrajectory global_best_plan;
-    global_best_plan.cost = std::numeric_limits<double>::max();
+    std::vector<double> global_best_controls;
+    double global_best_cost = std::numeric_limits<double>::max();
     int plan_count = 0;
     std::mutex plan_count_mutex, global_best_plan_mutex;
 
     auto worker = [&, this](int thread_idx) {
-        OptimizedTrajectory plan, best_plan;
-        plan.cost = best_plan.cost = global_best_plan.cost;
+        std::vector<double> controls;
+        double best_cost = global_best_cost;
         while (true) {
             {
                 std::lock_guard lock(plan_count_mutex);
@@ -99,12 +89,12 @@ OptimizedTrajectory HillClimbPlanner::Optimize(const rr::PCLMap& map) {
 
             if (plan_count == 1 && !previous_best_plan_.control.empty()) {
                 // for one start, init to previous best controls
-                plan.control = previous_best_plan_.control;
+                controls = previous_best_plan_.control;
             } else {
                 // select a random starting configuration
-                plan.control.resize(state_dim_);
-                std::fill(plan.control.begin(), plan.control.end(), 0.0);
-                JitterControls(plan.control, max_steering_ / 2);
+                controls.resize(state_dim_);
+                std::fill(controls.begin(), controls.end(), 0.0);
+                JitterControls(controls, max_steering_ / 2);
             }
 
             descend_hill(plan);

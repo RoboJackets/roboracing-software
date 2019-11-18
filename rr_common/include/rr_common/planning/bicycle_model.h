@@ -4,8 +4,8 @@
 
 #include <ros/time.h>
 
-#include "linear_tracking_filter.hpp"
 #include "planner_types.hpp"
+#include "rr_common/linear_tracking_filter.hpp"
 
 namespace rr {
 

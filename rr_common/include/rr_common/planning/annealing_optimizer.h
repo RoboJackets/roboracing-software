@@ -7,7 +7,6 @@
 
 #include "bicycle_model.h"
 #include "nearest_point_cache.h"
-#include "planner_types.hpp"
 #include "planning_optimizer.h"
 
 namespace rr {
@@ -32,23 +31,9 @@ class AnnealingPlanner : public PlanningOptimizer {
 
     ~AnnealingPlanner() = default;
 
-    /**
-     * Given a map of the world, find the best path through it
-     * @param map A point cloud representation of the world around the car
-     * @return PlannedPath object representing the plan for movement
-     */
-    OptimizedTrajectory Optimize(const PCLMap& map) override;
+    std::vector<double> Optimize(const CostFunction& cost_fn, const std::vector<double>& init_controls) override;
 
   private:
-    /**
-     * Probabilistically jiggle a vector of control inputs (steering angles) to an
-     * optimization neighbor
-     * @param ctrl Out param, list of steering angles which we will test
-     * @param source In param, previously-tested control vector
-     * @param t Iteration number of simulated annealing algorithm
-     */
-    void SampleControls(std::vector<double>& ctrl, const std::vector<double>& source, unsigned int t);
-
     /**
      * Find the current annealing temperature. This is used as the standard
      * deviation for SampleControls in addition to the normal usage in the SA
@@ -58,27 +43,9 @@ class AnnealingPlanner : public PlanningOptimizer {
      */
     double GetTemperature(unsigned int t);
 
-    /**
-     * Calculate the total cost of a path (see Params for more detail on cost
-     * coefficients)
-     * @param path list of (pose, steering, speed) tuples
-     * @param map point cloud map
-     * @return cost of the path
-     */
-    double GetCost(const OptimizedTrajectory& path, const PCLMap& map);
-
-    Params params;
-    NearestPointCache distance_checker_;
-    BicycleModel model_;
-
-    std::normal_distribution<double> steering_gaussian_;
+    Params params_;
     std::uniform_real_distribution<double> uniform_01_;
     std::mt19937 rand_gen_;
-
-    unsigned int last_path_idx_;
-    std::vector<OptimizedTrajectory> path_pool_;
-
-    double max_path_length_;
 };
 
 }  // namespace rr

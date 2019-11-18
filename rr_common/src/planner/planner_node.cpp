@@ -7,8 +7,8 @@
 #include <pcl_ros/transforms.h>
 #include <ros/ros.h>
 
-#include <rr_common/annealing_planner.h>
-#include <rr_common/hill_climb_planner.h>
+#include <rr_common/planning/annealing_optimizer.h>
+#include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/random_sample_planner.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
@@ -57,7 +57,7 @@ void update_messages(double speed, double angle) {
 
 void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
-    rr::PCLMap cloud;
+    rr::pcl::PointCloud<pcl::PointXYZ> cloud;
 
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::fromPCLPointCloud2(pcl_pc2, cloud);
@@ -143,15 +143,15 @@ int main(int argc, char** argv) {
 
     rr::CenteredBox hitbox;
     ros::NodeHandle nh_hitbox(nhp, "collision_hitbox");
-    assertions::getParam(nh_hitbox, "front", hitbox.length_front);
-    assertions::getParam(nh_hitbox, "back", hitbox.length_back);
-    assertions::getParam(nh_hitbox, "side", hitbox.width_left);
-    hitbox.width_right = hitbox.width_left;
+    assertions::getParam(nh_hitbox, "front", hitbox.front);
+    assertions::getParam(nh_hitbox, "back", hitbox.back);
+    assertions::getParam(nh_hitbox, "side", hitbox.left);
+    hitbox.right = hitbox.left;
 
     rr::CenteredBox map_dimensions;
-    map_dimensions.length_front = 15;
-    map_dimensions.length_back = 5;
-    map_dimensions.width_right = map_dimensions.width_left = 8;
+    map_dimensions.front = 15;
+    map_dimensions.back = 5;
+    map_dimensions.right = map_dimensions.left = 8;
 
     distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
 

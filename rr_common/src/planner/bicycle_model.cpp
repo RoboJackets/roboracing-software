@@ -1,4 +1,4 @@
-#include <rr_common/bicycle_model.h>
+#include <rr_common/planning/bicycle_model.h>
 
 namespace rr {
 

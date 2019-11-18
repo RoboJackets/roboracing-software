@@ -14,6 +14,8 @@ namespace rr {
 
 class NearestPointCache {
   public:
+    using point_t = pcl::PointXYZ;
+
     /**
      * Constructor
      * @param hitbox Hitbox of the robot
@@ -34,14 +36,14 @@ class NearestPointCache {
      * Given a map, cache the nearest neighbors. Fill the cache outwards from locations containing obstacle points.
      * @param map Point cloud map representation
      */
-    void SetMap(const PCLMap& map);
+    void SetMap(const pcl::PointCloud<point_t>& map);
 
     /**
      * Determine if a point is in collision with the robot's current position. If true, something is fishy.
      * @param relative_point Point in robot's coordinate frame
      * @return true if point is inside robot's hitbox, false otherwise
      */
-    [[nodiscard]] bool GetCollision(const PCLPoint& relative_point) const;
+    [[nodiscard]] bool GetCollision(const point_t& relative_point) const;
 
     /**
      * Convenience method for the distance between two PointCloud points
@@ -49,25 +51,25 @@ class NearestPointCache {
      * @param p2 Point 2
      * @return Euclidean distance between the points
      */
-    [[nodiscard]] double Dist(const PCLPoint& p1, const PCLPoint& p2) const;
+    [[nodiscard]] double Dist(const point_t& p1, const point_t& p2) const;
 
   private:
     /*
      * Caching system: map from discretized x, y location to its nearest neighbor in the map/obstacle point cloud
      */
     struct CacheEntry {
-        PCLPoint location;                              // x, y location represented by this entry
-        std::vector<const PCLPoint*> might_hit_points;  // map points which are close enough to check
-                                                        // collisions
-        const PCLPoint* nearest_point;                  // nearest neighbor in obstacle map
-        const CacheEntry* parent;                       // BFS parent
+        point_t location;                              // x, y location represented by this entry
+        std::vector<const point_t*> might_hit_points;  // map points which are close enough to check
+                                                       // collisions
+        const point_t* nearest_point;                  // nearest neighbor in obstacle map
+        const CacheEntry* parent;                      // BFS parent
     };
 
     /*
      * Get the index of a cache element from the x, y location and vice versa
      */
     [[nodiscard]] int GetCacheIndex(double x, double y) const;
-    [[nodiscard]] PCLPoint GetPointFromIndex(int i) const;
+    [[nodiscard]] point_t GetPointFromIndex(int i) const;
 
     std::vector<CacheEntry> cache_;      // cache storage
     std::deque<int> cache_updates_;      // queue for updating the cache in breadth-first order
