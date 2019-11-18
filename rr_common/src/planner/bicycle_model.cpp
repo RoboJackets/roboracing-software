@@ -14,7 +14,7 @@ BicycleModel::BicycleModel(const ros::NodeHandle& nh,
     steering_model_ = steer_model_ptr;
 }
 
-void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<PathPoint>& path_points) const {
+void BicycleModel::RollOutPath(const Controls<1>& controls, std::vector<PathPoint>& path_points) const {
     const size_t path_size = 1 + segment_size_ * n_segments_;
     if (path_points.size() != path_size) {
         path_points.resize(static_cast<size_t>(path_size));
@@ -23,8 +23,8 @@ void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<P
     path_points[0].pose.x = 0;
     path_points[0].pose.y = 0;
     path_points[0].pose.theta = 0;
-    path_points[0].steer = control[0];
-    path_points[0].speed = SteeringToSpeed(control[0]);
+    path_points[0].steer = controls(0);
+    path_points[0].speed = SteeringToSpeed(controls(0));
 
     rr::LinearTrackingFilter steering_model_temp = *steering_model_;  // copy
 
@@ -32,7 +32,7 @@ void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<P
     for (int segment = 0; segment < n_segments_; segment++) {
         double speed = SteeringToSpeed(steering_model_temp.GetValue());
         double dt = distance_increment_ / speed;
-        steering_model_temp.SetTarget(control[segment]);
+        steering_model_temp.SetTarget(controls(segment));
 
         for (auto j = i; j < i + segment_size_; j++) {
             const Pose& last_pose = path_points[j - 1].pose;
@@ -41,7 +41,7 @@ void BicycleModel::RollOutPath(const std::vector<double>& control, std::vector<P
             steering_model_temp.Update(steering_model_temp.GetLastUpdateTime() + dt);
 
             StepKinematics(last_pose, steering_model_temp.GetValue(), path_point.pose);
-            path_point.steer = control[segment];
+            path_point.steer = controls(segment);
             path_point.speed = speed;
         }
 

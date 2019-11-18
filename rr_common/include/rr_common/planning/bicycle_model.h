@@ -2,8 +2,6 @@
 
 #include <tuple>
 
-#include <ros/time.h>
-
 #include <rr_common/linear_tracking_filter.hpp>
 #include "planner_types.hpp"
 
@@ -26,10 +24,10 @@ class BicycleModel {
 
     /**
      * roll out a trajectory through the world
-     * @param control Vector of steering angles
+     * @param control Control vector, interpretation depends on planning scenario
      * @param path_points Output parameter into which points are placed
      */
-    void RollOutPath(const std::vector<double>& control, std::vector<PathPoint>& path_points) const;
+    void RollOutPath(const Controls<1>& controls, std::vector<PathPoint>& path_points) const;
 
   private:
     /**
@@ -39,7 +37,7 @@ class BicycleModel {
      * @param steer_angle Proposed steering value to publish
      * @return Maximum acceptable speed given the turning angle
      */
-    double SteeringToSpeed(double steer_angle) const;
+    [[nodiscard]] double SteeringToSpeed(double steer_angle) const;
 
     /**
      * Calculate one distance-step (not timestep) of "simulated" vehicle motion.

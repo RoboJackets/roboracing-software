@@ -8,30 +8,6 @@
 
 namespace rr {
 
-namespace detail {
-
-// inline int dim(const std::vector<double>& v) {
-//    return v.size();
-//}
-//
-// inline int dim(const Eigen::MatrixXd& m) {
-//    return m.rows();
-//}
-
-// inline int n_control_points(const Eigen::MatrixXd& m) {
-//    return m.cols();
-//}
-
-}  // namespace detail
-
-// template <class T1, class T2, class... Ts>
-// inline void assert_controls_dimension(const T1& a, const T2& b, const Ts&... others) {
-//    ROS_ASSERT(detail::dim(a) == detail::dim(b));
-//    if constexpr (sizeof...(Ts) > 0) {
-//        assert_controls_dimension(b, others...);
-//    }
-//}
-
 template <int ctrl_dim>
 inline Controls<ctrl_dim> controls_neighbor(const Controls<ctrl_dim>& ctrl, const Matrix<ctrl_dim, 2>& limits,
                                             const Vector<ctrl_dim>& stddevs) {

@@ -21,9 +21,6 @@ class HillClimbOptimizer : public PlanningOptimizer<ctrl_dim> {
     int num_restarts_;                  // total number of hill descents to do
     Vector<ctrl_dim> neighbor_stddev_;  // standard deviation of noise added in neighbor function
     int local_optimum_tries_;           // we are at a local optimum if we try this many times with no improvement
-
-    Controls<ctrl_dim> previous_best_controls_;
-    bool previous_best_controls_set_;
 };
 
 }  // namespace rr

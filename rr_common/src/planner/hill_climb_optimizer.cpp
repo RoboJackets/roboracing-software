@@ -13,37 +13,19 @@ template class HillClimbOptimizer<1>;
 template class HillClimbOptimizer<2>;
 
 template <int ctrl_dim>
-HillClimbOptimizer<ctrl_dim>::HillClimbOptimizer(const ros::NodeHandle& nh) : previous_best_controls_set_(false) {
+HillClimbOptimizer<ctrl_dim>::HillClimbOptimizer(const ros::NodeHandle& nh) {
     assertions::getParam(nh, "num_workers", num_workers_, { assertions::greater(0) });
     assertions::getParam(nh, "num_restarts", num_restarts_, { assertions::greater(0) });
     assertions::getParam(nh, "local_optimum_tries", local_optimum_tries_, { assertions::greater(0) });
 
     std::vector<double> stddev;
-    assertions::getParam(nh, "stddev", stddev, { assertions::size<std::vector<double>>(ctrl_dim) });
+    assertions::getParam(nh, "neighbor_stddev", stddev, { assertions::size<std::vector<double>>(ctrl_dim) });
 
     for (size_t i = 0; i < ctrl_dim; ++i) {
         ROS_ASSERT(stddev[i] > 0);
         neighbor_stddev_(i) = stddev[i];
     }
 }
-
-// void HillClimbOptimizer::FillObstacleCosts(OptimizedTrajectory& plan) const {
-//    plan.cost = 0;
-//    plan.has_collision = false;
-//    for (size_t i = 0; i < plan.path.size(); ++i) {
-//        auto dist = distance_checker_.GetCollisionDistance(plan.path[i].pose);
-//        if (dist > 0) {
-//            plan.cost += k_dist_ * std::exp(-dist);
-//            plan.cost -= k_speed_ * plan.path[i].speed;
-//            plan.cost += k_steering_ * plan.path[i].steer;
-//            plan.cost += k_angle_ * std::abs(plan.path[i].pose.theta);
-//        } else {
-//            plan.cost += collision_penalty_ * (plan.path.size() - i);
-//            plan.has_collision = true;
-//            break;
-//        }
-//    }
-//}
 
 template <int ctrl_dim>
 Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctrl_dim>& cost_fn,
@@ -54,7 +36,7 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
         int stuck_counter = local_optimum_tries_;
         while (stuck_counter > 0) {
             const auto new_controls = controls_neighbor(controls, ctrl_limits, neighbor_stddev_);
-            auto cost = cost_fn(controls);
+            auto cost = cost_fn(new_controls);
 
             if (cost >= best_cost) {
                 --stuck_counter;
@@ -84,9 +66,9 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
                 plan_count++;
             }
 
-            if (plan_count == 1 && previous_best_controls_set_) {
+            if (plan_count == 1) {
                 // for one start, init to previous best controls
-                controls = std::move(previous_best_controls_);
+                controls = init_controls;
             } else {
                 // select a random starting configuration
                 Vector<ctrl_dim> half_range = (ctrl_limits.col(1) - ctrl_limits.col(0)) * 0.5;
@@ -116,9 +98,7 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
         t.join();
     }
 
-    previous_best_controls_ = std::move(global_best_controls);
-    previous_best_controls_set_ = true;
-    return previous_best_controls_;
+    return global_best_controls;
 }
 
 }  // namespace rr
