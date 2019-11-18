@@ -3,13 +3,15 @@
 #include <functional>
 #include <vector>
 
+#include "planner_types.hpp"
+
 namespace rr {
 
+template <int ctrl_dim>
 class PlanningOptimizer {
   public:
-    using CostFunction = std::function<double(const std::vector<double>&)>;
-
-    virtual std::vector<double> Optimize(const CostFunction& cost_fn, const std::vector<double>& init_controls) = 0;
+    virtual Controls<ctrl_dim> Optimize(const CostFunction<ctrl_dim>& cost_fn, const Controls<ctrl_dim>& init_controls,
+                                        const Matrix<ctrl_dim, 2>& ctrl_limits) = 0;
 };
 
 }  // namespace rr

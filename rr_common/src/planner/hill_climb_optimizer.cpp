@@ -5,78 +5,75 @@
 
 #include <parameter_assertions/assertions.h>
 
+#include <rr_common/planning/planning_utils.h>
+
 namespace rr {
 
-HillClimbPlanner::HillClimbPlanner(const ros::NodeHandle& nh, rr::NearestPointCache distanceChecker,
-                                   rr::BicycleModel bicycleModel)
-      : distance_checker_(std::move(distanceChecker))
-      , model_(std::move(bicycleModel))
-      , rand_gen_(0)
-      , normal_distribution_(0, 1) {
-    assertions::getParam(nh, "n_segments", state_dim_, { assertions::greater<int>(0) });
-    assertions::getParam(nh, "k_dist", k_dist_, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "k_speed", k_speed_, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "k_angle", k_angle_, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "k_steering", k_steering_, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "collision_penalty", collision_penalty_, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "max_steering", max_steering_, { assertions::greater(0.0) });
+template class HillClimbOptimizer<1>;
+template class HillClimbOptimizer<2>;
+
+template <int ctrl_dim>
+HillClimbOptimizer<ctrl_dim>::HillClimbOptimizer(const ros::NodeHandle& nh) : previous_best_controls_set_(false) {
     assertions::getParam(nh, "num_workers", num_workers_, { assertions::greater(0) });
     assertions::getParam(nh, "num_restarts", num_restarts_, { assertions::greater(0) });
-    assertions::getParam(nh, "neighbor_stddev", neighbor_stddev_, { assertions::greater(0.0) });
     assertions::getParam(nh, "local_optimum_tries", local_optimum_tries_, { assertions::greater(0) });
-}
 
-void HillClimbPlanner::FillObstacleCosts(OptimizedTrajectory& plan) const {
-    plan.cost = 0;
-    plan.has_collision = false;
-    for (size_t i = 0; i < plan.path.size(); ++i) {
-        auto dist = distance_checker_.GetCollisionDistance(plan.path[i].pose);
-        if (dist > 0) {
-            plan.cost += k_dist_ * std::exp(-dist);
-            plan.cost -= k_speed_ * plan.path[i].speed;
-            plan.cost += k_steering_ * plan.path[i].steer;
-            plan.cost += k_angle_ * std::abs(plan.path[i].pose.theta);
-        } else {
-            plan.cost += collision_penalty_ * (plan.path.size() - i);
-            plan.has_collision = true;
-            break;
-        }
+    std::vector<double> stddev;
+    assertions::getParam(nh, "stddev", stddev, { assertions::size<std::vector<double>>(ctrl_dim) });
+
+    for (size_t i = 0; i < ctrl_dim; ++i) {
+        ROS_ASSERT(stddev[i] > 0);
+        neighbor_stddev_(i) = stddev[i];
     }
 }
 
-void HillClimbPlanner::JitterControls(std::vector<double>& ctrl, double stddev) {
-    for (double& x : ctrl) {
-        x = std::clamp(x + normal_distribution_(rand_gen_) * stddev, -max_steering_, max_steering_);
-    }
-}
+// void HillClimbOptimizer::FillObstacleCosts(OptimizedTrajectory& plan) const {
+//    plan.cost = 0;
+//    plan.has_collision = false;
+//    for (size_t i = 0; i < plan.path.size(); ++i) {
+//        auto dist = distance_checker_.GetCollisionDistance(plan.path[i].pose);
+//        if (dist > 0) {
+//            plan.cost += k_dist_ * std::exp(-dist);
+//            plan.cost -= k_speed_ * plan.path[i].speed;
+//            plan.cost += k_steering_ * plan.path[i].steer;
+//            plan.cost += k_angle_ * std::abs(plan.path[i].pose.theta);
+//        } else {
+//            plan.cost += collision_penalty_ * (plan.path.size() - i);
+//            plan.has_collision = true;
+//            break;
+//        }
+//    }
+//}
 
-std::vector<double> HillClimbPlanner::Optimize(const CostFunction& cost_fn, const std::vector<double>& init_controls) {
-    auto descend_hill = [this, &cost_fn](std::vector<double> controls) {
+template <int ctrl_dim>
+Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctrl_dim>& cost_fn,
+                                                          const Controls<ctrl_dim>& init_controls,
+                                                          const Matrix<ctrl_dim, 2>& ctrl_limits) {
+    auto descend_hill = [&](Controls<ctrl_dim> controls) {
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
         while (stuck_counter > 0) {
-            const auto last_ctrl = controls;  // copy
-            JitterControls(controls, neighbor_stddev_);
+            const auto new_controls = controls_neighbor(controls, ctrl_limits, neighbor_stddev_);
             auto cost = cost_fn(controls);
 
             if (cost >= best_cost) {
                 --stuck_counter;
-                controls = last_ctrl;
             } else {
-                stuck_counter = local_optimum_tries_;
+                controls = std::move(new_controls);
                 best_cost = cost;
+                stuck_counter = local_optimum_tries_;
             }
         }
         return std::make_tuple(best_cost, std::move(controls));
     };
 
-    std::vector<double> global_best_controls;
+    Controls<ctrl_dim> global_best_controls;
     double global_best_cost = std::numeric_limits<double>::max();
     int plan_count = 0;
     std::mutex plan_count_mutex, global_best_plan_mutex;
 
     auto worker = [&, this](int thread_idx) {
-        std::vector<double> controls;
+        Controls<ctrl_dim> controls;
         double best_cost = global_best_cost;
         while (true) {
             {
@@ -87,26 +84,27 @@ std::vector<double> HillClimbPlanner::Optimize(const CostFunction& cost_fn, cons
                 plan_count++;
             }
 
-            if (plan_count == 1 && !previous_best_plan_.control.empty()) {
+            if (plan_count == 1 && previous_best_controls_set_) {
                 // for one start, init to previous best controls
-                controls = previous_best_plan_.control;
+                controls = std::move(previous_best_controls_);
             } else {
                 // select a random starting configuration
-                controls.resize(state_dim_);
-                std::fill(controls.begin(), controls.end(), 0.0);
-                JitterControls(controls, max_steering_ / 2);
+                Vector<ctrl_dim> half_range = (ctrl_limits.col(1) - ctrl_limits.col(0)) * 0.5;
+                controls = rr::init_controls(init_controls.cols(), ctrl_limits, half_range);
             }
 
-            descend_hill(plan);
+            auto [cost, controls_opt] = descend_hill(controls);
 
-            if (plan.cost < best_plan.cost) {
-                best_plan = plan;
+            if (cost < best_cost) {
+                controls = std::move(controls_opt);
+                best_cost = cost;
             }
         }
 
         std::lock_guard lock(global_best_plan_mutex);
-        if (best_plan.cost < global_best_plan.cost) {
-            global_best_plan = best_plan;
+        if (best_cost < global_best_cost) {
+            global_best_controls = std::move(controls);
+            global_best_cost = best_cost;
         }
     };
 
@@ -118,8 +116,9 @@ std::vector<double> HillClimbPlanner::Optimize(const CostFunction& cost_fn, cons
         t.join();
     }
 
-    previous_best_plan_ = global_best_plan;
-    return global_best_plan;
+    previous_best_controls_ = std::move(global_best_controls);
+    previous_best_controls_set_ = true;
+    return previous_best_controls_;
 }
 
 }  // namespace rr

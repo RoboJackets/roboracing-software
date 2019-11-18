@@ -9,17 +9,18 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
-#include <rr_common/random_sample_planner.h>
+#include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <rr_common/linear_tracking_filter.hpp>
 
-std::unique_ptr<rr::PlanningOptimizer> planner;
+std::unique_ptr<rr::PlanningOptimizer<1>> planner;
 std::unique_ptr<rr::NearestPointCache> distance_checker;
 std::unique_ptr<rr::LinearTrackingFilter> speed_filter;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
-ros::Publisher path_pub;
+ros::Publisher viz_pub;
 
 rr_msgs::speedPtr speed_message;
 rr_msgs::steeringPtr steer_message;
@@ -57,7 +58,7 @@ void update_messages(double speed, double angle) {
 
 void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
-    rr::pcl::PointCloud<pcl::PointXYZ> cloud;
+    pcl::PointCloud<pcl::PointXYZ> cloud;
 
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::fromPCLPointCloud2(pcl_pc2, cloud);
@@ -168,9 +169,9 @@ int main(int argc, char** argv) {
     if (planner_type == "random_sample") {
         planner = std::make_unique<rr::RandomSamplePlanner>(nhp, *distance_checker, vehicle_model);
     } else if (planner_type == "annealing") {
-        planner = std::make_unique<rr::AnnealingPlanner>(nhp, *distance_checker, vehicle_model);
+        planner = std::make_unique<rr::AnnealingOptimizer>(nhp, *distance_checker, vehicle_model);
     } else if (planner_type == "hill_climbing") {
-        planner = std::make_unique<rr::HillClimbPlanner>(nhp, *distance_checker, vehicle_model);
+        planner = std::make_unique<rr::HillClimbOptimizer>(nhp, *distance_checker, vehicle_model);
     } else {
         ROS_ERROR_STREAM("[PlanningOptimizer] Error: unknown planner type \"" << planner_type << "\"");
         ros::shutdown();

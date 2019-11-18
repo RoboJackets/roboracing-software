@@ -4,6 +4,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <eigen3/Eigen/Core>
 
 namespace rr {
 
@@ -61,5 +62,17 @@ struct CenteredBox {
     double left;
     double right;
 };
+
+template <int R, int C>
+using Matrix = Eigen::Matrix<double, R, C>;
+
+template <int N>
+using Vector = Matrix<N, 1>;
+
+template <int ctrl_dim>
+using Controls = Matrix<ctrl_dim, -1>;
+
+template <int ctrl_dim>
+using CostFunction = std::function<double(const Controls<ctrl_dim>&)>;
 
 }  // namespace rr

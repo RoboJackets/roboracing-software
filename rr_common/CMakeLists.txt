@@ -16,9 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
         )
 
-#find_package(OpenCV REQUIRED)
-#find_package(PCL REQUIRED)
-
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -34,9 +31,7 @@ catkin_package(
 ## Specify additional locations of header files
 include_directories(
         include
-        ${PCL_INCLUDE_DIRS}
         ${catkin_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
 )
 
 add_library(rr_common src/image_flipper/image_flipper.cpp)
