@@ -27,7 +27,6 @@
   <build_depend>cv_bridge</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>laser_geometry</build_depend>
-  <build_depend>image_transport</build_depend>
 
   <exec_depend>sick_tim</exec_depend>
   <exec_depend>rplidar_ros</exec_depend>
