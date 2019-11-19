@@ -13,11 +13,10 @@
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int8.h>
 #include <climits>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <cv_bridge/cv_bridge.h>
 #include <cmath>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace cv;
@@ -86,7 +85,6 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     double maxLength = 0.0;
     double maxLengthYPos = 0.0;
     for (size_t i = 0; i < contours.size(); i++) {
-
         // Find the average slopes and filter out ones with big slope
         Point start = contours.at(i).at(0);
         Point end = contours.at(i).at((contours.at(i).size() - 1) / 2);
@@ -95,24 +93,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         double slope = std::abs(rise / run);
         double length = arcLength(contours.at(i), false);
 
-
         if (slope > 0.0001 && slope < slope_cutoff && length > length_cutoff) {
-
-            drawContours(drawing, contours, (int) i, Scalar(255, 0, 0), 2, LINE_8, hierarchy, 0);
+            drawContours(drawing, contours, (int)i, Scalar(255, 0, 0), 2, LINE_8, hierarchy, 0);
 
             if (length > maxLength) {
-
                 maxLength = length;
-                maxLengthYPos = contours.at(i).at((int) (contours.at(i).size() / 2)).y;
-
+                maxLengthYPos = contours.at(i).at((int)(contours.at(i).size() / 2)).y;
             }
 
         } else {
-
-            drawContours(drawing, contours, (int) i, Scalar(0, 255, 0), 2, LINE_8, hierarchy, 0);
-
+            drawContours(drawing, contours, (int)i, Scalar(0, 255, 0), 2, LINE_8, hierarchy, 0);
         }
-
     }
 
     // Convert to ros image format
@@ -125,37 +116,30 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     if (publish_when_detected) {
         // Publish when first detected but don't keep on increasing number of crosses, so make use of states again
         if (detected && state == LOW && cooldown == 0) {
-
             number_of_crosses++;
             ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
             state = HIGH;
             cooldown = cooldown_value;
 
         } else if (state == HIGH && !detected) {
-
             state = LOW;
-
         }
 
     } else {
         // When the line is first detected, set to a high state then when we stop detecting (we've crossed), report that
         if (state == LOW && detected && cooldown == 0) {
-
             state = HIGH;
 
         } else if (state == HIGH && !detected) {
-
             state = LOW;
             number_of_crosses++;
             cooldown = cooldown_value;
             ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
-
         }
-
     }
 
-    if (cooldown > 0) cooldown--;
-
+    if (cooldown > 0)
+        cooldown--;
 }
 
 int main(int argc, char** argv) {
