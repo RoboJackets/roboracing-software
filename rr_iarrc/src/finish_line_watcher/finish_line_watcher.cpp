@@ -15,7 +15,6 @@
 #include <climits>
 #include <cmath>
 #include <opencv2/imgcodecs.hpp>
-// #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -85,15 +84,18 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     double maxLength = 0.0;
     double maxLengthYPos = 0.0;
     for (size_t i = 0; i < contours.size(); i++) {
-        // Find the average slopes and filter out ones with big slope
+        // Find the average slopes of the contour
         Point start = contours.at(i).at(0);
         Point end = contours.at(i).at((contours.at(i).size() - 1) / 2);
         double rise = start.y - end.y;
         double run = start.x - end.x + 0.01;
         double slope = std::abs(rise / run);
+        // Also find the length
         double length = arcLength(contours.at(i), false);
 
+        // Filter by slope and contour
         if (slope > 0.0001 && slope < slope_cutoff && length > length_cutoff) {
+            // Draw for debug image
             drawContours(drawing, contours, (int)i, Scalar(255, 0, 0), 2, LINE_8, hierarchy, 0);
 
             if (length > maxLength) {
@@ -105,11 +107,6 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             drawContours(drawing, contours, (int)i, Scalar(0, 255, 0), 2, LINE_8, hierarchy, 0);
         }
     }
-
-    // Convert to ros image format
-    debug_img.header = msg->header;
-    debug_img.encoding = "bgr8";
-    debug_img.image = drawing;
 
     bool detected = maxLength > length_cutoff;
 
@@ -145,10 +142,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     std_msgs::Int8 intmsg;
     intmsg.data = number_of_crosses;
 
-    if (debug_pub.getNumSubscribers() > 0)
+    if (debug_pub.getNumSubscribers() > 0) {
+        // Convert to ros image format and publish
+        debug_img.header = msg->header;
+        debug_img.encoding = "bgr8";
+        debug_img.image = drawing;
         debug_pub.publish(debug_img.toImageMsg());
-    if (crosses_pub.getNumSubscribers() > 0)
+    }
+
+    if (crosses_pub.getNumSubscribers() > 0) {
         crosses_pub.publish(intmsg);
+    }
 }
 
 int main(int argc, char** argv) {
