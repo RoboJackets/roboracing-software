@@ -47,7 +47,6 @@
 //    }
 ////This is literally just example panel
 //} // end of rr_rviz_plugins
-
 #include <pluginlib/class_list_macros.h>
 #include <rr_rviz_plugins/StartlightPanel.h>
 #include <std_msgs/Bool.h>
@@ -56,19 +55,20 @@
 #include <QtGui/QPainter>
 
 namespace rr_rviz_plugins {
-
     bool isGreen = false;
     bool receivedSignal = false;
+    QLabel *label;
     StartlightPanel::StartlightPanel(QWidget *parent)
             : rviz::Panel(parent)  // Base class constructor
     {
 //        reset_btn = new QPushButton("Reset!");
 //        reset_pub = nh.advertise<rr_msgs::race_reset>("/reset_detected", 0);
 //        connect(reset_btn, SIGNAL(released()), this, SLOT(resetCallback()));
-        auto *label = new QLabel("No Message");
+        label = new QLabel("No Message");
         start_detector = nh.subscribe<std_msgs::Bool>("/start_detected", 1, startlightCallback);
 
         //Creates painter to make the circle
+//        QPaintEvent screen;
         QPainter painter;
 
         //Makes the pen that the painter uses
@@ -85,15 +85,25 @@ namespace rr_rviz_plugins {
         }
 
         //makes a layout
-        QVBoxLayout *layout = new QVBoxLayout;
+        auto *layout = new QVBoxLayout;
 
         //draws the circle
-        painter.drawEllipse(0, 0, 100, 100);
+        painter.drawEllipse(0, 0, 10, 10);
 //        layout->addWidget(reset_btn);
         layout->addWidget(label);
         setLayout(layout);
     }
-
+    void StartlightPanel::paintEvent(QPaintEvent *) {
+        QPainter painter(this);
+        if (isGreen) {
+            painter.setPen(Qt::green);
+        } else {
+            painter.setPen(Qt::red);
+        }
+        if (!receivedSignal) {
+            painter.setPen(Qt::gray);
+        }
+    }
 //    void StartlightPanel::resetCallback() {
 //        rr_msgs::race_reset reset;
 //        reset_pub.publish(reset);
@@ -104,6 +114,11 @@ namespace rr_rviz_plugins {
 //        label->setText(text.c_str());
         receivedSignal = true;
         isGreen = msg.data != 0;
+        if (isGreen) {
+            label->setText("Green");
+        } else {
+            label->setText("Red");
+        }
     }
 }  // namespace rr_rviz_plugins
 

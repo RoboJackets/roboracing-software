@@ -47,7 +47,7 @@ namespace rr_rviz_plugins {
         StartlightPanel(QWidget *parent = 0);
 
     protected:
-        QPushButton *reset_btn;
+        QPushButton *reset_btn{};
         ros::NodeHandle nh;
         ros::Publisher reset_pub;
         ros::Subscriber start_detector;
@@ -55,6 +55,7 @@ namespace rr_rviz_plugins {
     private slots:
 //        void resetCallback();
         static void startlightCallback(std_msgs::Bool msg);
+        void paintEvent(QPaintEvent *);
     };
 
 }  // namespace rr_rviz_plugins
