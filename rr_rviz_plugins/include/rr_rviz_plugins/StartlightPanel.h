@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QtWidgets/QLabel>
 #include <std_msgs/Bool.h>
+#include <QtGui/QPaintEvent>
 
 /*
  * All of our panels need to be under the rr_rviz_plugins namespace.
@@ -47,7 +48,7 @@ namespace rr_rviz_plugins {
         StartlightPanel(QWidget *parent = 0);
 
     protected:
-        QPushButton *reset_btn{};
+//        QPushButton *reset_bpainter.setBrush(Qt::green);tn{};
         ros::NodeHandle nh;
         ros::Publisher reset_pub;
         ros::Subscriber start_detector;
@@ -55,7 +56,7 @@ namespace rr_rviz_plugins {
     private slots:
 //        void resetCallback();
         static void startlightCallback(std_msgs::Bool msg);
-        void paintEvent(QPaintEvent *);
+        void paintEvent(QPaintEvent *e);
     };
 
 }  // namespace rr_rviz_plugins

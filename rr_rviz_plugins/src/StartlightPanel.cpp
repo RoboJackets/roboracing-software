@@ -53,11 +53,13 @@
 #include <QVBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtGui/QPainter>
+#include <QtGui/QPaintEvent>
 
 namespace rr_rviz_plugins {
     bool isGreen = false;
     bool receivedSignal = false;
     QLabel *label;
+    static QRect *rectangle = new QRect(0, 0, 100, 100);
     StartlightPanel::StartlightPanel(QWidget *parent)
             : rviz::Panel(parent)  // Base class constructor
     {
@@ -68,41 +70,47 @@ namespace rr_rviz_plugins {
         start_detector = nh.subscribe<std_msgs::Bool>("/start_detected", 1, startlightCallback);
 
         //Creates painter to make the circle
-//        QPaintEvent screen;
-        QPainter painter;
-
-        //Makes the pen that the painter uses
-        QPen pen;
-
-        //Sets the color of the pen
-        if (isGreen) {
-            pen.setColor(Qt::green);
-        } else {
-            pen.setColor(Qt::red);
-        }
-        if(!receivedSignal) {
-            pen.setColor(Qt::gray);
-        }
-
-        //makes a layout
+////        QPaintEvent screen;
+//        QPainter painter;
+//
+//        //Makes the pen that the painter uses
+//        QPen pen;
+//
+//        //Sets the color of the pen
+//        if (isGreen) {
+//            pen.setColor(Qt::green);
+//        } else {
+//            pen.setColor(Qt::red);
+//        }
+//        if(!receivedSignal) {
+//            pen.setColor(Qt::gray);
+//        }
+//
+//        //makes a layout
         auto *layout = new QVBoxLayout;
-
-        //draws the circle
-        painter.drawEllipse(0, 0, 10, 10);
+        QWidget::repaint();
+//
+//        //draws the circle
+//        painter.drawEllipse(0, 0, 10, 10);
 //        layout->addWidget(reset_btn);
         layout->addWidget(label);
         setLayout(layout);
     }
-    void StartlightPanel::paintEvent(QPaintEvent *) {
+    void StartlightPanel::paintEvent(QPaintEvent *e) {
         QPainter painter(this);
         if (isGreen) {
             painter.setPen(Qt::green);
+            painter.setBrush(Qt::green);
         } else {
             painter.setPen(Qt::red);
+            painter.setBrush(Qt::red);
         }
         if (!receivedSignal) {
             painter.setPen(Qt::gray);
+            painter.setBrush(Qt::gray);
         }
+        painter.drawEllipse(6, 6, 20, 20);
+        QWidget::paintEvent(e);
     }
 //    void StartlightPanel::resetCallback() {
 //        rr_msgs::race_reset reset;
@@ -115,9 +123,9 @@ namespace rr_rviz_plugins {
         receivedSignal = true;
         isGreen = msg.data != 0;
         if (isGreen) {
-            label->setText("Green");
+            label->setText("Go!");
         } else {
-            label->setText("Red");
+            label->setText("Stop!");
         }
     }
 }  // namespace rr_rviz_plugins
