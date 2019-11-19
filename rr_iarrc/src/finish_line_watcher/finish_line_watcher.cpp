@@ -15,7 +15,7 @@
 #include <climits>
 #include <cmath>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
+// #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -140,6 +140,15 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     if (cooldown > 0)
         cooldown--;
+
+    // Publish
+    std_msgs::Int8 intmsg;
+    intmsg.data = number_of_crosses;
+
+    if (debug_pub.getNumSubscribers() > 0)
+        debug_pub.publish(debug_img.toImageMsg());
+    if (crosses_pub.getNumSubscribers() > 0)
+        crosses_pub.publish(intmsg);
 }
 
 int main(int argc, char** argv) {
@@ -169,16 +178,7 @@ int main(int argc, char** argv) {
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
     debug_pub = nh.advertise<sensor_msgs::Image>("finish_line_detection/debug", 1);
 
-    Rate rate(30);
-    while (ros::ok()) {
-        std_msgs::Int8 intmsg;
-        intmsg.data = number_of_crosses;
-        crosses_pub.publish(intmsg);
-        debug_pub.publish(debug_img.toImageMsg());
-
-        spinOnce();
-        rate.sleep();
-    }
+    spin();
 
     return 0;
 }
