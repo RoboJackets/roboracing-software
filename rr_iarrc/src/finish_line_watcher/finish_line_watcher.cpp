@@ -1,8 +1,8 @@
 /*
  * Publishes the number of times the robot has crossed the
  * finish line.
- * Utilize the color_detector and hsv_tuner to detect the
- * finish line.
+ * Utilize the color_detector and hsv_tuner and Hough lines
+ * to detect the finish line.
  */
 
 #include <cv_bridge/cv_bridge.h>
@@ -14,7 +14,6 @@
 #include <std_msgs/Int8.h>
 #include <climits>
 #include <cmath>
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -31,24 +30,38 @@ int blockSky_height, blockWheels_height, blockBumper_height;
 Publisher debug_pub;
 cv_bridge::CvImage debug_img;
 
-// Define the cutoff slope to detect the finish line, should be paramaterized
+// Define the cutoff slope to detect the finish line
 double slope_cutoff;
 double length_cutoff;
 
+// Defines whether to publish when the line is first detected or when we cross it
 bool publish_when_detected;
 
-int cooldown_value = 7;
+// Threshold for counting non-zero pixels
+int count_thresh;
 
-// Quick cooldown variable to prevent double-detections
+// In frames, the number cooldown is set to when the finish line is detected
+int cooldown_value;
+
+// Cooldown variable to prevent double-detections
 int cooldown = 0;
 
 #define HIGH 1
 #define LOW 0
 
-// Quick state for making sure we don't publish many times
+// State for making sure we don't publish many times
 int state = LOW;
 
 int number_of_crosses = 0;
+
+// Some params for Canny and Hough detection
+double canny_thresh1;
+double canny_thresh2;
+double hough_rho;
+double hough_theta;
+int hough_thresh;
+double hough_minLineLength;
+double hough_maxLineGap;
 
 void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0), CV_FILLED);
@@ -74,41 +87,45 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     frame = cv_ptr->image;
     blockEnvironment(frame);
 
-    // Do contour detection
-    vector<vector<Point>> contours;
-    vector<Vec4i> hierarchy;
-    Mat contourImg = frame.clone();
-    findContours(contourImg, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    Mat src = frame.clone();
+    Mat dst;
+    cv::Canny(src, dst, canny_thresh1, canny_thresh2, 3);
+    Mat drawing = Mat::zeros(src.size(), CV_8UC3);
+    // Do line detection with probabilistic Hough line detection
+    vector<Vec4i> linesP;
+    cv::HoughLinesP(dst, linesP, hough_rho, hough_theta, hough_thresh, hough_minLineLength, hough_maxLineGap);
+    // Calculate slopes and lengths
+    double length_sum = 0;
+    for (size_t i = 0; i < linesP.size(); i++) {
+        Vec4i l = linesP[i];
+        cv::Point p1 = cv::Point(l[0], l[1]);
+        cv::Point p2 = cv::Point(l[2], l[3]);
 
-    Mat drawing = Mat::zeros(contourImg.size(), CV_8UC3);
-    double maxLength = 0.0;
-    double maxLengthYPos = 0.0;
-    for (size_t i = 0; i < contours.size(); i++) {
-        // Find the average slopes of the contour
-        Point start = contours.at(i).at(0);
-        Point end = contours.at(i).at((contours.at(i).size() - 1) / 2);
-        double rise = start.y - end.y;
-        double run = start.x - end.x + 0.01;
-        double slope = std::abs(rise / run);
-        // Also find the length
-        double length = arcLength(contours.at(i), false);
+        // Calculate length
+        cv::Point diff = p1 - p2;
+        double length = cv::sqrt(diff.x * diff.x + diff.y * diff.y);
 
-        // Filter by slope and contour
-        if (slope > 0.0001 && slope < slope_cutoff && length > length_cutoff) {
-            // Draw for debug image
-            drawContours(drawing, contours, (int)i, Scalar(255, 0, 0), 2, LINE_8, hierarchy, 0);
+        // Calculate slope
+        double slope = cv::abs((double)diff.y / diff.x);
+        Scalar color;
 
-            if (length > maxLength) {
-                maxLength = length;
-                maxLengthYPos = contours.at(i).at((int)(contours.at(i).size() / 2)).y;
-            }
-
+        // Filter based on length and slope to remove false positives
+        if (length > length_cutoff && slope < slope_cutoff) {
+            color = Scalar(0, 255, 0);
+            // Add to the running total of length
+            length_sum += length;
         } else {
-            drawContours(drawing, contours, (int)i, Scalar(0, 255, 0), 2, LINE_8, hierarchy, 0);
+            color = Scalar(0, 0, 255);
         }
+
+        cv::line(drawing, p1, p2, color, 3, LINE_AA);
     }
 
-    bool detected = maxLength > length_cutoff;
+    // Quick count of pixels as a final sanity check
+    auto count = cv::countNonZero(frame);
+
+    // Actually calculate if we've detected the line
+    bool detected = length_sum > 2.5 * length_cutoff && count > count_thresh;
 
     if (publish_when_detected) {
         // Publish when first detected but don't keep on increasing number of crosses, so make use of states again
@@ -138,16 +155,29 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     if (cooldown > 0)
         cooldown--;
 
-    // Publish
+    // Publish stuff
     std_msgs::Int8 intmsg;
     intmsg.data = number_of_crosses;
 
     if (debug_pub.getNumSubscribers() > 0) {
+        // Draw some debug info
+        std::string mode_str =
+              std::string("Mode: ") + std::string(publish_when_detected ? "when detected" : "when crossed");
+        cv::putText(drawing, mode_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(drawing, std::string("Length sum: ") + std::to_string(length_sum), cv::Point(5, 200),
+                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(drawing, std::string("Detected: ") + std::string(detected ? "true" : "false"), cv::Point(5, 300),
+                    cv::FONT_HERSHEY_SIMPLEX, 2, detected ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 143, 143), 2);
+        cv::putText(drawing, std::string("Num detections: ") + std::to_string(number_of_crosses), cv::Point(5, 400),
+                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(drawing, std::string("Count: ") + std::to_string(count), cv::Point(5, 500),
+                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
         // Convert to ros image format and publish
         debug_img.header = msg->header;
         debug_img.encoding = "bgr8";
         debug_img.image = drawing;
         debug_pub.publish(debug_img.toImageMsg());
+        ROS_INFO_STREAM(std::to_string(cv::countNonZero(frame)));
     }
 
     if (crosses_pub.getNumSubscribers() > 0) {
@@ -174,6 +204,16 @@ int main(int argc, char** argv) {
     nhp.param("length_cutoff", length_cutoff, 800.0);
 
     nhp.param("cooldown", cooldown_value, 7);
+
+    nhp.param("count_thresh", count_thresh, 2000);
+
+    nhp.param("canny_thresh1", canny_thresh1, 50.);
+    nhp.param("canny_thresh2", canny_thresh1, 200.);
+    nhp.param("hough_rho", hough_rho, 1.);
+    nhp.param("hough_theta", hough_theta, CV_PI / 180);
+    nhp.param("hough_thresh", hough_thresh, 50);
+    nhp.param("hough_minLineLength", hough_minLineLength, 50.);
+    nhp.param("hough_maxLineGap", hough_maxLineGap, 35.);
 
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 
