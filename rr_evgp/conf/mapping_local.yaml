@@ -12,9 +12,9 @@ costmap:
     plugins:
         - {name: "static_global", type: "costmap_2d::StaticLayer"}
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
-        - {name: "inflation", type: "costmap_2d::InflationLayer"}
-        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
         - {name: "track_closing", type: "rr::TrackClosingLayer"}
+        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
+
 
     static_global:
         map_topic: "/global_mapper/costmap/costmap"
@@ -36,21 +36,16 @@ costmap:
             obstacle_range: 7.99
             raytrace_range: 7.98
 
-    inflation:
-        inflation_radius: 0.3
-        cost_scaling_factor: 1.0
-        lethal_cost_threshold: 1
+    track_closing:
+        branch_pruning_size: 30
+        dilate_size: 3
+        min_enclosing_radius: 5
+        reg_bounding_box_size: 30
+        extrapolate_distance: 40
+        max_angle_between_lines: 50
+        max_dist_between_lines: 50
 
     distance_field:
         inflation_radius: 10.0
         cost_scaling_factor: 0.1
         lethal_cost_threshold: 255
-
-    track_closing:
-        branch_pruning_size: 30
-        dilate_size: 3
-        min_enclosing_radius: 10
-        reg_bounding_box_size: 30
-        extrapolate_distance: 20
-        max_angle_between_lines: 50
-        max_dist_between_lines: 50

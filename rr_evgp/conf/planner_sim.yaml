@@ -29,11 +29,11 @@ steering_gain: 1.0
 max_steering: $(arg max_steering)
 
 n_segments: $(arg n_segments)
-k_dist: 5.0
+k_dist: .1
 k_speed: 1.0
 k_steering: 0.1
-k_angle: 0.5
-collision_penalty: 100
+k_angle: 1
+collision_penalty: 10000
 
 planner_type: "hill_climbing"
 num_workers: 4

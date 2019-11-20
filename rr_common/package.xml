@@ -21,6 +21,9 @@
     <depend>rr_msgs</depend>
     <depend>nodelet</depend>
     <depend>sound_play</depend>
+    <depend>tf</depend>
+    <depend>tf2_geometry_msgs</depend>
+    <depend>costmap_2d</depend>
 
     <build_depend>cv_bridge</build_depend>
     <build_depend>image_transport</build_depend>

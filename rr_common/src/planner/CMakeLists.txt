@@ -1,8 +1,11 @@
 add_library(nearest_point_cache nearest_point_cache.cpp)
 
+add_library(inflation_cost inflation_cost.cpp)
+target_link_libraries(inflation_cost ${planning_libs} ${catkin_LIBRARIES})
+
 add_library(bicycle_model bicycle_model.cpp)
 
-set(planning_libs nearest_point_cache bicycle_model)
+set(planning_libs nearest_point_cache inflation_cost bicycle_model)
 
 add_library(annealing_optimizer annealing_optimizer.cpp)
 target_link_libraries(annealing_optimizer ${planning_libs} ${catkin_LIBRARIES})

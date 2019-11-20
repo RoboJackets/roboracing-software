@@ -9,8 +9,10 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/map_cost_interface.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/nearest_point_cache.h>
+#include <rr_common/planning/inflation_cost.h>
 #include <rr_common/planning/planning_utils.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
@@ -19,7 +21,7 @@
 constexpr int ctrl_dim = 1;
 
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
-std::unique_ptr<rr::NearestPointCache> g_distance_checker;
+std::unique_ptr<rr::InflationCost> g_distance_checker;
 std::unique_ptr<rr::LinearTrackingFilter> g_speed_filter;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
 std::unique_ptr<rr::Controls<ctrl_dim>> g_last_controls;
@@ -33,7 +35,7 @@ ros::Publisher viz_pub;
 rr_msgs::speedPtr speed_message;
 rr_msgs::steeringPtr steer_message;
 
-sensor_msgs::PointCloud2ConstPtr last_map_msg;
+nav_msgs::OccupancyGridConstPtr last_map_msg;
 bool is_new_msg;
 
 enum reverse_state_t { OK, CAUTION, REVERSE };
@@ -49,7 +51,12 @@ double steering_gain;
 double total_planning_time;
 size_t total_plans;
 
-void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
+//void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
+//    last_map_msg = map;
+//    is_new_msg = true;
+//}
+
+void mapCallback(const nav_msgs::OccupancyGridConstPtr& map) {
     last_map_msg = map;
     is_new_msg = true;
 }
@@ -62,37 +69,39 @@ void update_messages(double speed, double angle) {
 
     steer_message->angle = angle;
     steer_message->header.stamp = now;
+
 }
 
-void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl::PointCloud<pcl::PointXYZ> cloud;
 
-    pcl_conversions::toPCL(*map, pcl_pc2);
-    pcl::fromPCLPointCloud2(pcl_pc2, cloud);
+void processMap(const nav_msgs::OccupancyGridConstPtr& map) {
+//    pcl::PCLPointCloud2 pcl_pc2;
+//    pcl::PointCloud<pcl::PointXYZ> cloud;
+//
+//    pcl_conversions::toPCL(*map, pcl_pc2);
+//    pcl::fromPCLPointCloud2(pcl_pc2, cloud);
+//
+//    for (auto point_it = cloud.begin(); point_it != cloud.end();) {
+//        if (g_distance_checker->GetCollision(*point_it)) {
+//            point_it = cloud.erase(point_it);
+//        } else {
+//            point_it++;
+//        }
+//    }
 
-    for (auto point_it = cloud.begin(); point_it != cloud.end();) {
-        if (g_distance_checker->GetCollision(*point_it)) {
-            point_it = cloud.erase(point_it);
-        } else {
-            point_it++;
-        }
-    }
+//    if (cloud.empty()) {
+//        ROS_WARN("environment map pointcloud is empty");
+//    }
 
-    if (cloud.empty()) {
-        ROS_WARN("environment map pointcloud is empty");
-    }
-
-    g_distance_checker->SetMap(cloud);
+    g_distance_checker->SetMapMessage(map);
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         std::vector<rr::PathPoint> path;
         g_vehicle_model->RollOutPath(controls, path);
 
         double cost = 0;
         for (size_t i = 0; i < path.size(); ++i) {
-            auto dist = g_distance_checker->GetCollisionDistance(path[i].pose);
+            auto dist = g_distance_checker->DistanceCost(path[i].pose);
             if (dist > 0) {
-                cost += k_dist_ * std::exp(-dist);
+                cost += k_dist_ * dist;
                 cost -= k_speed_ * path[i].speed;
                 cost += k_steering_ * path[i].steer;
                 cost += k_angle_ * std::abs(path[i].pose.theta);
@@ -117,7 +126,7 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
     g_vehicle_model->RollOutPath(controls_opt, plan.path);
     plan.has_collision = false;
     for (size_t i = 0; i < plan.path.size(); ++i) {
-        auto dist = g_distance_checker->GetCollisionDistance(plan.path[i].pose);
+        auto dist = g_distance_checker->DistanceCost(plan.path[i].pose);
         if (dist <= 0) {
             plan.has_collision = true;
             break;
@@ -208,7 +217,8 @@ int main(int argc, char** argv) {
     map_dimensions.back = 5;
     map_dimensions.right = map_dimensions.left = 8;
 
-    g_distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
+//    g_distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
+    g_distance_checker = std::make_unique<rr::InflationCost>(nhp, hitbox);
 
     auto steering_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "steering_filter"));
     rr::BicycleModel vehicle_model(ros::NodeHandle(nhp, "bicycle_model"), steering_model);
