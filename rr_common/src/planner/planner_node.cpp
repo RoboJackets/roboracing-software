@@ -9,8 +9,10 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/map_cost_interface.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/nearest_point_cache.h>
+#include <rr_common/planning/inflation_cost.h>
 #include <rr_common/planning/planning_utils.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
@@ -54,6 +56,7 @@ void update_messages(double speed, double angle) {
 
     steer_message->angle = angle;
     steer_message->header.stamp = now;
+
 }
 
 void processMap() {

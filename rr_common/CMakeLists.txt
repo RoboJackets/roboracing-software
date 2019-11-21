@@ -13,6 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
         image_transport
         sound_play
         rr_msgs
+        costmap_2d
+        tf
+        tf2_geometry_msgs
         parameter_assertions
         )
 
