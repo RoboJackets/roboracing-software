@@ -7,7 +7,7 @@
 
 namespace rr {
 
-NearestPointCache::NearestPointCache(ros::NodeHandle& nh)
+NearestPointCache::NearestPointCache(ros::NodeHandle nh)
       : points_storage_()
       , map_limits_(ros::NodeHandle(nh, "map_limits"))
       , hitbox_(ros::NodeHandle(nh, "hitbox"))
@@ -142,7 +142,7 @@ void NearestPointCache::SetMapMessage(const sensor_msgs::PointCloud2ConstPtr& cl
     updated_ = true;
 }
 
-double NearestPointCache::_SingleDistanceCost(const rr::Pose& pose) {
+double NearestPointCache::DistanceCost(const rr::Pose& pose) {
     double cos_th = std::cos(pose.theta);
     double sin_th = std::sin(pose.theta);
 
@@ -211,20 +211,16 @@ double NearestPointCache::_SingleDistanceCost(const rr::Pose& pose) {
     return std::exp(-dist_decay_ * dist);
 }
 
-double NearestPointCache::DistanceCost(const Pose& pose) {
-    return _SingleDistanceCost(pose);
-}
-
 std::vector<double> NearestPointCache::DistanceCost(const std::vector<Pose>& poses) {
     std::vector<double> out(poses.size());
-    std::transform(poses.cbegin(), poses.cend(), out.begin(), [this](const Pose& p) { return _SingleDistanceCost(p); });
+    std::transform(poses.cbegin(), poses.cend(), out.begin(), [this](const Pose& p) { return DistanceCost(p); });
     return out;
 }
 
 std::vector<double> NearestPointCache::DistanceCost(const std::vector<PathPoint>& path) {
     std::vector<double> out(path.size());
     std::transform(path.cbegin(), path.cend(), out.begin(),
-                   [this](const PathPoint& p) { return _SingleDistanceCost(p.pose); });
+                   [this](const PathPoint& p) { return DistanceCost(p.pose); });
     return out;
 }
 

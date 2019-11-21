@@ -20,37 +20,55 @@ speed_filter:
     rate_max: 10.0
     rate_min: -1000.0
 
-cache_resolution: 0.2
-map_limits:
-    min_x: -5
-    max_x: 10
-    min_y: -8
-    max_y: 8
-hitbox:
-    min_x: -0.2
-    max_x: 1.6
-    min_y: -0.7
-    max_y: 0.7
-
 steering_gain: 1.0
 max_steering: $(arg max_steering)
 
+#map_type: "obstacle_points"
+#obstacle_points_map:
+#    input_cloud_topic: /current_obstacles
+#    cache_resolution: 0.2
+#    distance_decay_factor: 0.6
+#    map_limits:
+#        min_x: -5
+#        max_x: 10
+#        min_y: -8
+#        max_y: 8
+#    hitbox:
+#        min_x: -0.2
+#        max_x: 1.6
+#        min_y: -0.7
+#        max_y: 0.7
+
+map_type: "grid_inflation"
+grid_inflation_map:
+    map_topic: "/local_mapper/costmap/costmap"
+    lethal_threshold: 75
+    map_size:
+        min_x: -500
+        max_x: 500
+        min_y: -500
+        max_y: 500
+
 n_segments: $(arg n_segments)
-distance_decay_factor: 0.6
-k_map_cost: 3.0
+k_map_cost: 0.01  # ~3 for obstacle_points
 k_speed: 0.1
 k_steering: 0.1
 k_angle: 1.0
 collision_penalty: 100
 
+impasse_caution_duration: 0.25
+impasse_reverse_duration: 4.0
+
 planner_type: "hill_climbing"
-num_workers: 4
-num_restarts: 4
-neighbor_stddev: [0.03]
-local_optimum_tries: 30
+hill_climb_optimizer:
+    num_workers: 4
+    num_restarts: 4
+    neighbor_stddev: [0.03]
+    local_optimum_tries: 30
 
 #planner_type: "annealing"
-#stddevs_start: [0.2]
-#temperature_end: 0.1
-#annealing_steps: 1000
-#acceptance_scale: 0.01
+#annealing_optimizer:
+#    stddevs_start: [0.2]
+#    temperature_end: 0.1
+#    annealing_steps: 1000
+#    acceptance_scale: 0.01

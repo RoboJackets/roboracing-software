@@ -29,7 +29,7 @@ class NearestPointCache : public MapCostInterface {
      * @param map_size Map size limits for cached distances. Set this so that it is not possible for paths to leave this
      * box.
      */
-    explicit NearestPointCache(ros::NodeHandle& nh);
+    explicit NearestPointCache(ros::NodeHandle nh);
 
     double DistanceCost(const Pose& pose) override;
 
@@ -63,8 +63,6 @@ class NearestPointCache : public MapCostInterface {
      * @param map Point cloud map representation
      */
     void SetMapMessage(const sensor_msgs::PointCloud2ConstPtr& cloud);
-
-    double _SingleDistanceCost(const Pose& pose);
 
     /*
      * Caching system: map from discretized x, y location to its nearest neighbor in the map/obstacle point cloud

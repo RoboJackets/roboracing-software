@@ -2,7 +2,7 @@ add_library(nearest_point_cache nearest_point_cache.cpp)
 target_link_libraries(nearest_point_cache ${catkin_LIBRARIES})
 
 add_library(inflation_cost inflation_cost.cpp)
-target_link_libraries(inflation_cost ${planning_libs} ${catkin_LIBRARIES})
+target_link_libraries(inflation_cost ${catkin_LIBRARIES})
 
 add_library(bicycle_model bicycle_model.cpp)
 target_link_libraries(nearest_point_cache ${catkin_LIBRARIES})
@@ -17,8 +17,9 @@ target_link_libraries(hill_climb_optimizer ${catkin_LIBRARIES})
 
 add_executable(planner planner_node.cpp)
 target_link_libraries(planner
-        nearest_point_cache
         bicycle_model
+        nearest_point_cache
+        inflation_cost
         annealing_optimizer
         hill_climb_optimizer
         ${catkin_LIBRARIES})

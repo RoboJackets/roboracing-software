@@ -2,18 +2,15 @@
 #include <nav_msgs/Path.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/conversions.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl_ros/transforms.h>
 #include <ros/ros.h>
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
-#include <rr_common/planning/map_cost_interface.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
-#include <rr_common/planning/nearest_point_cache.h>
 #include <rr_common/planning/inflation_cost.h>
-#include <rr_common/planning/planning_utils.h>
+#include <rr_common/planning/map_cost_interface.h>
+#include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include <rr_common/linear_tracking_filter.hpp>
@@ -21,7 +18,7 @@
 constexpr int ctrl_dim = 1;
 
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
-std::shared_ptr<rr::MapCostInterface> g_map_cost_interface;
+std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::LinearTrackingFilter> g_speed_filter;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
 
@@ -56,16 +53,14 @@ void update_messages(double speed, double angle) {
 
     steer_message->angle = angle;
     steer_message->header.stamp = now;
-
 }
 
 void processMap() {
-    auto map_cost_interface = g_map_cost_interface;
-    rr::CostFunction<ctrl_dim> cost_fn = [&, map_cost_interface](const rr::Controls<ctrl_dim>& controls) -> double {
+    rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         std::vector<rr::PathPoint> path;
         g_vehicle_model->RollOutPath(controls, path);
 
-        std::vector<double> map_costs = map_cost_interface->DistanceCost(path);
+        std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
         double cost = 0;
         for (size_t i = 0; i < path.size(); ++i) {
             if (map_costs[i] >= 0) {
@@ -78,7 +73,6 @@ void processMap() {
                 break;
             }
         }
-        //        ROS_INFO_STREAM(controls << " --> " << cost);
         return cost;
     };
 
@@ -90,14 +84,13 @@ void processMap() {
     plan.cost = cost_fn(plan.control);
 
     g_vehicle_model->RollOutPath(plan.control, plan.path);
-    std::vector<double> map_costs = map_cost_interface->DistanceCost(plan.path);
+    std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.path);
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
 
     g_last_controls = plan.control;
 
-    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision << ", controls "
-                                         << plan.control);
+    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
 
     // update impasse state machine
     auto now = ros::Time::now();
@@ -169,7 +162,16 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "collision_penalty", collision_penalty_);
     assertions::getParam(nhp, "max_steering", max_steering_);
 
-    g_map_cost_interface = std::make_unique<rr::NearestPointCache>(nhp);
+    std::string map_type;
+    assertions::getParam(nhp, "map_type", map_type);
+    if (map_type == "obstacle_points") {
+        g_map_cost_interface = std::make_unique<rr::NearestPointCache>(ros::NodeHandle(nhp, "obstacle_points_map"));
+    } else if (map_type == "grid_inflation") {
+        g_map_cost_interface = std::make_unique<rr::InflationCost>(ros::NodeHandle(nhp, "grid_inflation_map"));
+    } else {
+        ROS_ERROR_STREAM("[Planner] Error: unknown map type \"" << map_type << "\"");
+        ros::shutdown();
+    }
 
     auto steering_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "steering_filter"));
     rr::BicycleModel vehicle_model(ros::NodeHandle(nhp, "bicycle_model"), steering_model);
@@ -180,11 +182,11 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "planner_type", planner_type);
 
     if (planner_type == "annealing") {
-        g_planner = std::make_unique<rr::AnnealingOptimizer<ctrl_dim>>(nhp);
+        g_planner = std::make_unique<rr::AnnealingOptimizer<ctrl_dim>>(ros::NodeHandle(nhp, "annealing_optimizer"));
     } else if (planner_type == "hill_climbing") {
-        g_planner = std::make_unique<rr::HillClimbOptimizer<ctrl_dim>>(nhp);
+        g_planner = std::make_unique<rr::HillClimbOptimizer<ctrl_dim>>(ros::NodeHandle(nhp, "hill_climb_optimizer"));
     } else {
-        ROS_ERROR_STREAM("[PlanningOptimizer] Error: unknown planner type \"" << planner_type << "\"");
+        ROS_ERROR_STREAM("[Planner] Error: unknown planner type \"" << planner_type << "\"");
         ros::shutdown();
     }
 
