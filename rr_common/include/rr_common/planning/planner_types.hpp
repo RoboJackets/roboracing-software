@@ -43,34 +43,25 @@ std::ostream& operator<<(std::ostream& out, const PathPoint& p) {
                << ")";
 }
 
-/**
- * PlannedPath: object representing a planned trajectory
- */
-struct OptimizedTrajectory {
-    std::vector<double> control;  // input to a path
-    std::vector<PathPoint> path;  // results of path rollout
-    double cost;                  // result of applying cost function
-    bool has_collision;
-};
-
-/**
- * CenteredBox: container for forward, backward, left, and right offsets
- */
-struct CenteredBox {
-    double front;  // distance from origin to front edge
-    double back;   // ditto for back edge, etc.
-    double left;
-    double right;
-};
-
 template <int R, int C>
 using Matrix = Eigen::Matrix<double, R, C>;
 
 template <int N>
-using Vector = Matrix<N, 1>;
+using Vector = Eigen::Matrix<double, N, 1>;
 
 template <int ctrl_dim>
-using Controls = Matrix<ctrl_dim, -1>;
+using Controls = Eigen::Matrix<double, ctrl_dim, -1, Eigen::RowMajor, ctrl_dim, 10>;
+
+/**
+ * object representing a planned trajectory
+ */
+template <int ctrl_dim>
+struct TrajectoryPlan {
+    Controls<ctrl_dim> control;   // input to a path
+    std::vector<PathPoint> path;  // results of path rollout
+    double cost;                  // result of applying cost function
+    bool has_collision;
+};
 
 template <int ctrl_dim>
 using CostFunction = std::function<double(const Controls<ctrl_dim>&)>;

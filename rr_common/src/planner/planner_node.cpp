@@ -19,12 +19,12 @@
 constexpr int ctrl_dim = 1;
 
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
-std::unique_ptr<rr::NearestPointCache> g_distance_checker;
+std::shared_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::LinearTrackingFilter> g_speed_filter;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
-std::unique_ptr<rr::Controls<ctrl_dim>> g_last_controls;
 
-double k_dist_, k_speed_, k_steering_, k_angle_, collision_penalty_, max_steering_;
+double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_, max_steering_;
+rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
@@ -32,9 +32,6 @@ ros::Publisher viz_pub;
 
 rr_msgs::speedPtr speed_message;
 rr_msgs::steeringPtr steer_message;
-
-sensor_msgs::PointCloud2ConstPtr last_map_msg;
-bool is_new_msg;
 
 enum reverse_state_t { OK, CAUTION, REVERSE };
 
@@ -49,11 +46,6 @@ double steering_gain;
 double total_planning_time;
 size_t total_plans;
 
-void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
-    last_map_msg = map;
-    is_new_msg = true;
-}
-
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
 
@@ -64,35 +56,17 @@ void update_messages(double speed, double angle) {
     steer_message->header.stamp = now;
 }
 
-void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl::PointCloud<pcl::PointXYZ> cloud;
-
-    pcl_conversions::toPCL(*map, pcl_pc2);
-    pcl::fromPCLPointCloud2(pcl_pc2, cloud);
-
-    for (auto point_it = cloud.begin(); point_it != cloud.end();) {
-        if (g_distance_checker->GetCollision(*point_it)) {
-            point_it = cloud.erase(point_it);
-        } else {
-            point_it++;
-        }
-    }
-
-    if (cloud.empty()) {
-        ROS_WARN("environment map pointcloud is empty");
-    }
-
-    g_distance_checker->SetMap(cloud);
-    rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
+void processMap() {
+    auto map_cost_interface = g_map_cost_interface;
+    rr::CostFunction<ctrl_dim> cost_fn = [&, map_cost_interface](const rr::Controls<ctrl_dim>& controls) -> double {
         std::vector<rr::PathPoint> path;
         g_vehicle_model->RollOutPath(controls, path);
 
+        std::vector<double> map_costs = map_cost_interface->DistanceCost(path);
         double cost = 0;
         for (size_t i = 0; i < path.size(); ++i) {
-            auto dist = g_distance_checker->GetCollisionDistance(path[i].pose);
-            if (dist > 0) {
-                cost += k_dist_ * std::exp(-dist);
+            if (map_costs[i] >= 0) {
+                cost += k_map_cost_ * map_costs[i];
                 cost -= k_speed_ * path[i].speed;
                 cost += k_steering_ * path[i].steer;
                 cost += k_angle_ * std::abs(path[i].pose.theta);
@@ -101,30 +75,26 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
                 break;
             }
         }
+        //        ROS_INFO_STREAM(controls << " --> " << cost);
         return cost;
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
     ctrl_limits << -max_steering_, max_steering_;
 
-    rr::Controls<ctrl_dim> controls_opt = g_planner->Optimize(cost_fn, *g_last_controls, ctrl_limits);
+    rr::TrajectoryPlan<ctrl_dim> plan;
+    plan.control = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
+    plan.cost = cost_fn(plan.control);
 
-    rr::OptimizedTrajectory plan;
-    for (long i = 0; i < controls_opt.cols(); ++i) {
-        plan.control.push_back(controls_opt(0, i));
-    }
-    plan.cost = cost_fn(controls_opt);
-    g_vehicle_model->RollOutPath(controls_opt, plan.path);
-    plan.has_collision = false;
-    for (size_t i = 0; i < plan.path.size(); ++i) {
-        auto dist = g_distance_checker->GetCollisionDistance(plan.path[i].pose);
-        if (dist <= 0) {
-            plan.has_collision = true;
-            break;
-        }
-    }
+    g_vehicle_model->RollOutPath(plan.control, plan.path);
+    std::vector<double> map_costs = map_cost_interface->DistanceCost(plan.path);
+    auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
+    plan.has_collision = (negative_it != map_costs.end());
 
-    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
+    g_last_controls = plan.control;
+
+    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision << ", controls "
+                                         << plan.control);
 
     // update impasse state machine
     auto now = ros::Time::now();
@@ -152,14 +122,14 @@ void processMap(const sensor_msgs::PointCloud2ConstPtr& map) {
             caution_start_time = now;
         }
     } else {
-        ROS_ERROR_STREAM("PlanningOptimizer encountered unknown reverse state");
+        ROS_ERROR_STREAM("Planner encountered unknown reverse state");
     }
 
     if (REVERSE == reverse_state) {
         update_messages(-0.8, 0);
-        ROS_WARN_STREAM("PlanningOptimizer reversing");
+        ROS_WARN_STREAM("Planner reversing");
     } else if (plan.has_collision) {
-        ROS_WARN_STREAM("PlanningOptimizer: no path found but not reversing; reusing previous message");
+        ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");
     } else {
         g_speed_filter->Update(plan.path[0].speed, now.toSec());
         update_messages(g_speed_filter->GetValue(), plan.path[0].steer * steering_gain);
@@ -189,34 +159,20 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    rr::CenteredBox hitbox;
-    ros::NodeHandle nh_hitbox(nhp, "collision_hitbox");
-    assertions::getParam(nh_hitbox, "front", hitbox.front);
-    assertions::getParam(nh_hitbox, "back", hitbox.back);
-    assertions::getParam(nh_hitbox, "side", hitbox.left);
-    hitbox.right = hitbox.left;
-
-    assertions::getParam(nhp, "k_dist", k_dist_);
+    assertions::getParam(nhp, "k_map_cost", k_map_cost_);
     assertions::getParam(nhp, "k_speed", k_speed_);
     assertions::getParam(nhp, "k_steering", k_steering_);
     assertions::getParam(nhp, "k_angle", k_angle_);
     assertions::getParam(nhp, "collision_penalty", collision_penalty_);
     assertions::getParam(nhp, "max_steering", max_steering_);
 
-    rr::CenteredBox map_dimensions;
-    map_dimensions.front = 15;
-    map_dimensions.back = 5;
-    map_dimensions.right = map_dimensions.left = 8;
-
-    g_distance_checker = std::make_unique<rr::NearestPointCache>(hitbox, map_dimensions);
+    g_map_cost_interface = std::make_unique<rr::NearestPointCache>(nhp);
 
     auto steering_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "steering_filter"));
     rr::BicycleModel vehicle_model(ros::NodeHandle(nhp, "bicycle_model"), steering_model);
 
     g_speed_filter = std::make_unique<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "speed_filter"));
 
-    std::string obstacle_cloud_topic;
-    assertions::getParam(nhp, "input_cloud_topic", obstacle_cloud_topic);
     std::string planner_type;
     assertions::getParam(nhp, "planner_type", planner_type);
 
@@ -233,8 +189,8 @@ int main(int argc, char** argv) {
 
     int n_control_points = 0;
     assertions::getParam(nhp, "n_segments", n_control_points);
-    g_last_controls = std::make_unique<rr::Controls<ctrl_dim>>(ctrl_dim, n_control_points);
-    g_last_controls->setZero();
+    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_control_points);
+    g_last_controls.setZero();
 
     caution_duration = ros::Duration(assertions::param(nhp, "impasse_caution_duration", 0.0));
     reverse_duration = ros::Duration(assertions::param(nhp, "impasse_reverse_duration", 0.0));
@@ -244,7 +200,6 @@ int main(int argc, char** argv) {
 
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
 
-    auto map_sub = nh.subscribe(obstacle_cloud_topic, 1, mapCallback);
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
@@ -259,23 +214,26 @@ int main(int argc, char** argv) {
     steering_model->Reset(0, ros::Time::now().toSec());
     g_speed_filter->Reset(0, ros::Time::now().toSec());
 
+    g_map_cost_interface->SetMapStale();
+
     ROS_INFO("planner initialized");
 
     ros::Rate rate(30);
-    is_new_msg = false;
     while (ros::ok()) {
         rate.sleep();
         ros::spinOnce();
 
         steering_model->Update(steer_message->angle, ros::Time::now().toSec());
 
-        if (is_new_msg) {
-            is_new_msg = false;
-
+        if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
-            processMap(last_map_msg);
-            double seconds = (ros::WallTime::now() - start).toSec();
 
+            g_map_cost_interface->StopUpdates();
+            processMap();
+            g_map_cost_interface->SetMapStale();
+            g_map_cost_interface->StartUpdates();
+
+            double seconds = (ros::WallTime::now() - start).toSec();
             total_planning_time += seconds;
             total_plans++;
             double sec_avg = total_planning_time / total_plans;

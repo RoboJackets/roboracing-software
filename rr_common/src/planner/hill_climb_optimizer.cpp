@@ -31,17 +31,17 @@ template <int ctrl_dim>
 Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctrl_dim>& cost_fn,
                                                           const Controls<ctrl_dim>& init_controls,
                                                           const Matrix<ctrl_dim, 2>& ctrl_limits) {
-    auto descend_hill = [&](Controls<ctrl_dim> controls) {
+    auto descend_hill = [this, &cost_fn, &ctrl_limits](Controls<ctrl_dim> controls) {
         double best_cost = std::numeric_limits<double>::max();
         int stuck_counter = local_optimum_tries_;
         while (stuck_counter > 0) {
-            const auto new_controls = controls_neighbor(controls, ctrl_limits, neighbor_stddev_);
+            const Controls<ctrl_dim> new_controls = controls_neighbor(controls, ctrl_limits, neighbor_stddev_);
             auto cost = cost_fn(new_controls);
 
             if (cost >= best_cost) {
                 --stuck_counter;
             } else {
-                controls = std::move(new_controls);
+                controls = new_controls;
                 best_cost = cost;
                 stuck_counter = local_optimum_tries_;
             }
@@ -55,8 +55,8 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
     std::mutex plan_count_mutex, global_best_plan_mutex;
 
     auto worker = [&, this](int thread_idx) {
-        Controls<ctrl_dim> controls;
-        double best_cost = global_best_cost;
+        Controls<ctrl_dim> best_controls;
+        double best_cost = std::numeric_limits<double>::max();
         while (true) {
             {
                 std::lock_guard lock(plan_count_mutex);
@@ -66,6 +66,7 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
                 plan_count++;
             }
 
+            Controls<ctrl_dim> controls;
             if (plan_count == 1) {
                 // for one start, init to previous best controls
                 controls = init_controls;
@@ -78,14 +79,14 @@ Controls<ctrl_dim> HillClimbOptimizer<ctrl_dim>::Optimize(const CostFunction<ctr
             auto [cost, controls_opt] = descend_hill(controls);
 
             if (cost < best_cost) {
-                controls = std::move(controls_opt);
+                best_controls = controls_opt;
                 best_cost = cost;
             }
         }
 
         std::lock_guard lock(global_best_plan_mutex);
         if (best_cost < global_best_cost) {
-            global_best_controls = std::move(controls);
+            global_best_controls = best_controls;
             global_best_cost = best_cost;
         }
     };

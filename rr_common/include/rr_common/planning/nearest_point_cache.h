@@ -1,18 +1,25 @@
 /**
- * DistanceChecker: utility class for quickly evaluating feasibility of trajectories
+ * DistanceChecker: implementation of the MapCostInterface which does careful distance and collision checking.
+ * This is suitable for paths which pass close to obstacles, such as those used in the IARRC Obstacle Avoidance
+ * Challenge.
  */
 
 #pragma once
 
 #include <deque>
+#include <mutex>
 #include <tuple>
 #include <valarray>
 
+#include <sensor_msgs/PointCloud2.h>
+
+#include "map_cost_interface.h"
 #include "planner_types.hpp"
+#include "rectangle.hpp"
 
 namespace rr {
 
-class NearestPointCache {
+class NearestPointCache : public MapCostInterface {
   public:
     using point_t = pcl::PointXYZ;
 
@@ -22,38 +29,43 @@ class NearestPointCache {
      * @param map_size Map size limits for cached distances. Set this so that it is not possible for paths to leave this
      * box.
      */
-    NearestPointCache(const CenteredBox& hitbox, const CenteredBox& map_size);
+    explicit NearestPointCache(ros::NodeHandle& nh);
 
-    /**
-     * Calculate the shortest distance from any part of the robot to any obstacle
-     * point in the map
-     * @param pose Future pose relative to current/origin (0,0,0)
-     * @return clearing distance to nearest obstacle, or (<= 0) if collision
-     */
-    [[nodiscard]] double GetCollisionDistance(const Pose& pose) const;
+    double DistanceCost(const Pose& pose) override;
 
+    std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
+
+    std::vector<double> DistanceCost(const std::vector<PathPoint>& path) override;
+
+    bool IsMapUpdated() override {
+        std::unique_lock lock(mutex_);
+        return updated_;
+    }
+
+    void SetMapStale() override {
+        std::unique_lock lock(mutex_);
+        updated_ = false;
+    }
+
+    void StartUpdates() override {
+        std::unique_lock lock(mutex_);
+        activated_ = true;
+    }
+
+    void StopUpdates() override {
+        std::unique_lock lock(mutex_);
+        activated_ = false;
+    }
+
+  private:
     /**
      * Given a map, cache the nearest neighbors. Fill the cache outwards from locations containing obstacle points.
      * @param map Point cloud map representation
      */
-    void SetMap(const pcl::PointCloud<point_t>& map);
+    void SetMapMessage(const sensor_msgs::PointCloud2ConstPtr& cloud);
 
-    /**
-     * Determine if a point is in collision with the robot's current position. If true, something is fishy.
-     * @param relative_point Point in robot's coordinate frame
-     * @return true if point is inside robot's hitbox, false otherwise
-     */
-    [[nodiscard]] bool GetCollision(const point_t& relative_point) const;
+    double _SingleDistanceCost(const Pose& pose);
 
-    /**
-     * Convenience method for the distance between two PointCloud points
-     * @param p1 Point 1
-     * @param p2 Point 2
-     * @return Euclidean distance between the points
-     */
-    [[nodiscard]] double Dist(const point_t& p1, const point_t& p2) const;
-
-  private:
     /*
      * Caching system: map from discretized x, y location to its nearest neighbor in the map/obstacle point cloud
      */
@@ -68,23 +80,46 @@ class NearestPointCache {
     /*
      * Get the index of a cache element from the x, y location and vice versa
      */
-    [[nodiscard]] int GetCacheIndex(double x, double y) const;
-    [[nodiscard]] point_t GetPointFromIndex(int i) const;
+    [[nodiscard]] inline int GetCacheIndex(double x, double y) const {
+        if (!map_limits_.PointInside(x, y)) {
+            return -1;
+        }
 
+        double dx = x - map_limits_.min_x;
+        double dy = y - map_limits_.min_y;
+
+        auto mx = static_cast<int>(dx / cache_resolution_);
+        auto my = static_cast<int>(dy / cache_resolution_);
+
+        return my * cache_size_x_ + mx;
+    }
+
+    [[nodiscard]] inline point_t GetPointFromIndex(int i) const {
+        int my = i / cache_size_x_;
+        int mx = i % cache_size_x_;
+
+        point_t out;
+        out.x = map_limits_.min_x + ((mx + 0.5) * cache_resolution_);
+        out.y = map_limits_.min_y + ((my + 0.5) * cache_resolution_);
+        return out;
+    }
+
+    pcl::PointCloud<point_t> points_storage_;
     std::vector<CacheEntry> cache_;      // cache storage
-    std::deque<int> cache_updates_;      // queue for updating the cache in breadth-first order
     std::valarray<bool> cache_visited_;  // boolean mask for tracking which locations have been updated
-    int cache_rows_front_;
-    int cache_rows_back_;
-    int cache_rows_;
-    int cache_cols_left_;
-    int cache_cols_right_;
-    int cache_cols_;
-    const CenteredBox map_size_;
-    const double cache_resolution_;
+    int cache_size_x_;
+    int cache_size_y_;
+    double cache_resolution_;
+    rr::Rectangle map_limits_;
+    double dist_decay_;  // map cost is exp(-dist_decay_ * dist). Smaller value is like a larger inflation radius
 
-    const CenteredBox hitbox_;
+    rr::Rectangle hitbox_;
     double hitbox_corner_dist_;
+
+    ros::Subscriber map_sub_;
+    std::mutex mutex_;
+    bool updated_;
+    bool activated_;
 };
 
 }  // namespace rr
