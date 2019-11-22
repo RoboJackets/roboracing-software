@@ -6,7 +6,6 @@ costmap:
     rolling_window: false
     width: $(arg global_map_size)
     height: $(arg global_map_size)
-    resolution: 0.25
 
     plugins:
         - {name: "grid_filter", type: "rr::BinaryBayesFilterObstacleLayer"}

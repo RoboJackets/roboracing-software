@@ -42,7 +42,7 @@ max_steering: $(arg max_steering)
 map_type: "grid_inflation"
 grid_inflation_map:
     map_topic: "/local_mapper/costmap/costmap"
-    lethal_threshold: 75
+    lethal_threshold: 95
     hitbox:
         min_x: -0.2
         max_x: 1.6

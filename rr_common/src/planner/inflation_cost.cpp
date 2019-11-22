@@ -23,10 +23,7 @@ double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
         return 0.0;
     char cost = map->data[index];
 
-    if (cost < 0) {  // in case the input map indicates unexplored area
-        return 0.0;
-    }
-    else if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && cost > lethal_threshold) {
+    if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && (cost > lethal_threshold || cost < 0)) {
         return -1.0;
     }
 

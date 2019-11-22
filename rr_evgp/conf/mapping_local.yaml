@@ -1,40 +1,23 @@
 costmap:
-    update_frequency: 15.0
+    update_frequency: 30.0
     publish_frequency: 15.0
     always_send_full_costmap: true
 
     rolling_window: true
     width: 25
     height: 25
-    resolution: 0.1
-    track_unknown_space: false
 
     plugins:
-        - {name: "static_global", type: "costmap_2d::StaticLayer"}
-        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+        - {name: "global", type: "costmap_2d::StaticLayer"}
         - {name: "track_closing", type: "rr::TrackClosingLayer"}
         - {name: "distance_field", type: "costmap_2d::InflationLayer"}
 
 
-    static_global:
+    global:
         map_topic: "/global_mapper/costmap/costmap"
         subscribe_to_updates: true
         trinary_costmap: true
-
-    obstacles:
-        observation_sources: laserscan
-        combination_method: 1
-        laserscan:
-            data_type: LaserScan
-            topic: /scan
-            frame_name: lidar
-            expected_update_rate: 15.0
-            observation_persistence: 0.0
-            marking: true
-            clearing: true
-            inf_is_valid: false
-            obstacle_range: 7.99
-            raytrace_range: 7.98
+        track_unknown_space: false
 
     track_closing:
         branch_pruning_size: 30
