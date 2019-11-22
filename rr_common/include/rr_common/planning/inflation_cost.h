@@ -14,19 +14,11 @@ namespace rr {
 
 class InflationCost : public MapCostInterface {
   public:
-    InflationCost(ros::NodeHandle nh);
+    explicit InflationCost(ros::NodeHandle nh);
 
     double DistanceCost(const Pose& pose) override;
     std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
     std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) override;
-
-    bool IsMapUpdated() override {
-        return updated;
-    }
-
-    void SetMapStale() override {
-        updated = false;
-    }
 
   private:
     void SetMapMessage(const nav_msgs::OccupancyGridConstPtr& map_msg);
@@ -36,7 +28,6 @@ class InflationCost : public MapCostInterface {
     Rectangle hit_box;
     std::unique_ptr<tf::TransformListener> listener;
     tf::StampedTransform transform;
-    bool updated;
     int lethal_threshold;
 };
 

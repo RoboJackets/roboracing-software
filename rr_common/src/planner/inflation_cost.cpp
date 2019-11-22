@@ -1,11 +1,9 @@
 #include <rr_common/planning/inflation_cost.h>
 
-#include <algorithm>
-
 namespace rr {
 
 InflationCost::InflationCost(ros::NodeHandle nh)
-      : map(), hit_box(ros::NodeHandle(nh, "map_size")), listener(new tf::TransformListener), updated(false) {
+      : map(), hit_box(ros::NodeHandle(nh, "hitbox")), listener(new tf::TransformListener) {
     std::string map_topic;
     assertions::getParam(nh, "map_topic", map_topic);
     map_sub = nh.subscribe(map_topic, 1, &InflationCost::SetMapMessage, this);
@@ -23,11 +21,12 @@ double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
 
     if (index < 0 && index >= map->data.size())
         return 0.0;
-    unsigned int cost = map->data[index];
+    char cost = map->data[index];
 
-    if ((rr_pose.y < hit_box.min_y || hit_box.max_y < rr_pose.y || rr_pose.x < hit_box.min_x ||
-         hit_box.max_x < rr_pose.x) &&
-        cost > 90) {
+    if (cost < 0) {  // in case the input map indicates unexplored area
+        return 0.0;
+    }
+    else if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && cost > lethal_threshold) {
         return -1.0;
     }
 
@@ -49,9 +48,11 @@ std::vector<double> InflationCost::DistanceCost(const std::vector<PathPoint>& pa
 }
 
 void InflationCost::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
-    map = map_msg;
+    if (!accepting_updates_) {
+        return;
+    }
 
-    ROS_INFO_STREAM("map max: " << (int)*std::max(std::begin(map->data), std::end(map->data)));
+    map = map_msg;
 
     try {
         listener->waitForTransform(map_msg->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(.05));
@@ -60,7 +61,7 @@ void InflationCost::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGri
         ROS_ERROR_STREAM(ex.what());
     }
 
-    updated = true;
+    updated_ = true;
 }
 
 }  // namespace rr

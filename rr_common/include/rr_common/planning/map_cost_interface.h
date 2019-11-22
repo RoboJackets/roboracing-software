@@ -13,6 +13,8 @@ namespace rr {
 
 class MapCostInterface {
   public:
+    MapCostInterface() : updated_(false), accepting_updates_(true) {}
+
     /**
      * Get the cost w.r.t. the map of a single pose
      * @param pose (x, y, theta) relative to the current pose of the robot
@@ -28,11 +30,23 @@ class MapCostInterface {
     virtual std::vector<double> DistanceCost(const std::vector<Pose>& poses) = 0;
     virtual std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) = 0;
 
-    virtual bool IsMapUpdated() = 0;
-    virtual void SetMapStale() = 0;
+    virtual bool IsMapUpdated() {
+        return updated_;
+    }
+    virtual void SetMapStale() {
+        updated_ = false;
+    }
 
-    virtual void StartUpdates() {}
-    virtual void StopUpdates() {}
+    virtual void StartUpdates() {
+        accepting_updates_ = true;
+    }
+    virtual void StopUpdates() {
+        accepting_updates_ = false;
+    }
+
+  protected:
+    bool updated_;            // set true when stored map data is updated
+    bool accepting_updates_;  // only modify stored map data when this is true
 };
 
 }  // namespace rr

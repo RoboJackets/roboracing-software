@@ -43,14 +43,14 @@ map_type: "grid_inflation"
 grid_inflation_map:
     map_topic: "/local_mapper/costmap/costmap"
     lethal_threshold: 75
-    map_size:
-        min_x: -500
-        max_x: 500
-        min_y: -500
-        max_y: 500
+    hitbox:
+        min_x: -0.2
+        max_x: 1.6
+        min_y: -0.7
+        max_y: 0.7
 
 n_segments: $(arg n_segments)
-k_map_cost: 0.01  # ~3 for obstacle_points
+k_map_cost: 0.03  # map costs are about 100x higher with grid_inflation
 k_speed: 0.1
 k_steering: 0.1
 k_angle: 1.0

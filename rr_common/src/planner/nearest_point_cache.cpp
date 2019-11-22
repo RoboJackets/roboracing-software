@@ -10,9 +10,7 @@ namespace rr {
 NearestPointCache::NearestPointCache(ros::NodeHandle nh)
       : points_storage_()
       , map_limits_(ros::NodeHandle(nh, "map_limits"))
-      , hitbox_(ros::NodeHandle(nh, "hitbox"))
-      , updated_(false)
-      , activated_(true) {
+      , hitbox_(ros::NodeHandle(nh, "hitbox")) {
     assertions::getParam(nh, "cache_resolution", cache_resolution_, { assertions::greater(0.0) });
 
     cache_size_x_ = static_cast<int>((map_limits_.max_x - map_limits_.min_x) / cache_resolution_);
@@ -46,8 +44,7 @@ inline double dist(const NearestPointCache::point_t& p1, const NearestPointCache
 }
 
 void NearestPointCache::SetMapMessage(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
-    std::unique_lock lock(mutex_);
-    if (!activated_) {
+    if (!accepting_updates_) {
         return;
     }
 

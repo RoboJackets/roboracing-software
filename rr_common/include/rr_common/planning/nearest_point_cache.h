@@ -37,26 +37,6 @@ class NearestPointCache : public MapCostInterface {
 
     std::vector<double> DistanceCost(const std::vector<PathPoint>& path) override;
 
-    bool IsMapUpdated() override {
-        std::unique_lock lock(mutex_);
-        return updated_;
-    }
-
-    void SetMapStale() override {
-        std::unique_lock lock(mutex_);
-        updated_ = false;
-    }
-
-    void StartUpdates() override {
-        std::unique_lock lock(mutex_);
-        activated_ = true;
-    }
-
-    void StopUpdates() override {
-        std::unique_lock lock(mutex_);
-        activated_ = false;
-    }
-
   private:
     /**
      * Given a map, cache the nearest neighbors. Fill the cache outwards from locations containing obstacle points.
@@ -116,8 +96,6 @@ class NearestPointCache : public MapCostInterface {
 
     ros::Subscriber map_sub_;
     std::mutex mutex_;
-    bool updated_;
-    bool activated_;
 };
 
 }  // namespace rr
