@@ -4,8 +4,8 @@ costmap:
     always_send_full_costmap: true
 
     rolling_window: true
-    width: 25
-    height: 25
+    width: 35
+    height: 35
 
     plugins:
         - {name: "global", type: "costmap_2d::StaticLayer"}
@@ -20,13 +20,13 @@ costmap:
         track_unknown_space: false
 
     track_closing:
-        branch_pruning_size: 30
-        dilate_size: 3
-        min_enclosing_radius: 5
-        reg_bounding_box_size: 30
-        extrapolate_distance: 40
-        max_angle_between_lines: 50
-        max_dist_between_lines: 50
+        branch_pruning_size: 15
+        dilate_size: 5
+        min_enclosing_radius: 3
+        reg_bounding_box_size: 15
+        extrapolate_distance: 20
+        max_angle_between_lines: 25
+        max_dist_between_lines: 25
 
     distance_field:
         inflation_radius: 10.0

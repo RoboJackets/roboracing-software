@@ -50,10 +50,10 @@ grid_inflation_map:
         max_y: 0.7
 
 n_segments: $(arg n_segments)
-k_map_cost: 0.03  # map costs are about 100x higher with grid_inflation
-k_speed: 0.1
-k_steering: 0.1
-k_angle: 1.0
+k_map_cost: 0.05  # map costs are about 100x higher with grid_inflation
+k_speed: 0.2
+k_steering: 0
+k_angle: 0
 collision_penalty: 100
 
 impasse_caution_duration: 0.25

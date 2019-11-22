@@ -11,12 +11,12 @@
 <!--    </include>-->
 
     <node pkg="costmap_2d" type="costmap_2d_node" name="global_mapper" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common_params.yaml" subst_value="True"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="True"/>
         <rosparam command="load" file="$(find rr_evgp)/conf/mapping_global.yaml" subst_value="True"/>
     </node>
 
     <node pkg="costmap_2d" type="costmap_2d_node" name="local_mapper" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common_params.yaml" subst_value="True"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="True"/>
         <rosparam command="load" file="$(find rr_evgp)/conf/mapping_local.yaml" subst_value="True"/>
     </node>
 

@@ -232,7 +232,6 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     }
 
     // Make map from image
-    cv::morphologyEx(walls, walls, cv::MORPH_DILATE, dilate_kernel);
     for (int r = 0; r < walls.rows; r++) {
         for (int c = 0; c < walls.cols; c++) {
             if (walls.at<uint8_t>(r, c) > 0) {

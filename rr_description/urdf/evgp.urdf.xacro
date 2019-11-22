@@ -1,6 +1,6 @@
 <robot name="evgp" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:property name="use_gpu" value="false"/>
+    <xacro:property name="use_gpu" value="true"/>
 
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
 
@@ -200,31 +200,31 @@
 
     <!-- ******************* Sensors *********************** -->
 
-    <!-- SICK TiM551 -->
+    <!-- Velodyne Puck VLP-16 -->
     <xacro:property name="gpu_string" value="${'gpu_' if use_gpu else ''}"/>
     <gazebo reference="lidar">
         <sensor type="${gpu_string}ray" name="lidar_sensor">
             <pose>0 0 0 0 0 0</pose>
             <visualize>false</visualize>
-            <update_rate>15</update_rate>
+            <update_rate>10</update_rate>
             <ray>
                 <scan>
                     <horizontal>
-                        <samples>270</samples>
+                        <samples>360</samples>
                         <resolution>1</resolution>  <!-- controls interpolation, leave at 1 -->
-                        <min_angle>${-pi*0.75}</min_angle>
-                        <max_angle>${pi*0.75}</max_angle>
+                        <min_angle>${-pi}</min_angle>
+                        <max_angle>${pi}</max_angle>
                     </horizontal>
                 </scan>
                 <range>
-                    <min>0.10</min>
-                    <max>8.0</max>
+                    <min>1.0</min>
+                    <max>100.0</max>
                     <resolution>0.01</resolution>
                 </range>
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.02</stddev>
+                    <stddev>0.005</stddev>
                 </noise>
             </ray>
             <plugin name="laser_controller" filename="libgazebo_ros_${gpu_string}laser.so">
