@@ -15,13 +15,13 @@ double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
     const tf::Pose pose(tf::createQuaternionFromYaw(rr_pose.theta), tf::Vector3(rr_pose.x, rr_pose.y, 0));
     tf::Pose world_Pose = transform * pose;
 
-    int mx = std::floor((world_Pose.getOrigin().x() - map->info.origin.position.x) / map->info.resolution);
-    int my = std::floor((world_Pose.getOrigin().y() - map->info.origin.position.y) / map->info.resolution);
-    unsigned int index = my * map->info.width + mx;
-
-    if (index < 0 && index >= map->data.size())
+    unsigned int mx = std::floor((world_Pose.getOrigin().x() - map->info.origin.position.x) / map->info.resolution);
+    unsigned int my = std::floor((world_Pose.getOrigin().y() - map->info.origin.position.y) / map->info.resolution);
+    if (my < 0 || my >= map->info.height || mx < 0 || mx >= map->info.width) {
         return 0.0;
-    char cost = map->data[index];
+    }
+
+    char cost = map->data[my * map->info.width + mx];
 
     if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && (cost > lethal_threshold || cost < 0)) {
         return -1.0;

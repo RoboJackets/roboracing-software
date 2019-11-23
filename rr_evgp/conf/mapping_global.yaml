@@ -1,6 +1,6 @@
 costmap:
-    update_frequency: 15.0
-    publish_frequency: 15.0
+    update_frequency: 60.0
+    publish_frequency: 30.0
     always_send_full_costmap: false
 
     rolling_window: false
@@ -23,5 +23,5 @@ costmap:
             marking: true
             clearing: true
             inf_is_valid: true  # inf's are set to scan msg max range
-            obstacle_range: 25.0  # must be smaller than scan msg max range
-            raytrace_range: 10.0  # clear and explore this distance
+            obstacle_range: 50.0  # must be smaller than scan msg max range
+            raytrace_range: 49.0  # clear and explore this distance

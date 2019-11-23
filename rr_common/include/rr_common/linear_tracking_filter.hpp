@@ -28,12 +28,23 @@ class LinearTrackingFilter {
 
     LinearTrackingFilter(const LinearTrackingFilter& t) = default;
 
-    [[nodiscard]] inline double GetValue() const {
+    inline double GetValue() const {
         return val_;
     }
-
-    [[nodiscard]] inline double GetLastUpdateTime() const {
+    inline double GetLastUpdateTime() const {
         return last_update_;
+    }
+    inline double GetValMin() const {
+        return val_min_;
+    }
+    inline double GetValMax() const {
+        return val_max_;
+    }
+    inline double GetRateMin() const {
+        return rate_min_;
+    }
+    inline double GetRateMax() const {
+        return rate_max_;
     }
 
     inline void SetTarget(double x) {
@@ -57,6 +68,13 @@ class LinearTrackingFilter {
     inline void Update(double setpoint, double t) {
         target_ = setpoint;
         Update(t);
+    }
+
+    inline void UpdateRawDT(double dt) {
+        double l1 = val_ + rate_min_ * dt;
+        double l2 = val_ + rate_max_ * dt;
+        val_ = std::clamp(target_, std::min(l1, l2), std::max(l1, l2));
+        last_update_ += dt;
     }
 
     inline void Reset(double x, double t) {

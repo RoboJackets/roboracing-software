@@ -1,27 +1,24 @@
+n_segments: 4
+
 bicycle_model:
     wheel_base: 0.97
-    lateral_accel: 2.0
-    n_segments: $(arg n_segments)
-    segment_size: 20
-    distance_increment: 0.12
-    max_speed: $(arg max_speed)
+    lateral_accel: 6.0
+    segment_size: 45
+    dt: 0.02
 
 steering_filter:
     init_val: 0
-    val_max: $(arg max_steering)
-    val_min: -$(arg max_steering)
+    val_max: 0.25
+    val_min: -0.25
     rate_max: 2.0
     rate_min: -2.0
 
 speed_filter:
     init_val: 0
-    val_max: $(arg max_speed)
+    val_max: 13.5
     val_min: -1.0
-    rate_max: 10.0
-    rate_min: -1000.0
-
-steering_gain: 1.0
-max_steering: $(arg max_steering)
+    rate_max: 12.0
+    rate_min: -15.0
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -49,12 +46,13 @@ grid_inflation_map:
         min_y: -0.7
         max_y: 0.7
 
-n_segments: $(arg n_segments)
-k_map_cost: 0.05  # map costs are about 100x higher with grid_inflation
-k_speed: 0.2
-k_steering: 0
+steering_gain: 1.25
+
+k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
+k_speed: 0.05
+k_steering: 0.1
 k_angle: 0
-collision_penalty: 100
+collision_penalty: 1000
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
@@ -63,8 +61,8 @@ planner_type: "hill_climbing"
 hill_climb_optimizer:
     num_workers: 4
     num_restarts: 4
-    neighbor_stddev: [0.03]
-    local_optimum_tries: 30
+    neighbor_stddev: [0.01]
+    local_optimum_tries: 70
 
 #planner_type: "annealing"
 #annealing_optimizer:

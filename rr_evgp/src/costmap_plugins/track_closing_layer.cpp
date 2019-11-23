@@ -98,8 +98,7 @@ bool TrackClosingLayer::IsConnectable(const WallEndpointContext& current, const 
     const auto& [endpntA, pntA, vxA, vyA] = current;
     const auto& [endpntB, pntB, vxB, vyB] = prev;
 
-    double angle_between_lines = std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI;
-    angle_between_lines = std::min(angle_between_lines, 180 - angle_between_lines);
+    double angle_between_lines = 180.0 - (std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI);
 
     cv::Point closest_endB_to_lineA = intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500), true);
     cv::Point closest_endA_to_lineB = intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500), true);
@@ -125,8 +124,15 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         }
     }
 
-    auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(dilate_size_, dilate_size_));
-    cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_CLOSE, dilate_kernel);
+    auto dilate_kernel =
+          cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * dilate_size_ + 1, 2 * dilate_size_ + 1));
+    cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_DILATE, dilate_kernel);
+
+    if (dilate_size_ > 1) {
+        auto erode_kernel =
+              cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * dilate_size_ - 1, 2 * dilate_size_ - 1));
+        cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_ERODE, erode_kernel);
+    }
 
     // Make Skeleton
     auto skel = rr::thinObstacles(mat_grid);
