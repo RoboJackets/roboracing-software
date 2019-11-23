@@ -15,16 +15,15 @@ namespace rr_rviz_plugins {
     class StartlightPanel : public rviz::Panel {
     Q_OBJECT
     public:
-        explicit StartlightPanel(QWidget *parent = 0);
+        explicit StartlightPanel(QWidget *parent = nullptr);
 
     protected:
         ros::NodeHandle nh;
-        ros::Publisher reset_pub;
         ros::Subscriber start_detector;
 
     private slots:
         static void startlightCallback(std_msgs::Bool msg);
-        void paintEvent(QPaintEvent *e);
+        void paintEvent(QPaintEvent *e) override;
     };
 
 }  // namespace rr_rviz_plugins

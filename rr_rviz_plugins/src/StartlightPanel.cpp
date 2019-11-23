@@ -17,12 +17,10 @@ namespace rr_rviz_plugins {
             : rviz::Panel(parent)  // Base class constructor
     {
         label = new QLabel("        No Message");
-        label->setMinimumHeight(30);
-        label->setMinimumWidth(130);
+        label->setFixedHeight(30);
+        label->setFixedHeight(30);
         start_detector = nh.subscribe<std_msgs::Bool>("/start_detected", 1, startlightCallback);
         auto *layout = new QVBoxLayout;
-        QWidget::repaint();
-
         layout->addWidget(label);
         setLayout(layout);
     }
