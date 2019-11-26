@@ -1,6 +1,14 @@
 #include "follower.h"
 using namespace std;
+//rr_msgs::speedPtr speedMSG(new rr_msgs::speed);
 
+void pidCallback(std_msgs::Float64 pidSpeed) {
+//    float newSpeed = pidSpeed;
+    rr_msgs::speed outputSpeed;
+    double newSpeed = (double) pidSpeed.data;
+    outputSpeed.speed = newSpeed;
+    speed_pub.publish(outputSpeed);
+}
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*map, pcl_pc2);
@@ -57,18 +65,30 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         return;
     }
 
-    if (avgX <= GOAL_DIST - GOAL_MARGIN_OF_ERR && avgX >= MIN_FRONT_VISION)
-        speedMSG->speed = -(FOLLOWER_SPEED);  // when object is too close, move backward
-    else if (avgX >= GOAL_DIST + GOAL_MARGIN_OF_ERR && avgX <= MAX_FRONT_VISION)
-        speedMSG->speed = FOLLOWER_SPEED;  // when object is too far, move forward
-    else
-        speedMSG->speed = 0.0;  // when the object exceeds MAX_FRONT_VISION or
+//    if (avgX <= GOAL_DIST - GOAL_MARGIN_OF_ERR && avgX >= MIN_FRONT_VISION)
+//        speedMSG->speed = -(FOLLOWER_SPEED);  // when object is too close, move backward
+//    else if (avgX >= GOAL_DIST + GOAL_MARGIN_OF_ERR && avgX <= MAX_FRONT_VISION)
+//        speedMSG->speed = FOLLOWER_SPEED;  // when object is too far, move forward
+//    else
+//        speedMSG->speed = 0.0;  // when the object exceeds MAX_FRONT_VISION or
                                 // another anomali occurs
+
+
+
+
+    std_msgs::Float64 currDist;
+    currDist.data = avgX;
+    pid_speed_pub.publish(currDist);
+    std_msgs::Float64 setDist;
+    setDist.data = GOAL_DIST;
+    pid_setpoint_pub.publish(setDist);
+
+
+
     steerMSG->angle = 0;
-    speed_pub.publish(speedMSG);
+//    speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 }
-
 int main(int argc, char** argv) {
     ros::init(argc, argv, "follower");
     string obstacleCloudTopic;
@@ -86,9 +106,23 @@ int main(int argc, char** argv) {
     nhp.param("FOLLOWER_SPEED", FOLLOWER_SPEED, 1.0f);
     nhp.param("INPUT_CLOUD_TOPIC", obstacleCloudTopic, string("/map"));
 
+    nhp.param("topic_from_plant", topic_from_plant, string("/state"));
+    nhp.param("setpoint_topic", setpoint_topic, string("/setpoint"));
+    nhp.param("topic_from_controller", topic_from_controller, string("/control_effort"));
+
+
+    pid_speed_pub = nh.advertise<std_msgs::Float64>(topic_from_plant, 1);
+    pid_setpoint_pub = nh.advertise<std_msgs::Float64>(setpoint_topic, 1);
+
+    speed_pub = nh.advertise<rr_msgs::speed>("/speed", 1);
+
+    auto pid_sub = nh.subscribe(topic_from_controller, 1, pidCallback);
+
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    speed_pub = nh.advertise<rr_msgs::speed>("speed", 1);
-    steer_pub = nh.advertise<rr_msgs::steering>("steering", 1);
+//    speed_pub = nh.advertise<rr_msgs::speed>("speed", 1);
+    steer_pub = nh.advertise<rr_msgs::steering>("/steering", 1);
+
+
 
     ROS_INFO("follower initialized");
 
