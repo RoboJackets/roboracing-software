@@ -8,6 +8,7 @@ void pidCallback(std_msgs::Float64 pidSpeed) {
     double newSpeed = (double) pidSpeed.data;
     outputSpeed.speed = newSpeed;
     speed_pub.publish(outputSpeed);
+
 }
 void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl::PCLPointCloud2 pcl_pc2;
@@ -41,10 +42,10 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     passLimitY.filter(*cloud_filtered);
 
     // avgX is the AVERAGE foward distance of all the points in the vision box
-    float avgX = 0.0f;
+//    float avgX = 0.0f;
     float minX = INT_MAX;
     for (pcl::PointXYZ point : cloud_filtered->points) {
-        avgX += point.x;
+//        avgX += point.x;
         if (point.x < minX) {
             minX = point.x;
         }
@@ -54,8 +55,10 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     // avgX = minx;
 
     if (cloud_filtered->points.size() != 0) {  // computes the average distance away
-        avgX = avgX / cloud_filtered->points.size();
-        ROS_INFO_STREAM("Average X = " << avgX);
+//        avgX = avgX / cloud_filtered->points.size();
+//        ROS_INFO_STREAM("Average X = " << avgX);
+        ROS_INFO_STREAM("Min X = " << minX);
+
     } else {  // Nothing in bounding box
         ROS_INFO_STREAM("Nothing in bounding box");
         speedMSG->speed = 0;
@@ -77,7 +80,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
 
     std_msgs::Float64 currDist;
-    currDist.data = avgX;
+//    currDist.data = avgX;
+    currDist.data = minX;
     pid_speed_pub.publish(currDist);
     std_msgs::Float64 setDist;
     setDist.data = GOAL_DIST;
