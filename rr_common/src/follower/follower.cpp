@@ -1,9 +1,7 @@
 #include "follower.h"
 using namespace std;
-// rr_msgs::speedPtr speedMSG(new rr_msgs::speed);
-
+// Gets new speed from the pid and published it
 void pidCallback(std_msgs::Float64 pidSpeed) {
-    //    float newSpeed = pidSpeed;
     rr_msgs::speed outputSpeed;
     double newSpeed = (double)pidSpeed.data;
     outputSpeed.speed = newSpeed;
@@ -42,6 +40,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
 
     // avgX is the AVERAGE foward distance of all the points in the vision box
     //    float avgX = 0.0f;
+    // Finds closest point
     float minX = INT_MAX;
     for (pcl::PointXYZ point : cloud_filtered->points) {
         //        avgX += point.x;
@@ -67,16 +66,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         return;
     }
 
-    //    if (avgX <= GOAL_DIST - GOAL_MARGIN_OF_ERR && avgX >= MIN_FRONT_VISION)
-    //        speedMSG->speed = -(FOLLOWER_SPEED);  // when object is too close, move backward
-    //    else if (avgX >= GOAL_DIST + GOAL_MARGIN_OF_ERR && avgX <= MAX_FRONT_VISION)
-    //        speedMSG->speed = FOLLOWER_SPEED;  // when object is too far, move forward
-    //    else
-    //        speedMSG->speed = 0.0;  // when the object exceeds MAX_FRONT_VISION or
-    // another anomali occurs
-
+    //Publishes the setpoint and the current error to the pid
     std_msgs::Float64 currDist;
-    //    currDist.data = avgX;
     currDist.data = minX;
     pid_speed_pub.publish(currDist);
     std_msgs::Float64 setDist;
@@ -84,7 +75,6 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pid_setpoint_pub.publish(setDist);
 
     steerMSG->angle = 0;
-    //    speed_pub.publish(speedMSG);
     steer_pub.publish(steerMSG);
 }
 int main(int argc, char** argv) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
-<!--    <include file="$(find rr_avc)/launch/mapper.launch"/>-->
     <node name="follower" pkg="rr_common" type="follower" output="screen">
         <param name="MIN_FRONT_VISION" value="0.2"/>
         <param name="MAX_FRONT_VISION" value="5"/>
@@ -18,8 +17,6 @@
         <param name="upper_limit" value="1" />
         <param name="lower_limit" value="-1" />
         <param name="windup_limit" value="10" />
-<!--        <param name="max_loop_frequency" value="100.0" />-->
-<!--        <param name="min_loop_frequency" value="100.0" />-->
         <param name="topic_from_controller" value="/control_effort" />
         <param name="topic_from_plant" value="/state" />
         <param name="setpoint_topic" value="/setpoint" />
