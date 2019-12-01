@@ -12,8 +12,8 @@
         <param name="INPUT_CLOUD_TOPIC" value="/scan/pointcloud"/>
     </node>
     <node name="demo_pid_controller" pkg="pid" type="controller" >
-        <param name="Kp" value="-10.0" />
-        <param name="Ki" value="-0.0" />
+        <param name="Kp" value="-2.0" />
+        <param name="Ki" value="-0.8" />
         <param name="Kd" value="-0.16" />
         <param name="upper_limit" value="1" />
         <param name="lower_limit" value="-1" />
