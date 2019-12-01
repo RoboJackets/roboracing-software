@@ -8,9 +8,9 @@
 #include <ros/ros.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <std_msgs/Float64.h>
 #include <string>
 #include "flann/flann.hpp"
-#include <std_msgs/Float64.h>
 //#include <asdl.h>
 
 float MIN_FRONT_VISION;
