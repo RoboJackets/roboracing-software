@@ -66,7 +66,7 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
         return;
     }
 
-    //Publishes the setpoint and the current error to the pid
+    // Publishes the setpoint and the current error to the pid
     std_msgs::Float64 currDist;
     currDist.data = minX;
     pid_speed_pub.publish(currDist);
