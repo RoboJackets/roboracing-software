@@ -54,3 +54,4 @@ costmap:
         extrapolate_distance: 20
         max_angle_between_lines: 50
         max_dist_between_lines: 50
+        wall_output_dilation: 1

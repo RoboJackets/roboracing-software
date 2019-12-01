@@ -24,7 +24,13 @@ cv::Mat thinObstacles(const cv::Mat& grid_in) {
 
     grid.copyTo(grid_copy);
 
-    auto A = [](const cv::Mat& data, int r, int c) -> int {
+    /*
+     * Count the number of rising edges around the center point
+     *  9 2 3
+     *  8 * 4
+     *  7 6 5
+     */
+    auto clockwise_rising_edges = [](const cv::Mat& data, int r, int c) -> int {
         int sum = 0;
         sum += !data.at<uint8_t>(r - 1, c) && data.at<uint8_t>(r - 1, c + 1);  // 2 3
         sum += !data.at<uint8_t>(r - 1, c + 1) && data.at<uint8_t>(r, c + 1);  // 3 4
@@ -37,7 +43,7 @@ cv::Mat thinObstacles(const cv::Mat& grid_in) {
         return sum;
     };
 
-    auto B = [](const cv::Mat& data, int r, int c) -> int {
+    auto num_neighbors = [](const cv::Mat& data, int r, int c) -> int {
         int sum = 0;
         sum += (bool)data.at<uint8_t>(r - 1, c);
         sum += (bool)data.at<uint8_t>(r - 1, c + 1);
@@ -59,8 +65,8 @@ cv::Mat thinObstacles(const cv::Mat& grid_in) {
         for (int r = 1; r < grid.rows - 1; r++) {
             for (int c = 1; c < grid.cols - 1; c++) {
                 if (grid.at<uint8_t>(r, c)) {
-                    int b = B(grid, r, c);
-                    if (b >= 2 && b <= 6 && A(grid, r, c) == 1 &&
+                    int n = num_neighbors(grid, r, c);
+                    if (n >= 2 && n <= 6 && clockwise_rising_edges(grid, r, c) == 1 &&
                         !(grid.at<uint8_t>(r - 1, c) && grid.at<uint8_t>(r, c + 1) && grid.at<uint8_t>(r + 1, c)) &&
                         !(grid.at<uint8_t>(r, c + 1) && grid.at<uint8_t>(r + 1, c) && grid.at<uint8_t>(r, c - 1))) {
                         grid_copy.at<uint8_t>(r, c) = 0;
@@ -75,8 +81,8 @@ cv::Mat thinObstacles(const cv::Mat& grid_in) {
         for (int r = 1; r < grid.rows - 1; r++) {
             for (int c = 1; c < grid.cols - 1; c++) {
                 if (grid_copy.at<uint8_t>(r, c)) {
-                    int b = B(grid_copy, r, c);
-                    if (b >= 2 && b <= 6 && A(grid_copy, r, c) == 1 &&
+                    int n = num_neighbors(grid_copy, r, c);
+                    if (n >= 2 && n <= 6 && clockwise_rising_edges(grid_copy, r, c) == 1 &&
                         !(grid_copy.at<uint8_t>(r - 1, c) && grid_copy.at<uint8_t>(r, c + 1) &&
                           grid_copy.at<uint8_t>(r, c - 1)) &&
                         !(grid_copy.at<uint8_t>(r - 1, c) && grid_copy.at<uint8_t>(r + 1, c) &&
