@@ -11,7 +11,6 @@
 #include <std_msgs/Float64.h>
 #include <string>
 #include "flann/flann.hpp"
-//#include <asdl.h>
 
 float MIN_FRONT_VISION;
 float MAX_FRONT_VISION;

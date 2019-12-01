@@ -38,19 +38,13 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     passLimitY.setFilterLimits(MIN_SIDE_VISION, MAX_SIDE_VISION);
     passLimitY.filter(*cloud_filtered);
 
-    // avgX is the AVERAGE foward distance of all the points in the vision box
-    //    float avgX = 0.0f;
     // Finds closest point
     float minX = INT_MAX;
     for (pcl::PointXYZ point : cloud_filtered->points) {
-        //        avgX += point.x;
         if (point.x < minX) {
             minX = point.x;
         }
     }
-
-    // Uncomment to make car go GOAL_DIST from the CLOSEST object
-    // avgX = minx;
 
     if (cloud_filtered->points.size() != 0) {  // computes the average distance away
                                                //        avgX = avgX / cloud_filtered->points.size();
@@ -106,7 +100,6 @@ int main(int argc, char** argv) {
     auto pid_sub = nh.subscribe(topic_from_controller, 1, pidCallback);
 
     auto map_sub = nh.subscribe(obstacleCloudTopic, 1, mapCallback);
-    //    speed_pub = nh.advertise<rr_msgs::speed>("speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("/steering", 1);
 
     ROS_INFO("follower initialized");
