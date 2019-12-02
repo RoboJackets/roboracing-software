@@ -1,8 +1,8 @@
 #include "rr_common/color_filter.h"
 
-#include <opencv2/opencv.hpp>
-#include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/Image.h>
+#include <opencv2/opencv.hpp>
 
 namespace rr {
 
