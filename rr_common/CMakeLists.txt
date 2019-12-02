@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
         )
 
-#find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED)
 #find_package(PCL REQUIRED)
 
 ###################################
@@ -52,3 +52,4 @@ add_subdirectory(src/local_mapper)
 add_subdirectory(src/pose_tracker)
 add_subdirectory(src/camera_geometry)
 add_subdirectory(src/image_transformation)
+add_subdirectory(src/color_filter)
