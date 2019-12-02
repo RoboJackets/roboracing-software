@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <std_msgs/Float64.h>
 #include <string>
 #include "flann/flann.hpp"
 
@@ -19,6 +20,10 @@ float MIN_SIDE_VISION;
 float MAX_SIDE_VISION;
 float FOLLOWER_SPEED;
 
-ros::Publisher speed_pub, steer_pub;
+std::string topic_from_plant;
+std::string setpoint_topic;
+std::string topic_from_controller;
+
+ros::Publisher speed_pub, steer_pub, pid_speed_pub, pid_setpoint_pub;
 
 #endif  // RR_COMMON_FOLLOWER_H
