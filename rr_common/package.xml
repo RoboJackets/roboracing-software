@@ -21,6 +21,7 @@
     <depend>rr_msgs</depend>
     <depend>nodelet</depend>
     <depend>sound_play</depend>
+    <exec_depend>pid</exec_depend>
 
     <build_depend>cv_bridge</build_depend>
     <build_depend>image_transport</build_depend>
