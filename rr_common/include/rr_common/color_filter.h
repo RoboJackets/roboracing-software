@@ -15,12 +15,7 @@ class ColorFilter {
     cv::Mat Filter(const cv::Mat& img);
 
   private:
-    enum Mode {
-        PASSTHROUGH = 0,
-        GRAY = 1,
-        HSV = 2,
-        HLS = 3
-    };
+    enum Mode { PASSTHROUGH = 0, GRAY = 1, HSV = 2, HLS = 3 };
 
     void ReconfigureCallback(const rr_msgs::ColorFilterConfig& config, uint32_t level);
 
