@@ -5,7 +5,7 @@
 namespace rr {
 
 ColorFilter::ColorFilter(ros::NodeHandle nh)
-      : lower_(0, 0, 0), upper_(255, 255, 255), mode_(PASSTHROUGH), dilation_(0), erosion_(0) {
+      : lower_(0, 0, 0), upper_(255, 255, 255), mode_(PASSTHROUGH), dilation_(0), erosion_(0), configured_(false) {
     dsrv_ = std::make_unique<dynamic_reconfigure::Server<rr_msgs::ColorFilterConfig>>(nh);
     dsrv_->setCallback(boost::bind(&ColorFilter::ReconfigureCallback, this, _1, _2));
 
@@ -13,6 +13,10 @@ ColorFilter::ColorFilter(ros::NodeHandle nh)
 }
 
 cv::Mat ColorFilter::Filter(const cv::Mat& in_img_full) {
+    if (!configured_) {
+        ROS_WARN("[ColorFilter] Running Filter before configuration callback");
+    }
+
     roi_.x = std::clamp(roi_.x, 0, in_img_full.cols - 1);
     roi_.y = std::clamp(roi_.y, 0, in_img_full.rows - 1);
     roi_.width = std::clamp(roi_.width, 1, in_img_full.cols - roi_.x);
@@ -77,6 +81,7 @@ void ColorFilter::ReconfigureCallback(const rr_msgs::ColorFilterConfig& config, 
     erosion_ = config.erosion;
 
     ROS_INFO("[ColorFilter] reconfigure callback");
+    configured_ = true;
 }
 
 }  // namespace rr

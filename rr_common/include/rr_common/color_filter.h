@@ -14,6 +14,10 @@ class ColorFilter {
 
     cv::Mat Filter(const cv::Mat& img);
 
+    inline bool IsConfigured() const {
+        return configured_;
+    }
+
   private:
     enum Mode { PASSTHROUGH = 0, GRAY = 1, HSV = 2, HLS = 3 };
 
@@ -25,6 +29,7 @@ class ColorFilter {
     int dilation_;
     int erosion_;
     cv::Rect roi_;
+    bool configured_;
 
     std::unique_ptr<dynamic_reconfigure::Server<rr_msgs::ColorFilterConfig>> dsrv_;
 };
