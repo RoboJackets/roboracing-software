@@ -1,6 +1,8 @@
 #include "rr_common/color_filter.h"
 
 #include <opencv2/opencv.hpp>
+#include <sensor_msgs/Image.h>
+#include <cv_bridge/cv_bridge.h>
 
 namespace rr {
 
@@ -8,6 +10,8 @@ ColorFilter::ColorFilter(ros::NodeHandle nh)
       : lower_(0, 0, 0), upper_(255, 255, 255), mode_(PASSTHROUGH), dilation_(0), erosion_(0), configured_(false) {
     dsrv_ = std::make_unique<dynamic_reconfigure::Server<rr_msgs::ColorFilterConfig>>(nh);
     dsrv_->setCallback(boost::bind(&ColorFilter::ReconfigureCallback, this, _1, _2));
+
+    debug_pub_ = nh.advertise<sensor_msgs::Image>("debug_img", 1);
 
     ROS_INFO_STREAM("Initialized ColorFilter at " << nh.getNamespace());
 }
@@ -64,6 +68,14 @@ cv::Mat ColorFilter::Filter(const cv::Mat& in_img_full) {
         out_img_full = cv::Mat(in_img_full.rows, in_img_full.cols, out_img.depth(), cv::Scalar(0, 0, 0));
         out_img.copyTo(out_img_full(roi_));
     }
+
+    if (debug_pub_.getNumSubscribers() > 0) {
+        cv_bridge::CvImage cvb;
+        cvb.image = out_img_full;
+        cvb.encoding = (out_img_full.channels() == 1) ? "mono8" : "bgr8";
+        debug_pub_.publish(cvb.toImageMsg());
+    }
+
     return out_img_full;
 }
 

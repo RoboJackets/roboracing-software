@@ -32,6 +32,7 @@ class ColorFilter {
     bool configured_;
 
     std::unique_ptr<dynamic_reconfigure::Server<rr_msgs::ColorFilterConfig>> dsrv_;
+    ros::Publisher debug_pub_;
 };
 
 }  // namespace rr
