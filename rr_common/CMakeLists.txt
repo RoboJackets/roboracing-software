@@ -23,6 +23,7 @@ find_package(OpenCV REQUIRED)
 ###################################
 catkin_package(
         INCLUDE_DIRS include
+        LIBRARIES rr_color_filter
         CATKIN_DEPENDS roscpp rospy std_msgs
 )
 
