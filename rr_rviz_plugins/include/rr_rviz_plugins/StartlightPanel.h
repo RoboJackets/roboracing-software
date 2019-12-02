@@ -20,9 +20,6 @@ namespace rr_rviz_plugins {
     protected:
         ros::NodeHandle nh;
         ros::Subscriber start_detector;
-//        ros::Timer timer;
-//        ros::Time current;
-//        ros::Time callbackTime;
 
     private slots:
 //        void startlightCallback(const std_msgs::BoolConstPtr &msg, QWidget *parent);
