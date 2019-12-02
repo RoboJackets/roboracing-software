@@ -34,6 +34,7 @@ class TrackClosingLayer : public costmap_2d::Layer {
     double extrapolate_distance_;
     double max_angle_between_lines_;
     double max_dist_between_lines_;
+    int wall_output_dilation_;
 
     void reconfigureCB(const costmap_2d::GenericPluginConfig& config, uint32_t level) {
         enabled_ = config.enabled;
@@ -53,7 +54,7 @@ void TrackClosingLayer::onInitialize() {
 
     ros::NodeHandle private_nh("~" + getName());
     assertions::getParam(private_nh, "branch_pruning_size", branch_pruning_size_, { assertions::greater<int>(0) });
-    assertions::getParam(private_nh, "dilate_size", dilate_size_, { assertions::greater<int>(0) });
+    assertions::getParam(private_nh, "dilate_size", dilate_size_, { assertions::greater_eq<int>(0) });
     assertions::getParam(private_nh, "min_enclosing_radius", min_enclosing_radius_, { assertions::greater<double>(0) });
     assertions::getParam(private_nh, "reg_bounding_box_size", reg_bounding_box_size_, { assertions::greater<int>(0) });
     assertions::getParam(private_nh, "extrapolate_distance", extrapolate_distance_, { assertions::greater<double>(0) });
@@ -61,6 +62,7 @@ void TrackClosingLayer::onInitialize() {
                          { assertions::greater<double>(0) });
     assertions::getParam(private_nh, "max_dist_between_lines", max_dist_between_lines_,
                          { assertions::greater<double>(0) });
+    assertions::getParam(private_nh, "wall_output_dilation", wall_output_dilation_, { assertions::greater_eq<int>(0) });
 }
 
 void TrackClosingLayer::updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y,
@@ -98,8 +100,7 @@ bool TrackClosingLayer::IsConnectable(const WallEndpointContext& current, const 
     const auto& [endpntA, pntA, vxA, vyA] = current;
     const auto& [endpntB, pntB, vxB, vyB] = prev;
 
-    double angle_between_lines = std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI;
-    angle_between_lines = std::min(angle_between_lines, 180 - angle_between_lines);
+    double angle_between_lines = 180.0 - (std::acos(vxA * vxB + vyA * vyB) * 180.0 / M_PI);
 
     cv::Point closest_endB_to_lineA = intersect_point_line(endpntB, pntA, pntA + cv::Point(vxA * 500, vyA * 500), true);
     cv::Point closest_endA_to_lineB = intersect_point_line(endpntA, pntB, pntB + cv::Point(vxB * 500, vyB * 500), true);
@@ -125,8 +126,17 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
         }
     }
 
-    auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(dilate_size_, dilate_size_));
-    cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_CLOSE, dilate_kernel);
+    if (dilate_size_ > 0) {
+        int kernel_size = 2 * dilate_size_ + 1;
+        auto dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(kernel_size, kernel_size));
+        cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_DILATE, dilate_kernel);
+
+        if (dilate_size_ > 1) {
+            kernel_size = 2 * dilate_size_ - 1;
+            auto erode_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(kernel_size, kernel_size));
+            cv::morphologyEx(mat_grid, mat_grid, cv::MORPH_ERODE, erode_kernel);
+        }
+    }
 
     // Make Skeleton
     auto skel = rr::thinObstacles(mat_grid);
@@ -229,6 +239,13 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
             // cv::line(debug_img, endpnt, extrapolated_pnt, cv::Scalar(0, 0, 255));
             cv::line(walls, endpnt, extrapolated_pnt, cv::Scalar(255));
         }
+    }
+
+    // make walls larger if desired
+    if (wall_output_dilation_ > 0) {
+        int ksize = 2 * wall_output_dilation_ + 1;
+        auto wall_dilate_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(ksize, ksize));
+        cv::morphologyEx(walls, walls, cv::MORPH_DILATE, wall_dilate_kernel);
     }
 
     // Make map from image
