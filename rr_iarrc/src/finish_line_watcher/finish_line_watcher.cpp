@@ -30,9 +30,15 @@ int blockSky_height, blockWheels_height, blockBumper_height;
 Publisher debug_pub;
 cv_bridge::CvImage debug_img;
 
-// Define the cutoff slope to detect the finish line
-double slope_cutoff;
-double length_cutoff;
+// Define the cutoff angle and width to detect the line and the cutoff area for contours
+double angle_cutoff;
+double width_cutoff;
+double min_contour_area;
+double area_cutoff;
+
+// Some Canny params
+double canny_thresh1;
+double canny_thresh2;
 
 // Defines whether to publish when the line is first detected or when we cross it
 bool publish_when_detected;
@@ -53,15 +59,6 @@ int cooldown = 0;
 int state = LOW;
 
 int number_of_crosses = 0;
-
-// Some params for Canny and Hough detection
-double canny_thresh1;
-double canny_thresh2;
-double hough_rho;
-double hough_theta;
-int hough_thresh;
-double hough_minLineLength;
-double hough_maxLineGap;
 
 void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0), CV_FILLED);
@@ -87,45 +84,60 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     frame = cv_ptr->image;
     blockEnvironment(frame);
 
-    Mat src = frame.clone();
     Mat dst;
-    cv::Canny(src, dst, canny_thresh1, canny_thresh2, 3);
-    Mat drawing = Mat::zeros(src.size(), CV_8UC3);
-    // Do line detection with probabilistic Hough line detection
-    vector<Vec4i> linesP;
-    cv::HoughLinesP(dst, linesP, hough_rho, hough_theta, hough_thresh, hough_minLineLength, hough_maxLineGap);
-    // Calculate slopes and lengths
-    double length_sum = 0;
-    for (size_t i = 0; i < linesP.size(); i++) {
-        Vec4i l = linesP[i];
-        cv::Point p1 = cv::Point(l[0], l[1]);
-        cv::Point p2 = cv::Point(l[2], l[3]);
+    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+    cv::cvtColor(frame, drawing, cv::COLOR_GRAY2BGR);
 
-        // Calculate length
-        cv::Point diff = p1 - p2;
-        double length = cv::sqrt(diff.x * diff.x + diff.y * diff.y);
+    // Find contours
+    vector<vector<Point> > contours;
+    vector<Vec4i> hierarchy;
+    cv::Canny(frame, dst, canny_thresh1, canny_thresh2, 3);
+    cv::findContours(dst, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 
-        // Calculate slope
-        double slope = cv::abs((double)diff.y / diff.x);
-        Scalar color;
+    // Filter out very small contours
+    vector<Point> filteredContourPoints;
+    for (int i = 0; i < contours.size(); i++) {
+        cv::Scalar color(0, 0, 255);
 
-        // Filter based on length and slope to remove false positives
-        if (length > length_cutoff && slope < slope_cutoff) {
-            color = Scalar(0, 255, 0);
-            // Add to the running total of length
-            length_sum += length;
-        } else {
-            color = Scalar(0, 0, 255);
+        if (cv::contourArea(contours.at(i)) > min_contour_area) {
+            filteredContourPoints.insert(std::end(filteredContourPoints), std::begin(contours.at(i)),
+                                         std::end(contours.at(i)));
+            color = cv::Scalar(0, 255, 0);
         }
 
-        cv::line(drawing, p1, p2, color, 3, LINE_AA);
+        // Debug draw
+        cv::drawContours(drawing, contours, i, color, 2, 8);
+    }
+
+    bool detected = false;
+
+    if (filteredContourPoints.size() > 0) {
+        // Fit a rect to the points and detect based on angle and width
+        cv::RotatedRect fitRect = cv::minAreaRect(filteredContourPoints);
+        Size2f size = fitRect.size;
+        float angle = std::abs(std::abs(fitRect.angle) - 90);
+        // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
+        // assigns them)
+        detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
+
+        // Draw debug info
+        std::string angle_str = std::string("Angle: ") + std::to_string(angle);
+        cv::putText(drawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        std::string width_str = std::string("Width: ") + std::to_string(size.width);
+        cv::putText(drawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        std::string height_str = std::string("Height: ") + std::to_string(size.height);
+        cv::putText(drawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+
+        Point2f rectPoints[4];
+        fitRect.points(rectPoints);
+
+        for (int i = 0; i < 4; i++)
+            cv::line(drawing, rectPoints[i], rectPoints[(i + 1) % 4], cv::Scalar(255, 0, 0), 2, 12);
     }
 
     // Quick count of pixels as a final sanity check
     auto count = cv::countNonZero(frame);
-
-    // Actually calculate if we've detected the line
-    bool detected = length_sum > 2.5 * length_cutoff && count > count_thresh;
+    detected = detected && count > count_thresh;
 
     if (publish_when_detected) {
         // Publish when first detected but don't keep on increasing number of crosses, so make use of states again
@@ -163,26 +175,22 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // Draw some debug info
         std::string mode_str =
               std::string("Mode: ") + std::string(publish_when_detected ? "when detected" : "when crossed");
-        cv::putText(drawing, mode_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
-        cv::putText(drawing, std::string("Length sum: ") + std::to_string(length_sum), cv::Point(5, 200),
-                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
-        cv::putText(drawing, std::string("Detected: ") + std::string(detected ? "true" : "false"), cv::Point(5, 300),
-                    cv::FONT_HERSHEY_SIMPLEX, 2, detected ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 143, 143), 2);
-        cv::putText(drawing, std::string("Num detections: ") + std::to_string(number_of_crosses), cv::Point(5, 400),
-                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
-        cv::putText(drawing, std::string("Count: ") + std::to_string(count), cv::Point(5, 500),
-                    cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(drawing, mode_str, cv::Point(5, 400), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        std::string detected_str = std::string("Detected: ") + std::to_string(detected);
+        cv::putText(drawing, detected_str, cv::Point(5, 500), cv::FONT_HERSHEY_SIMPLEX, 2,
+                    (detected ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 143, 143)), 2);
+        std::string count_str = std::string("Num detections: ") + std::to_string(number_of_crosses);
+        cv::putText(drawing, count_str, cv::Point(5, 600), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+
         // Convert to ros image format and publish
         debug_img.header = msg->header;
         debug_img.encoding = "bgr8";
         debug_img.image = drawing;
         debug_pub.publish(debug_img.toImageMsg());
-        ROS_INFO_STREAM(std::to_string(cv::countNonZero(frame)));
     }
 
-    if (crosses_pub.getNumSubscribers() > 0) {
+    if (crosses_pub.getNumSubscribers() > 0)
         crosses_pub.publish(intmsg);
-    }
 }
 
 int main(int argc, char** argv) {
@@ -200,20 +208,16 @@ int main(int argc, char** argv) {
 
     nhp.param("publish_when_detected", publish_when_detected, true);
 
-    nhp.param("slope_cutoff", slope_cutoff, 0.05);
-    nhp.param("length_cutoff", length_cutoff, 800.0);
-
-    nhp.param("cooldown", cooldown_value, 7);
-
+    nhp.param("min_contour_area", min_contour_area, 5.0);
+    nhp.param("angle_cutoff", angle_cutoff, 20.0);
+    nhp.param("width_cutoff", width_cutoff, 275.0);
     nhp.param("count_thresh", count_thresh, 2000);
 
-    nhp.param("canny_thresh1", canny_thresh1, 50.);
-    nhp.param("canny_thresh2", canny_thresh1, 200.);
-    nhp.param("hough_rho", hough_rho, 1.);
-    nhp.param("hough_theta", hough_theta, CV_PI / 180);
-    nhp.param("hough_thresh", hough_thresh, 50);
-    nhp.param("hough_minLineLength", hough_minLineLength, 50.);
-    nhp.param("hough_maxLineGap", hough_maxLineGap, 35.);
+    double canny_thresh1;
+    double canny_thresh2;
+
+    nhp.param("canny_thresh1", canny_thresh1, 100.0);
+    nhp.param("canny_thresh2", canny_thresh2, 200.0);
 
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 

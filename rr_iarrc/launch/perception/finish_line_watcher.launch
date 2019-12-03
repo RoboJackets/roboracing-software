@@ -13,24 +13,24 @@
       <!--If set to true, the detector will start publishing once the finish line is first detected, if false, publishes when we cross the finish line-->
       <param name="publish_when_detected" type="boolean" value="false" />
 
-      <!--The detector uses line detection and will only consider relatively flat lines (slope < slope cutoff) and will only trigger when relatively long lines are detected (length > length_cutoff) -->
-      <param name="slope_cutoff" type="double" value="0.3" />
-      <param name="length_cutoff" type="double" value="75.0" />
-
       <!-- Number of camera frames between detections. Added to prevent flickering and double detections. -->
       <param name="cooldown" type="int" value="7" />
 
       <!-- As a final sanity check the detector counts non-zero pixels in the HSV threshold. Count of non-zero pixels must be > this threshold for the detector to fire. -->
-      <param name="count_thresh" type="int" value="2000" />
+	  <param name="count_thresh" type="int" value="2000" />
 
-      <!-- Some params for Canny edge detection and Hough line detection. Refer to OpenCV docs for meaning -->
-      <param name="canny_thresh1" type="double" value="50.0" />
-      <param name="canny_thresh2" type="double" value="200.0" />
-      <param name="hough_rho" type="double" value="1.0" />
-      <param name="hough_theta" type="double" value="0.01745327777" /> <!-- pi/180 -->
-      <param name="hough_thresh" type="int" value="50" />
-      <param name="hough_minLineLength" type="double" value="50" />
-      <param name="hough_maxLineGap" type="double" value="35" />
+      <!-- The detector fits a bounding box to the contours in the image. min_contour_area defines the minimum area cutoff for a contour in order for it to not be excluded from this bounding box using OpenCV's contourArea units -->
+      <param name="min_contour_area" type="double" value="5.0" />
+	  <!-- In order for the fitted box to be considered a finish line, it must have an angle < angle_cutoff (in degrees) and a width > height_cutoff (in pixels) -->
+      <param name="angle_cutoff" type="double" value="20.0" />
+      <param name="height_cutoff" type="double" value="275.0" />
+
+	
+	  <!-- Some stuff for Canny edge detection, see OpenCV docs -->	
+      <param name="canny_thresh1" type="double" value="100.0" />
+  	  <param name="canny_thresh2" type="double" value="200.0" />
+
+
   </node>
 
   <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
