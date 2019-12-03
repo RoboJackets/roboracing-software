@@ -14,9 +14,8 @@ namespace rr_rviz_plugins {
     bool receivedSignal = false;
     QLabel *label;
     ros::Time current;
-    ros::Time callbackTime;
+    ros::Time callbackTime = ros::Time::now();
     ros::Timer timer;
-
     StartlightPanel::StartlightPanel(QWidget *parent)
             : rviz::Panel(parent)  // Base class constructor
     {
@@ -24,15 +23,14 @@ namespace rr_rviz_plugins {
         label->setFixedHeight(30);
         label->setFixedHeight(30);
         label->setGeometry(QRect(0, 0, 30, 30));
-
         start_detector = nh.subscribe<std_msgs::Bool>("/start_detected", 1,
                 StartlightPanel::startlightCallback);
         timer = nh.createTimer(ros::Duration(1), StartlightPanel::timerCallback);
-
         auto *layout = new QVBoxLayout;
         layout->addWidget(label);
         setLayout(layout);
     }
+
     //draws the circle
     void StartlightPanel::paintEvent(QPaintEvent *e) {
         QPainter painter(this);
@@ -56,10 +54,6 @@ namespace rr_rviz_plugins {
 
     void StartlightPanel::startlightCallback(const std_msgs::Bool msg){
 
-        if(!timer.hasStarted()) {
-            timer.start();
-        }
-
         callbackTime = ros::Time::now();
         receivedSignal = true;
         isGreen = msg.data != 0;
@@ -78,7 +72,7 @@ namespace rr_rviz_plugins {
             receivedSignal = false;
             label->setText("        No Message");
         }
-        timer.stop();
+
     }
 }  // namespace rr_rviz_plugins
 
