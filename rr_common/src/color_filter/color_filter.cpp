@@ -72,7 +72,7 @@ cv::Mat ColorFilter::Filter(const cv::Mat& in_img_full) {
     if (debug_pub_.getNumSubscribers() > 0) {
         cv_bridge::CvImage cvb;
         cvb.image = out_img_full;
-        cvb.encoding = (out_img_full.channels() == 1) ? "mono8" : "bgr8";
+        cvb.encoding = "mono8";
         debug_pub_.publish(cvb.toImageMsg());
     }
 
