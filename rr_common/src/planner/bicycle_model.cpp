@@ -43,8 +43,11 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
 
             steering_model_temp.UpdateRawDT(dt_);
 
+            speed_model_temp.SetTarget(SteeringToSpeed(steering_model_temp.GetValue()));
+            speed_model_temp.UpdateRawDT(dt_);
+
             path_point.steer = steering_model_temp.GetValue();
-            path_point.speed = SteeringToSpeed(path_point.steer);
+            path_point.speed = speed_model_temp.GetValue();
             path_point.time = last_path_point.time + dt_;
         }
 
@@ -52,7 +55,7 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     }
 
     speed_model_temp.Reset(rollout.path.back().speed, 0);
-    for (int i = path_size - 1; i >= 1; --i) {
+    for (i = path_size - 1; i >= 1; --i) {
         speed_model_temp.SetTarget(rollout.path[i].speed);
         speed_model_temp.UpdateRawDT(-dt_);
         rollout.path[i - 1].speed = std::min(rollout.path[i - 1].speed, speed_model_temp.GetValue());

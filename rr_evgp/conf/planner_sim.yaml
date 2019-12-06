@@ -1,9 +1,9 @@
-n_segments: 4
+n_segments: 7
 
 bicycle_model:
     wheel_base: 0.97
-    lateral_accel: 6.0
-    segment_size: 45
+    lateral_accel: 7.0
+    segment_size: 25
     dt: 0.02
 
 steering_filter:
@@ -17,8 +17,8 @@ speed_filter:
     init_val: 0
     val_max: 13.5
     val_min: -1.0
-    rate_max: 12.0
-    rate_min: -15.0
+    rate_max: 20.0
+    rate_min: -25.0
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -46,11 +46,11 @@ grid_inflation_map:
         min_y: -0.7
         max_y: 0.7
 
-steering_gain: 1.25
+steering_gain: 1.4
 
 k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
 k_speed: 0.05
-k_steering: 0.1
+k_steering: 0.01
 k_angle: 0
 collision_penalty: 1000
 
@@ -60,9 +60,9 @@ impasse_reverse_duration: 4.0
 planner_type: "hill_climbing"
 hill_climb_optimizer:
     num_workers: 4
-    num_restarts: 4
-    neighbor_stddev: [0.01]
-    local_optimum_tries: 70
+    num_restarts: 6
+    neighbor_stddev: [0.015]
+    local_optimum_tries: 60
 
 #planner_type: "annealing"
 #annealing_optimizer:

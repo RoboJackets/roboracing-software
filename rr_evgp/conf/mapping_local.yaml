@@ -30,5 +30,5 @@ costmap:
 
     distance_field:
         inflation_radius: 35
-        cost_scaling_factor: 0.2
+        cost_scaling_factor: 0.4
         lethal_cost_threshold: 255
