@@ -17,17 +17,15 @@
 #include <opencv2/opencv.hpp>
 
 using namespace std;
-using namespace cv;
-using namespace ros;
 
 using uchar = unsigned char;
 
 // Publisher debug_pub;
-Publisher crosses_pub;
+ros::Publisher crosses_pub;
 int blockSky_height, blockWheels_height, blockBumper_height;
 
 // Debug publisher for my image processing stuff
-Publisher debug_pub;
+ros::Publisher debug_pub;
 cv_bridge::CvImage debug_img;
 
 // Define the cutoff angle and width to detect the line and the cutoff area for contours
@@ -71,8 +69,8 @@ void blockEnvironment(const cv::Mat& img) {
 
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
-    Mat frame;
-    Mat output;
+    cv::Mat frame;
+    cv::Mat output;
 
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
@@ -85,16 +83,16 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     blockEnvironment(frame);
 
     // Matrix used to draw debug info
-    Mat debugDrawing = Mat::zeros(frame.size(), CV_8UC3);
+    cv::Mat debugDrawing = cv::Mat::zeros(frame.size(), CV_8UC3);
     cv::cvtColor(frame, debugDrawing, cv::COLOR_GRAY2BGR);
 
     // Find contours
-    vector<vector<Point>> contours;
-    vector<Vec4i> hierarchy;
-    cv::findContours(frame, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+    vector<vector<cv::Point>> contours;
+    vector<cv::Vec4i> hierarchy;
+    cv::findContours(frame, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     // Filter out very small contours
-    vector<Point> filteredContourPoints;
+    vector<cv::Point> filteredContourPoints;
     for (int i = 0; i < contours.size(); i++) {
         cv::Scalar color(0, 0, 255);
 
@@ -122,7 +120,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // assigns them)
         detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
 
-        Point2f rectPoints[4];
+        cv::Point2f rectPoints[4];
         fitRect.points(rectPoints);
 
         for (int i = 0; i < 4; i++)
@@ -200,10 +198,10 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-    init(argc, argv, "finish_line_watcher");
+    ros::init(argc, argv, "finish_line_watcher");
 
-    NodeHandle nh;
-    NodeHandle nhp("~");
+    ros::NodeHandle nh;
+    ros::NodeHandle nhp("~");
 
     string img_topic;
     nhp.getParam("img_topic", img_topic);
@@ -224,12 +222,12 @@ int main(int argc, char** argv) {
 
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 
-    Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
+    ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
     debug_pub = nh.advertise<sensor_msgs::Image>("finish_line_detection/debug", 1);
 
-    spin();
+    ros::spin();
 
     return 0;
 }
