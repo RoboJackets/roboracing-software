@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
-    debug_pub = nh.advertise<sensor_msgs::Image>("debug", 1);
+    debug_pub = nhp.advertise<sensor_msgs::Image>("debug", 1);
 
     ros::spin();
 
