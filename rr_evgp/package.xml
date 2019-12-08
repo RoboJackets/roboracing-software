@@ -17,10 +17,7 @@
 
   <depend>roscpp</depend>
   <depend>rospy</depend>
-  <depend>rr_common</depend>
-  <depend>rr_description</depend>
-  <depend>rr_gazebo</depend>
-  <depend>rr_platform</depend>
+  <depend>rr_msgs</depend>
   <depend>costmap_2d</depend>
 
   <build_depend>geometry_msgs</build_depend>
