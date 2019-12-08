@@ -12,9 +12,6 @@
 
     <include file="$(dirname)/mapping_sim.launch"/>
 
-    <arg name="max_speed" value="5.0"/>
-    <arg name="n_segments" value="4"/>
-    <arg name="max_steering" value="0.3"/>
     <node pkg="rr_common" type="planner" name="planner" output="screen" required="true">
         <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml" subst_value="true"/>
     </node>

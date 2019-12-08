@@ -32,10 +32,6 @@ struct PathPoint {
     double steer;
     double speed;
     double time;
-
-    PathPoint(const Pose& pose, double steer, double speed, double t)
-          : pose(pose), steer(steer), speed(speed), time(t) {}
-    PathPoint() : pose(), steer(0), speed(0), time(0) {}
 };
 
 std::ostream& operator<<(std::ostream& out, const PathPoint& p) {
@@ -52,14 +48,15 @@ using Vector = Eigen::Matrix<double, N, 1>;
 template <int ctrl_dim>
 using Controls = Eigen::Matrix<double, ctrl_dim, -1, Eigen::RowMajor, ctrl_dim, 10>;
 
-/**
- * object representing a planned trajectory
- */
-template <int ctrl_dim>
+struct TrajectoryRollout {
+    std::vector<PathPoint> path;
+    double apply_speed;
+    double apply_steering;
+};
+
 struct TrajectoryPlan {
-    Controls<ctrl_dim> control;   // input to a path
-    std::vector<PathPoint> path;  // results of path rollout
-    double cost;                  // result of applying cost function
+    TrajectoryRollout rollout;
+    double cost;  // result of applying cost function
     bool has_collision;
 };
 

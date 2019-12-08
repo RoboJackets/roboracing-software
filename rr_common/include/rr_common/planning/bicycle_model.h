@@ -20,14 +20,17 @@ class BicycleModel {
      * angle
      * @param segment_sections Vector of sizes of
      */
-    explicit BicycleModel(const ros::NodeHandle& nh, const std::shared_ptr<rr::LinearTrackingFilter>& steer_model_ptr);
+    explicit BicycleModel(const ros::NodeHandle& nh, const std::shared_ptr<rr::LinearTrackingFilter>& steer_model_ptr,
+                          const std::shared_ptr<rr::LinearTrackingFilter>& speed_model_ptr);
 
     /**
      * roll out a trajectory through the world
      * @param control Control vector, interpretation depends on planning scenario
      * @param path_points Output parameter into which points are placed
      */
-    void RollOutPath(const Controls<1>& controls, std::vector<PathPoint>& path_points) const;
+    void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
+
+    //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
 
   private:
     /**
@@ -46,16 +49,15 @@ class BicycleModel {
      * @param steer_angle Constant steering angle for the distance step
      * @param pose Out param for the resulting pose
      */
-    void StepKinematics(const Pose& last_pose, double steer_angle, Pose& pose) const;
+    void StepKinematics(const PathPoint& prev, Pose& next) const;
 
     double wheel_base_;
     double max_lateral_accel_;
-    int n_segments_;
     int segment_size_;
-    double distance_increment_;
-    double max_speed_;
+    double dt_;
 
     std::shared_ptr<rr::LinearTrackingFilter> steering_model_;
+    std::shared_ptr<rr::LinearTrackingFilter> speed_model_;
 };
 
 }  // namespace rr
