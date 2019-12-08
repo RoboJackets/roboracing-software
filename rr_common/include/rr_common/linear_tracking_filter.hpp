@@ -56,6 +56,7 @@ class LinearTrackingFilter {
             double dt = t - last_update_;
             if (dt > 0) {
                 val_ = std::clamp(target_, val_ + rate_min_ * dt, val_ + rate_max_ * dt);
+                val_ = std::clamp(val_, val_min_, val_max_);
             } else {
                 ROS_WARN("[%s] linear tracking model found jump backwards in time %f %f",
                          ros::this_node::getName().c_str(), last_update_, t);
@@ -74,6 +75,7 @@ class LinearTrackingFilter {
         double l1 = val_ + rate_min_ * dt;
         double l2 = val_ + rate_max_ * dt;
         val_ = std::clamp(target_, std::min(l1, l2), std::max(l1, l2));
+        val_ = std::clamp(val_, val_min_, val_max_);
         last_update_ += dt;
     }
 

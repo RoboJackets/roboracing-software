@@ -1,6 +1,6 @@
 <robot name="evgp" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:property name="use_gpu" value="true"/>
+    <xacro:property name="use_gpu" value="false"/>
 
     <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
 

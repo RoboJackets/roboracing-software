@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <vector>
 
 #include "planner_types.hpp"

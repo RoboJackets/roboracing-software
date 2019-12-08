@@ -23,7 +23,7 @@ double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
 
     char cost = map->data[my * map->info.width + mx];
 
-    if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && (cost > lethal_threshold || cost < 0)) {
+    if (!hit_box.PointInside(rr_pose.x, rr_pose.y) && cost > lethal_threshold) {
         return -1.0;
     }
 
