@@ -25,11 +25,6 @@
       <param name="angle_cutoff" type="double" value="20.0" />
       <param name="height_cutoff" type="double" value="275.0" />
 
-	
-	  <!-- Some stuff for Canny edge detection, see OpenCV docs -->	
-      <param name="canny_thresh1" type="double" value="100.0" />
-  	  <param name="canny_thresh2" type="double" value="200.0" />
-
 
   </node>
 

@@ -34,10 +34,6 @@ double width_cutoff;
 double min_contour_area;
 double area_cutoff;
 
-// Some Canny params
-double canny_thresh1;
-double canny_thresh2;
-
 // Defines whether to publish when the line is first detected or when we cross it
 bool publish_when_detected;
 
@@ -107,6 +103,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
 
     bool detected = false;
+	bool drawRectDebug = false;
     cv::RotatedRect fitRect;
     cv::Size2f size;
     float angle;
@@ -116,6 +113,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         fitRect = cv::minAreaRect(filteredContourPoints);
         size = fitRect.size;
         angle = std::abs(std::abs(fitRect.angle) - 90);
+		drawRectDebug = true;
         // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
         // assigns them)
         detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
@@ -167,15 +165,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     if (debug_pub.getNumSubscribers() > 0) {
         // Draw some debug info
-        std::string angle_str = std::string("Angle: ") + std::to_string(angle);
-        cv::putText(debugDrawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-                    2);
-        std::string width_str = std::string("Width: ") + std::to_string(size.width);
-        cv::putText(debugDrawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-                    2);
-        std::string height_str = std::string("Height: ") + std::to_string(size.height);
-        cv::putText(debugDrawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-                    2);
+		if (drawRectDebug) {
+		    std::string angle_str = std::string("Angle: ") + std::to_string(angle);
+		    cv::putText(debugDrawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
+		                2);
+		    std::string width_str = std::string("Width: ") + std::to_string(size.width);
+		    cv::putText(debugDrawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
+		                2);
+		    std::string height_str = std::string("Height: ") + std::to_string(size.height);
+		    cv::putText(debugDrawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
+		                2);
+		}
         std::string mode_str =
               std::string("Mode: ") + std::string(publish_when_detected ? "when detected" : "when crossed");
         cv::putText(debugDrawing, mode_str, cv::Point(5, 400), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
@@ -216,9 +216,6 @@ int main(int argc, char** argv) {
     nhp.param("angle_cutoff", angle_cutoff, 20.0);
     nhp.param("width_cutoff", width_cutoff, 275.0);
     nhp.param("count_thresh", count_thresh, 2000);
-
-    nhp.param("canny_thresh1", canny_thresh1, 100.0);
-    nhp.param("canny_thresh2", canny_thresh2, 200.0);
 
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 
