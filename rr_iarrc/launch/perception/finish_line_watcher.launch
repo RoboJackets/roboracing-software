@@ -11,7 +11,7 @@
       <param name="blockBumper_height" type="int" value="720" />
 
       <!--If set to true, the detector will start publishing once the finish line is first detected, if false, publishes when we cross the finish line-->
-      <param name="publish_when_detected" type="boolean" value="false" />
+      <param name="publish_when_detected" type="bool" value="false" />
 
       <!-- Number of camera frames between detections. Added to prevent flickering and double detections. -->
       <param name="cooldown" type="int" value="7" />

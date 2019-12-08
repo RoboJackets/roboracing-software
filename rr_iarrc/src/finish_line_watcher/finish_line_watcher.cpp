@@ -32,7 +32,6 @@ cv_bridge::CvImage debug_img;
 double angle_cutoff;
 double width_cutoff;
 double min_contour_area;
-double area_cutoff;
 
 // Defines whether to publish when the line is first detected or when we cross it
 bool publish_when_detected;
@@ -111,9 +110,9 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
         // assigns them)
         if (size.height > size.width)
-            angle = std::abs(std::abs(fitRect.angle) - 90);
+            angle = std::abs(fitRect.angle) - 90;
 
-        detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
+        detected = std::abs(angle) < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
 
         cv::Point2f rectPoints[4];
         fitRect.points(rectPoints);
@@ -205,7 +204,7 @@ int main(int argc, char** argv) {
     ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, ImageCB);
 
     crosses_pub = nh.advertise<std_msgs::Int8>("finish_line_crosses", 1);
-    debug_pub = nh.advertise<sensor_msgs::Image>("finish_line_detection/debug", 1);
+    debug_pub = nhp.advertise<sensor_msgs::Image>("debug", 1);
 
     ros::spin();
 
