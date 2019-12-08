@@ -1,7 +1,7 @@
 /*
  * Publishes the number of times the robot has crossed the
  * finish line.
- * Utilize the color_detector and hsv_tuner and Hough lines
+ * Utilize the color_detector and hsv_tuner and contours
  * to detect the finish line.
  */
 
@@ -103,7 +103,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
 
     bool detected = false;
-	bool drawRectDebug = false;
+    bool drawRectDebug = false;
     cv::RotatedRect fitRect;
     cv::Size2f size;
     float angle;
@@ -113,7 +113,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         fitRect = cv::minAreaRect(filteredContourPoints);
         size = fitRect.size;
         angle = std::abs(std::abs(fitRect.angle) - 90);
-		drawRectDebug = true;
+        drawRectDebug = true;
         // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
         // assigns them)
         detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
@@ -165,17 +165,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     if (debug_pub.getNumSubscribers() > 0) {
         // Draw some debug info
-		if (drawRectDebug) {
-		    std::string angle_str = std::string("Angle: ") + std::to_string(angle);
-		    cv::putText(debugDrawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-		                2);
-		    std::string width_str = std::string("Width: ") + std::to_string(size.width);
-		    cv::putText(debugDrawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-		                2);
-		    std::string height_str = std::string("Height: ") + std::to_string(size.height);
-		    cv::putText(debugDrawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143),
-		                2);
-		}
+        if (drawRectDebug) {
+            std::string angle_str = std::string("Angle: ") + std::to_string(angle);
+            cv::putText(debugDrawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2,
+                        cv::Scalar(0, 143, 143), 2);
+            std::string width_str = std::string("Width: ") + std::to_string(size.width);
+            cv::putText(debugDrawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2,
+                        cv::Scalar(0, 143, 143), 2);
+            std::string height_str = std::string("Height: ") + std::to_string(size.height);
+            cv::putText(debugDrawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2,
+                        cv::Scalar(0, 143, 143), 2);
+        }
         std::string mode_str =
               std::string("Mode: ") + std::string(publish_when_detected ? "when detected" : "when crossed");
         cv::putText(debugDrawing, mode_str, cv::Point(5, 400), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
