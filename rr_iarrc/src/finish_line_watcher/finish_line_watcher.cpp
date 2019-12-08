@@ -84,15 +84,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     frame = cv_ptr->image;
     blockEnvironment(frame);
 
-    Mat dst;
-    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
-    cv::cvtColor(frame, drawing, cv::COLOR_GRAY2BGR);
+	// Matrix used for detecting contours
+    Mat contourImg;
+	// Matrix used to draw debug info
+    Mat debugDrawing = Mat::zeros(frame.size(), CV_8UC3);
+    cv::cvtColor(frame, debugDrawing, cv::COLOR_GRAY2BGR);
 
     // Find contours
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
-    cv::Canny(frame, dst, canny_thresh1, canny_thresh2, 3);
-    cv::findContours(dst, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+    cv::Canny(frame, contourImg, canny_thresh1, canny_thresh2, 3);
+    cv::findContours(contourImg, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 
     // Filter out very small contours
     vector<Point> filteredContourPoints;
@@ -106,47 +108,41 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         }
 
         // Debug draw
-        cv::drawContours(drawing, contours, i, color, 2, 8);
+        cv::drawContours(debugDrawing, contours, i, color, 2, 8);
     }
 
     bool detected = false;
+	cv::RotatedRect fitRect;
+	cv::Size2f size;
+	float angle;
 
     if (filteredContourPoints.size() > 0) {
         // Fit a rect to the points and detect based on angle and width
-        cv::RotatedRect fitRect = cv::minAreaRect(filteredContourPoints);
-        Size2f size = fitRect.size;
-        float angle = std::abs(std::abs(fitRect.angle) - 90);
+        fitRect = cv::minAreaRect(filteredContourPoints);
+        size = fitRect.size;
+        angle = std::abs(std::abs(fitRect.angle) - 90);
         // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
         // assigns them)
         detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
-
-        // Draw debug info
-        std::string angle_str = std::string("Angle: ") + std::to_string(angle);
-        cv::putText(drawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
-        std::string width_str = std::string("Width: ") + std::to_string(size.width);
-        cv::putText(drawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
-        std::string height_str = std::string("Height: ") + std::to_string(size.height);
-        cv::putText(drawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
 
         Point2f rectPoints[4];
         fitRect.points(rectPoints);
 
         for (int i = 0; i < 4; i++)
-            cv::line(drawing, rectPoints[i], rectPoints[(i + 1) % 4], cv::Scalar(255, 0, 0), 2, 12);
+            cv::line(debugDrawing, rectPoints[i], rectPoints[(i + 1) % 4], cv::Scalar(255, 0, 0), 2, 12);
     }
 
     // Quick count of pixels as a final sanity check
     auto count = cv::countNonZero(frame);
     detected = detected && count > count_thresh;
+	auto incrementCrossNum = false;
 
     if (publish_when_detected) {
         // Publish when first detected but don't keep on increasing number of crosses, so make use of states again
         if (detected && state == LOW && cooldown == 0) {
-            number_of_crosses++;
-            ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
+			incrementCrossNum = true;
             state = HIGH;
             cooldown = cooldown_value;
-
         } else if (state == HIGH && !detected) {
             state = LOW;
         }
@@ -155,14 +151,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // When the line is first detected, set to a high state then when we stop detecting (we've crossed), report that
         if (state == LOW && detected && cooldown == 0) {
             state = HIGH;
-
         } else if (state == HIGH && !detected) {
             state = LOW;
+			incrementCrossNum = true;
+        }
+    }
+	
+	if (incrementCrossNum) {
             number_of_crosses++;
             cooldown = cooldown_value;
             ROS_INFO_STREAM("Finish line crossed: " << to_string(number_of_crosses));
-        }
-    }
+	}
 
     if (cooldown > 0)
         cooldown--;
@@ -173,19 +172,25 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     if (debug_pub.getNumSubscribers() > 0) {
         // Draw some debug info
+        std::string angle_str = std::string("Angle: ") + std::to_string(angle);
+        cv::putText(debugDrawing, angle_str, cv::Point(5, 100), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        std::string width_str = std::string("Width: ") + std::to_string(size.width);
+        cv::putText(debugDrawing, width_str, cv::Point(5, 200), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        std::string height_str = std::string("Height: ") + std::to_string(size.height);
+        cv::putText(debugDrawing, height_str, cv::Point(5, 300), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
         std::string mode_str =
               std::string("Mode: ") + std::string(publish_when_detected ? "when detected" : "when crossed");
-        cv::putText(drawing, mode_str, cv::Point(5, 400), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(debugDrawing, mode_str, cv::Point(5, 400), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
         std::string detected_str = std::string("Detected: ") + std::to_string(detected);
-        cv::putText(drawing, detected_str, cv::Point(5, 500), cv::FONT_HERSHEY_SIMPLEX, 2,
+        cv::putText(debugDrawing, detected_str, cv::Point(5, 500), cv::FONT_HERSHEY_SIMPLEX, 2,
                     (detected ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 143, 143)), 2);
         std::string count_str = std::string("Num detections: ") + std::to_string(number_of_crosses);
-        cv::putText(drawing, count_str, cv::Point(5, 600), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
+        cv::putText(debugDrawing, count_str, cv::Point(5, 600), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 143, 143), 2);
 
         // Convert to ros image format and publish
         debug_img.header = msg->header;
         debug_img.encoding = "bgr8";
-        debug_img.image = drawing;
+        debug_img.image = debugDrawing;
         debug_pub.publish(debug_img.toImageMsg());
     }
 
@@ -212,9 +217,6 @@ int main(int argc, char** argv) {
     nhp.param("angle_cutoff", angle_cutoff, 20.0);
     nhp.param("width_cutoff", width_cutoff, 275.0);
     nhp.param("count_thresh", count_thresh, 2000);
-
-    double canny_thresh1;
-    double canny_thresh2;
 
     nhp.param("canny_thresh1", canny_thresh1, 100.0);
     nhp.param("canny_thresh2", canny_thresh2, 200.0);
