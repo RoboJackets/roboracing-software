@@ -130,40 +130,17 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     detected = detected && count > count_thresh;
     auto incrementCrossNum = false;
 
-	/*
-    if (publish_when_detected) {
-        // Publish when first detected but don't keep on increasing number of crosses, so make use of states again
-        if (detected && state == LOW && cooldown == 0) {
-            incrementCrossNum = true;
-            state = HIGH;
-            cooldown = cooldown_value;
-        } else if (state == HIGH && !detected) {
-            state = LOW;
-        }
+    // Update state (HIGH=line currently visible, LOW=not visible), set cooldown, and set whether we should increment
+    // number of crosses based on whether we want to publish when detected or when we lose detection
+    if (state == LOW && detected && cooldown == 0) {
+        incrementCrossNum = publish_when_detected;
+        state = HIGH;
 
-    } else {
-        // When the line is first detected, set to a high state then when we stop detecting (we've crossed), report that
-        if (state == LOW && detected && cooldown == 0) {
-            state = HIGH;
-        } else if (state == HIGH && !detected) {
-            state = LOW;
-            incrementCrossNum = true;
-        }
-    }*/
-
-	// Update state (HIGH=line currently visible, LOW=not visible), set cooldown, and set whether we should increment number of crosses based on whether we want to publish when detected or when we lose detection 
-	if (state == LOW && detected && cooldown == 0) {
-
-		incrementCrossNum = publish_when_detected;
-		state = HIGH;
-
-	} else if (state == HIGH && !detected) {
-
-		incrementCrossNum = !publish_when_detected;
+    } else if (state == HIGH && !detected) {
+        incrementCrossNum = !publish_when_detected;
         state = LOW;
-		cooldown = cooldown_value;
-
-	}
+        cooldown = cooldown_value;
+    }
 
     if (incrementCrossNum) {
         number_of_crosses++;
