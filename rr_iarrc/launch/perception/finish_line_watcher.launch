@@ -20,7 +20,7 @@
       <param name="min_contour_area" type="double" value="5.0" />
 	  <!-- In order for the fitted box to be considered a finish line, it must have an angle < angle_cutoff (in degrees) and a width > height_cutoff (in pixels) -->
       <param name="angle_cutoff" type="double" value="20.0" />
-      <param name="height_cutoff" type="double" value="275.0" />
+      <param name="width_cutoff" type="double" value="275.0" />
 
 
   </node>

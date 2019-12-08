@@ -107,10 +107,12 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // Fit a rect to the points and detect based on angle and width
         fitRect = cv::minAreaRect(filteredContourPoints);
         size = fitRect.size;
-        angle = std::abs(std::abs(fitRect.angle) - 90);
         drawRectDebug = true;
         // Check the detection criteria (must look at both width and height because OpenCV is inconsistent about how it
         // assigns them)
+        if (size.height > size.width)
+            angle = std::abs(std::abs(fitRect.angle) - 90);
+
         detected = angle < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
 
         cv::Point2f rectPoints[4];
@@ -120,8 +122,6 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
             cv::line(debugDrawing, rectPoints[i], rectPoints[(i + 1) % 4], cv::Scalar(255, 0, 0), 2, 12);
     }
 
-    // Quick count of pixels as a final sanity check
-    detected = detected;
     auto incrementCrossNum = false;
 
     // Update state (HIGH=line currently visible, LOW=not visible), set cooldown, and set whether we should increment
