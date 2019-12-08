@@ -37,9 +37,6 @@ double area_cutoff;
 // Defines whether to publish when the line is first detected or when we cross it
 bool publish_when_detected;
 
-// Threshold for counting non-zero pixels
-int count_thresh;
-
 // In frames, the number cooldown is set to when the finish line is detected
 int cooldown_value;
 
@@ -66,7 +63,6 @@ void blockEnvironment(const cv::Mat& img) {
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr;
     cv::Mat frame;
-    cv::Mat output;
 
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, "mono8");
@@ -84,7 +80,6 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
 
     // Find contours
     vector<vector<cv::Point>> contours;
-    vector<cv::Vec4i> hierarchy;
     cv::findContours(frame, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     // Filter out very small contours
@@ -126,8 +121,7 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     }
 
     // Quick count of pixels as a final sanity check
-    auto count = cv::countNonZero(frame);
-    detected = detected && count > count_thresh;
+    detected = detected;
     auto incrementCrossNum = false;
 
     // Update state (HIGH=line currently visible, LOW=not visible), set cooldown, and set whether we should increment
@@ -135,11 +129,9 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     if (state == LOW && detected && cooldown == 0) {
         incrementCrossNum = publish_when_detected;
         state = HIGH;
-
     } else if (state == HIGH && !detected) {
         incrementCrossNum = !publish_when_detected;
         state = LOW;
-        cooldown = cooldown_value;
     }
 
     if (incrementCrossNum) {
@@ -207,7 +199,6 @@ int main(int argc, char** argv) {
     nhp.param("min_contour_area", min_contour_area, 5.0);
     nhp.param("angle_cutoff", angle_cutoff, 20.0);
     nhp.param("width_cutoff", width_cutoff, 275.0);
-    nhp.param("count_thresh", count_thresh, 2000);
 
     ROS_INFO("Finish line watching %s", img_topic.c_str());
 

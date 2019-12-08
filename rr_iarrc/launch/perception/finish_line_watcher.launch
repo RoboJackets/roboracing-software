@@ -16,9 +16,6 @@
       <!-- Number of camera frames between detections. Added to prevent flickering and double detections. -->
       <param name="cooldown" type="int" value="7" />
 
-      <!-- As a final sanity check the detector counts non-zero pixels in the HSV threshold. Count of non-zero pixels must be > this threshold for the detector to fire. -->
-	  <param name="count_thresh" type="int" value="2000" />
-
       <!-- The detector fits a bounding box to the contours in the image. min_contour_area defines the minimum area cutoff for a contour in order for it to not be excluded from this bounding box using OpenCV's contourArea units -->
       <param name="min_contour_area" type="double" value="5.0" />
 	  <!-- In order for the fitted box to be considered a finish line, it must have an angle < angle_cutoff (in degrees) and a width > height_cutoff (in pixels) -->
