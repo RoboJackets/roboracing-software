@@ -84,17 +84,14 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
     frame = cv_ptr->image;
     blockEnvironment(frame);
 
-    // Matrix used for detecting contours
-    Mat contourImg;
     // Matrix used to draw debug info
     Mat debugDrawing = Mat::zeros(frame.size(), CV_8UC3);
     cv::cvtColor(frame, debugDrawing, cv::COLOR_GRAY2BGR);
 
     // Find contours
-    vector<vector<Point> > contours;
+    vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
-    cv::Canny(frame, contourImg, canny_thresh1, canny_thresh2, 3);
-    cv::findContours(contourImg, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+    cv::findContours(frame, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 
     // Filter out very small contours
     vector<Point> filteredContourPoints;
