@@ -111,7 +111,8 @@ void ImageCB(const sensor_msgs::ImageConstPtr& msg) {
         // assigns them)
         if (size.height > size.width)
             angle = std::abs(fitRect.angle) - 90;
-
+        else
+            angle = std::abs(fitRect.angle);
         detected = std::abs(angle) < angle_cutoff && (size.width > width_cutoff || size.height > width_cutoff);
 
         cv::Point2f rectPoints[4];
