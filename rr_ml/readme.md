@@ -18,7 +18,7 @@ OR \
 
 1. Extract image data from bag file: 
 `roslaunch rr_ml extract_images_iarrc_lines.launch bag_file:=/path/to/bag image_topic:=/topic num_images:=30`
-1. Label all unlabeled images from iarrc_lines dataset: `roslaunch label_folder_iarrc_lines.launch`
+1. Label all unlabeled images from iarrc_lines dataset: `roslaunch rr_ml label_folder_iarrc_lines.launch`
     1. Ctrl+S to save, next image will open automatically
     1. Close the window and/or Ctrl-C in the terminal to cancel labeling (will resume from same point next time)
 
