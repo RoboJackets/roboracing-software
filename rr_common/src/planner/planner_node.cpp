@@ -234,8 +234,8 @@ int main(int argc, char** argv) {
         rate.sleep();
         ros::spinOnce();
 
-        g_steer_model->Update(steer_message->angle, ros::Time::now().toSec());
-        g_speed_model->Update(speed_message->speed, ros::Time::now().toSec());
+        g_steer_model->Update(0, ros::Time::now().toSec());
+        g_speed_model->Update(0, ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();

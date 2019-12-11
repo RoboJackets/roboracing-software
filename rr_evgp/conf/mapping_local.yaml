@@ -9,7 +9,7 @@ costmap:
 
     plugins:
         - {name: "global", type: "costmap_2d::StaticLayer"}
-        - {name: "track_closing", type: "rr::TrackClosingLayer"}
+#        - {name: "track_closing", type: "rr::TrackClosingLayer"}
         - {name: "distance_field", type: "costmap_2d::InflationLayer"}
 
 
@@ -19,17 +19,16 @@ costmap:
         trinary_costmap: true
         track_unknown_space: false
 
-    track_closing:
-        branch_pruning_size: 5
-        dilate_size: 10
-        min_enclosing_radius: 1
-        reg_bounding_box_size: 30
-        extrapolate_distance: 1
-        max_angle_between_lines: 30
-        max_dist_between_lines: 20
-        wall_output_dilation: 1
+#    track_closing:
+#        branch_pruning_size: 5
+#        dilate_size: .7
+#        min_enclosing_radius: 1
+#        reg_bounding_box_size: 30
+#        extrapolate_distance: 1
+#        max_angle_between_lines: 30
+#        max_dist_between_lines: 20
+#        wall_output_dilation: 1
 
     distance_field:
         inflation_radius: 35
         cost_scaling_factor: 0.4
-        lethal_cost_threshold: 255
