@@ -33,6 +33,4 @@
 
     <include file="$(dirname)/perception/startlight_watcher.launch"/>
 
-    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
-
 </launch>
