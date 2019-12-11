@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
     nhp.param("setpoint_topic", setpoint_topic, string("/setpoint"));
     nhp.param("topic_from_controller", topic_from_controller, string("/control_effort"));
 
-    visonBox_pub = nhp.advertise<geometry_msgs::PolygonStamped>("/follower/vision_box", 1);
+    visonBox_pub = nhp.advertise<geometry_msgs::PolygonStamped>("vision_box", 1);
 
     pid_speed_pub = nh.advertise<std_msgs::Float64>(topic_from_plant, 1);
     pid_setpoint_pub = nh.advertise<std_msgs::Float64>(setpoint_topic, 1);
