@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rr_common)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-Wall")
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -12,11 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
         image_transport
         sound_play
         rr_msgs
+        costmap_2d
+        tf
+        tf2_geometry_msgs
         parameter_assertions
         )
-
-#find_package(OpenCV REQUIRED)
-#find_package(PCL REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -33,9 +34,7 @@ catkin_package(
 ## Specify additional locations of header files
 include_directories(
         include
-        ${PCL_INCLUDE_DIRS}
         ${catkin_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
 )
 
 add_library(rr_common src/image_flipper/image_flipper.cpp)

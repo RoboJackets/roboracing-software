@@ -252,7 +252,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
     for (int r = 0; r < walls.rows; r++) {
         for (int c = 0; c < walls.cols; c++) {
             if (walls.at<uint8_t>(r, c) > 0) {
-                charMap[r * walls.cols + c] = 255;
+                charMap[r * walls.cols + c] = costmap_2d::LETHAL_OBSTACLE;
             }
         }
     }
