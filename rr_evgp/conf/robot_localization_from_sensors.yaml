@@ -1,0 +1,48 @@
+#robot_localization EKF configuration from imu and wheel odometry data
+
+frequency: 20.0
+sensor_timeout: 1.0
+two_d_mode: true
+
+map_frame: map
+odom_frame: odom
+world_frame: odom  # odom -> robot mode
+base_link_frame: base_footprint
+
+transform_time_offset: 0.0
+transform_timeout: 10.0
+
+#wheel encoders give forward velocity, use steering for rotation
+odom0: /odometry_encoder
+odom0_config: [false, false, false,
+               false, false, false,
+               true, true, false,
+               false, false, false,
+               false, false, false]
+odom0_queue_size: 100
+odom0_differential: false
+odom0_relative: false
+
+#GPS gives us (non-continuous) x and y coordinates
+odom1: /odometry/gps
+odom1_config: [true, true, false,
+               false, false, false,
+               true, true, false,
+               false, false, false,
+               false, false, false]
+odom1_queue_size: 100
+odom1_differential: false
+odom1_relative: false
+
+#IMU give absolute heading, rotational velocity, and linear velocity.
+imu0: /imu
+imu0_config: [false, false, false,
+               false, false, true,
+               false, false, false,
+               false, false, true,
+               true, false, false] #no lateral movements
+imu0_queue_size: 100
+imu0_differential: false
+imu0_relative: false
+
+publish_tf: true
