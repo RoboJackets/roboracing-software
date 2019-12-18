@@ -14,7 +14,7 @@ bool isGreen = false;
 bool receivedSignal = false;
 QLabel *label;
 ros::Time current;
-ros::Time callbackTime = ros::Time::now();
+ros::Time startlightUpdateTime = ros::Time::now();
 ros::Timer timer;
 StartlightPanel::StartlightPanel(QWidget *parent)
       : rviz::Panel(parent)  // Base class constructor
@@ -31,15 +31,17 @@ StartlightPanel::StartlightPanel(QWidget *parent)
 
 // draws the stoplight
 void StartlightPanel::paintEvent(QPaintEvent *e) {
-    int radius = 21;
+    int diameter = 21;
     int posX = 16;
     int posY = 12;
+    auto green = Qt::green;
+    auto red = Qt::red;
 
     // Background rectangle
     QPainter painter1(this);
     painter1.setBrush(Qt::black);
     painter1.setPen(Qt::black);
-    painter1.drawRect(posX - 1, posY - 1, 2 * radius + 5, radius + 2);
+    painter1.drawRect(posX - 1, posY - 1, 2 * diameter + 5, diameter + 2);
 
     // Left circle
     QPainter painter(this);
@@ -54,7 +56,7 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
         painter.setPen(Qt::gray);
         painter.setBrush(Qt::gray);
     }
-    painter.drawEllipse(posX, posY, radius, radius);
+    painter.drawEllipse(posX, posY, diameter, diameter);
 
     // Right circle
     if (!isGreen) {
@@ -68,13 +70,14 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
         painter.setPen(Qt::gray);
         painter.setBrush(Qt::gray);
     }
-    painter.drawEllipse(posX + radius + 3, posY, radius, radius);
+
+    painter.drawEllipse(posX + diameter + 3, posY, diameter, diameter);
 
     QWidget::paintEvent(e);
 }
 
 void StartlightPanel::startlightCallback(const std_msgs::Bool msg) {
-    callbackTime = ros::Time::now();
+    startlightUpdateTime = ros::Time::now();
     receivedSignal = true;
     isGreen = msg.data != 0;
     if (isGreen) {
@@ -86,7 +89,7 @@ void StartlightPanel::startlightCallback(const std_msgs::Bool msg) {
 
 void StartlightPanel::timerCallback(const ros::TimerEvent &e) {
     current = ros::Time::now();
-    if (current - callbackTime > ros::Duration(1)) {
+    if (current - startlightUpdateTime > ros::Duration(1)) {
         receivedSignal = false;
         label->setText("              No Message");
     }
