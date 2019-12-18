@@ -36,41 +36,31 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
     int posY = 12;
     auto green = Qt::green;
     auto red = Qt::red;
+    auto gray = Qt::gray;
+    auto circle_color = gray;
 
     // Background rectangle
-    QPainter painter1(this);
-    painter1.setBrush(Qt::black);
-    painter1.setPen(Qt::black);
-    painter1.drawRect(posX - 1, posY - 1, 2 * diameter + 5, diameter + 2);
+    QPainter painter(this);
+    painter.setBrush(Qt::black);
+    painter.setPen(Qt::black);
+    painter.drawRect(posX - 1, posY - 1, 2 * diameter + 5, diameter + 2);
 
     // Left circle
-    QPainter painter(this);
-    if (isGreen) {
-        painter.setPen(Qt::green);
-        painter.setBrush(Qt::green);
-    } else {
-        painter.setPen(Qt::gray);
-        painter.setBrush(Qt::gray);
+    if (isGreen && receivedSignal) {
+        circle_color = green;
     }
-    if (!receivedSignal) {
-        painter.setPen(Qt::gray);
-        painter.setBrush(Qt::gray);
-    }
+    painter.setPen(circle_color);
+    painter.setBrush(circle_color);
     painter.drawEllipse(posX, posY, diameter, diameter);
 
     // Right circle
-    if (!isGreen) {
-        painter.setPen(Qt::red);
-        painter.setBrush(Qt::red);
+    if (!isGreen && receivedSignal) {
+        circle_color = red;
     } else {
-        painter.setPen(Qt::gray);
-        painter.setBrush(Qt::gray);
+        circle_color = gray;
     }
-    if (!receivedSignal) {
-        painter.setPen(Qt::gray);
-        painter.setBrush(Qt::gray);
-    }
-
+    painter.setPen(circle_color);
+    painter.setBrush(circle_color);
     painter.drawEllipse(posX + diameter + 3, posY, diameter, diameter);
 
     QWidget::paintEvent(e);
