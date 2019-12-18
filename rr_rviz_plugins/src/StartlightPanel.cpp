@@ -37,7 +37,8 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
     auto green = Qt::green;
     auto red = Qt::red;
     auto gray = Qt::gray;
-    auto circle_color = gray;
+    auto left_color = gray;
+    auto right_color = gray;
 
     // Background rectangle
     QPainter painter(this);
@@ -47,20 +48,18 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
 
     // Left circle
     if (isGreen && receivedSignal) {
-        circle_color = green;
+        left_color = green;
     }
-    painter.setPen(circle_color);
-    painter.setBrush(circle_color);
+    painter.setPen(left_color);
+    painter.setBrush(left_color);
     painter.drawEllipse(posX, posY, diameter, diameter);
 
     // Right circle
     if (!isGreen && receivedSignal) {
-        circle_color = red;
-    } else {
-        circle_color = gray;
+        right_color = red;
     }
-    painter.setPen(circle_color);
-    painter.setBrush(circle_color);
+    painter.setPen(right_color);
+    painter.setBrush(right_color);
     painter.drawEllipse(posX + diameter + 3, posY, diameter, diameter);
 
     QWidget::paintEvent(e);
