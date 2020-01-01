@@ -42,6 +42,10 @@ struct Rectangle {
         double local_y = dx * sin_th + dy * cos_th;
         return local_x >= min_x && local_x < max_x && local_y >= min_y && local_y < max_y;
     }
+
+//    inline std::pair<double, double> getForwardInscribedCircle() {
+//        min(min_x + max_x, min_y + max_y);
+//    }
 };
 
 }  // namespace rr

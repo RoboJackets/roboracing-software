@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
         costmap_2d
         tf
         tf2_geometry_msgs
+        grid_map_cv
+        grid_map_ros
         parameter_assertions
         )
 
