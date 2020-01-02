@@ -61,9 +61,9 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     distance_map *= mapMetaData.resolution;
 
     // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)
-    cv::exp(-distance_map * cost_scaling_factor, distance_cost_map);
+    cv::exp(-(distance_map - (wall_inflation + inscribed_circle_radius)) * cost_scaling_factor, distance_cost_map);
     distance_cost_map *= 100;
-    distance_cost_map.setTo(-1.0, distance_map < wall_inflation + inscribed_circle_radius);
+    distance_cost_map.setTo(-1.0, distance_map <= wall_inflation + inscribed_circle_radius);
 
     updated_ = true;
 
