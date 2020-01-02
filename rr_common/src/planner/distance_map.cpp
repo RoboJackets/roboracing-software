@@ -1,6 +1,4 @@
-#include <geometry_msgs/PolygonStamped.h>
 #include <rr_common/planning/distance_map.h>
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
 namespace rr {
 
@@ -93,7 +91,7 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
               transform * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(inscribed_circle_origin, 0, 0));
 
         for (unsigned int i = 0; i < circle.polygon.points.size(); i++) {
-            double angle = i * M_PI / 8;
+            double angle = i * 2 * M_PI / circle.polygon.points.size();
             circle.polygon.points[i].x = w_pose.getOrigin().x() + inscribed_circle_radius * cos(angle);
             circle.polygon.points[i].y = w_pose.getOrigin().y() + inscribed_circle_radius * sin(angle);
         }
@@ -101,4 +99,5 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
         inscribed_circle_pub.publish(circle);
     }
 }
+
 }  // namespace rr
