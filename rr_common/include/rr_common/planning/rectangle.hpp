@@ -43,9 +43,15 @@ struct Rectangle {
         return local_x >= min_x && local_x < max_x && local_y >= min_y && local_y < max_y;
     }
 
-//    inline std::pair<double, double> getForwardInscribedCircle() {
-//        min(min_x + max_x, min_y + max_y);
-//    }
+    /**
+     * Calculates radius of the inscribed circle and maximum forward shift the circle can be placed from the rect's
+     * origin Assumes symmetry on the y-axis (origin-y = 0)
+     */
+    inline std::pair<double, double> getForwardInscribedCircle() {
+        double radius = fmin(max_x - min_x, max_y - min_y) / 2.0;
+        double shift = max_x - radius;
+        return std::make_pair(radius, shift);
+    }
 };
 
 }  // namespace rr

@@ -33,10 +33,6 @@ class NearestPointCache : public MapCostInterface {
 
     double DistanceCost(const Pose& pose) override;
 
-    std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
-
-    std::vector<double> DistanceCost(const std::vector<PathPoint>& path) override;
-
   private:
     /**
      * Given a map, cache the nearest neighbors. Fill the cache outwards from locations containing obstacle points.

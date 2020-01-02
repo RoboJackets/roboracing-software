@@ -18,9 +18,6 @@ class DistanceMap : public MapCostInterface {
     explicit DistanceMap(ros::NodeHandle nh);
 
     double DistanceCost(const Pose& pose) override;
-    std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
-    std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) override;
-
 
   private:
     std::pair<unsigned int, unsigned int> PoseToGridPosition(const rr::Pose& pose);
@@ -28,16 +25,18 @@ class DistanceMap : public MapCostInterface {
 
     ros::Subscriber map_sub;
     ros::Publisher distance_map_pub;
+    ros::Publisher inscribed_circle_pub;
     cv::Mat distance_cost_map;
     Rectangle hit_box;
     double cost_scaling_factor;
     double wall_inflation;
-    int wall_cost;
+    double inscribed_circle_radius;
+    double inscribed_circle_origin;
     bool publish_distance_map;
+    bool publish_inscribed_circle;
     nav_msgs::MapMetaData mapMetaData;
     std::unique_ptr<tf::TransformListener> listener;
     tf::StampedTransform transform;
-
 };
 
 }  // namespace rr

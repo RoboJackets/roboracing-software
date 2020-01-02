@@ -17,8 +17,6 @@ class InflationMap : public MapCostInterface {
     explicit InflationMap(ros::NodeHandle nh);
 
     double DistanceCost(const Pose& pose) override;
-    std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
-    std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) override;
 
   private:
     void SetMapMessage(const nav_msgs::OccupancyGridConstPtr& map_msg);

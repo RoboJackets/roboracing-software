@@ -30,20 +30,6 @@ double InflationMap::DistanceCost(const rr::Pose& rr_pose) {
     return cost;
 }
 
-std::vector<double> InflationMap::DistanceCost(const std::vector<Pose>& poses) {
-    std::vector<double> distance_costs(poses.size());
-    std::transform(poses.begin(), poses.end(), distance_costs.begin(),
-                   [this](const Pose& pose) { return this->DistanceCost(pose); });
-    return distance_costs;
-}
-
-std::vector<double> InflationMap::DistanceCost(const std::vector<PathPoint>& path_points) {
-    std::vector<double> distance_costs(path_points.size());
-    std::transform(path_points.begin(), path_points.end(), distance_costs.begin(),
-                   [this](const PathPoint& pathPoint) { return this->DistanceCost(pathPoint.pose); });
-    return distance_costs;
-}
-
 void InflationMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
     if (!accepting_updates_) {
         return;

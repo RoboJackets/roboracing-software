@@ -193,6 +193,7 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
+        "": true
         Axes: true
         Detection: true
         Global Map: true
@@ -209,18 +210,83 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: false
+      Enabled: true
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        body_inertial_center:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        body_visual_origin:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_optical:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        gps_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        steering_link_left:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        steering_link_right:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        wheel_BL:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_BR:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_FL:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_FR:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
       Update Interval: 0.05000000074505806
-      Value: false
+      Value: true
       Visual Enabled: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
@@ -236,12 +302,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: Local Map
       Topic: /local_mapper/costmap/costmap
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: costmap
@@ -258,6 +324,14 @@ Visualization Manager:
       Enabled: true
       Name: Polygon
       Topic: /local_mapper/costmap/footprint
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Polygon
+      Topic: /planner/distance_map/inscribed_circle
       Unreliable: false
       Value: true
   Enabled: true
@@ -288,16 +362,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.2548246383667
+      Distance: 8.62596607208252
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.3215291500091553
-        Y: -0.6472715139389038
-        Z: 2.7246851921081543
+        X: 1.890632152557373
+        Y: -1.2398871183395386
+        Z: 2.7220864295959473
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -329,4 +403,4 @@ Window Geometry:
     collapsed: false
   Width: 1312
   X: 67
-  Y: 390
+  Y: 0
