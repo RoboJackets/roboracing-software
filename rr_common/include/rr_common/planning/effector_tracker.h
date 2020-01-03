@@ -3,9 +3,9 @@
 #include <nav_msgs/Odometry.h>
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
+#include <rr_msgs/chassis_state.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <rr_msgs/chassis_state.h>
 
 namespace rr {
 

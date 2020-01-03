@@ -7,6 +7,7 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/inflation_cost.h>
 #include <rr_common/planning/map_cost_interface.h>
@@ -14,7 +15,6 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include <rr_common/linear_tracking_filter.hpp>
-#include <rr_common/planning/effector_tracker.h>
 
 constexpr int ctrl_dim = 1;
 
