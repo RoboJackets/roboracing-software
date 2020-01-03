@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
     g_effector_tracker =
-            std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
+          std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
 
     total_planning_time = 0;
     total_plans = 0;
@@ -238,10 +238,8 @@ int main(int argc, char** argv) {
         rate.sleep();
         ros::spinOnce();
 
-        ROS_INFO_STREAM(g_effector_tracker->getSpeed() << " " << g_effector_tracker->getAngle());
-
-        g_steer_model->Update(steer_message->angle, ros::Time::now().toSec());
-        g_speed_model->Update(speed_message->speed, ros::Time::now().toSec());
+        g_steer_model->Update(g_effector_tracker->getAngle(), ros::Time::now().toSec());
+        g_speed_model->Update(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();

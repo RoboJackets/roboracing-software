@@ -70,7 +70,6 @@ double EffectorTracker::getSpeed() {
 }
 
 double EffectorTracker::getAngle() {
-
     if (steering_guessing_between_updates && !steering_updated) {
         return last_steering_msg->angle;
     }
