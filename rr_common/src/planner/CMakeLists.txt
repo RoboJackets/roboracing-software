@@ -9,6 +9,7 @@ target_link_libraries(nearest_point_cache ${catkin_LIBRARIES})
 
 add_library(effector_tracker effector_tracker.cpp)
 target_link_libraries(effector_tracker ${catkin_LIBRARIES})
+add_dependencies(effector_tracker ${catkin_EXPORTED_TARGETS})
 
 set(planning_libs nearest_point_cache inflation_cost bicycle_model effector_tracker)
 
