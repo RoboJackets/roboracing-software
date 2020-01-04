@@ -23,7 +23,7 @@ namespace rr_rviz_plugins {
         auto *layout = new QVBoxLayout;
         speed_label = new QLabel("      No Message");
         speed_label->setGeometry(QRect(80, 0, 30, 30));
-        heading_label = new QLabel("No Message");
+        heading_label = new QLabel("      No Message");
         msg_label = new QLabel("No Message");
         //speed_label->setGeometry(QRect(80, 0, 30, 30));
         chassis_sub = nh.subscribe<rr_msgs::chassis_state>("/chassis_state", 1, ChassisPanel::chassisStateCallback);
@@ -37,29 +37,49 @@ namespace rr_rviz_plugins {
 
 // draws the images
     void ChassisPanel::paintEvent(QPaintEvent *e) {
+        //initial positions / dimensions for the speedometer
         int x_pos = 1;
         int y_pos = 7;
         int width = 30;
         int height = 40;
         QRectF rect = QRectF(x_pos,y_pos,width,height);
-        QWidget::paintEvent(e);
         QPainter painter(this);
+        //sets the color and draws the speedometer
         painter.setBrush(Qt::gray);
-        painter.setPen(Qt::black);
+        painter.setPen(Qt::gray);
         painter.drawEllipse(rect);
-        painter.eraseRect(x_pos,y_pos + (height / 2), width + 2,height / 2 + 2);
         painter.drawChord(rect,0,5760 / 2);
-        painter.setBrush(Qt::red);
-        painter.setBrush(Qt::red);
-        //for drawChord and drawArc 5760 = 360degrees
-        int top_speed = 60; //sets the max speed displayed by the speedometer
-        auto angle = (((top_speed - mph) * M_PI) / top_speed); //the angle the speedometer needle needs to point in
+        //erases half of the ellipse so it becomes a semicircle and looks like a speedometer
+        painter.eraseRect(x_pos,y_pos + (height / 2), width + 2,height / 2 + 2);
+        //for drawChord and drawArc 5760 = 360 degrees
+        //sets the max speed displayed by the speedometer
+        int top_speed = 35;
+        //the angle the speedometer needle needs to point in
+        auto angle = (((top_speed - mph) * M_PI) / top_speed);
+        //determines x and y height of the needle
         auto x_comp = cos(angle) * width / 2;
         auto y_comp = sin(angle) * height / 2;
-        QLineF needle = QLineF(width / 2, y_pos + height / 2, width / 2 + x_comp, y_pos + height / 2 + y_comp); //The shape and position of the needle
+        //the shape and direction of the needle
+        QLineF needle = QLineF(width / 2,
+                y_pos + height / 2 - 1,
+                width / 2 + x_comp,
+                y_pos + height / 2 - y_comp);
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::red);
+        //draws the needle
         painter.drawLine(needle);
 
+        //sets the new positions of the heading arrow
+        y_pos = 36;
+        height = 25;
+        //determines the rectangle shape the arrow will fit in
+        rect = QRectF(x_pos,y_pos,width,height);
+        painter.setBrush(Qt::black);
+        painter.setPen(Qt::black);
+        painter.drawRect(rect);
 
+
+        //paints the event
         QWidget::paintEvent(e);
     }
 
@@ -77,9 +97,12 @@ namespace rr_rviz_plugins {
 
     void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
         now = ros::Time::now();
-        if (now - chassisUpdateTime > ros::Duration(1)) {
+        if (now - chassisUpdateTime > ros::Duration(.5)) { //latency for detecting if its no longer sending a message
             received_signal = false;
+            mph = 0;
             speed_label->setText("      No Message");
+            heading_label->setText("      No Message");
+            msg_label->setText("No Message");
         }
     }
 }  // namespace rr_rviz_plugins
