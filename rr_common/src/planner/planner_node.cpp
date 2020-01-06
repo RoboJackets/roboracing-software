@@ -7,6 +7,7 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/inflation_cost.h>
 #include <rr_common/planning/map_cost_interface.h>
@@ -20,6 +21,7 @@ constexpr int ctrl_dim = 1;
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
+std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
@@ -131,7 +133,7 @@ void processMap() {
     }
 
     if (REVERSE == reverse_state) {
-        update_messages(-0.8, 0);
+        update_messages(-2.0, 0);
         ROS_WARN_STREAM("Planner reversing");
     } else if (plan.has_collision) {
         ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");
@@ -218,6 +220,8 @@ int main(int argc, char** argv) {
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
+    g_effector_tracker =
+          std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
 
     total_planning_time = 0;
     total_plans = 0;
@@ -234,8 +238,8 @@ int main(int argc, char** argv) {
         rate.sleep();
         ros::spinOnce();
 
-        g_steer_model->Update(0, ros::Time::now().toSec());
-        g_speed_model->Update(0, ros::Time::now().toSec());
+        g_steer_model->Update(g_effector_tracker->getAngle(), ros::Time::now().toSec());
+        g_speed_model->Update(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
