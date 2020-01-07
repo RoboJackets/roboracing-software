@@ -10,7 +10,7 @@
 
 namespace rr_rviz_plugins {
 bool received_signal = false;
-int m ph;
+int mph;
 float hding;
 QLabel *speed_label;
 QLabel *heading_label;
@@ -26,7 +26,6 @@ ChassisPanel::ChassisPanel(QWidget *parent)
     speed_label->setGeometry(QRect(80, 0, 30, 30));
     heading_label = new QLabel("      No Message");
     msg_label = new QLabel("No Message");
-    // speed_label->setGeometry(QRect(80, 0, 30, 30));
     chassis_sub = nh.subscribe<rr_msgs::chassis_state>("/chassis_state", 1, ChassisPanel::chassisStateCallback);
     time = nh.createTimer(ros::Duration(1), ChassisPanel::timerCallback);
     layout->addWidget(speed_label);
@@ -81,7 +80,6 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     painter.setBrush(Qt::black);
     painter.setPen(Qt::black);
 
-    //        painter.drawRect(rect);
     // For the directional arrow to show the heading
     // the x component of the origin
     int x_org = x_pos + width / 2;
