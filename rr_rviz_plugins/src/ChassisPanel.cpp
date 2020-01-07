@@ -39,12 +39,12 @@ namespace rr_rviz_plugins {
 // draws the images
     void ChassisPanel::paintEvent(QPaintEvent *e) {
         //initial positions / dimensions for the speedometer
-        const QRect & rct = e->rect();
+        const QRect &rct = e->rect();
         int x_pos = 1;
         int y_pos = 7;
         int width = 30;
         int height = 40;
-        QRectF rect = QRectF(x_pos,y_pos,width,height);
+        QRectF rect = QRectF(x_pos, y_pos, width, height);
         QPainter painter(this);
         painter.eraseRect(rct);
         painter.setRenderHint(QPainter::Antialiasing);
@@ -52,9 +52,9 @@ namespace rr_rviz_plugins {
         painter.setBrush(Qt::gray);
         painter.setPen(Qt::gray);
         painter.drawEllipse(rect);
-        painter.drawChord(rect,0,5760 / 2);
+        painter.drawChord(rect, 0, 5760 / 2);
         //erases half of the ellipse so it becomes a semicircle and looks like a speedometer
-        painter.eraseRect(x_pos,y_pos + (height / 2), width + 2,height / 2 + 2);
+        painter.eraseRect(x_pos, y_pos + (height / 2), width + 2, height / 2 + 2);
         //for drawChord and drawArc 5760 = 360 degrees
         //sets the max speed displayed by the speedometer
         int top_speed = 35;
@@ -65,9 +65,9 @@ namespace rr_rviz_plugins {
         float y_comp = sin(angle) * height / 2;
         //the shape and direction of the needle
         QLineF needle = QLineF(width / 2,
-                y_pos + height / 2 - 1,
-                width / 2 + x_comp,
-                y_pos + height / 2 - y_comp);
+                               y_pos + height / 2 - 1,
+                               width / 2 + x_comp,
+                               y_pos + height / 2 - y_comp);
         painter.setBrush(Qt::red);
         painter.setPen(Qt::red);
         //draws the needle
@@ -77,7 +77,7 @@ namespace rr_rviz_plugins {
         y_pos = 36;
         height = 25;
         //determines the rectangle shape the arrow will fit in
-        rect = QRectF(x_pos,y_pos,width,height);
+        rect = QRectF(x_pos, y_pos, width, height);
         painter.setPen(Qt::white);
         painter.setBrush(Qt::white);
         painter.drawRect(rect);
@@ -91,7 +91,8 @@ namespace rr_rviz_plugins {
         int y_org = y_pos + height / 2;
         //The size of the arrow
         int arr_size = 10; //this is actually  half the length of the arrow
-
+        //makes it so that zero points north
+        hding = hding + M_PI / 2;
         y_comp = sin(hding) * (float) arr_size;
         x_comp = cos(hding) * (float) arr_size;
 
@@ -99,14 +100,21 @@ namespace rr_rviz_plugins {
 
         painter.drawLine(arrow_shaft);
 
-        painter.setPen(Qt::white);
-        painter.setBrush(Qt::white);
-
-
+        if (y_comp > 1) {
+            painter.setPen(Qt::white);
+            painter.setBrush(Qt::white);
+            painter.drawLine(x_org - 5, 0, x_org - 3, 0);
+            painter.setPen(Qt::black);
+            painter.setBrush(Qt::black);
+        }
         //For the arrowhead
-        //the angle it juts out at
-        float pivot = M_PI / 6;
+        painter.setPen(Qt::green);
+        painter.setBrush(Qt::green);
+        QLineF arrow_tip = QLineF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
+        QRectF arrow_head = QRectF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
 
+        painter.drawLine(arrow_tip);
+        painter.drawRect(arrow_head);
         //actually paints everything from above
         QWidget::paintEvent(e);
     }
