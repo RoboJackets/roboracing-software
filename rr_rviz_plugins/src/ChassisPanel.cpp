@@ -22,9 +22,9 @@ ChassisPanel::ChassisPanel(QWidget *parent)
       : rviz::Panel(parent)  // Base class constructor
 {
     auto *layout = new QVBoxLayout;
-    speed_label = new QLabel("      No Message");
-    speed_label->setGeometry(QRect(80, 0, 30, 30));
-    heading_label = new QLabel("      No Message");
+    speed_label = new QLabel("        No Message");
+//    speed_label->setGeometry(QRect(80, 0, 30, 30));
+    heading_label = new QLabel("        No Message");
     msg_label = new QLabel("No Message");
     chassis_sub = nh.subscribe<rr_msgs::chassis_state>("/chassis_state", 1, ChassisPanel::chassisStateCallback);
     time = nh.createTimer(ros::Duration(1), ChassisPanel::timerCallback);
@@ -39,7 +39,7 @@ ChassisPanel::ChassisPanel(QWidget *parent)
 void ChassisPanel::paintEvent(QPaintEvent *e) {
     // initial positions / dimensions for the speedometer
     const QRect &rct = e->rect();
-    int x_pos = 1;
+    int x_pos = 10;
     int y_pos = 7;
     int width = 30;
     int height = 40;
@@ -63,14 +63,14 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     float x_comp = cos(angle) * width / 2;
     float y_comp = sin(angle) * height / 2;
     // the shape and direction of the needle
-    QLineF needle = QLineF(width / 2, y_pos + height / 2 - 1, width / 2 + x_comp, y_pos + height / 2 - y_comp);
+    QLineF needle = QLineF(width / 2 + x_pos, y_pos + height / 2 - 1, width / 2 + x_comp + x_pos, y_pos + height / 2 - y_comp);
     painter.setBrush(Qt::red);
     painter.setPen(Qt::red);
     // draws the needle
     painter.drawLine(needle);
 
     // sets the new positions of the heading arrow
-    y_pos = 36;
+    y_pos = 37;
     height = 25;
     // determines the rectangle shape the arrow will fit in
     rect = QRectF(x_pos, y_pos, width, height);
@@ -103,13 +103,13 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         painter.setBrush(Qt::black);
     }
     // For the arrowhead
-    painter.setPen(Qt::green);
-    painter.setBrush(Qt::green);
+    painter.setPen(Qt::red);
+    painter.setBrush(Qt::red);
     QLineF arrow_tip = QLineF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
     QRectF arrow_head = QRectF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
 
     painter.drawLine(arrow_tip);
-    painter.drawRect(arrow_head);
+//    painter.drawRect(arrow_head);
     // actually paints everything from above
     QWidget::paintEvent(e);
 }
@@ -119,8 +119,8 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
     received_signal = true;
     mph = msg.speed_mps;
     hding = msg.steer_rad;
-    auto speed = "      " + std::to_string(msg.speed_mps) + " m/s";
-    auto heading = "      " + std::to_string(msg.steer_rad) + " rad";
+    auto speed = "        " + std::to_string(msg.speed_mps) + " m/s";
+    auto heading = "        " + std::to_string(msg.steer_rad) + " rad";
     auto message = msg.state;
     speed_label->setText(speed.c_str());
     heading_label->setText(heading.c_str());
@@ -133,8 +133,8 @@ void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
         received_signal = false;
         mph = 0;
         hding = 0;
-        speed_label->setText("      No Message");
-        heading_label->setText("      No Message");
+        speed_label->setText("        No Message");
+        heading_label->setText("        No Message");
         msg_label->setText("No Message");
     }
 }
