@@ -12,6 +12,7 @@ namespace rr_rviz_plugins {
 bool received_signal = false;
 int cur_speed;
 float hding;
+bool record_bag;
 QLabel *speed_label;
 QLabel *heading_label;
 QLabel *msg_label;
@@ -71,8 +72,8 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     painter.setPen(Qt::red);
     painter.drawLine(needle);
     // new params for the heading arrow
-    y_pos = 37;
-    height = 25;
+    y_pos = 38;
+    height = 18;
     // determines the rectangle shape the arrow will fit in
     rect = QRectF(x_pos, y_pos, width, height);
     painter.setPen(QColor(255,255,255,255));
@@ -83,7 +84,7 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     int x_org = x_pos + width / 2;
     int y_org = y_pos + height / 2;
     // The size of the arrow
-    int arr_size = 10;  // this is actually  half the length of the arrow
+    int arr_size = 9;  // this is actually  half the length of the arrow
     // makes it so that zero points north instead of east
     hding = hding + M_PI / 2;
     y_comp = sin(hding) * (float)arr_size;
@@ -96,11 +97,23 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     painter.setPen(Qt::red);
     painter.setBrush(Qt::red);
     QLineF arrow_tip = QLineF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
-    QRectF arrow_head = QRectF(x_org + x_comp, y_org - y_comp, x_org + .5 * x_comp, y_org - .5 * y_comp);
-
     painter.drawLine(arrow_tip);
-//    painter.drawRect(arrow_head);
-    // actually paints everything from above
+
+    // For the status of recording_bag
+    x_pos = 137;
+    y_pos = 93;
+    width = 40;
+    height = 15;
+    if (received_signal && record_bag) {
+        painter.setBrush(Qt::green);
+        painter.setPen(Qt::green);
+        painter.drawRect(x_pos, y_pos, width, height);
+    } else if (received_signal){
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::red);
+        painter.drawRect(x_pos, y_pos, width, height);
+    }
+
     QWidget::paintEvent(e);
 }
 
@@ -109,6 +122,7 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
     received_signal = true;
     cur_speed = msg.speed_mps;
     hding = msg.steer_rad;
+    record_bag = msg.record_bag;
     auto speed = spacing.toStdString() + std::to_string(msg.speed_mps) + " m/s";
     auto heading = spacing.toStdString() + std::to_string(msg.steer_rad) + " rad";
     auto message = msg.state;
@@ -117,10 +131,10 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
     msg_label->setText(message.c_str());
 
     if (msg.record_bag) {
-        rcding_bag_label->setText("Recording Bag File: true");
+        rcding_bag_label->setText("Recording Bag File:  true");
         //rcding_bag_label->setStyleSheet("QLabel { background-color : green}");
     } else {
-        rcding_bag_label->setText("Recording Bag File: false");
+        rcding_bag_label->setText("Recording Bag File:  false");
         //rcding_bag_label->setStyleSheet("QLabel { background-color : red}");
     }
 }
