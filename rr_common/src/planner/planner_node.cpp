@@ -132,7 +132,7 @@ void processMap() {
     }
 
     if (REVERSE == reverse_state) {
-        update_messages(-2.0, 0);
+        update_messages(-0.8, 0);
         ROS_WARN_STREAM("Planner reversing");
     } else if (plan.has_collision) {
         ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");

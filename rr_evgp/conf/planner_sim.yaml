@@ -10,15 +10,15 @@ steering_filter:
     init_val: 0
     val_max: 0.25
     val_min: -0.25
-    rate_max: 5.0
-    rate_min: -5.0
+    rate_max: 2.0
+    rate_min: -2.0
 
 speed_filter:
     init_val: 0
     val_max: 13.5
-    val_min: -2.0
+    val_min: -1.0
     rate_max: 20.0
-    rate_min: -80.0
+    rate_min: -25.0
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -51,7 +51,7 @@ distance_map:
 
 steering_gain: 1.4
 
-k_map_cost: .1  # map costs are about 100x higher with grid_inflation
+k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
 k_speed: 0.05
 k_steering: 0.01
 k_angle: 0
@@ -66,8 +66,6 @@ hill_climb_optimizer:
     num_restarts: 6
     neighbor_stddev: [0.015]
     local_optimum_tries: 60
-
-
 
 #planner_type: "annealing"
 #annealing_optimizer:
