@@ -17,6 +17,7 @@ QLabel *speed_label;
 QLabel *heading_label;
 QLabel *msg_label;
 QLabel *rcding_bag_label;
+QLabel *estop_label;
 ros::Time now;
 ros::Time chassisUpdateTime = ros::Time::now();
 ros::Timer time;
@@ -29,14 +30,16 @@ ChassisPanel::ChassisPanel(QWidget *parent)
     heading_label = new QLabel(spacing + "No Message");
     msg_label = new QLabel("No Message");
     rcding_bag_label = new QLabel("No Message");
+    estop_label = new QLabel("No Message");
     chassis_sub = nh.subscribe<rr_msgs::chassis_state>("/chassis_state", 1, ChassisPanel::chassisStateCallback);
     time = nh.createTimer(ros::Duration(1), ChassisPanel::timerCallback);
     layout->addWidget(speed_label);
     layout->addWidget(heading_label);
     layout->addWidget(msg_label);
     layout->addWidget(rcding_bag_label);
+    layout->addWidget(estop_label);
     setLayout(layout);
-    this->setFixedHeight(120);
+    this->setFixedHeight(140);
     this->setFixedWidth(340);
 }
 
@@ -101,7 +104,7 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
 
     // For the status of recording_bag
     x_pos = 137;
-    y_pos = 93;
+    y_pos = 88;
     width = 40;
     height = 15;
     if (received_signal && record_bag) {
@@ -137,6 +140,11 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
         rcding_bag_label->setText("Recording Bag File:  false");
         //rcding_bag_label->setStyleSheet("QLabel { background-color : red}");
     }
+    if (msg.estop_on) {
+        estop_label->setText("Estop: on");
+    } else {
+        estop_label->setText("Estop: off");
+    }
 }
 
 void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
@@ -149,6 +157,7 @@ void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
         heading_label->setText(spacing + "No Message");
         msg_label->setText("No Message");
         rcding_bag_label->setText("No Message");
+        estop_label->setText("No Message");
     }
 }
 }  // namespace rr_rviz_plugins
