@@ -13,6 +13,7 @@ bool received_signal = false;
 int cur_speed;
 float hding;
 bool record_bag;
+bool estop;
 QLabel *speed_label;
 QLabel *heading_label;
 QLabel *msg_label;
@@ -26,20 +27,24 @@ ChassisPanel::ChassisPanel(QWidget *parent)
       : rviz::Panel(parent)  // Base class constructor
 {
     auto *layout = new QVBoxLayout;
+
     speed_label = new QLabel(spacing + "No Message");
     heading_label = new QLabel(spacing + "No Message");
     msg_label = new QLabel("No Message");
     rcding_bag_label = new QLabel("No Message");
     estop_label = new QLabel("No Message");
+
     chassis_sub = nh.subscribe<rr_msgs::chassis_state>("/chassis_state", 1, ChassisPanel::chassisStateCallback);
     time = nh.createTimer(ros::Duration(1), ChassisPanel::timerCallback);
+
     layout->addWidget(speed_label);
     layout->addWidget(heading_label);
     layout->addWidget(msg_label);
     layout->addWidget(rcding_bag_label);
     layout->addWidget(estop_label);
     setLayout(layout);
-    this->setFixedHeight(140);
+
+    this->setFixedHeight(150);
     this->setFixedWidth(340);
 }
 
@@ -64,6 +69,11 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     painter.eraseRect(x_pos, y_pos + (height / 2), width + 2, height / 2 + 2);
     //top speed displayed by the speedometer
     int top_speed = 40;
+    //only changes the speed shown by the speedometer, so it does not go below its half circle,
+    //does not affect what the label says
+    if (cur_speed >= top_speed) {
+        cur_speed = top_speed;
+    }
     // the angle the speedometer needle needs to point in
     auto angle = (((top_speed - cur_speed) * M_PI) / top_speed);
     // determines x and y height of the needle
@@ -104,7 +114,7 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
 
     // For the status of recording_bag
     x_pos = 137;
-    y_pos = 88;
+    y_pos = 95;
     width = 40;
     height = 15;
     if (received_signal && record_bag) {
@@ -117,15 +127,34 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         painter.drawRect(x_pos, y_pos, width, height);
     }
 
+    //for the status of estop
+    x_pos = 52;
+    y_pos = 122;
+    width = 23;
+    if (received_signal && estop) {
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::red);
+        painter.drawRect(x_pos, y_pos, width, height);
+    } else if (received_signal) {
+        painter.setBrush(Qt::green);
+        painter.setPen(Qt::green);
+        painter.drawRect(x_pos, y_pos, width, height);
+    }
     QWidget::paintEvent(e);
 }
 
 void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
+    //for timerCallback
     chassisUpdateTime = ros::Time::now();
     received_signal = true;
+
+    //global variables
     cur_speed = msg.speed_mps;
     hding = msg.steer_rad;
     record_bag = msg.record_bag;
+    estop = msg.estop_on;
+
+    //label updates
     auto speed = spacing.toStdString() + std::to_string(msg.speed_mps) + " m/s";
     auto heading = spacing.toStdString() + std::to_string(msg.steer_rad) + " rad";
     auto message = msg.state;
@@ -149,7 +178,9 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
 
 void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
     now = ros::Time::now();
-    if (now - chassisUpdateTime > ros::Duration(.5)) {  // latency for detecting if its no longer sending a message
+
+    // latency for detecting if its no longer sending a message
+    if (now - chassisUpdateTime > ros::Duration(.5)) {
         received_signal = false;
         cur_speed = 0;
         hding = 0;
@@ -160,6 +191,7 @@ void ChassisPanel::timerCallback(const ros::TimerEvent &e) {
         estop_label->setText("No Message");
     }
 }
+
 }  // namespace rr_rviz_plugins
 
 PLUGINLIB_EXPORT_CLASS(rr_rviz_plugins::ChassisPanel, rviz::Panel)
