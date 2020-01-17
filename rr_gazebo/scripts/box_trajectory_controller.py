@@ -5,7 +5,6 @@ front of the car then measuring how long it takes the lidar scan, map,
 and planned path to reflect the update.
 
 @author Daniel Martin
-
 """
 
 

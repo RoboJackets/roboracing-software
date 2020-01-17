@@ -19,11 +19,6 @@
             <pose>50 20 0 0 0 0 0</pose>
         </include>
         <include>
-            <uri>model://ground_plane</uri>
-            <pose>50 20 0 0 0 0 0</pose>
-        </include>
-
-        <include>
             <uri>model://LongBox</uri>
             <pose frame=''>15 0 0.5 0 0 0</pose>
         </include>
