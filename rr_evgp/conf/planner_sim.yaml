@@ -3,7 +3,7 @@ n_segments: 7
 bicycle_model:
     wheel_base: 0.97
     lateral_accel: 7.0
-    segment_size: 15
+    segment_size: 25
     dt: 0.02
 
 steering_filter:
@@ -50,7 +50,7 @@ steering_gain: 1.4
 
 k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
 k_speed: 0.05
-k_steering: 50
+k_steering: 0.01
 k_angle: 0
 collision_penalty: 1000
 

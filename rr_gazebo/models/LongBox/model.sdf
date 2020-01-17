@@ -1,12 +1,11 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
     <model name='LongBox'>
-        <pose frame=''>2.32716 -0.63187 0.5 0 -0 0</pose>
         <link name='link'>
           <collision name='collision'>
             <geometry>
               <box>
-                <size>10 10 1</size>
+                <size>1 15 1</size>
               </box>
             </geometry>
           </collision>
