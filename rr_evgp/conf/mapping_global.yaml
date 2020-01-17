@@ -1,0 +1,27 @@
+costmap:
+    update_frequency: 60.0
+    publish_frequency: 30.0
+    always_send_full_costmap: false
+
+    rolling_window: false
+    width: $(arg global_map_size)
+    height: $(arg global_map_size)
+
+    plugins:
+        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+
+    obstacles:
+        observation_sources: laserscan
+        combination_method: 0
+        track_unknown_space: true
+        laserscan:
+            data_type: LaserScan
+            topic: /scan
+            frame_name: lidar
+            expected_update_rate: 15.0
+            observation_persistence: 0.0
+            marking: true
+            clearing: true
+            inf_is_valid: true  # inf's are set to scan msg max range
+            obstacle_range: 50.0  # must be smaller than scan msg max range
+            raytrace_range: 49.0  # clear and explore this distance

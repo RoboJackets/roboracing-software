@@ -63,7 +63,7 @@ Visualization Manager:
       Axis: X
       Channel Name: intensity
       Class: rviz/PointCloud2
-      Color: 255; 0; 0
+      Color: 245; 121; 0
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
@@ -194,7 +194,9 @@ Visualization Manager:
       Visibility:
         Axes: true
         Detection: true
+        Global Map: true
         Grid: true
+        Local Map: true
         Map: true
         Path: true
         RobotModel: true
@@ -235,6 +237,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
         gps_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -280,11 +287,21 @@ Visualization Manager:
       Visual Enabled: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
-      Color Scheme: raw
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Global Map
+      Topic: /global_mapper/costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Map
-      Topic: /basic_mapper/costmap/costmap
+      Name: Local Map
+      Topic: /local_mapper/costmap/costmap
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -316,25 +333,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 140.3189697265625
+      Distance: 142.9976348876953
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 29.343753814697266
-        Y: 16.73333168029785
-        Z: 2.7308239936828613
+        X: 16.06003761291504
+        Y: 47.70695495605469
+        Z: 2.808222532272339
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.5647963285446167
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1054015159606934
+      Yaw: 3.1454017162323
     Saved: ~
 Window Geometry:
   Camera:

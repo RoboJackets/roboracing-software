@@ -1,0 +1,40 @@
+<launch>
+  <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
+      <param name="img_topic" value="/finish_line_detection_img" />
+
+      <!-- Params to control blocking of the image. (Image Height = 1280)-->
+      <!-- Sky height draws the a block from y=0 to y=sky height (increasing sky height lowers the sky rectangle) -->
+      <param name="blockSky_height" type="int" value="560" />
+      <!-- Wheels height draws the a block from the bottom to y=wheel height (increasing wheel height brings the rectangle up bigger from the bottom) -->
+      <param name="blockWheels_height" type="int" value="750" />
+      <!-- Same thing as wheel height, just draws the rectangle over the middle third of the screen -->
+      <param name="blockBumper_height" type="int" value="720" />
+
+      <!--If set to true, the detector will start publishing once the finish line is first detected, if false, publishes when we cross the finish line-->
+      <param name="publish_when_detected" type="bool" value="false" />
+
+      <!-- Number of camera frames between detections. Added to prevent flickering and double detections. -->
+      <param name="cooldown" type="int" value="7" />
+
+      <!-- The detector fits a bounding box to the contours in the image. min_contour_area defines the minimum area cutoff for a contour in order for it to not be excluded from this bounding box using OpenCV's contourArea units -->
+      <param name="min_contour_area" type="double" value="5.0" />
+	  <!-- In order for the fitted box to be considered a finish line, it must have an angle < angle_cutoff (in degrees) and a width > height_cutoff (in pixels) -->
+      <param name="angle_cutoff" type="double" value="20.0" />
+      <param name="width_cutoff" type="double" value="275.0" />
+
+
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="color_detector_finish_line" output="screen"
+        args="standalone rr_iarrc/color_detector">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_magenta.txt"/>
+      <param name="camera_image" value="/camera_center/image_color_rect"/>
+      <param name="detection_topic" value="/finish_line_detection_img"/>
+      <param name="hsv_values_topic" value="/finish_line_hsv"/>
+  </node>
+
+  <node name="hsv_tuner" pkg="rr_iarrc" type="hsv_tuner" output="screen">
+      <param name="load_file" value= "$(find rr_iarrc)/saved_hsv/finish_line_magenta.txt"/>
+      <param name="values_topic" value="/finish_line_hsv"/>
+  </node>
+</launch>

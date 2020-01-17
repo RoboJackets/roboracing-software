@@ -1,30 +1,72 @@
-collision_hitbox:
-  front: 1.5
-  back: 0.1
-  side: 0.65
+n_segments: 7
 
-max_speed: 5.0
-max_drive_accel: 10
+bicycle_model:
+    wheel_base: 0.97
+    lateral_accel: 7.0
+    segment_size: 25
+    dt: 0.02
 
-wheel_base: 0.97
-lateral_accel: 2.0
-max_steering: 0.3
-steering_speed: 1000
-steering_gain: 1.0
+steering_filter:
+    init_val: 0
+    val_max: 0.25
+    val_min: -0.25
+    rate_max: 2.0
+    rate_min: -2.0
 
-planner_type: "annealing"
+speed_filter:
+    init_val: 0
+    val_max: 13.5
+    val_min: -1.0
+    rate_max: 20.0
+    rate_min: -25.0
 
-n_path_segments: 4
-distance_increment: 0.1
-segment_sections: [20, 20, 20, 20]
+#map_type: "obstacle_points"
+#obstacle_points_map:
+#    input_cloud_topic: /current_obstacles
+#    cache_resolution: 0.2
+#    distance_decay_factor: 0.6
+#    map_limits:
+#        min_x: -5
+#        max_x: 10
+#        min_y: -8
+#        max_y: 8
+#    hitbox:
+#        min_x: -0.2
+#        max_x: 1.6
+#        min_y: -0.7
+#        max_y: 0.7
 
-temperature_start: 0.2
-temperature_end: 0.02
-annealing_steps: 1000
+map_type: "grid_inflation"
+grid_inflation_map:
+    map_topic: "/local_mapper/costmap/costmap"
+    lethal_threshold: 95
+    hitbox:
+        min_x: -0.2
+        max_x: 1.6
+        min_y: -0.7
+        max_y: 0.7
 
-k_dist: 2.0
-k_speed: 1.0
-k_final_pose: 0
-k_angle: 2.0
-collision_penalty: 100
-acceptance_scale: 0.006
+steering_gain: 1.4
+
+k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
+k_speed: 0.05
+k_steering: 0.01
+k_angle: 0
+collision_penalty: 1000
+
+impasse_caution_duration: 0.25
+impasse_reverse_duration: 4.0
+
+planner_type: "hill_climbing"
+hill_climb_optimizer:
+    num_workers: 4
+    num_restarts: 6
+    neighbor_stddev: [0.015]
+    local_optimum_tries: 60
+
+#planner_type: "annealing"
+#annealing_optimizer:
+#    stddevs_start: [0.2]
+#    temperature_end: 0.1
+#    annealing_steps: 1000
+#    acceptance_scale: 0.01

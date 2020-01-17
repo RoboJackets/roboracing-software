@@ -124,20 +124,20 @@
 
     <!-- ************************** Joints *************************** -->
 
-    <xacro:property name="joint_flop_distance" value="0.02"/>
+    <xacro:property name="joint_flop_both" value="0.03"/>
     <xacro:macro name="back_wheel_joint" params="dest_link y">
         <joint name="base_footprint_to_${dest_link}" type="continuous">
             <parent link="base_footprint"/>
             <child link="${dest_link}"/>
-            <origin xyz="0 ${y} ${(props['wheel_radius_back'] / 2) - joint_flop_distance}" rpy="${-pi/2} 0 0"/>
+            <origin xyz="0 ${y} ${(props['wheel_radius_back'] / 2) - joint_flop_both}" rpy="${-pi/2} 0 0"/>
             <axis xyz="0 0 1"/>
-            <dynamics damping="0.01"/>
         </joint>
         <gazebo reference="base_footprint_to_${dest_link}"/>
     </xacro:macro>
     <xacro:back_wheel_joint dest_link="wheel_BL" y="${props['track'] / 2}"/>
     <xacro:back_wheel_joint dest_link="wheel_BR" y="${-props['track'] / 2}"/>
 
+    <xacro:property name="joint_flop_front" value="0.007"/>
     <xacro:macro name="steering_joints" params="steering_link wheel_link y">
         <joint name="base_footprint_to_${steering_link}" type="revolute">
             <parent link="base_footprint"/>
@@ -150,7 +150,7 @@
         <gazebo reference="base_footprint_to_${steering_link}"/>
 
         <joint name="${steering_link}_to_${wheel_link}" type="continuous">
-            <origin xyz="0 0 ${-joint_flop_distance}" rpy="${pi/2} 0 0"/>
+            <origin xyz="0 0 ${-joint_flop_both - joint_flop_front}" rpy="${pi/2} 0 0"/>
             <parent link="${steering_link}"/>
             <child link="${wheel_link}"/>
             <axis xyz="0 0 1"/>
@@ -200,31 +200,31 @@
 
     <!-- ******************* Sensors *********************** -->
 
-    <!-- SICK TiM551 -->
+    <!-- Velodyne Puck VLP-16 -->
     <xacro:property name="gpu_string" value="${'gpu_' if use_gpu else ''}"/>
     <gazebo reference="lidar">
         <sensor type="${gpu_string}ray" name="lidar_sensor">
             <pose>0 0 0 0 0 0</pose>
             <visualize>false</visualize>
-            <update_rate>15</update_rate>
+            <update_rate>10</update_rate>
             <ray>
                 <scan>
                     <horizontal>
-                        <samples>270</samples>
+                        <samples>360</samples>
                         <resolution>1</resolution>  <!-- controls interpolation, leave at 1 -->
-                        <min_angle>${-pi*0.75}</min_angle>
-                        <max_angle>${pi*0.75}</max_angle>
+                        <min_angle>${-pi}</min_angle>
+                        <max_angle>${pi}</max_angle>
                     </horizontal>
                 </scan>
                 <range>
-                    <min>0.10</min>
-                    <max>8.0</max>
+                    <min>1.0</min>
+                    <max>100.0</max>
                     <resolution>0.01</resolution>
                 </range>
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.02</stddev>
+                    <stddev>0.005</stddev>
                 </noise>
             </ray>
             <plugin name="laser_controller" filename="libgazebo_ros_${gpu_string}laser.so">
@@ -318,7 +318,7 @@
     <gazebo>
         <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">
             <alwaysOn>true</alwaysOn>
-            <updateRate>50.0</updateRate>
+            <updateRate>10.0</updateRate>
             <bodyName>base_footprint</bodyName>
             <topicName>/odometry/ground_truth</topicName>
             <gaussianNoise>0.0</gaussianNoise>

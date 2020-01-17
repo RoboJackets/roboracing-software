@@ -5,6 +5,7 @@
                 <geometry>
                     <mesh>
                         <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple.dae</uri>
+                        <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
                 <material>
@@ -16,6 +17,7 @@
                 <geometry>
                     <mesh>
                         <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple.dae</uri>
+                        <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
             </collision>
@@ -27,6 +29,7 @@
                 <geometry>
                     <mesh>
                         <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple_outer.dae</uri>
+                        <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
                 <material>
@@ -38,6 +41,7 @@
                 <geometry>
                     <mesh>
                         <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple_outer.dae</uri>
+                        <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
             </collision>

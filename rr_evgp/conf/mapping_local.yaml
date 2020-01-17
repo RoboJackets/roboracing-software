@@ -1,0 +1,34 @@
+costmap:
+    update_frequency: 30.0
+    publish_frequency: 30.0
+    always_send_full_costmap: true
+
+    rolling_window: true
+    width: 100
+    height: 100
+
+    plugins:
+        - {name: "global", type: "costmap_2d::StaticLayer"}
+        - {name: "track_closing", type: "rr::TrackClosingLayer"}
+        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
+
+
+    global:
+        map_topic: "/global_mapper/costmap/costmap"
+        subscribe_to_updates: true
+        trinary_costmap: true
+        track_unknown_space: false
+
+    track_closing:
+        branch_pruning_size: 5
+        dilate_size: 10
+        min_enclosing_radius: 1
+        reg_bounding_box_size: 30
+        extrapolate_distance: 1
+        max_angle_between_lines: 30
+        max_dist_between_lines: 20
+        wall_output_dilation: 1
+
+    distance_field:
+        inflation_radius: 35
+        cost_scaling_factor: 0.4

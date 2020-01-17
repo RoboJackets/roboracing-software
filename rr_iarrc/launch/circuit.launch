@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
-    <include file="$(dirname)/planner/mpc_planner_circuit.launch"/>
-
     <include file="$(dirname)/perception/laplacian_line_detector_front.launch"/>
 
     <include file="$(dirname)/perception/lines_projector.launch">
@@ -10,8 +8,11 @@
     </include>
 
     <include file="$(dirname)/perception/startlight_watcher.launch"/>
+    <include file="$(dirname)/perception/finish_line_watcher.launch"/>
 
-    <!-- <include file="$(dirname)/perception/race_end_detector.launch"/> -->
+    <node pkg="rr_common" type="planner" name="planner" output="screen">
+        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_circuit.yaml"/>
+    </node>
 
     <node name="navigation_controller" pkg="rr_common" type="navigation_controller" output="screen">
         <param name="req_finish_line_crosses" type="int" value="1"/>
