@@ -1,3 +1,14 @@
+/**
+ * Helps the planner keep track of the vehicle's current speed and steering angle.
+ *
+ * Note: Pointers to the planner's speed and steering messages are stored
+ * as global variables and get updated within the planner node (outside this class).
+ * This means the allowing for 'guessing between updates' is equivalent to just keeping
+ * track of the planner's last speed and steering message.
+ *
+ * @author Daniel Martin
+ */
+
 #include "rr_common/planning/effector_tracker.h"
 
 namespace rr {
