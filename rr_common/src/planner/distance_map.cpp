@@ -1,3 +1,11 @@
+/**
+ * Used to determine the cost for a list of poses based on the distance from obstacles
+ * within the robot's local map. It takes in occupany grid and creates a distance map which assigns
+ * cost to positions in the map.
+ *
+ * @author Daniel Martin
+ */
+
 #include <rr_common/planning/distance_map.h>
 
 namespace rr {
@@ -6,6 +14,7 @@ DistanceMap::DistanceMap(ros::NodeHandle nh)
       : distance_cost_map(), hit_box(ros::NodeHandle(nh, "hitbox")), listener(new tf::TransformListener) {
     std::string map_topic;
     assertions::getParam(nh, "map_topic", map_topic);
+    assertions::getParam(nh, "robot_base_frame", robot_base_frame);
     assertions::getParam(nh, "publish_distance_map", publish_distance_map);
     assertions::getParam(nh, "publish_inscribed_circle", publish_inscribed_circle);
 
@@ -44,8 +53,8 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     }
 
     try {
-        listener->waitForTransform(map_msg->header.frame_id, "base_footprint", ros::Time(0), ros::Duration(.05));
-        listener->lookupTransform(map_msg->header.frame_id, "base_footprint", ros::Time(0), transform);
+        listener->waitForTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), ros::Duration(.05));
+        listener->lookupTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), transform);
     } catch (tf::TransformException& ex) {
         ROS_ERROR_STREAM(ex.what());
     }

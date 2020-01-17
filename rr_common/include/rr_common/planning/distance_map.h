@@ -25,6 +25,7 @@ class DistanceMap : public MapCostInterface {
     void SetMapMessage(const nav_msgs::OccupancyGridConstPtr& map_msg);
 
     ros::Subscriber map_sub;
+    std::string robot_base_frame;
     ros::Publisher distance_map_pub;
     ros::Publisher inscribed_circle_pub;
     cv::Mat distance_cost_map;

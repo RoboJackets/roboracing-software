@@ -39,6 +39,7 @@ speed_filter:
 map_type: "distance_map"
 distance_map:
     map_topic: "/local_mapper/costmap/costmap"
+    robot_base_frame: base_footprint
     publish_distance_map: true
     publish_inscribed_circle: true
     hitbox:
@@ -51,8 +52,8 @@ distance_map:
 
 steering_gain: 1.4
 
-k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
-k_speed: 0.05
+k_map_cost: 0.5  # map costs are about 100x higher with grid_inflation
+k_speed: 0.1
 k_steering: 0.01
 k_angle: 0
 collision_penalty: 1000
