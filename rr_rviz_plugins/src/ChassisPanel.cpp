@@ -67,10 +67,10 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     painter.drawChord(rect, 0, 5760 / 2);
     // erases half of the ellipse so it becomes a semicircle and looks like a speedometer
     painter.eraseRect(x_pos, y_pos + (height / 2), width + 2, height / 2 + 2);
-    //top speed displayed by the speedometer
+    // top speed displayed by the speedometer
     int top_speed = 40;
-    //only changes the speed shown by the speedometer, so it does not go below its half circle,
-    //does not affect what the label says
+    // only changes the speed shown by the speedometer, so it does not go below its half circle,
+    // does not affect what the label says
     if (cur_speed >= top_speed) {
         cur_speed = top_speed;
     }
@@ -80,7 +80,8 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     float x_comp = cos(angle) * width / 2;
     float y_comp = sin(angle) * height / 2;
     // the shape and direction of the needle
-    QLineF needle = QLineF(width / 2 + x_pos, y_pos + height / 2 - 1, width / 2 + x_comp + x_pos, y_pos + height / 2 - y_comp);
+    QLineF needle =
+          QLineF(width / 2 + x_pos, y_pos + height / 2 - 1, width / 2 + x_comp + x_pos, y_pos + height / 2 - y_comp);
     painter.setBrush(Qt::red);
     painter.setPen(Qt::red);
     painter.drawLine(needle);
@@ -89,8 +90,8 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
     height = 18;
     // determines the rectangle shape the arrow will fit in
     rect = QRectF(x_pos, y_pos, width, height);
-    painter.setPen(QColor(255,255,255,255));
-    painter.setBrush(QColor(255,255,255,255));
+    painter.setPen(QColor(255, 255, 255, 255));
+    painter.setBrush(QColor(255, 255, 255, 255));
     painter.drawRect(rect);
     painter.setBrush(Qt::black);
     painter.setPen(Qt::black);
@@ -121,13 +122,13 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         painter.setBrush(Qt::green);
         painter.setPen(Qt::green);
         painter.drawRect(x_pos, y_pos, width, height);
-    } else if (received_signal){
+    } else if (received_signal) {
         painter.setBrush(Qt::red);
         painter.setPen(Qt::red);
         painter.drawRect(x_pos, y_pos, width, height);
     }
 
-    //for the status of estop
+    // for the status of estop
     x_pos = 52;
     y_pos = 122;
     width = 23;
@@ -144,17 +145,17 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
 }
 
 void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
-    //for timerCallback
+    // for timerCallback
     chassisUpdateTime = ros::Time::now();
     received_signal = true;
 
-    //global variables
+    // global variables
     cur_speed = msg.speed_mps;
     hding = msg.steer_rad;
     record_bag = msg.record_bag;
     estop = msg.estop_on;
 
-    //label updates
+    // label updates
     auto speed = spacing.toStdString() + std::to_string(msg.speed_mps) + " m/s";
     auto heading = spacing.toStdString() + std::to_string(msg.steer_rad) + " rad";
     auto message = msg.state;
@@ -164,10 +165,10 @@ void ChassisPanel::chassisStateCallback(const rr_msgs::chassis_state msg) {
 
     if (msg.record_bag) {
         rcding_bag_label->setText("Recording Bag File:  true");
-        //rcding_bag_label->setStyleSheet("QLabel { background-color : green}");
+        // rcding_bag_label->setStyleSheet("QLabel { background-color : green}");
     } else {
         rcding_bag_label->setText("Recording Bag File:  false");
-        //rcding_bag_label->setStyleSheet("QLabel { background-color : red}");
+        // rcding_bag_label->setStyleSheet("QLabel { background-color : red}");
     }
     if (msg.estop_on) {
         estop_label->setText("Estop: on");
