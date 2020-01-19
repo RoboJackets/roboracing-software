@@ -13,12 +13,14 @@ ColorFilter::ColorFilter(ros::NodeHandle nh)
       , color_space_(SAME_AS_INPUT)
       , dilation_(0)
       , erosion_(0)
-      , configured_(false)
-      , return_roi_only_(false)
       , proc_width_(0)
       , proc_height_(0)
       , return_width_(0)
-      , return_height_(0) {
+      , return_height_(0)
+      , hood_mask_width_(0)
+      , hood_mask_height_(0)
+      , return_roi_only_(false)
+      , configured_(false) {
     dsrv_ = std::make_unique<dynamic_reconfigure::Server<rr_msgs::ColorFilterConfig>>(nh);
     dsrv_->setCallback(boost::bind(&ColorFilter::ReconfigureCallback, this, _1, _2));
 

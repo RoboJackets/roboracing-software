@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
         )
 
+find_package(OpenCV REQUIRED)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
