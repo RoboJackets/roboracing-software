@@ -36,31 +36,35 @@ speed_filter:
 #        min_y: -0.7
 #        max_y: 0.7
 
-map_type: "grid_inflation"
-grid_inflation_map:
+map_type: "distance_map"
+distance_map:
     map_topic: "/local_mapper/costmap/costmap"
-    lethal_threshold: 95
+    robot_base_frame: base_footprint
+    publish_distance_map: true
+    publish_inscribed_circle: true
     hitbox:
         min_x: -0.2
         max_x: 1.6
         min_y: -0.7
         max_y: 0.7
+    cost_scaling_factor: .2
+    wall_inflation: .3
 
 steering_gain: 1.4
 
-k_map_cost: 0.1  # map costs are about 100x higher with grid_inflation
+k_map_cost: 0.3  # map costs are about 100x higher with grid_inflation
 k_speed: 0.05
 k_steering: 0.01
 k_angle: 0
-collision_penalty: 1000
+collision_penalty: 10000
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
 
 planner_type: "hill_climbing"
 hill_climb_optimizer:
-    num_workers: 4
-    num_restarts: 6
+    num_workers: 6
+    num_restarts: 12
     neighbor_stddev: [0.015]
     local_optimum_tries: 60
 

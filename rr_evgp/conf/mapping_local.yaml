@@ -10,7 +10,7 @@ costmap:
     plugins:
         - {name: "global", type: "costmap_2d::StaticLayer"}
 #        - {name: "track_closing", type: "rr::TrackClosingLayer"}
-        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
+#        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
 
 
     global:
@@ -21,7 +21,7 @@ costmap:
 
 #    track_closing:
 #        branch_pruning_size: 5
-#        dilate_size: .7
+#        dilate_size: 10
 #        min_enclosing_radius: 1
 #        reg_bounding_box_size: 30
 #        extrapolate_distance: 1
@@ -29,6 +29,6 @@ costmap:
 #        max_dist_between_lines: 20
 #        wall_output_dilation: 1
 
-    distance_field:
-        inflation_radius: 35
-        cost_scaling_factor: 0.4
+#    distance_field:
+#        inflation_radius: 35
+#        cost_scaling_factor: 0.4

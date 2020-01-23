@@ -54,3 +54,13 @@ annealing_optimizer:
     temperature_end: 0.1
     annealing_steps: 1000
     acceptance_scale: 0.02
+
+effector_tracker:
+    speed:
+        message_topic: /speed
+        message_type: speed
+        guessing_between_updates: true
+    steering:
+        message_topic: /steering
+        message_type: steering
+        guessing_between_updates: true

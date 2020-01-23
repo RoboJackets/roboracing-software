@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /Local Map1
       Splitter Ratio: 0.5
     Tree Height: 772
   - Class: rviz/Selection
@@ -200,6 +199,7 @@ Visualization Manager:
         Local Map: true
         Map: true
         Path: true
+        Polygon: true
         RobotModel: true
         TF: true
         Value: true
@@ -299,12 +299,38 @@ Visualization Manager:
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
-      Draw Behind: false
+      Draw Behind: true
       Enabled: true
       Name: Local Map
       Topic: /local_mapper/costmap/costmap
       Unreliable: false
       Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /planner/distance_map/distance_map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Polygon
+      Topic: /local_mapper/costmap/footprint
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Polygon
+      Topic: /planner/distance_map/inscribed_circle
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
@@ -334,16 +360,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 105.78837585449219
+      Distance: 259.8436279296875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.10227370262146
-        Y: -1.5500783920288086
-        Z: -12.054679870605469
+        X: 22.490957260131836
+        Y: 3.653724431991577
+        Z: 9.677155494689941
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -352,7 +378,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1254055500030518
+      Yaw: 3.1403982639312744
     Saved: ~
 Window Geometry:
   Camera:
