@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /Map2
       Splitter Ratio: 0.5
     Tree Height: 772
   - Class: rviz/Selection
@@ -193,7 +192,6 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
-        "": true
         Axes: true
         Detection: true
         Global Map: true
@@ -300,8 +298,8 @@ Visualization Manager:
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
-      Color Scheme: costmap
-      Draw Behind: false
+      Color Scheme: map
+      Draw Behind: true
       Enabled: true
       Name: Local Map
       Topic: /local_mapper/costmap/costmap
@@ -362,25 +360,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.62596607208252
+      Distance: 259.8436279296875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.890632152557373
-        Y: -1.2398871183395386
-        Z: 2.7220864295959473
+        X: 22.490957260131836
+        Y: 3.653724431991577
+        Z: 9.677155494689941
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5647963285446167
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1454017162323
+      Yaw: 3.1403982639312744
     Saved: ~
 Window Geometry:
   Camera:
