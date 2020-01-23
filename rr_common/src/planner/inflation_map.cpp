@@ -1,17 +1,17 @@
-#include <rr_common/planning/inflation_cost.h>
+#include <rr_common/planning/inflation_map.h>
 
 namespace rr {
 
-InflationCost::InflationCost(ros::NodeHandle nh)
+InflationMap::InflationMap(ros::NodeHandle nh)
       : map(), hit_box(ros::NodeHandle(nh, "hitbox")), listener(new tf::TransformListener) {
     std::string map_topic;
     assertions::getParam(nh, "map_topic", map_topic);
-    map_sub = nh.subscribe(map_topic, 1, &InflationCost::SetMapMessage, this);
+    map_sub = nh.subscribe(map_topic, 1, &InflationMap::SetMapMessage, this);
 
     assertions::getParam(nh, "lethal_threshold", lethal_threshold, { assertions::greater(0), assertions::less(256) });
 }
 
-double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
+double InflationMap::DistanceCost(const rr::Pose& rr_pose) {
     const tf::Pose pose(tf::createQuaternionFromYaw(rr_pose.theta), tf::Vector3(rr_pose.x, rr_pose.y, 0));
     tf::Pose world_Pose = transform * pose;
 
@@ -30,21 +30,7 @@ double InflationCost::DistanceCost(const rr::Pose& rr_pose) {
     return cost;
 }
 
-std::vector<double> InflationCost::DistanceCost(const std::vector<Pose>& poses) {
-    std::vector<double> distance_costs(poses.size());
-    std::transform(poses.begin(), poses.end(), distance_costs.begin(),
-                   [this](const Pose& pose) { return this->DistanceCost(pose); });
-    return distance_costs;
-}
-
-std::vector<double> InflationCost::DistanceCost(const std::vector<PathPoint>& path_points) {
-    std::vector<double> distance_costs(path_points.size());
-    std::transform(path_points.begin(), path_points.end(), distance_costs.begin(),
-                   [this](const PathPoint& pathPoint) { return this->DistanceCost(pathPoint.pose); });
-    return distance_costs;
-}
-
-void InflationCost::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
+void InflationMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
     if (!accepting_updates_) {
         return;
     }

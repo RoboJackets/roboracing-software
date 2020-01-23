@@ -16,7 +16,7 @@ struct Pose {
     double y;
     double theta;
 
-    Pose(double x, double y, double theta) : x(x), y(x), theta(theta) {}
+    Pose(double x, double y, double theta) : x(x), y(y), theta(theta) {}
     Pose() : x(0), y(0), theta(0) {}
 };
 
