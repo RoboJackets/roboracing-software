@@ -3,7 +3,7 @@
 """
 trajectory_csv_to_map.py
 Given a trajectory CSV file (generated from rosbag_to_trajectory_csv.py), synthesize a static map where every point
-more than x meters from the path is an obstacle.
+more than track_width/2 meters from the path is an obstacle.
 """
 
 from __future__ import print_function
