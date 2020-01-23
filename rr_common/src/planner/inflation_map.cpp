@@ -3,23 +3,12 @@
 namespace rr {
 
 InflationMap::InflationMap(ros::NodeHandle nh)
-      : map(), hit_box(ros::NodeHandle(nh, "hitbox")), listener(new tf::TransformListener), map_updated_ever(false) {
+      : map(), hit_box(ros::NodeHandle(nh, "hitbox")), listener(new tf::TransformListener) {
     std::string map_topic;
     assertions::getParam(nh, "map_topic", map_topic);
     map_sub = nh.subscribe(map_topic, 1, &InflationMap::SetMapMessage, this);
 
     assertions::getParam(nh, "lethal_threshold", lethal_threshold, { assertions::greater(0), assertions::less(256) });
-    assertions::param(nh, "map_is_static", using_static_map, false);
-
-    ros::TimerOptions o;
-    o.period = ros::Duration(0.01);
-    o.callback = [this](const ros::TimerEvent& e) {
-        if (map_updated_ever) {
-            listener->waitForTransform(map->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(.05));
-            listener->lookupTransform(map->header.frame_id, "/base_footprint", ros::Time(0), transform);
-        }
-    };
-    pos_update_timer = nh.createTimer(o);
 }
 
 double InflationMap::DistanceCost(const rr::Pose& rr_pose) {
@@ -52,11 +41,10 @@ void InflationMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid
         listener->waitForTransform(map_msg->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(.05));
         listener->lookupTransform(map_msg->header.frame_id, "/base_footprint", ros::Time(0), transform);
     } catch (tf::TransformException& ex) {
-        ROS_ERROR_STREAM("Error in SetMapMessage: " << ex.what());
+        ROS_ERROR_STREAM(ex.what());
     }
 
     updated_ = true;
-    map_updated_ever = true;
 }
 
 }  // namespace rr

@@ -64,7 +64,7 @@ impasse_reverse_duration: 4.0
 planner_type: "hill_climbing"
 hill_climb_optimizer:
     num_workers: 6
-    num_restarts: 6
+    num_restarts: 12
     neighbor_stddev: [0.015]
     local_optimum_tries: 60
 
