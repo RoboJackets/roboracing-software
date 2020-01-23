@@ -1,0 +1,19 @@
+<launch>
+    <include file="$(dirname)/evgp_sim.launch">
+        <arg name="world" value="$(find rr_gazebo)/worlds/ev_response.world"/>
+    </include>
+
+    <node pkg="rr_gazebo" type="box_trajectory_controller.py" name="box_trajectory_controller0"
+          output="screen">
+    </node>
+
+    <include file="$(find rr_evgp)/launch/mapping_sim.launch"/>
+
+    <node pkg="rr_common" type="planner" name="planner" required="true">
+        <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml" subst_value="true"/>
+    </node>
+
+    <node pkg="rviz" type="rviz" name="evgp_rviz" required="false" respawn="false"
+          args="-d $(find rr_evgp)/rviz/evgp.rviz"/>
+
+</launch>

@@ -12,13 +12,11 @@
 
 namespace rr {
 
-class InflationCost : public MapCostInterface {
+class InflationMap : public MapCostInterface {
   public:
-    explicit InflationCost(ros::NodeHandle nh);
+    explicit InflationMap(ros::NodeHandle nh);
 
     double DistanceCost(const Pose& pose) override;
-    std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
-    std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) override;
 
     bool IsMapUpdated() override {
         return updated_ || (using_static_map && map_updated_ever);
