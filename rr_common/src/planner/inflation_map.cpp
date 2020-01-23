@@ -14,10 +14,10 @@ InflationMap::InflationMap(ros::NodeHandle nh)
     ros::TimerOptions o;
     o.period = ros::Duration(0.01);
     o.callback = [this](const ros::TimerEvent& e) {
-      if (map_updated_ever) {
-        listener->waitForTransform(map->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(.05));
-        listener->lookupTransform(map->header.frame_id, "/base_footprint", ros::Time(0), transform);
-      }
+        if (map_updated_ever) {
+            listener->waitForTransform(map->header.frame_id, "/base_footprint", ros::Time(0), ros::Duration(.05));
+            listener->lookupTransform(map->header.frame_id, "/base_footprint", ros::Time(0), transform);
+        }
     };
     pos_update_timer = nh.createTimer(o);
 }
