@@ -206,17 +206,4 @@ double NearestPointCache::DistanceCost(const rr::Pose& pose) {
     return std::exp(-dist_decay_ * dist);
 }
 
-std::vector<double> NearestPointCache::DistanceCost(const std::vector<Pose>& poses) {
-    std::vector<double> out(poses.size());
-    std::transform(poses.cbegin(), poses.cend(), out.begin(), [this](const Pose& p) { return DistanceCost(p); });
-    return out;
-}
-
-std::vector<double> NearestPointCache::DistanceCost(const std::vector<PathPoint>& path) {
-    std::vector<double> out(path.size());
-    std::transform(path.cbegin(), path.cend(), out.begin(),
-                   [this](const PathPoint& p) { return DistanceCost(p.pose); });
-    return out;
-}
-
 }  // namespace rr

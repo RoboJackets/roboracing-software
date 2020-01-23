@@ -7,8 +7,9 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/distance_map.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
-#include <rr_common/planning/inflation_cost.h>
+#include <rr_common/planning/inflation_map.h>
 #include <rr_common/planning/map_cost_interface.h>
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
@@ -174,8 +175,10 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "map_type", map_type);
     if (map_type == "obstacle_points") {
         g_map_cost_interface = std::make_unique<rr::NearestPointCache>(ros::NodeHandle(nhp, "obstacle_points_map"));
-    } else if (map_type == "grid_inflation") {
-        g_map_cost_interface = std::make_unique<rr::InflationCost>(ros::NodeHandle(nhp, "grid_inflation_map"));
+    } else if (map_type == "inflation_map") {
+        g_map_cost_interface = std::make_unique<rr::InflationMap>(ros::NodeHandle(nhp, "inflation_map"));
+    } else if (map_type == "distance_map") {
+        g_map_cost_interface = std::make_unique<rr::DistanceMap>(ros::NodeHandle(nhp, "distance_map"));
     } else {
         ROS_ERROR_STREAM("[Planner] Error: unknown map type \"" << map_type << "\"");
         ros::shutdown();

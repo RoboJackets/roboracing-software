@@ -27,8 +27,18 @@ class MapCostInterface {
      * @param poses (x, y, theta) relative to the current pose of the robot
      * @return for each entry, distance cost if not in collision, negative value if in collision
      */
-    virtual std::vector<double> DistanceCost(const std::vector<Pose>& poses) = 0;
-    virtual std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) = 0;
+    virtual std::vector<double> DistanceCost(const std::vector<Pose>& path) {
+        std::vector<double> costs(path.size());
+        std::transform(path.cbegin(), path.cend(), costs.begin(), [this](const Pose& p) { return DistanceCost(p); });
+        return costs;
+    }
+
+    virtual std::vector<double> DistanceCost(const std::vector<PathPoint>& path) {
+        std::vector<double> costs(path.size());
+        std::transform(path.cbegin(), path.cend(), costs.begin(),
+                       [this](const PathPoint& p) { return DistanceCost(p.pose); });
+        return costs;
+    }
 
     virtual bool IsMapUpdated() {
         return updated_;
