@@ -1,0 +1,50 @@
+n_segments: 7
+
+bicycle_model:
+    wheel_base: 0.97
+    lateral_accel: 4.0
+    segment_size: 25
+    dt: 0.02
+
+steering_filter:
+    init_val: 0
+    val_max: 0.25
+    val_min: -0.25
+    rate_max: 2.0
+    rate_min: -2.0
+
+speed_filter:
+    init_val: 0
+    val_max: 7.0
+    val_min: -1.0
+    rate_max: 10.0
+    rate_min: -10.0
+
+map_type: "grid_inflation"
+grid_inflation_map:
+    map_topic: "/static_map"
+    lethal_threshold: 95
+    map_is_static: true
+    hitbox:
+        min_x: -0.2
+        max_x: 1.6
+        min_y: -0.7
+        max_y: 0.7
+
+steering_gain: 1.3
+
+k_map_cost: 3.0
+k_speed: 0.05
+k_steering: 0.01
+k_angle: 0
+collision_penalty: 1000
+
+impasse_caution_duration: 0.25
+impasse_reverse_duration: 4.0
+
+planner_type: "hill_climbing"
+hill_climb_optimizer:
+    num_workers: 4
+    num_restarts: 6
+    neighbor_stddev: [0.015]
+    local_optimum_tries: 60

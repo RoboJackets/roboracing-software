@@ -20,15 +20,22 @@ class InflationCost : public MapCostInterface {
     std::vector<double> DistanceCost(const std::vector<Pose>& poses) override;
     std::vector<double> DistanceCost(const std::vector<PathPoint>& path_points) override;
 
+    bool IsMapUpdated() override {
+        return updated_ || (using_static_map && map_updated_ever);
+    }
+
   private:
     void SetMapMessage(const nav_msgs::OccupancyGridConstPtr& map_msg);
 
     ros::Subscriber map_sub;
+    ros::Timer pos_update_timer;
     nav_msgs::OccupancyGridConstPtr map;
     Rectangle hit_box;
     std::unique_ptr<tf::TransformListener> listener;
     tf::StampedTransform transform;
     int lethal_threshold;
+    bool using_static_map;
+    bool map_updated_ever;
 };
 
 }  // namespace rr
