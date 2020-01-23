@@ -68,6 +68,16 @@ hill_climb_optimizer:
     neighbor_stddev: [0.015]
     local_optimum_tries: 60
 
+effector_tracker:
+    speed:
+        message_topic: /odometry/filtered
+        message_type: odometry
+        guessing_between_updates: true
+    steering:
+        message_topic: /steering
+        message_type: steering
+        guessing_between_updates: true
+
 #planner_type: "annealing"
 #annealing_optimizer:
 #    stddevs_start: [0.2]

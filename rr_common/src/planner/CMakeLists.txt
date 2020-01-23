@@ -10,7 +10,11 @@ target_link_libraries(distance_map ${catkin_LIBRARIES})
 add_library(bicycle_model bicycle_model.cpp)
 target_link_libraries(nearest_point_cache ${catkin_LIBRARIES})
 
-set(planning_libs nearest_point_cache inflation_map distance_map bicycle_model)
+add_library(effector_tracker effector_tracker.cpp)
+target_link_libraries(effector_tracker ${catkin_LIBRARIES})
+add_dependencies(effector_tracker ${catkin_EXPORTED_TARGETS})
+
+set(planning_libs nearest_point_cache inflation_map distance_map bicycle_model effector_tracker)
 
 add_library(annealing_optimizer annealing_optimizer.cpp)
 target_link_libraries(annealing_optimizer ${catkin_LIBRARIES})
@@ -25,6 +29,7 @@ target_link_libraries(planner
         inflation_map
         distance_map
         annealing_optimizer
+        effector_tracker
         hill_climb_optimizer
         ${catkin_LIBRARIES})
 add_dependencies(planner ${catkin_EXPORTED_TARGETS})
