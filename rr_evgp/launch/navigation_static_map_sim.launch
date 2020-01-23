@@ -10,8 +10,13 @@
 
     <include file="$(dirname)/localization_sim.launch"/>
 
+    <node pkg="costmap_2d" type="costmap_2d_node" name="local_mapper" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="true"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_local_shadow_track.yaml" subst_value="true"/>
+    </node>
+
     <node pkg="rr_common" type="planner" name="planner" output="screen" required="true">
-        <rosparam command="load" file="$(find rr_evgp)/conf/planner_staticmap_sim.yaml" subst_value="true"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml" subst_value="true"/>
     </node>
 
     <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false"
