@@ -7,8 +7,8 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
-#include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/distance_map.h>
+#include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/inflation_map.h>
 #include <rr_common/planning/map_cost_interface.h>
