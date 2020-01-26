@@ -8,20 +8,34 @@
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
+#include <tf/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <geometry_msgs/Pose.h>
 
 #include <rr_common/CameraGeometry.h>
+#include <rr_msgs/axes.h>
 
 #include <thread>
 
 using PointT = pcl::PointXYZ;
+
+ros::Subscriber axes_sub_;
+tf::TransformListener tf_listener;
+tf::StampedTransform camera_optical_center_tf;
+
+// Pitch and roll variables (initialized to 0 for the start)
+geometry_msgs::Pose camera_pose;
+
 
 class PointCloudProjector : public nodelet::Nodelet {
   private:
     rr::CameraGeometry cam_geom_;
     ros::Publisher pointcloud_pub_;
     image_transport::Subscriber detection_image_sub_;
+
     pcl::PointCloud<PointT>::Ptr cloud_unfiltered_;
     pcl::VoxelGrid<PointT> grid_filter_;
     double x_max_;
@@ -68,9 +82,32 @@ class PointCloudProjector : public nodelet::Nodelet {
         pointcloud_pub_.publish(out);
     }
 
-    void onInit() override {
+	void axes_callback(const rr_msgs::axes& ax) {
+
+		// Convert to correct Quaternion type
+		tf2::Quaternion quat_tf;    
+   		tf2::convert(cam_geom_.GetCameraPose().orientation, quat_tf);
+
+		// Set roll, pitch, and yaw
+   		quat_tf.setRPY(ax.roll, ax.pitch, 0);
+
+		// Convert back
+   		cam_geom_.GetCameraPose().orientation = tf2::toMsg(quat_tf);
+
+	}
+
+    void onInit() override { 
+
         auto node_handle = getNodeHandle();
         auto nh_private = getPrivateNodeHandle();
+
+		axes_sub_ = node_handle.subscribe("/axes", 1, &PointCloudProjector::axes_callback, this);
+
+		// try {
+		//	tf_listener.lookupTransform("base_footprint", "chassis", ros::Time(0), camera_optical_center_tf);
+		// } catch (tf::TransformException &ex) {
+		// 	 ROS_ERROR_STREAM(ex.what());
+		// }
 
         image_transport::ImageTransport image_transport(node_handle);
 
