@@ -1,0 +1,66 @@
+n_segments: 3
+
+bicycle_model:
+    wheel_base: 0.485
+    lateral_accel: 3.0
+    segment_size: 20
+    dt: 0.05
+
+steering_filter:
+    init_val: 0
+    val_max: 0.4
+    val_min: -0.4
+    rate_max: 1.2
+    rate_min: -1.2
+
+speed_filter:
+    init_val: 0
+    val_max: 2.0
+    val_min: -1.0
+    rate_max: 6.0
+    rate_min: -6.0
+
+map_type: "obstacle_points"
+obstacle_points_map:
+    input_cloud_topic: /camera_center/lines/cloud
+    cache_resolution: 0.2
+    distance_decay_factor: 1.5
+    map_limits:
+        min_x: -5
+        max_x: 10
+        min_y: -8
+        max_y: 8
+    hitbox:
+        min_x: -0.17
+        max_x: 0.62
+        min_y: -0.15
+        max_y: 0.15
+
+
+steering_gain: 1.1
+
+k_map_cost: 1.0
+k_speed: 0.2
+k_steering: 0
+k_angle: 0.5
+collision_penalty: 1000
+
+impasse_caution_duration: 1000000.0
+impasse_reverse_duration: 0.1
+
+planner_type: "annealing"
+annealing_optimizer:
+    stddevs_start: [0.2]
+    temperature_end: 0.1
+    annealing_steps: 1000
+    acceptance_scale: 0.02
+
+effector_tracker:
+    speed:
+        message_topic: /speed
+        message_type: speed
+        guessing_between_updates: true
+    steering:
+        message_topic: /steering
+        message_type: steering
+        guessing_between_updates: true

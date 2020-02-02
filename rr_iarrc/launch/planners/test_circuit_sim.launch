@@ -13,5 +13,7 @@
 <!--        <arg name="obstacles_topic" value="/lines/detection_img_transformed_cloud"/>-->
     </include>
 
-    <include file="$(dirname)/mpc_planner_circuit_sim.launch"/>
+    <node pkg="rr_common" type="planner" name="planner" output="screen">
+        <rosparam command="load" file="$(find rr_iarrc)/conf/planner_sim.yaml"/>
+    </node>
 </launch>

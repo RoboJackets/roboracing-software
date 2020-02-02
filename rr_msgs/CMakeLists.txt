@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
         genpy
         message_generation
         std_msgs
+        dynamic_reconfigure
         )
 
 add_message_files(
@@ -23,6 +24,10 @@ add_message_files(
 generate_messages(
         DEPENDENCIES
         std_msgs
+)
+
+generate_dynamic_reconfigure_options(
+        cfg/ColorFilter.cfg
 )
 
 catkin_package(

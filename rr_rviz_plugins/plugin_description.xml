@@ -13,4 +13,11 @@
             Panel used for reseting the state to race start
         </description>
     </class>
+    <class name="rr_rviz_plugins/StartlightPanel"
+           type="rr_rviz_plugins::StartlightPanel"
+           base_class_type="rviz::Panel">
+        <description>
+            Panel used for viewing the state of the startlight
+        </description>
+    </class>
 </library>
