@@ -74,9 +74,7 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         cur_speed = std::abs(cur_speed);
         // only changes the speed shown by the speedometer, so it does not go below its half circle,
         // does not affect what the label says
-        if (cur_speed >= top_speed) {
-            cur_speed = top_speed;
-        }
+        cur_speed = std::min(cur_speed, top_speed);
         // the angle the speedometer needle needs to point in
         float angle = M_PI * (1.0 - cur_speed / top_speed);
         // determines x and y height of the needle
