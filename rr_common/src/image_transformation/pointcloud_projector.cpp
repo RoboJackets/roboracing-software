@@ -11,9 +11,9 @@
 #include <tf/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include <geometry_msgs/Pose.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
-#include <geometry_msgs/Pose.h>
 
 #include <rr_common/CameraGeometry.h>
 #include <rr_msgs/axes.h>
@@ -23,14 +23,8 @@
 using PointT = pcl::PointXYZ;
 
 ros::Subscriber axes_sub_;
-tf::TransformListener tf_listener;
-tf::StampedTransform camera_optical_center_tf;
-bool axes_init;
-tf2::Quaternion initial_axes;    
-
-// Pitch and roll variables (initialized to 0 for the start)
-geometry_msgs::Pose camera_pose;
-
+bool axes_init;  // Stores whether the initial axes have been added
+tf2::Quaternion initial_axes;
 
 class PointCloudProjector : public nodelet::Nodelet {
   private:
@@ -84,34 +78,34 @@ class PointCloudProjector : public nodelet::Nodelet {
         pointcloud_pub_.publish(out);
     }
 
-	void axes_callback(const rr_msgs::axes& ax) {
-    
-    if (!axes_init) {
-   		tf2::convert(cam_geom_.GetCameraPose().orientation, initial_axes);
+    void axes_callback(const rr_msgs::axes& ax) {
+        if (!axes_init) {
+            // Set the initial axes
+            tf2::convert(cam_geom_.GetCameraPose().orientation, initial_axes);
+        }
+
+        // Convert to correct Quaternion type
+        tf2::Quaternion quat_tf;
+        tf2::convert(cam_geom_.GetCameraPose().orientation, quat_tf);
+
+        // Set roll, pitch, and yaw
+        quat_tf.setRPY(ax.roll, ax.pitch, ax.yaw);
+        // Calculate the DELTA of the pitch and roll
+        quat_tf -= initial_axes;
+
+        // Convert back
+        cam_geom_.GetCameraPose().orientation = tf2::toMsg(quat_tf);
     }
-      
 
-		// Convert to correct Quaternion type
-		tf2::Quaternion quat_tf;    
-   	tf2::convert(cam_geom_.GetCameraPose().orientation, quat_tf);
-
-		// Set roll, pitch, and yaw
-   	quat_tf.setRPY(ax.roll, ax.pitch, 0);
-    quat_tf -= initial_axes;
-
-		// Convert back
-   		cam_geom_.GetCameraPose().orientation = tf2::toMsg(quat_tf);
-
-	}
-
-    void onInit() override { 
-
+    void onInit() override {
         auto node_handle = getNodeHandle();
         auto nh_private = getPrivateNodeHandle();
-        
-        axes_init = false;
-		    axes_sub_ = node_handle.subscribe("/axes", 1, &PointCloudProjector::axes_callback, this);
 
+        // Initialize the axes stuff
+        axes_init = false;
+        axes_sub_ = node_handle.subscribe("/axes", 1, &PointCloudProjector::axes_callback, this);
+
+        // Initialize the camera stuff
         image_transport::ImageTransport image_transport(node_handle);
 
         std::string camera_info_topic;
@@ -153,4 +147,3 @@ class PointCloudProjector : public nodelet::Nodelet {
 };
 
 PLUGINLIB_EXPORT_CLASS(PointCloudProjector, nodelet::Nodelet);
-
