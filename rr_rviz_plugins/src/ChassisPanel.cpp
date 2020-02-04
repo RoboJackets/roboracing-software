@@ -50,7 +50,7 @@ ChassisPanel::ChassisPanel(QWidget *parent)
 
 // draws the images
 void ChassisPanel::paintEvent(QPaintEvent *e) {
-    if (received_signal) { //will only paint if receiving a signal
+    if (received_signal) {  // will only paint if receiving a signal
         // initial positions / dimensions for the speedometer
         const QRect &rct = e->rect();
         int x_pos = 10;
@@ -70,7 +70,7 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         painter.eraseRect(x_pos, y_pos + (height / 2), width + 2, height / 2 + 2);
         // top speed displayed by the speedometer
         float top_speed = 40;
-        //displaying speed as positive, even for in reverse
+        // displaying speed as positive, even for in reverse
         cur_speed = std::abs(cur_speed);
         // only changes the speed shown by the speedometer, so it does not go below its half circle,
         // does not affect what the label says
@@ -78,14 +78,13 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
             cur_speed = top_speed;
         }
         // the angle the speedometer needle needs to point in
-        float angle = M_PI * (1.0 - cur_speed/top_speed);
+        float angle = M_PI * (1.0 - cur_speed / top_speed);
         // determines x and y height of the needle
         float x_comp = cos(angle) * width / 2;
         float y_comp = sin(angle) * height / 2;
         // the shape and direction of the needle
-        QLineF needle =
-                QLineF(width / 2 + x_pos, y_pos + height / 2 - 1, width / 2 + x_comp + x_pos,
-                       y_pos + height / 2 - y_comp);
+        QLineF needle = QLineF(width / 2 + x_pos, y_pos + height / 2 - 1, width / 2 + x_comp + x_pos,
+                               y_pos + height / 2 - y_comp);
         painter.setBrush(Qt::red);
         painter.setPen(Qt::red);
         painter.drawLine(needle);
@@ -105,8 +104,8 @@ void ChassisPanel::paintEvent(QPaintEvent *e) {
         int arr_size = 9;  // this is actually  half the length of the arrow
         // makes it so that zero points north instead of east
         steer_rad = steer_rad + M_PI / 2;
-        y_comp = sin(steer_rad) * (float) arr_size;
-        x_comp = cos(steer_rad) * (float) arr_size;
+        y_comp = sin(steer_rad) * (float)arr_size;
+        x_comp = cos(steer_rad) * (float)arr_size;
 
         QLineF arrow_shaft = QLineF(x_org - x_comp, y_org + y_comp, x_org + x_comp, y_org - y_comp);
         painter.drawLine(arrow_shaft);
