@@ -93,7 +93,7 @@ def convert_bag_file(bag_file_path, output_dir, examples_per_file):
 def main():
     rospy.init_node("convert_end_to_end")
 
-    output_dir = rospy.get_param("~output_dir", None)
+    output_dir = rospy.get_param("~output_dir")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
