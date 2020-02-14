@@ -8,8 +8,8 @@ class UniformCostSearch {
     public:
         UniformCostSearch(cv::Mat obstacleGrid, cv::Mat distanceMap, cv::Point startPt, cv::Point goalPt);
         std::vector<cv::Point> search();
-        void setStartState(cv::Point pt);
-        void setGoalState(cv::Point pt);
+        void setStartPoint(cv::Point pt);
+        void setGoalPoint(cv::Point pt);
 
     private:
         struct State {
@@ -29,9 +29,9 @@ class UniformCostSearch {
         cv::Point goalPoint_;
         State getStartState();
         bool isGoalState(State state);
-        std::vector<State> getSuccessors(State state);
         float pointToCost(cv::Point pt);
         bool isValidPoint(cv::Point pt);
+        std::vector<State> getSuccessors(State state);
 
 };
 #endif
