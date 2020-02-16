@@ -21,4 +21,9 @@ KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idProduct}=="ea60", ATTRS{idVendor}
 
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="0002" , ATTRS{idVendor}=="1d6b",  SYMLINK+="razor_imu"
 
+# evgp gps
+ATTRS{idProduct}=="6014", ATTRS{idVendor}=="0403", MODE="666", GROUP="dialout"
+ATTRS{idProduct}=="8398", ATTRS{idVendor}=="0403", MODE="666", GROUP="dialout"
+ATTRS{idProduct}=="A4A7", ATTRS{idVendor}=="0525", MODE="666", GROUP="dialout"
+SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="2e69", ENV{ID_MODEL_ID}=="1001", ENV{ID_USB_INTERFACE_NUM}=="00", MODE="666", GROUP="dialout", SYMLINK+="PiksiMultiUSB%n"
 
