@@ -64,7 +64,8 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     // Turn occupancy grid to distance map in meters
     cv::Mat distance_map(mapMetaData.width, mapMetaData.height, CV_8UC1);
     memcpy(distance_map.data, map_msg->data.data(), map_msg->data.size() * sizeof(uint8_t));
-    cv::threshold(distance_map, distance_map, 99, 1, CV_THRESH_BINARY_INV);
+    cv::inRange(distance_map, 99, 254, distance_map); //costmap2d::NO_INFORMATION is counted as FREE
+    cv::bitwise_not(distance_map, distance_map);
 
     cv::distanceTransform(distance_map, distance_map, CV_DIST_L2, 3, CV_32F);
     distance_map *= mapMetaData.resolution;
