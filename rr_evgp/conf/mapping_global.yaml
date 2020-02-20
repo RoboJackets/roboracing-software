@@ -9,6 +9,7 @@ costmap:
 
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+        - {name: "center_path", type: "rr::GlobalCenterPathLayer"}
 
     obstacles:
         observation_sources: laserscan
