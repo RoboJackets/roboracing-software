@@ -4,3 +4,6 @@
 [submodule "third_party/rj-ros-common"]
 	path = third_party/rj-ros-common
 	url = https://github.com/RoboJackets/rj-ros-common.git
+[submodule "third_party/ethz_piksi_ros"]
+	path = third_party/ethz_piksi_ros
+	url = https://github.com/ethz-asl/ethz_piksi_ros.git
