@@ -17,6 +17,8 @@ find_package(catkin
         image_transport
         geometry_msgs
         rr_msgs
+        serial
+        parameter_assertions
         )
 
 find_package(OpenCV REQUIRED)
@@ -54,3 +56,4 @@ add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/razor_imu)
 add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
+add_subdirectory(src/yost_imu)
