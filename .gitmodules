@@ -7,3 +7,6 @@
 [submodule "third_party/ethz_piksi_ros"]
 	path = third_party/ethz_piksi_ros
 	url = https://github.com/ethz-asl/ethz_piksi_ros.git
+[submodule "third_party/velodyne"]
+	path = third_party/velodyne
+	url = https://github.com/ros-drivers/velodyne.git
