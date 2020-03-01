@@ -34,6 +34,7 @@
   <exec_depend>libusb-1.0-dev</exec_depend>
   <exec_depend>libuvc_camera</exec_depend>
   <exec_depend>pointgrey_camera_driver</exec_depend>
+  <exec_depend>piksi_multi_rtk_ros</exec_depend>
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
