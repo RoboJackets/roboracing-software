@@ -1,0 +1,23 @@
+<launch>
+    <arg name="global_map_size" value="500.0"/>
+
+    <include file="$(dirname)/localization_sim.launch">
+        <arg name="map_origin_x" value="$(eval -global_map_size/2)"/>
+        <arg name="map_origin_y" value="$(eval -global_map_size/2)"/>
+    </include>
+<!--    <include file="$(dirname)/localization_ground_truth.launch">-->
+<!--        <arg name="map_origin_x" value="$(eval -global_map_size/2)"/>-->
+<!--        <arg name="map_origin_y" value="$(eval -global_map_size/2)"/>-->
+<!--    </include>-->
+
+    <node pkg="costmap_2d" type="costmap_2d_node" name="global_mapper" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="True"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_global.yaml" subst_value="True"/>
+    </node>
+
+    <node pkg="costmap_2d" type="costmap_2d_node" name="local_mapper" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="True"/>
+        <rosparam command="load" file="$(find rr_evgp)/conf/mapping_local.yaml" subst_value="True"/>
+    </node>
+
+</launch>

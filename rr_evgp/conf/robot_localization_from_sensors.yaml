@@ -35,7 +35,7 @@ odom1_differential: false
 odom1_relative: false
 
 #IMU give absolute heading, rotational velocity, and linear velocity.
-imu0: /imu
+imu0: /imu_bottom
 imu0_config: [false, false, false,
                false, false, true,
                false, false, false,

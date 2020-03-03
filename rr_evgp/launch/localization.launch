@@ -1,0 +1,30 @@
+<launch>
+    <arg name="map_origin_x" default="0.0"/>
+    <arg name="map_origin_y" default="0.0"/>
+
+    <!-- transform from world -> map -> odom to make localization/mapping happy -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="$(anon tf_static_world_to_map)"
+          args="$(eval ' '.join([str(map_origin_x), str(map_origin_y), '0 0 0 0 world map']))"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="$(anon tf_static_map_to_odom)"
+          args="$(eval ' '.join([str(-map_origin_x), str(-map_origin_y), '0 0 0 0 map odom']))"/>
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/robot_localization_from_sensors.yaml"
+                  subst_value="True"/>
+    </node>
+
+    <!-- @Note: see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
+    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
+        <param name="magnetic_declination_radians" value="0"/> <!-- #TODO: mag declination of shop / speedway -->
+        <param name="yaw_offset" value="1.5708"/> <!-- offset by 90 degrees for ENU-->
+        <param name="zero_altitude" value="true"/>
+
+        <param name="use_odometry_yaw" value="false"/>
+        <param name="wait_for_datum" value="false"/>
+
+        <remap from="/imu_bottom" to="/imu_bottom"/>
+        <remap from="/gps/fix" to="/gps/fix"/>
+        <remap from="/odometry/filtered" to="/odometry/filtered"/>
+    </node>
+
+</launch>
