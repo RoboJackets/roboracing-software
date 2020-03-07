@@ -3,6 +3,8 @@
     <!-- top imu (pole imu) is to be plugged in on the back TOP port, bottom is back bottom-->
     <include file="$(find rr_platform)/launch/yost_imu_top.launch"/>
     <include file="$(find rr_platform)/launch/yost_imu_bottom.launch"/>
-    <include file="$(find rr_platform)/launch/velodyne.launch"/>
-    <include file="$(find rr_platform)/launch/piksi_gps.launch"/>			
+    <include file="$(find rr_platform)/launch/velodyne_lidar.launch"/>
+    <include file="$(find rr_platform)/launch/piksi_gps.launch"/>
+
+    <include file="(find rr_platform)/launch/rigatoni_ethernet_drive_relay.launch"/>		
 </launch>
