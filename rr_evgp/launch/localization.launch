@@ -15,14 +15,14 @@
 
     <!-- @Note: see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
-        <param name="magnetic_declination_radians" value="0"/> <!-- #TODO: mag declination of shop / speedway -->
-        <param name="yaw_offset" value="1.5708"/> <!-- offset by 90 degrees for ENU-->
+        <param name="magnetic_declination_radians" value="-0.09134"/> <!-- #TODO: mag declination of shop / speedway -->
+        <param name="yaw_offset" value="1.5708"/> <!-- offset by 90 degrees for ENU--> <!-- IMU should read 0 for yaw when facing east -->
         <param name="zero_altitude" value="true"/>
 
         <param name="use_odometry_yaw" value="false"/>
         <param name="wait_for_datum" value="false"/>
 
-        <remap from="/imu_bottom" to="/imu_bottom"/>
+        <remap from="/imu/data" to="/imu_top"/>
         <remap from="/gps/fix" to="/gps/fix"/>
         <remap from="/odometry/filtered" to="/odometry/filtered"/>
     </node>

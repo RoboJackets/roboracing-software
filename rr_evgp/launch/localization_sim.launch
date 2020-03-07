@@ -9,7 +9,7 @@
           args="$(eval ' '.join([str(-map_origin_x), str(-map_origin_y), '0 0 0 0 map odom']))"/>
 
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization" output="screen">
-        <rosparam command="load" file="$(find rr_evgp)/conf/robot_localization_from_sensors.yaml"
+        <rosparam command="load" file="$(find rr_evgp)/conf/robot_localization_from_sensors_sim.yaml"
                   subst_value="True"/>
     </node>
 
