@@ -21,6 +21,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
         init_robot_x = 0.0;
         init_robot_y = 0.0;
+        init_robot_yaw = 0.0;
         init_is_set = false;
         lap_completed = false;
         center_path_calculated = false;
@@ -46,8 +47,9 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         curr_robot_x = robot_x;
         curr_robot_y = robot_y;
         if (!init_is_set) {
-            init_robot_x = robot_x;
+            init_robot_x = robot_x + 10; //#TODO launch params for extra offset and convert to real units
             init_robot_y = robot_y;
+            init_robot_yaw = robot_yaw;
             init_is_set = true;
         }
 
@@ -72,12 +74,11 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         }
 */
         counter++;
-        if (counter > 700) {
+        if (counter > 1100) {
             double dx = std::fabs(curr_robot_x - init_robot_x);
             double dy = std::fabs(curr_robot_y - init_robot_y);
 
-            //ROS_INFO_STREAM("@@@@@@@@@@ " << dx+dy);
-            ROS_INFO_STREAM_THROTTLE(10, "###DX+DY: " << dx+dy);
+            ROS_WARN_STREAM_THROTTLE(5, "###DX+DY: " << dx+dy);
 
             if (dx + dy < 30) {
                 lap_completed = true;
@@ -88,7 +89,9 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
             if (!center_path_calculated) {
                 center_path_calculated = true;
+                ROS_WARN_STREAM("$$ PROCESSING IMAGE");
 
+                //convert to opencv matrix
                 cv::Mat mat_grid(master_grid.getSizeInCellsX(), master_grid.getSizeInCellsY(), CV_8UC1);
                 uint8_t* charMap = master_grid.getCharMap();
                 for (int r = 0; r < mat_grid.rows; r++) {
@@ -96,15 +99,76 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                         mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] != costmap_2d::FREE_SPACE) ? 255 : 0;
                     }
                 }
-                ROS_INFO_STREAM("%%%%%%%%%%SIZE X CELLS: " << cv::countNonZero(mat_grid));
-                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/CVTEST2.png",mat_grid);
 
-                //master_grid.saveMap("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/test.pgm");
-                ROS_INFO_STREAM("$$$$$$ DIDIIDIDIDIDIDI COMPLETE $$$$$");
-                //cv::imshow("BIGTESTIMAGE", mat_grid);
-                //cv::waitKey(1);
-                //sensor_msgs::ImagePtr outmsg = cv_bridge::CvImage(std_msgs::Header(), "mono8", mat_grid).toImageMsg();
-                //debug_pub.publish(outmsg);
+                //draw a wall to block the backwards path
+                double wallLength = 60; //#TODO: convert to real units
+                double wallDistanceBehindStart = 10;
+                double wallThickness = 3; //#TODO: convert to real
+                int mx;
+                int my;
+                master_grid.worldToMapEnforceBounds(init_robot_x, init_robot_y, mx, my);
+                cv::Point2d wallMidpoint;
+                wallMidpoint.x = -1.0 * std::cos(init_robot_yaw) * wallDistanceBehindStart + mx;
+                wallMidpoint.y = -1.0 * std::sin(init_robot_yaw) * wallDistanceBehindStart + my;
+                cv::Point2d wallPtA;
+                cv::Point2d wallPtB;
+                wallPtA.x = std::cos(init_robot_yaw + CV_PI/2.0) * wallLength/2.0 + wallMidpoint.x;
+                wallPtA.y = std::sin(init_robot_yaw + CV_PI/2.0) * wallLength/2.0 + wallMidpoint.y;
+                wallPtB.x = std::cos(init_robot_yaw - CV_PI/2.0) * wallLength/2.0 + wallMidpoint.x;
+                wallPtB.y = std::sin(init_robot_yaw - CV_PI/2.0) * wallLength/2.0 + wallMidpoint.y;
+
+
+                double goalDistanceBehindStart = 30; //#TODO: launch param
+                cv::Point2d goalPt;
+                goalPt.x = -1.0 * std::cos(init_robot_yaw) * goalDistanceBehindStart + mx;
+                goalPt.y = -1.0 * std::sin(init_robot_yaw) * goalDistanceBehindStart + my;
+
+                cv::Mat debug;
+                cv::cvtColor(mat_grid, debug, CV_GRAY2BGR);
+                int cx;
+                int cy;
+                master_grid.worldToMapEnforceBounds(curr_robot_x, curr_robot_y, cx, cy);
+                //cv::line(debug, cv::Point2d(cx, cy), wallMidpoint, CV_RGB(0,255,0),wallThickness);
+                cv::line(debug, wallPtA, wallPtB, CV_RGB(255,0,0), wallThickness); //add wall in between start and end points
+
+                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/CVTEST8.png", debug);
+
+                cv::Mat channels[3];
+                cv::split(debug, channels);
+                //cv::Rect cropRect = findCropRect(channels[2]); //only red channel
+                cv::Mat obstacleGrid;
+                cv::resize(channels[2], obstacleGrid, cv::Size(500,500)); //#TODO: right now this is a scaling factor of 1/4
+                cv::threshold(obstacleGrid, obstacleGrid, 127, 255, cv::THRESH_BINARY); //threshold after scaling because of interpolation (halfway at 127 seems fine)
+
+                //Ensures track walls are at least 2 pixels wide (can't sneak through) and adds buffer in case of badly sensed wall
+                cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+                cv::dilate(obstacleGrid, obstacleGrid, kernel);
+
+
+                cv::bitwise_not(obstacleGrid, obstacleGrid); //#TODO
+                cv::Mat distanceGrid;
+                cv::distanceTransform(obstacleGrid, distanceGrid, cv::DIST_L2, cv::DIST_MASK_3);
+                //convert based on max so that we minimize the center path
+                double min;
+                double max;
+                cv::minMaxLoc(distanceGrid, &min, &max);
+                cv::absdiff(distanceGrid, cv::Scalar(max), distanceGrid);
+                cv::bitwise_not(obstacleGrid, obstacleGrid); //#TODO
+
+                cv::Point startPt(mx / 4, my / 4); //#TODO
+                UniformCostSearch ucs(obstacleGrid, distanceGrid, startPt, goalPt);
+                std::vector<cv::Point> rawPointPath = ucs.search();
+
+                //Display the Image for debug #TODO: remove
+                cv::Mat displayImage;
+                cv::cvtColor(obstacleGrid, displayImage, cv::COLOR_GRAY2BGR);
+                for (cv::Point pt : rawPointPath) {
+                    cv::Vec3b color(0,0,255);
+                    displayImage.at<cv::Vec3b>(pt) = color;
+                }
+                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/fullPath01.png", displayImage);
+
+
             }
         }
 
@@ -119,13 +183,13 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
     // state
     double init_robot_x;
     double init_robot_y;
+    double init_robot_yaw;
     double curr_robot_x;
     double curr_robot_y;
     int counter;
     bool lap_completed;
     bool init_is_set;
     bool center_path_calculated;
-    //UniformCostSearch UCS;
     ros::Publisher debug_pub;
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
