@@ -10,6 +10,7 @@ class UniformCostSearch {
         std::vector<cv::Point> search();
         void setStartPoint(cv::Point pt);
         void setGoalPoint(cv::Point pt);
+        cv::Point getNearestFreePointBFS(cv::Point initPoint);
 
     private:
         struct State {

@@ -6,9 +6,7 @@
 #include <ros/ros.h>
 #include <rr_evgp/UniformCostSearch.h>
 #include <opencv2/opencv.hpp>
-
-#include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h>
+#include <nav_msgs/Path.h>
 
 
 namespace rr {
@@ -29,8 +27,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
         //#REMOVE debug
         ros::NodeHandle nh;
-        debug_pub = nh.advertise<sensor_msgs::Image>("/aa/centerpathdebug", 1);
-
+        pub_path = nh.advertise<nav_msgs::Path>("/global_center_path", 1);
     }
 
     void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
@@ -74,7 +71,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         }
 */
         counter++;
-        if (counter > 1100) {
+        if (counter > 1100) { //#TODO: change from counter to distance
             double dx = std::fabs(curr_robot_x - init_robot_x);
             double dy = std::fabs(curr_robot_y - init_robot_y);
 
@@ -82,6 +79,11 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
             if (dx + dy < 30) {
                 lap_completed = true;
+            }
+        }
+        if (center_path_calculated) {
+            if (pub_path.getNumSubscribers() > 0) {
+                pub_path.publish(pathMsg);
             }
         }
         if (lap_completed) {
@@ -120,7 +122,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
                 double goalDistanceBehindStart = 30; //#TODO: launch param
                 cv::Point2d goalPt;
-                goalPt.x = -1.0 * std::cos(init_robot_yaw) * goalDistanceBehindStart + mx;
+                goalPt.x = -1.0 * std::cos(init_robot_yaw) * goalDistanceBehindStart + mx; //#TODO: way to search for nearest open pt in case that pt is blocked
                 goalPt.y = -1.0 * std::sin(init_robot_yaw) * goalDistanceBehindStart + my;
 
                 cv::Mat debug;
@@ -141,7 +143,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 cv::threshold(obstacleGrid, obstacleGrid, 127, 255, cv::THRESH_BINARY); //threshold after scaling because of interpolation (halfway at 127 seems fine)
 
                 //Ensures track walls are at least 2 pixels wide (can't sneak through) and adds buffer in case of badly sensed wall
-                cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+                cv::Mat kernel = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3));
                 cv::dilate(obstacleGrid, obstacleGrid, kernel);
 
 
@@ -156,7 +158,13 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 cv::bitwise_not(obstacleGrid, obstacleGrid); //#TODO
 
                 cv::Point startPt(mx / 4, my / 4); //#TODO
+                goalPt.x = goalPt.x / 4;
+                goalPt.y = goalPt.y / 4; //#TODO
                 UniformCostSearch ucs(obstacleGrid, distanceGrid, startPt, goalPt);
+
+                //cv::Point newGoalPt = ucs.getNearestFreePointBFS(goalPt); //#TODO: try this
+                //ucs.setGoalPoint(newGoalPt);
+
                 std::vector<cv::Point> rawPointPath = ucs.search();
 
                 //Display the Image for debug #TODO: remove
@@ -166,8 +174,24 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                     cv::Vec3b color(0,0,255);
                     displayImage.at<cv::Vec3b>(pt) = color;
                 }
-                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/fullPath01.png", displayImage);
+                displayImage.at<cv::Vec3b>(goalPt) = cv::Vec3b(255,0,0);
+                //displayImage.at<cv::Vec3b>(newGoalPt) = cv::Vec3b(0,255,255);
 
+                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/fullPath02.png", displayImage);
+
+                pathMsg.header.stamp = ros::Time::now();
+                pathMsg.header.frame_id = "map";
+                for (cv::Point p : rawPointPath) { //#TODO stamps and orientation?
+                    geometry_msgs::PoseStamped poseStamped;
+                    //poseStamped.header.stamp
+                    //{x,y,z} in real map
+
+                    master_grid.mapToWorld(p.x * 4, p.y * 4, poseStamped.pose.position.x, poseStamped.pose.position.y); //#TODO: scalefactor
+                    pathMsg.poses.push_back(poseStamped);
+                }
+                if (pub_path.getNumSubscribers() > 0) {
+                    pub_path.publish(pathMsg);
+                }
 
             }
         }
@@ -190,7 +214,8 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
     bool lap_completed;
     bool init_is_set;
     bool center_path_calculated;
-    ros::Publisher debug_pub;
+    ros::Publisher pub_path;
+    nav_msgs::Path pathMsg;
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
 };
