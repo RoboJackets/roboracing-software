@@ -58,11 +58,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
             return;
         }
 
-
-        auto* costmap = layered_costmap_->getCostmap();
-        double resolution = costmap->getResolution();
-
-
         curr_robot_x = robot_x;
         curr_robot_y = robot_y;
         if (!init_is_set) {
@@ -80,19 +75,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         if (!enabled_) {
             return;
         }
-/*
-        const double resolution = master_grid.getResolution();
-        const double world_min_x = master_grid.getOriginX();
-        const double world_max_x = world_min_x + master_grid.getSizeInMetersX();
-        const double world_min_y = master_grid.getOriginY();
-        const double world_max_y = world_min_y + master_grid.getSizeInMetersY();
 
-        for (int mx = min_cell_x; mx < max_cell_x; mx++) {
-            for (int my = min_cell_y; my < max_cell_y; my++) {
-                updates_[master_grid.getIndex(mx, my)] = -1;
-            }
-        }
-*/
         double dx = curr_robot_x - init_robot_x;
         double dy = curr_robot_y - init_robot_y;
         double current_distance = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)); //c^2 = a^2 + b^2
@@ -102,8 +85,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         }
 
         if (has_left_initial_region) {
-            ROS_WARN_STREAM("$$%%%%%%%Dist: " << current_distance);
-
             if (current_distance < distance_from_start_) {
                 lap_completed = true;
             }
@@ -113,7 +94,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
             if (!center_path_calculated) {
                 center_path_calculated = true;
-                ROS_WARN_STREAM("$$ PROCESSING IMAGE");
+                ROS_INFO_STREAM("Center Line Layer: Calculating center path");
 
                 //convert to opencv matrix
                 cv::Mat mat_grid(master_grid.getSizeInCellsX(), master_grid.getSizeInCellsY(), CV_8UC1);
@@ -146,8 +127,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 cv::Mat debug;
                 cv::cvtColor(mat_grid, debug, CV_GRAY2BGR);
                 cv::line(debug, wallPtA, wallPtB, CV_RGB(255,0,0), wallThicknessPixels); //add wall in between start and end points
-
-                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/CVTEST8.png", debug);
 
                 cv::Mat channels[3];
                 cv::split(debug, channels);
@@ -183,18 +162,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 ucs.setGoalPoint(newGoalPt);
 
                 std::vector<cv::Point> pixelPointPath = ucs.search();
-
-                //Display the Image for debug #TODO: remove
-                cv::Mat displayImage;
-                cv::cvtColor(obstacleGrid, displayImage, cv::COLOR_GRAY2BGR);
-                for (cv::Point pt : pixelPointPath) {
-                    cv::Vec3b color(0,0,255);
-                    displayImage.at<cv::Vec3b>(pt) = color;
-                }
-                displayImage.at<cv::Vec3b>(goalPt) = cv::Vec3b(255,0,0);
-                //displayImage.at<cv::Vec3b>(newGoalPt) = cv::Vec3b(0,255,255);
-
-                cv::imwrite("/home/brian/catkin_ws/src/roboracing-software/rr_evgp/src/center_path_finder/fullPath02.png", displayImage);
 
                 pathMsg.header.stamp = ros::Time::now();
                 pathMsg.header.frame_id = global_frame_;
