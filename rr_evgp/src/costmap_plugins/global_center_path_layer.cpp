@@ -1,20 +1,19 @@
 #include <costmap_2d/GenericPluginConfig.h>
 #include <costmap_2d/layer.h>
 #include <dynamic_reconfigure/server.h>
+#include <nav_msgs/Path.h>
 #include <parameter_assertions/assertions.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 #include <rr_evgp/UniformCostSearch.h>
 #include <opencv2/opencv.hpp>
-#include <nav_msgs/Path.h>
-
 
 /*
  * @author Brian Cochran
  * This layer finds the center line of the course
  * using UniformCostSearch with costs being the distance
  * to the nearest obstacle.
-*/
+ */
 
 namespace rr {
 
@@ -32,7 +31,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         center_path_calculated = false;
         has_left_initial_region = false;
 
-
         ros::NodeHandle nh;
         ros::NodeHandle costmap_nh("~costmap");
         ros::NodeHandle private_nh("~" + getName());
@@ -41,15 +39,18 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         pub_path = nh.advertise<nav_msgs::Path>(pathOutputTopic, 1);
 
         assertions::getParam(private_nh, "wall_length", wall_length_, { assertions::greater<double>(0) });
-        assertions::getParam(private_nh, "wall_distance_behind_start", wall_distance_behind_start_, { assertions::greater<double>(0) });
+        assertions::getParam(private_nh, "wall_distance_behind_start", wall_distance_behind_start_,
+                             { assertions::greater<double>(0) });
         assertions::getParam(private_nh, "wall_thickness", wall_thickness_, { assertions::greater<double>(0) });
         assertions::getParam(private_nh, "scaling_factor", scaling_factor_, { assertions::greater_eq<double>(1.0) });
-        assertions::getParam(private_nh, "distance_from_start", distance_from_start_, { assertions::greater<double>(0) });
-        assertions::getParam(private_nh, "goal_distance_behind_start", goal_distance_behind_start_, { assertions::greater<double>(wall_distance_behind_start_) });
-        assertions::getParam(private_nh, "forward_initial_offset", forward_initial_offset_, { assertions::less<double>(distance_from_start_) });
+        assertions::getParam(private_nh, "distance_from_start", distance_from_start_,
+                             { assertions::greater<double>(0) });
+        assertions::getParam(private_nh, "goal_distance_behind_start", goal_distance_behind_start_,
+                             { assertions::greater<double>(wall_distance_behind_start_) });
+        assertions::getParam(private_nh, "forward_initial_offset", forward_initial_offset_,
+                             { assertions::less<double>(distance_from_start_) });
 
         assertions::getParam(costmap_nh, "global_frame", global_frame_);
-
     }
 
     void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
@@ -61,13 +62,13 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         curr_robot_x = robot_x;
         curr_robot_y = robot_y;
         if (!init_is_set) {
-            cv::Point initPos = offsetPoint(cv::Point(curr_robot_x, curr_robot_y), init_robot_yaw, forward_initial_offset_);
+            cv::Point initPos =
+                  offsetPoint(cv::Point(curr_robot_x, curr_robot_y), init_robot_yaw, forward_initial_offset_);
             init_robot_x = initPos.x;
             init_robot_y = initPos.y;
             init_robot_yaw = robot_yaw;
             init_is_set = true;
         }
-
     }
 
     void updateCosts(costmap_2d::Costmap2D& master_grid, int min_cell_x, int min_cell_y, int max_cell_x,
@@ -78,9 +79,9 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
         double dx = curr_robot_x - init_robot_x;
         double dy = curr_robot_y - init_robot_y;
-        double current_distance = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)); //c^2 = a^2 + b^2
+        double current_distance = std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));  // c^2 = a^2 + b^2
 
-        if (current_distance > distance_from_start_ + 1.0) { //#TODO:should this extra buffer be a param?
+        if (current_distance > distance_from_start_ + 1.0) {  //#TODO:should this extra buffer be a param?
             has_left_initial_region = true;
         }
 
@@ -91,34 +92,36 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         }
 
         if (lap_completed) {
-
             if (!center_path_calculated) {
                 center_path_calculated = true;
                 ROS_INFO_STREAM("Center Line Layer: Calculating center path");
 
-                //convert to opencv matrix
+                // convert to opencv matrix
                 cv::Mat mat_grid(master_grid.getSizeInCellsX(), master_grid.getSizeInCellsY(), CV_8UC1);
                 uint8_t* charMap = master_grid.getCharMap();
                 for (int r = 0; r < mat_grid.rows; r++) {
                     for (int c = 0; c < mat_grid.cols; c++) {
-                        mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] != costmap_2d::FREE_SPACE) ? UniformCostSearch::OBSTACLE_SPACE : UniformCostSearch::FREE_SPACE;
+                        mat_grid.at<uint8_t>(r, c) = (charMap[r * mat_grid.cols + c] != costmap_2d::FREE_SPACE) ?
+                                                           UniformCostSearch::OBSTACLE_SPACE :
+                                                           UniformCostSearch::FREE_SPACE;
                     }
                 }
 
-                //draw a wall to block the backwards path
+                // draw a wall to block the backwards path
                 unsigned int wallLengthPixels = master_grid.cellDistance(wall_length_);
                 unsigned int wallDistanceBehindStartPixels = master_grid.cellDistance(wall_distance_behind_start_);
                 unsigned int wallThicknessPixels = master_grid.cellDistance(wall_thickness_);
                 int mx;
                 int my;
                 master_grid.worldToMapEnforceBounds(init_robot_x, init_robot_y, mx, my);
-                cv::Point2d wallMidpoint = offsetPoint(cv::Point(mx, my), init_robot_yaw, -1.0 * wallDistanceBehindStartPixels / 2.0);;
+                cv::Point2d wallMidpoint =
+                      offsetPoint(cv::Point(mx, my), init_robot_yaw, -1.0 * wallDistanceBehindStartPixels / 2.0);
                 cv::Point2d wallPtA = offsetPoint(wallMidpoint, init_robot_yaw + CV_PI / 2.0, wallLengthPixels / 2.0);
                 cv::Point2d wallPtB = offsetPoint(wallMidpoint, init_robot_yaw - CV_PI / 2.0, wallLengthPixels / 2.0);
 
-
                 unsigned int goalDistanceBehindStartPixels = master_grid.cellDistance(goal_distance_behind_start_);
-                cv::Point2d goalPt = offsetPoint(cv::Point(mx, my), init_robot_yaw, -1.0 * goalDistanceBehindStartPixels);
+                cv::Point2d goalPt =
+                      offsetPoint(cv::Point(mx, my), init_robot_yaw, -1.0 * goalDistanceBehindStartPixels);
 
                 int cx;
                 int cy;
@@ -126,24 +129,29 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
 
                 cv::Mat debug;
                 cv::cvtColor(mat_grid, debug, CV_GRAY2BGR);
-                cv::line(debug, wallPtA, wallPtB, CV_RGB(255,0,0), wallThicknessPixels); //add wall in between start and end points
+                cv::line(debug, wallPtA, wallPtB, CV_RGB(255, 0, 0),
+                         wallThicknessPixels);  // add wall in between start and end points
 
                 cv::Mat channels[3];
                 cv::split(debug, channels);
 
                 cv::Mat obstacleGrid;
-                cv::resize(channels[2], obstacleGrid, cv::Size(master_grid.getSizeInCellsX() / scaling_factor_, master_grid.getSizeInCellsY() / scaling_factor_));
-                cv::threshold(obstacleGrid, obstacleGrid, 127, UniformCostSearch::OBSTACLE_SPACE, cv::THRESH_BINARY); //threshold after scaling because of interpolation (halfway at 127 seems fine)
+                cv::resize(channels[2], obstacleGrid,
+                           cv::Size(master_grid.getSizeInCellsX() / scaling_factor_,
+                                    master_grid.getSizeInCellsY() / scaling_factor_));
+                cv::threshold(obstacleGrid, obstacleGrid, 127, UniformCostSearch::OBSTACLE_SPACE,
+                              cv::THRESH_BINARY);  // threshold after scaling because of interpolation (halfway at 127
+                                                   // seems fine)
 
-                //Ensures track walls are at least 2 pixels wide (can't sneak through) and adds buffer in case of badly sensed wall
+                // Ensures track walls are at least 2 pixels wide (can't sneak through) and adds buffer in case of badly
+                // sensed wall
                 cv::Mat kernel = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3));
                 cv::dilate(obstacleGrid, obstacleGrid, kernel);
 
-
-                cv::bitwise_not(obstacleGrid, obstacleGrid); //Flip due to how DistanceTransform defines obstacles
+                cv::bitwise_not(obstacleGrid, obstacleGrid);  // Flip due to how DistanceTransform defines obstacles
                 cv::Mat distanceGrid;
                 cv::distanceTransform(obstacleGrid, distanceGrid, cv::DIST_L2, cv::DIST_MASK_3);
-                //convert based on max so that we minimize the center path
+                // convert based on max so that we minimize the center path
                 double min;
                 double max;
                 cv::minMaxLoc(distanceGrid, &min, &max);
@@ -155,7 +163,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 goalPt.y = goalPt.y / scaling_factor_;
                 UniformCostSearch ucs(obstacleGrid, distanceGrid, startPt, goalPt);
 
-                //In case start or goal end up in the wall accidentally, find a workable point
+                // In case start or goal end up in the wall accidentally, find a workable point
                 cv::Point newStartPt = ucs.getNearestFreePointBFS(startPt);
                 ucs.setGoalPoint(newStartPt);
                 cv::Point newGoalPt = ucs.getNearestFreePointBFS(goalPt);
@@ -169,13 +177,13 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                     geometry_msgs::PoseStamped poseStamped;
                     //{x,y,z} in real map
 
-                    master_grid.mapToWorld(p.x * scaling_factor_, p.y * scaling_factor_, poseStamped.pose.position.x, poseStamped.pose.position.y);
+                    master_grid.mapToWorld(p.x * scaling_factor_, p.y * scaling_factor_, poseStamped.pose.position.x,
+                                           poseStamped.pose.position.y);
                     pathMsg.poses.push_back(poseStamped);
                 }
                 if (pub_path.getNumSubscribers() > 0) {
                     pub_path.publish(pathMsg);
                 }
-
             }
         }
 
@@ -184,7 +192,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 pub_path.publish(pathMsg);
             }
         }
-
     }
 
   private:
@@ -198,7 +205,6 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
         outputPoint.y = std::sin(angle) * distance + startPoint.y;
         return outputPoint;
     }
-
 
     // state
     double init_robot_x;

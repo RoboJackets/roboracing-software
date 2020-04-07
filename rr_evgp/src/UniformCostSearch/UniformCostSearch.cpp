@@ -1,10 +1,10 @@
 #include <rr_evgp/UniformCostSearch.h>
-#include <opencv2/core/types.hpp>
-#include <opencv2/core/mat.hpp>
 #include <algorithm>
-#include <vector>
-#include <queue>
 #include <functional>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/core/types.hpp>
+#include <queue>
+#include <vector>
 
 UniformCostSearch::UniformCostSearch(cv::Mat obstacleGrid, cv::Mat distanceGrid, cv::Point startPt, cv::Point goalPt) {
     obstacleGrid_ = obstacleGrid;
@@ -18,7 +18,6 @@ UniformCostSearch::State UniformCostSearch::getStartState() {
     s.pt = startPoint_;
     s.cost = 0.0;
     return s;
-
 }
 
 bool UniformCostSearch::isGoalState(UniformCostSearch::State s) {
@@ -29,7 +28,7 @@ bool UniformCostSearch::isGoalState(UniformCostSearch::State s) {
 }
 
 float UniformCostSearch::pointToCost(cv::Point pt) {
-    return distanceGrid_.at<float>(pt); //DistanceTransform outputs CV_32F
+    return distanceGrid_.at<float>(pt);  // DistanceTransform outputs CV_32F
 }
 
 bool UniformCostSearch::isValidPoint(cv::Point pt) {
@@ -38,12 +37,12 @@ bool UniformCostSearch::isValidPoint(cv::Point pt) {
 }
 
 std::vector<UniformCostSearch::State> UniformCostSearch::getSuccessors(UniformCostSearch::State s) {
-    //returns the 8 point grid around a center point
+    // returns the 8 point grid around a center point
     std::vector<UniformCostSearch::State> successors;
     for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
-            if (i != 0 || j != 0) { // not center position
-                cv::Point pt(s.pt.x+i, s.pt.y+j);
+            if (i != 0 || j != 0) {  // not center position
+                cv::Point pt(s.pt.x + i, s.pt.y + j);
                 if (this->isValidPoint(pt)) {
                     UniformCostSearch::State newState;
                     newState.pt = pt;
@@ -57,11 +56,13 @@ std::vector<UniformCostSearch::State> UniformCostSearch::getSuccessors(UniformCo
 }
 
 std::vector<cv::Point> UniformCostSearch::search() {
-    std::priority_queue<UniformCostSearch::State, std::vector<UniformCostSearch::State>, std::greater<UniformCostSearch::State>> pq; //minimum priority queue
+    std::priority_queue<UniformCostSearch::State, std::vector<UniformCostSearch::State>,
+                        std::greater<UniformCostSearch::State>>
+          pq;  // minimum priority queue
     cv::Mat visited(obstacleGrid_.size(), CV_8UC1, cv::Scalar(0));
 
     pq.push(this->getStartState());
-    //uniform cost search
+    // uniform cost search
     while (!pq.empty()) {
         UniformCostSearch::State e = pq.top();
         if (visited.at<uchar>(e.pt) == 0) {
@@ -79,9 +80,9 @@ std::vector<cv::Point> UniformCostSearch::search() {
             }
             visited.at<uchar>(e.pt) = 255;
         }
-        pq.pop(); //remove it now that we are done
+        pq.pop();  // remove it now that we are done
     }
-    return std::vector<cv::Point>(); //no path found
+    return std::vector<cv::Point>();  // no path found
 }
 
 void UniformCostSearch::setStartPoint(cv::Point pt) {
@@ -92,7 +93,7 @@ void UniformCostSearch::setGoalPoint(cv::Point pt) {
     goalPoint_ = pt;
 }
 
-//BFS from initPoint to find a free space nearby
+// BFS from initPoint to find a free space nearby
 cv::Point UniformCostSearch::getNearestFreePointBFS(cv::Point initPoint) {
     std::queue<cv::Point> queue;
     cv::Mat visited(obstacleGrid_.size(), CV_8UC1, cv::Scalar(0));
@@ -104,11 +105,11 @@ cv::Point UniformCostSearch::getNearestFreePointBFS(cv::Point initPoint) {
             if (obstacleGrid_.at<uchar>(currPoint) == UniformCostSearch::FREE_SPACE) {
                 return currPoint;
             }
-            //add successors: 8 point grid around a center point
+            // add successors: 8 point grid around a center point
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
-                    if (i != 0 || j != 0) { // not center position
-                        cv::Point newPt(currPoint.x+i, currPoint.y+j);
+                    if (i != 0 || j != 0) {  // not center position
+                        cv::Point newPt(currPoint.x + i, currPoint.y + j);
                         cv::Rect rect(cv::Point(), obstacleGrid_.size());
                         if (rect.contains(newPt)) {
                             queue.push(newPt);
