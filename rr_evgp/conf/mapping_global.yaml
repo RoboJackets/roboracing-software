@@ -29,8 +29,10 @@ costmap:
 
     center_line:
         output_topic: /global_center_path
-        wall_length: 15 #wall blocks backwards path
+        forward_initial_offset: 10 #forward offset to ensure real start position is scanned before search.
+        wall_length: 15 #wall blocks backwards path. Should be greater than width of track
         wall_distance_behind_start: 2.5
         wall_thickness: 0.5
         scaling_factor: 4 #factor to downsize map to speed search
-        distance_from_start: 17.5 #should be at least width of track
+        distance_from_start: 17.5 #how close to count lap finished. Should be at least width of track. Must be greater than forward_initial_offset
+        goal_distance_behind_start: 7.5

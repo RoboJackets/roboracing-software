@@ -6,10 +6,6 @@
 #include <queue>
 #include <functional>
 
-#include <opencv2/opencv.hpp>
-#include <stack>
-
-
 UniformCostSearch::UniformCostSearch(cv::Mat obstacleGrid, cv::Mat distanceGrid, cv::Point startPt, cv::Point goalPt) {
     obstacleGrid_ = obstacleGrid;
     distanceGrid_ = distanceGrid;
@@ -26,7 +22,6 @@ UniformCostSearch::State UniformCostSearch::getStartState() {
 }
 
 bool UniformCostSearch::isGoalState(UniformCostSearch::State s) {
-    //#TODO
     if (s.pt == goalPoint_) {
         return true;
     }
@@ -39,7 +34,7 @@ float UniformCostSearch::pointToCost(cv::Point pt) {
 
 bool UniformCostSearch::isValidPoint(cv::Point pt) {
     cv::Rect rect(cv::Point(), distanceGrid_.size());
-    return rect.contains(pt) && obstacleGrid_.at<uchar>(pt) == 0; //Anything above 0 is obstacle
+    return rect.contains(pt) && obstacleGrid_.at<uchar>(pt) == UniformCostSearch::FREE_SPACE;
 }
 
 std::vector<UniformCostSearch::State> UniformCostSearch::getSuccessors(UniformCostSearch::State s) {
@@ -106,7 +101,7 @@ cv::Point UniformCostSearch::getNearestFreePointBFS(cv::Point initPoint) {
     while (!queue.empty()) {
         cv::Point currPoint = queue.front();
         if (visited.at<uchar>(currPoint) == 0) {
-            if (obstacleGrid_.at<uchar>(currPoint) == 0) { //#TODO: change 0's to FREE_SPACE, etc
+            if (obstacleGrid_.at<uchar>(currPoint) == UniformCostSearch::FREE_SPACE) {
                 return currPoint;
             }
             //add successors: 8 point grid around a center point

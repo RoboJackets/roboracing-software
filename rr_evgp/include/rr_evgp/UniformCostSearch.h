@@ -12,6 +12,9 @@ class UniformCostSearch {
         void setGoalPoint(cv::Point pt);
         cv::Point getNearestFreePointBFS(cv::Point initPoint);
 
+        static const unsigned char FREE_SPACE = 0;
+        static const unsigned char OBSTACLE_SPACE = 255;
+
     private:
         struct State {
             cv::Point pt;
