@@ -36,5 +36,4 @@ include_directories(
 ###########
 
 add_subdirectory(src/costmap_plugins)
-add_subdirectory(src/center_path_finder)
 add_subdirectory(src/UniformCostSearch)
