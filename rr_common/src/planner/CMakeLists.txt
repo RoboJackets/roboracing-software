@@ -22,6 +22,9 @@ target_link_libraries(annealing_optimizer ${catkin_LIBRARIES})
 add_library(hill_climb_optimizer hill_climb_optimizer.cpp)
 target_link_libraries(hill_climb_optimizer ${catkin_LIBRARIES})
 
+add_library(global_path global_path.cpp)
+target_link_libraries(global_path ${catkin_LIBRARIES})
+
 add_executable(planner planner_node.cpp)
 target_link_libraries(planner
         bicycle_model
@@ -31,5 +34,6 @@ target_link_libraries(planner
         annealing_optimizer
         effector_tracker
         hill_climb_optimizer
+        global_path
         ${catkin_LIBRARIES})
 add_dependencies(planner ${catkin_EXPORTED_TARGETS})
