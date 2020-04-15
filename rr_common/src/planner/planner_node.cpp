@@ -16,6 +16,7 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include <rr_common/linear_tracking_filter.hpp>
+#include <rr_common/planning/global_path.h>
 
 constexpr int ctrl_dim = 1;
 
@@ -23,6 +24,7 @@ std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
 std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
+std::unique_ptr<rr::GlobalPath> g_global_path_cost;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
@@ -69,6 +71,7 @@ void processMap() {
         const auto& path = rollout.path;
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
+        std::vector<double> global_path_costs = g_global_path_cost->CalculateCost(path);
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
@@ -80,6 +83,7 @@ void processMap() {
                 cost += k_speed_ * std::pow(max_speed - path[i].speed, 2);
                 cost += k_steering_ * std::abs(path[i].steer);
                 cost += k_angle_ * std::abs(path[i].pose.theta);
+                cost += 1.0 *  global_path_costs[i];
             } else {
                 cost += collision_penalty_ * (path.size() - i);
                 break;
@@ -214,6 +218,8 @@ int main(int argc, char** argv) {
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
 
+    g_global_path_cost = std::make_unique<rr::GlobalPath>(ros::NodeHandle(nhp, "global_path_cost"));
+
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
 
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
@@ -248,6 +254,7 @@ int main(int argc, char** argv) {
             auto start = ros::WallTime::now();
 
             g_map_cost_interface->StopUpdates();
+            g_global_path_cost->PreProcess();
             processMap();
             g_map_cost_interface->SetMapStale();
             g_map_cost_interface->StartUpdates();

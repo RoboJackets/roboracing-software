@@ -56,7 +56,13 @@ k_map_cost: 0.3  # map costs are about 100x higher with grid_inflation
 k_speed: 0.05
 k_steering: 0.01
 k_angle: 0
+k_global_path_cost: 0
 collision_penalty: 10000
+
+global_path_cost:
+    global_path_topic: "/global_center_path"
+    robot_base_frame: base_footprint
+    cost_scaling_factor: 1.0
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
