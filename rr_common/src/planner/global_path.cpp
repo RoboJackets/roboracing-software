@@ -14,7 +14,7 @@
 
 namespace rr {
 
-GlobalPath::GlobalPath(ros::NodeHandle nh) : listener_(new tf::TransformListener) {
+GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_updates_(true), listener_(new tf::TransformListener) {
     std::string global_path_topic;
     assertions::getParam(nh, "global_path_topic", global_path_topic);
     assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
@@ -33,6 +33,9 @@ std::vector<double> GlobalPath::CalculateCost(const std::vector<PathPoint>& plan
 
 double GlobalPath::CalculateCost(const Pose& planPose) {
     //iterate through global path until distance increases
+    if (!has_global_path_) {
+        return 0;
+    }
     unsigned int currIndex = 0;//last_used_point_index_; //#TODO
     unsigned int nextIndex = this->GetNextIndex(currIndex);
 
@@ -58,6 +61,9 @@ double GlobalPath::CalculateCost(const Pose& planPose) {
 }
 
 void GlobalPath::PreProcess() {
+    if (!has_global_path_) {
+        return;
+    }
     this->LookupPathTransform();
     //closest_point_to_robot_index = //#TODO
 
@@ -91,6 +97,7 @@ void GlobalPath::SetPathMessage(const nav_msgs::Path& path_msg) {
     if (!accepting_updates_) {
         return;
     }
+    has_global_path_ = true;
     last_used_point_index_ = 0;
     global_path_msg_ = nav_msgs::Path(path_msg);
 

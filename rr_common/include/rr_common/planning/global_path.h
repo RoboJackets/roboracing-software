@@ -22,6 +22,7 @@ class GlobalPath {
     unsigned int GetNextIndex(unsigned int i);
     static double GetPointDistance(tf::Pose pose1, tf::Pose pose2);
 
+    bool has_global_path_;
     bool accepting_updates_;
     bool updated_;
 
