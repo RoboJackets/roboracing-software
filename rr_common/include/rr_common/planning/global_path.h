@@ -4,6 +4,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 #include <nav_msgs/Path.h>
+#include <tuple>
 #include "planner_types.hpp"
 
 namespace rr {
@@ -19,13 +20,14 @@ class GlobalPath {
 
   private:
     void SetPathMessage(const nav_msgs::Path& map_msg);
+    std::tuple<unsigned int, double> FindNearestPathPointIndex(unsigned int startIndex, tf::Pose inputPose);
     static double GetPointDistance(tf::Pose pose1, tf::Pose pose2);
 
     bool has_global_path_;
     bool accepting_updates_;
     bool updated_;
 
-    unsigned int last_used_point_index_;
+    unsigned int closest_point_to_robot_index_;
     double cost_scaling_factor_;
 
     ros::Subscriber global_path_sub_;

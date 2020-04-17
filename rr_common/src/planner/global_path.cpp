@@ -15,7 +15,7 @@
 
 namespace rr {
 
-GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_updates_(true), listener_(new tf::TransformListener) {
+GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_updates_(true), closest_point_to_robot_index_(0), listener_(new tf::TransformListener) {
     std::string global_path_topic;
     assertions::getParam(nh, "global_path_topic", global_path_topic);
     assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
@@ -35,32 +35,11 @@ std::vector<double> GlobalPath::CalculateCost(const std::vector<PathPoint>& plan
 double GlobalPath::CalculateCost(const Pose& planPose) {
     //iterate through global path until distance increases
     if (!has_global_path_) {
-        return 0;
+        return 0.0;
     }
-
-    unsigned int currIndex = 0;//last_used_point_index_; //#TODO
-    unsigned int nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
-
     tf::Pose w_planPose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(planPose.x, planPose.y, 0));
 
-    while (nextIndex != currIndex) { //full loop #TODO: last_used_point_index_
-        tf::Pose w_currPathPose;
-        tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
-        double distCurr = GlobalPath::GetPointDistance(w_planPose, w_currPathPose);
-
-        tf::Pose w_nextPathPose;
-        tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
-        double distNext = GlobalPath::GetPointDistance(w_planPose, w_nextPathPose);
-
-        if (distNext >= distCurr) {
-            last_used_point_index_ = currIndex;
-            return distCurr;
-        }
-        currIndex = nextIndex;
-        nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();;
-    }
-
-    return 0;
+    return std::get<1>(this->FindNearestPathPointIndex(closest_point_to_robot_index_, w_planPose));
 }
 
 void GlobalPath::PreProcess() {
@@ -69,10 +48,10 @@ void GlobalPath::PreProcess() {
     }
     this->LookupPathTransform();
     //find nearest point to robot
-    //tf::Pose w_robotPose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(0, 0, 0));
+    tf::Pose w_robotPose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(0, 0, 0));
 
-    //closest_point_to_robot_index = //#TODO
-
+    std::tuple<unsigned int, double> closestIndexPoint = this->FindNearestPathPointIndex(0, w_robotPose);
+    closest_point_to_robot_index_ = std::get<0>(closestIndexPoint);
 }
 
 void GlobalPath::LookupPathTransform() {
@@ -90,14 +69,38 @@ double GlobalPath::GetPointDistance(tf::Pose pose1, tf::Pose pose2) {
     return std::abs(pose1.getOrigin().distance(pose2.getOrigin()));
 }
 
+std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned int startIndex, tf::Pose inputPose) {
+    if (!has_global_path_) {
+        return std::make_tuple(0, 0.0);
+    }
 
+    unsigned int currIndex = startIndex;
+    unsigned int nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
+
+    do {
+        tf::Pose w_currPathPose;
+        tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
+        double distCurr = GlobalPath::GetPointDistance(inputPose, w_currPathPose);
+
+        tf::Pose w_nextPathPose;
+        tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
+        double distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
+
+        if (distNext >= distCurr) {
+            return std::make_tuple(currIndex, distCurr);
+        }
+        currIndex = nextIndex;
+        nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
+    } while (currIndex != startIndex); //full loop around
+
+    return std::make_tuple(0, 0.0); //nothing found
+}
 
 void GlobalPath::SetPathMessage(const nav_msgs::Path& path_msg) {
     if (!accepting_updates_) {
         return;
     }
     has_global_path_ = true;
-    last_used_point_index_ = 0;
     global_path_msg_ = nav_msgs::Path(path_msg);
 
     updated_ = true;
