@@ -10,6 +10,7 @@
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/Point.h>
 #include <cmath>
+#include <tuple>
 #include <parameter_assertions/assertions.h>
 
 namespace rr {
@@ -36,12 +37,13 @@ double GlobalPath::CalculateCost(const Pose& planPose) {
     if (!has_global_path_) {
         return 0;
     }
+
     unsigned int currIndex = 0;//last_used_point_index_; //#TODO
-    unsigned int nextIndex = this->GetNextIndex(currIndex);
+    unsigned int nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
 
     tf::Pose w_planPose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(planPose.x, planPose.y, 0));
 
-    while (nextIndex != currIndex) { //full loop
+    while (nextIndex != currIndex) { //full loop #TODO: last_used_point_index_
         tf::Pose w_currPathPose;
         tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
         double distCurr = GlobalPath::GetPointDistance(w_planPose, w_currPathPose);
@@ -50,13 +52,14 @@ double GlobalPath::CalculateCost(const Pose& planPose) {
         tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
         double distNext = GlobalPath::GetPointDistance(w_planPose, w_nextPathPose);
 
-        if (distNext > distCurr) {
+        if (distNext >= distCurr) {
             last_used_point_index_ = currIndex;
             return distCurr;
         }
         currIndex = nextIndex;
-        nextIndex = this->GetNextIndex(nextIndex);
+        nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();;
     }
+
     return 0;
 }
 
@@ -65,6 +68,9 @@ void GlobalPath::PreProcess() {
         return;
     }
     this->LookupPathTransform();
+    //find nearest point to robot
+    //tf::Pose w_robotPose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(0, 0, 0));
+
     //closest_point_to_robot_index = //#TODO
 
 }
@@ -84,14 +90,7 @@ double GlobalPath::GetPointDistance(tf::Pose pose1, tf::Pose pose2) {
     return std::abs(pose1.getOrigin().distance(pose2.getOrigin()));
 }
 
-unsigned int GlobalPath::GetNextIndex(unsigned int i) {
-    unsigned int numElements = sizeof(global_path_msg_.poses)/sizeof(global_path_msg_.poses[0]);
-    if (i + 1 >= numElements) {
-        return 0; //wrap around
-    } else {
-        return i + 1;
-    }
-}
+
 
 void GlobalPath::SetPathMessage(const nav_msgs::Path& path_msg) {
     if (!accepting_updates_) {

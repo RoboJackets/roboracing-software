@@ -19,7 +19,6 @@ class GlobalPath {
 
   private:
     void SetPathMessage(const nav_msgs::Path& map_msg);
-    unsigned int GetNextIndex(unsigned int i);
     static double GetPointDistance(tf::Pose pose1, tf::Pose pose2);
 
     bool has_global_path_;

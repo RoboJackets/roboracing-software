@@ -29,7 +29,7 @@ std::unique_ptr<rr::GlobalPath> g_global_path_cost;
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
 
-double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_;
+double k_map_cost_, k_speed_, k_steering_, k_angle_, k_global_path_cost_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
@@ -83,7 +83,7 @@ void processMap() {
                 cost += k_speed_ * std::pow(max_speed - path[i].speed, 2);
                 cost += k_steering_ * std::abs(path[i].steer);
                 cost += k_angle_ * std::abs(path[i].pose.theta);
-                cost += 1.0 *  global_path_costs[i];
+                cost += k_global_path_cost_ *  global_path_costs[i];
             } else {
                 cost += collision_penalty_ * (path.size() - i);
                 break;
@@ -175,6 +175,7 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "k_speed", k_speed_);
     assertions::getParam(nhp, "k_steering", k_steering_);
     assertions::getParam(nhp, "k_angle", k_angle_);
+    assertions::getParam(nhp, "k_global_path_cost", k_global_path_cost_);
     assertions::getParam(nhp, "collision_penalty", collision_penalty_);
 
     std::string map_type;
