@@ -77,20 +77,27 @@ std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned 
     unsigned int currIndex = startIndex;
     unsigned int nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
 
+    tf::Pose w_currPathPose;
+    tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
+    double distCurr = GlobalPath::GetPointDistance(inputPose, w_currPathPose);
+
+    tf::Pose w_nextPathPose;
+    tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
+    double distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
+
     do {
-        tf::Pose w_currPathPose;
-        tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
-        double distCurr = GlobalPath::GetPointDistance(inputPose, w_currPathPose);
-
-        tf::Pose w_nextPathPose;
-        tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
-        double distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
-
         if (distNext >= distCurr) {
             return std::make_tuple(currIndex, distCurr);
         }
+
         currIndex = nextIndex;
         nextIndex = (currIndex + 1 ) % global_path_msg_.poses.size();
+
+        w_currPathPose = w_nextPathPose;
+        distCurr = distNext;
+
+        tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
+        distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
     } while (currIndex != startIndex); //full loop around
 
     return std::make_tuple(0, 0.0); //nothing found
