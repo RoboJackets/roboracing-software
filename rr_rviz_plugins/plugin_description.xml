@@ -20,4 +20,11 @@
             Panel used for viewing the state of the startlight
         </description>
     </class>
+    <class name="rr_rviz_plugins/ChassisPanel"
+           type="rr_rviz_plugins::ChassisPanel"
+           base_class_type="rviz::Panel">
+        <description>
+            Panel used for viewing the state of the chassis
+        </description>
+    </class>
 </library>
