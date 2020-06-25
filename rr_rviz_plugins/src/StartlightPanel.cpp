@@ -46,7 +46,7 @@ void StartlightPanel::paintEvent(QPaintEvent *e) {
     painter.setPen(Qt::black);
     painter.drawRect(posX - 1, posY - 1, 2 * diameter + 5, diameter + 2);
 
-    // Left circleroslaunch rr_gazebo macaroni_iarrc_circuit.launch
+    // Left circle
     if (isGreen && receivedSignal) {
         left_color = green;
     }
