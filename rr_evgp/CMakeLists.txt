@@ -16,17 +16,24 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV 3 REQUIRED)
 
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES rr_evgp
 #  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs
+  LIBRARIES UniformCostSearch
   DEPENDS OpenCV
 )
 
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
 
+
+###########
+## Build ##
+###########
+
 add_subdirectory(src/costmap_plugins)
+add_subdirectory(src/UniformCostSearch)

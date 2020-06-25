@@ -1,0 +1,9 @@
+<launch>
+    <arg name="epochs" default="100"/>
+
+    <include file="$(find rr_ml)/launch/train_seg.launch">
+        <arg name="model" value="iarrc_lines"/>
+        <arg name="dataset" value="iarrc_lines"/>
+        <arg name="epochs" value="$(arg epochs)"/>
+    </include>
+</launch>
