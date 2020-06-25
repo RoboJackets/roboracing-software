@@ -26,7 +26,8 @@
 
   <exec_depend>robot_localization</exec_depend>
   <exec_depend>hector_gazebo_plugins</exec_depend>
-  
+  <exec_depend>map_server</exec_depend>
+
   <export>
     <costmap_2d plugin="${prefix}/plugins.xml"/>
   </export>
