@@ -2,13 +2,14 @@
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
-    <node pkg="rr_common" type="pointcloud_combiner" name="transform_scan" output="screen">
-        <param name="sources" value="/scan/pointcloud"/>
-        <param name="destination" value="/current_obstacles"/>
-        <param name="refresh_rate" value="50"/>
-        <param name="combined_frame" value="base_footprint"/>
-        <param name="vg_filter_size" value="0.05"/>
-    </node>
+<!--    Only use pointcloud_combiner when using nearest_point_cache for planner map_type-->
+<!--    <node pkg="rr_common" type="pointcloud_combiner" name="transform_scan" output="screen">-->
+<!--        <param name="sources" value="/scan/pointcloud"/>-->
+<!--        <param name="destination" value="/current_obstacles"/>-->
+<!--        <param name="refresh_rate" value="50"/>-->
+<!--        <param name="combined_frame" value="base_footprint"/>-->
+<!--        <param name="vg_filter_size" value="0.05"/>-->
+<!--    </node>-->
 
     <include file="$(dirname)/mapping_sim.launch"/>
 

@@ -7,8 +7,10 @@
 
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/distance_map.h>
+#include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
-#include <rr_common/planning/inflation_cost.h>
+#include <rr_common/planning/inflation_map.h>
 #include <rr_common/planning/map_cost_interface.h>
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
@@ -20,6 +22,7 @@ constexpr int ctrl_dim = 1;
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
+std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
@@ -174,8 +177,10 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "map_type", map_type);
     if (map_type == "obstacle_points") {
         g_map_cost_interface = std::make_unique<rr::NearestPointCache>(ros::NodeHandle(nhp, "obstacle_points_map"));
-    } else if (map_type == "grid_inflation") {
-        g_map_cost_interface = std::make_unique<rr::InflationCost>(ros::NodeHandle(nhp, "grid_inflation_map"));
+    } else if (map_type == "inflation_map") {
+        g_map_cost_interface = std::make_unique<rr::InflationMap>(ros::NodeHandle(nhp, "inflation_map"));
+    } else if (map_type == "distance_map") {
+        g_map_cost_interface = std::make_unique<rr::DistanceMap>(ros::NodeHandle(nhp, "distance_map"));
     } else {
         ROS_ERROR_STREAM("[Planner] Error: unknown map type \"" << map_type << "\"");
         ros::shutdown();
@@ -218,6 +223,8 @@ int main(int argc, char** argv) {
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
+    g_effector_tracker =
+          std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
 
     total_planning_time = 0;
     total_plans = 0;
@@ -234,8 +241,8 @@ int main(int argc, char** argv) {
         rate.sleep();
         ros::spinOnce();
 
-        g_steer_model->Update(steer_message->angle, ros::Time::now().toSec());
-        g_speed_model->Update(speed_message->speed, ros::Time::now().toSec());
+        g_steer_model->Update(g_effector_tracker->getAngle(), ros::Time::now().toSec());
+        g_speed_model->Update(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();

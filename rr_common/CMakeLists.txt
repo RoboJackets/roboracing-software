@@ -19,11 +19,14 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
         )
 
+find_package(OpenCV REQUIRED)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
         INCLUDE_DIRS include
+        LIBRARIES rr_color_filter
         CATKIN_DEPENDS roscpp rospy std_msgs
 )
 
@@ -51,3 +54,4 @@ add_subdirectory(src/local_mapper)
 add_subdirectory(src/pose_tracker)
 add_subdirectory(src/camera_geometry)
 add_subdirectory(src/image_transformation)
+add_subdirectory(src/color_filter)
