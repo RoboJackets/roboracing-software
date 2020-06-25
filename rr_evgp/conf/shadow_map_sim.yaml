@@ -1,0 +1,9 @@
+free_thresh: 0.1
+image: shadow_map_sim.png
+negate: 0
+occupied_thresh: 0.9
+origin:
+- -23.09421
+- -7.25404
+- 0.0
+resolution: 0.1
