@@ -1,0 +1,8 @@
+<launch>
+    <arg name="topic_in" default="basic_mapper/costmap/costmap"/>
+
+    <include file="$(find distance_map_node)/launch/distance_map.launch">
+        <arg name="distance_map_type" value="distmap/DistanceMapOpencv"/>
+        <arg name="topic_in" value="$(arg topic_in)" />
+    </include>
+</launch>

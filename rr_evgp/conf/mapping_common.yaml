@@ -5,3 +5,4 @@ costmap:
     transform_tolerance: 1.0
     footprint: [[-0.8, -0.7],[-0.8, 0.7],[1.6, 0.7],[1.6, -0.7]]
     resolution: 0.25
+    track_unknown_space: true
