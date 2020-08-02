@@ -1,42 +1,42 @@
-defaults: &dir
+dir_base: &dir
   working_directory: ~/catkin_ws
 
-defaults: &image
+image_base: &image
   docker:
     - image: robojackets/roboracing-baseimage:latest
 
-defaults: &install_deps
+install_deps_base: &install_deps
   run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='libuvc_camera'
 
-defaults: &save_src_cache
+save_src_cache_base: &save_src_cache
   save_cache:
     key: source-v1-{{ .Branch }}-{{ .Revision }}
     paths:
       - "~/catkin_ws/src/roboracing-software/.git"
-defaults: &load_src_cache
+load_src_cache_base: &load_src_cache
   restore_cache:
     keys:
       - source-v1-{{ .Branch }}-{{ .Revision }}
       - source-v1-{{ .Branch }}-
       - source-v1-
-defaults: &save_compile_cache
+save_compile_cache_base: &save_compile_cache
   save_cache:
     key: ccache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
     paths:
       - ~/.ccache
-defaults: &load_compile_cache
+load_compile_cache_base: &load_compile_cache
   restore_cache:
     keys:
       - ccache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
       - ccache-{{ arch }}-{{ .Branch }}
       - ccache-{{ arch }}
       - ccache-
-defaults: &save_test_cache
+save_test_cache_base: &save_test_cache
   save_cache:
     key: ccache-test-{{ arch }}-{{ .Branch }}-{{ .Revision }}
     paths:
       - ~/.ccache
-defaults: &load_test_cache
+load_test_cache_base: &load_test_cache
   restore_cache:
     keys:
       - ccache-test-{{ arch }}-{{ .Branch }}-{{ .Revision }}
@@ -44,17 +44,17 @@ defaults: &load_test_cache
       - ccache-test-{{ arch }}
       - ccache-test-
 
-defaults: &save_workspace
+save_workspace_base: &save_workspace
   persist_to_workspace:
     root: ~/catkin_ws
     paths:
       - build/*
       - devel/*
-defaults: &load_workspace
+load_workspace_base: &load_workspace
   attach_workspace:
     at: ~/catkin_ws
 
-checkout_submodules: &checkout_submodules
+checkout_submodules_base: &checkout_submodules
   run: cd ~/catkin_ws/src/roboracing-software && git submodule sync && git submodule update --init
 
 version: 2
