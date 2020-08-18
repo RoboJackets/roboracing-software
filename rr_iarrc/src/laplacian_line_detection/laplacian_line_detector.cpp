@@ -41,14 +41,14 @@ cv::Mat getBlurredGrayImage(const cv::Mat& frame) {
 
 void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height * resize_dim / original_height),
-                  cv::Scalar(0, 0, 0), CV_FILLED);
+                  cv::Scalar(0, 0, 0), cv::FILLED);
 
     cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height * resize_dim / original_height),
-                  cv::Scalar(0), CV_FILLED);
+                  cv::Scalar(0), cv::FILLED);
 
     cv::rectangle(img, cv::Point(img.cols / 3, img.rows),
                   cv::Point(2 * img.cols / 3, blockBumper_height * resize_dim / original_height), cv::Scalar(0),
-                  CV_FILLED);
+                  cv::FILLED);
 }
 
 cv::Mat getAdaptiveThres(const cv::Mat& frame_gray) {
@@ -81,7 +81,7 @@ cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
     cv::findContours(color_edges, contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
     for (int i = 0; i < contours.size(); i++) {
         if (size_min < cv::contourArea(contours[i], false)) {
-            cv::drawContours(contours_color, contours, i, cv::Scalar(255), CV_FILLED, 8);
+            cv::drawContours(contours_color, contours, i, cv::Scalar(255), cv::FILLED, 8);
         }
     }
     return contours_color;
@@ -107,7 +107,7 @@ cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth) {
     // glare from the sun
     cv::Mat top = img.clone();
     cv::rectangle(top, cv::Point(0, img.rows / 3 + blockSky_height - distanceFromEarth), cv::Point(img.cols, img.rows),
-                  cv::Scalar(0), CV_FILLED);
+                  cv::Scalar(0), cv::FILLED);
 
     std::vector<cv::Point> locations;
     cv::findNonZero(top, locations);
@@ -122,14 +122,14 @@ cv::Mat removeAngels(const cv::Mat& img, int distanceFromEarth) {
 
 cv::Mat createDebugImage(cv::Mat& img_debug, const cv::Mat& adaptive, const cv::Mat& lapl, const cv::Mat& cut,
                          const cv::Mat& ignore_color) {
-    cv::cvtColor(img_debug, img_debug, CV_GRAY2BGR);
+    cv::cvtColor(img_debug, img_debug, cv::COLOR_GRAY2BGR);
 
     // Highlight ROI
     double alpha = .8;
     cv::Mat img_ROI(img_debug.rows, img_debug.cols, CV_8UC3, cv::Scalar::all(255));
     cv::Mat img_ROI_binary, floodfill_pnt;
     blockEnvironment(img_ROI);
-    cv::cvtColor(img_ROI, img_ROI_binary, CV_BGR2GRAY);
+    cv::cvtColor(img_ROI, img_ROI_binary, cv::COLOR_BGR2GRAY);
     img_ROI.setTo(cv::Scalar(0, 255, 0), img_ROI_binary == 255);
     cv::addWeighted(img_debug, alpha, img_ROI, 1 - alpha, 0.0, img_debug);
 

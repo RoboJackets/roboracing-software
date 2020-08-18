@@ -128,7 +128,7 @@ class GlobalCenterPathLayer : public costmap_2d::Layer {
                 master_grid.worldToMapEnforceBounds(curr_robot_x, curr_robot_y, cx, cy);
 
                 cv::Mat debug;
-                cv::cvtColor(mat_grid, debug, CV_GRAY2BGR);
+                cv::cvtColor(mat_grid, debug, cv::COLOR_GRAY2BGR);
                 cv::line(debug, wallPtA, wallPtB, CV_RGB(255, 0, 0),
                          wallThicknessPixels);  // add wall in between start and end points
 
