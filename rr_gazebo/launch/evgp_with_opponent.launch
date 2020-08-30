@@ -1,8 +1,8 @@
 <launch>
     <include file="$(dirname)/evgp_sim.launch">
-        <arg name="world" value="$(find rr_gazebo)/worlds/ev_grand_prix_holes.world"/>
-        <arg name="x" value="14"/>
-        <arg name="y" value="-2"/>
+        <arg name="world" value="$(find rr_gazebo)/worlds/ev_grand_prix.world"/>
+        <arg name="x" value="-3"/>
+        <arg name="y" value="3.1"/>
         <arg name="heading" value="0"/>
     </include>
 
@@ -10,13 +10,13 @@
           args="-file $(find rr_description)/urdf/evgp_opponent.urdf
             -gazebo_namespace /gazebo
             -urdf -model evgp_opponent
-            -x 3 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+            -x 0 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
 
     <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller"
           output="screen">
-        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat.csv"/>
+        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes.csv"/>
         <param name="model_name" value="evgp_opponent"/>
-        <param name="time_warp" value="0.9"/>
-        <param name="start_delay" value="5.0"/>
+        <param name="time_warp" value="1"/>
+        <param name="start_delay" value="0.0"/>
     </node>
 </launch>
