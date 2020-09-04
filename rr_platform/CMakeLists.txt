@@ -12,7 +12,6 @@ find_package(catkin
         sensor_msgs
         cv_bridge
         pcl_ros
-        sick_tim
         laser_geometry
         image_transport
         geometry_msgs
