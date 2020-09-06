@@ -2,7 +2,7 @@
     <include file="$(dirname)/evgp_sim.launch">
         <arg name="world" value="$(find rr_gazebo)/worlds/ev_grand_prix.world"/>
         <arg name="x" value="-3"/>
-        <arg name="y" value="3.1"/>
+        <arg name="y" value="0"/>
         <arg name="heading" value="0"/>
     </include>
 
@@ -12,10 +12,26 @@
             -urdf -model evgp_opponent
             -x 0 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
 
+    <!-- TODO:  figure out how to add multiple opponents -->
+    <node name="spawn_opponent_2" pkg="gazebo_ros" type="spawn_model"
+          args="-file $(find rr_description)/urdf/evgp_opponent.urdf
+            -gazebo_namespace /gazebo
+            -urdf -model evgp_opponent_2
+            -x 0 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+
+    <!-- also need to copy this below and update the modelname -->
     <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller"
           output="screen">
-        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes.csv"/>
+        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes2.csv"/>
         <param name="model_name" value="evgp_opponent"/>
+        <param name="time_warp" value="1"/>
+        <param name="start_delay" value="0.0"/>
+    </node>
+
+    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller_2"
+          output="screen">
+        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes.csv"/>
+        <param name="model_name" value="evgp_opponent_2"/>
         <param name="time_warp" value="1"/>
         <param name="start_delay" value="0.0"/>
     </node>
