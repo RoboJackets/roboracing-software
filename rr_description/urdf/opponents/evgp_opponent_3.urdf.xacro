@@ -1,0 +1,11 @@
+<robot name="evgp_opponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="evgp_body.urdf.xacro"/>
+
+    <xacro:evgp_body collision_bitmask="0x6" color="Red"/>
+
+    <gazebo reference="base_footprint">
+        <kinematic>true</kinematic>
+    </gazebo>
+
+</robot>
