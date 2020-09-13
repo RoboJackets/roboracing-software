@@ -6,33 +6,49 @@
         <arg name="heading" value="0"/>
     </include>
 
-    <node name="spawn_opponent" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/evgp_opponent.urdf
+    <!-- Opponent 0-->
+    <node name="spawn_opponent_0" pkg="gazebo_ros" type="spawn_model"
+          args="-file $(find rr_description)/urdf/opponents/evgp_opponent_0.urdf
             -gazebo_namespace /gazebo
-            -urdf -model evgp_opponent
+            -urdf -model evgp_opponent_0
             -x 0 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
 
-    <!-- TODO:  figure out how to add multiple opponents -->
-    <node name="spawn_opponent_2" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/evgp_opponent.urdf
-            -gazebo_namespace /gazebo
-            -urdf -model evgp_opponent_2
-            -x 0 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
-
-    <!-- also need to copy this below and update the modelname -->
-    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller"
-          output="screen">
-        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes2.csv"/>
-        <param name="model_name" value="evgp_opponent"/>
-        <param name="time_warp" value="1"/>
-        <param name="start_delay" value="0.0"/>
-    </node>
-
-    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller_2"
+    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller_0"
           output="screen">
         <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes.csv"/>
-        <param name="model_name" value="evgp_opponent_2"/>
+        <param name="model_name" value="evgp_opponent_0"/>
         <param name="time_warp" value="1"/>
         <param name="start_delay" value="0.0"/>
     </node>
+
+    <!-- Opponent 1-->
+    <node name="spawn_opponent_1" pkg="gazebo_ros" type="spawn_model"
+          args="-file $(find rr_description)/urdf/opponents/evgp_opponent_1.urdf
+            -gazebo_namespace /gazebo
+            -urdf -model evgp_opponent_1
+            -x 0 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+
+    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller_1"
+          output="screen">
+        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes2.csv"/>
+        <param name="model_name" value="evgp_opponent_1"/>
+        <param name="time_warp" value="1"/>
+        <param name="start_delay" value="0.0"/>
+    </node>
+
+    <!-- Opponent 2-->
+<!--    <node name="spawn_opponent_2" pkg="gazebo_ros" type="spawn_model"-->
+<!--          args="-file $(find rr_description)/urdf/opponents/evgp_opponent_2.urdf-->
+<!--            -gazebo_namespace /gazebo-->
+<!--            -urdf -model evgp_opponent_2-->
+<!--            -x 0 -y -3 -z 0 -R 0 -P 0 -Y 0"/>-->
+
+<!--    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller_2"-->
+<!--          output="screen">-->
+<!--        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat_no_holes2.csv"/>-->
+<!--        <param name="model_name" value="evgp_opponent_2"/>-->
+<!--        <param name="time_warp" value="1"/>-->
+<!--        <param name="start_delay" value="0.0"/>-->
+<!--    </node>-->
+
 </launch>
