@@ -6,7 +6,7 @@ image_base: &image
     - image: robojackets/roboracing-baseimage:latest
 
 install_deps_base: &install_deps
-  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='libuvc_camera'
+  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='rplidar_ros pid libuvc_camera hector_gazebo_plugins'
 
 save_src_cache_base: &save_src_cache
   save_cache:
@@ -126,4 +126,3 @@ workflows:
       - test:
           requires:
             - compile
-
