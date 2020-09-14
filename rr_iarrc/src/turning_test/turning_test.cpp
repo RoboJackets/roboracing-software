@@ -2,10 +2,8 @@
 #include <rr_msgs/axes.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
-
 #include <stdlib.h> /* abs */
 
 using namespace std;

@@ -2,9 +2,9 @@
 
 #include <dynamic_reconfigure/server.h>
 #include <ros/ros.h>
-#include <opencv2/core/mat.hpp>
-
 #include <rr_msgs/ColorFilterConfig.h>
+
+#include <opencv2/core/mat.hpp>
 
 namespace rr {
 

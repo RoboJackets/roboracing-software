@@ -1,5 +1,6 @@
 #include <pluginlib/class_list_macros.h>
 #include <rr_rviz_plugins/ResetPanel.h>
+
 #include <QVBoxLayout>
 
 namespace rr_rviz_plugins {

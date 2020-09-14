@@ -1,8 +1,8 @@
 #pragma once
 
+#include <rr_common/linear_tracking_filter.hpp>
 #include <tuple>
 
-#include <rr_common/linear_tracking_filter.hpp>
 #include "planner_types.hpp"
 
 namespace rr {

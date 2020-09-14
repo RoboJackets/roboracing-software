@@ -6,6 +6,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 #include <rr_evgp/UniformCostSearch.h>
+
 #include <opencv2/opencv.hpp>
 
 /*
