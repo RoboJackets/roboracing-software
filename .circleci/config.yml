@@ -71,7 +71,7 @@ jobs:
       - <<: *install_deps
       - <<: *load_compile_cache
       - run: |
-          source /opt/ros/melodic/setup.sh
+          source /opt/ros/noetic/setup.sh
           catkin_make -j2 -DCATKIN_BLACKLIST_PACKAGES="pointgrey_camera_driver;"
       - <<: *save_compile_cache
       - <<: *save_workspace
@@ -88,7 +88,7 @@ jobs:
       - <<: *load_workspace
       - <<: *load_test_cache
       - run: |
-          source /opt/ros/melodic/setup.sh
+          source /opt/ros/noetic/setup.sh
           catkin_make run_tests -j2 -DCATKIN_BLACKLIST_PACKAGES="parameter_assertions;"
           catkin_test_results
       - <<: *save_test_cache
@@ -126,5 +126,3 @@ workflows:
       - test:
           requires:
             - compile
-
-            
