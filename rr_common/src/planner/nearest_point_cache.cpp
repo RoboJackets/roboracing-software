@@ -1,9 +1,8 @@
+#include <parameter_assertions/assertions.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <rr_common/planning/nearest_point_cache.h>
 
 #include <functional>
-
-#include <parameter_assertions/assertions.h>
-#include <pcl_conversions/pcl_conversions.h>
 
 namespace rr {
 
@@ -51,7 +50,7 @@ void NearestPointCache::SetMapMessage(const sensor_msgs::PointCloud2ConstPtr& cl
 
     // remove points in collision with robot
     std::remove_if(points_storage_.begin(), points_storage_.end(),
-                                         [this](const auto& point) { return hitbox_.PointInside(point.x, point.y); });
+                   [this](const auto& point) { return hitbox_.PointInside(point.x, point.y); });
 
     if (points_storage_.empty()) {
         ROS_WARN("environment map pointcloud is empty");

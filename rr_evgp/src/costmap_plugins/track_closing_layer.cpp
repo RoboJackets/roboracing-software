@@ -1,12 +1,12 @@
-#include <valarray>
-
 #include <costmap_2d/GenericPluginConfig.h>
 #include <costmap_2d/layer.h>
 #include <dynamic_reconfigure/server.h>
 #include <parameter_assertions/assertions.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+
 #include <opencv2/opencv.hpp>
+#include <valarray>
 
 #include "skeletonize.hpp"
 

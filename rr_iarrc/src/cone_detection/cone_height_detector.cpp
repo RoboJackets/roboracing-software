@@ -9,12 +9,14 @@
 #include <std_msgs/Float32.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+
 #include "std_msgs/Float64MultiArray.h"
 
 using namespace std;
@@ -286,7 +288,8 @@ cv::Mat find_orange_in_ROI(const cv::Mat& img) {
 void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0, 0, 0), cv::FILLED);
 
-    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0, 0, 0), cv::FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0, 0, 0),
+                  cv::FILLED);
 
     cv::rectangle(img, cv::Point(img.cols / 3, img.rows), cv::Point(2 * img.cols / 3, blockBumper_height),
                   cv::Scalar(0, 0, 0), cv::FILLED);

@@ -1,4 +1,5 @@
 #include <rr_evgp/UniformCostSearch.h>
+
 #include <algorithm>
 #include <functional>
 #include <opencv2/core/mat.hpp>
