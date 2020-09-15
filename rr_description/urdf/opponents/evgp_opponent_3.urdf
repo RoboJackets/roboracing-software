@@ -34,7 +34,7 @@
     <collision>
       <surface>
         <contact>
-          <collide_bitmask>0x6</collide_bitmask>
+          <collide_bitmask>0x20</collide_bitmask>
         </contact>
       </surface>
     </collision>
