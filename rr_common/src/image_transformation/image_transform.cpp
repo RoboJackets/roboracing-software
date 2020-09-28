@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <rr_common/CameraGeometry.h>
 #include <sensor_msgs/Image.h>
+
 #include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <opencv2/opencv.hpp>

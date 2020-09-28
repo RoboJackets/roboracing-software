@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rr_platform)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,7 +12,6 @@ find_package(catkin
         sensor_msgs
         cv_bridge
         pcl_ros
-        sick_tim
         laser_geometry
         image_transport
         geometry_msgs

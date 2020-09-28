@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int8.h>
+
 #include <opencv2/highgui.hpp>
 
 namespace rr_common {

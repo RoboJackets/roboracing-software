@@ -1,12 +1,12 @@
-#include <valarray>
-
 #include <costmap_2d/GenericPluginConfig.h>
 #include <costmap_2d/layer.h>
 #include <dynamic_reconfigure/server.h>
 #include <parameter_assertions/assertions.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+
 #include <opencv2/opencv.hpp>
+#include <valarray>
 
 #include "skeletonize.hpp"
 
@@ -147,7 +147,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
 
     // Remove small objects (cars and noise)
     std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+    cv::findContours(branches, contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
     cv::Mat contour_img(skel.rows, skel.cols, CV_8UC1, cv::Scalar(0));
     for (size_t i = 0; i < contours.size(); i++) {
         if (cv::arcLength(contours[i], false) >= min_enclosing_radius_) {
@@ -186,7 +186,7 @@ void TrackClosingLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_
 
         // Get regression line
         cv::Vec4f line;
-        cv::fitLine(box_points, line, CV_DIST_L2, 0, 0.01, 0.01);
+        cv::fitLine(box_points, line, cv::DIST_L2, 0, 0.01, 0.01);
         double vx = line(0);
         double vy = line(1);
         double x = line(2) + tl.x;

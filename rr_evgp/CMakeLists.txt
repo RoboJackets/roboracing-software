@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rr_evgp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -13,12 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
 )
 
-find_package(OpenCV 3 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES rr_evgp
-#  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs
+#  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs costmap_2d
   LIBRARIES UniformCostSearch
   DEPENDS OpenCV
 )

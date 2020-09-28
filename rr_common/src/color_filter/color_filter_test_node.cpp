@@ -1,9 +1,9 @@
 #include <cv_bridge/cv_bridge.h>
 #include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
-
 #include <rr_common/color_filter.h>
+#include <sensor_msgs/Image.h>
+
+#include <opencv2/opencv.hpp>
 
 std::unique_ptr<rr::ColorFilter> filter;
 

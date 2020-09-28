@@ -67,7 +67,7 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     cv::inRange(distance_map, 99, 254, distance_map);  // costmap2d::NO_INFORMATION is counted as FREE
     cv::bitwise_not(distance_map, distance_map);
 
-    cv::distanceTransform(distance_map, distance_map, CV_DIST_L2, 3, CV_32F);
+    cv::distanceTransform(distance_map, distance_map, cv::DIST_L2, 3, CV_32F);
     distance_map *= mapMetaData.resolution;
 
     // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)

@@ -5,6 +5,7 @@
 #include <rr_msgs/urc_sign.h>
 #include <sensor_msgs/Image.h>
 #include <stdlib.h>
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -238,7 +239,7 @@ int findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, 
         cv::Vec4i l = lines[i];
         cv::Point p1(l[0], l[1]);
         cv::Point p2(l[2], l[3]);
-        cv::line(output, p1, p2, cv::Scalar(0, 0, 255), 2, CV_AA);
+        cv::line(output, p1, p2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 
         // calc angle and decide if it is a stop bar
         double dx = p2.x - p1.x;
@@ -255,7 +256,7 @@ int findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, 
             // get distance to the line
             float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
 
-            cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, CV_AA);
+            cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
             std::stringstream streamDist;
             streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
             cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2), cv::FONT_HERSHEY_PLAIN,
@@ -286,11 +287,11 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     // debugging draw a line where we trigger
     cv::Point leftTriggerPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
     cv::Point rightTriggerPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
-    cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0, 255, 0), 1, CV_AA);
+    cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
 
     cv::Point leftTriggerPoint2(0, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
     cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
-    cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0, 150, 0), 1, CV_AA);
+    cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0, 150, 0), 1, cv::LINE_AA);
 
     if (stopBarDetected == 2 && bestMove.direction != NONE) {
         // let the world know

@@ -1,11 +1,9 @@
+#include <parameter_assertions/assertions.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
+#include <rr_common/planning/planning_utils.h>
 
 #include <mutex>
 #include <thread>
-
-#include <parameter_assertions/assertions.h>
-
-#include <rr_common/planning/planning_utils.h>
 
 namespace rr {
 

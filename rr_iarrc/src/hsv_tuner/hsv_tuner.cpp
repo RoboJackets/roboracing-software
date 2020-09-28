@@ -1,6 +1,7 @@
 #include <ros/package.h>
 #include <ros/ros.h>
 #include <rr_msgs/hsv_tuned.h>
+
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -134,7 +135,7 @@ int main(int argc, char** argv) {
     hsv_msg.white_v_high = white_v_high_slider;
 
     /// Create Windows
-    namedWindow("HSV Tuner", CV_GUI_NORMAL | CV_WINDOW_FREERATIO);
+    namedWindow("HSV Tuner", cv::WINDOW_FREERATIO);
 
     /// Create Trackbars
     char white_h_low[50];

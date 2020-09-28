@@ -4,3 +4,6 @@
 [submodule "third_party/rj-ros-common"]
 	path = third_party/rj-ros-common
 	url = https://github.com/RoboJackets/rj-ros-common.git
+[submodule "third_party/geometry2"]
+	path = third_party/geometry2
+	url = https://github.com/ros/geometry2.git
