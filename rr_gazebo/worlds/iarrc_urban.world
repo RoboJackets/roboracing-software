@@ -64,6 +64,67 @@
             <uri>model://IARRCUrbanArrow</uri>
             <pose>-1.96 10.6 .45 1.5708 0 0</pose>
         </include>
+
+        <actor name="reddot">
+            <link name="link">
+                <visual name="visual">
+                    <material> <!-- Wheel material -->
+                        <ambient>1 0.1 0.1 1</ambient>
+                        <diffuse>1 0.1 0.2 1</diffuse>
+                        <specular>1 0 0 1</specular>
+                        <emissive>1 0 0 1</emissive>
+                    </material> <!-- End wheel material -->
+                    <pose>0 0 3 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.1</radius>
+                        </sphere>
+                    </geometry>
+                </visual>
+            </link>
+            <script>
+                <loop>true</loop>
+                <delay_start>5.000000</delay_start>
+                <auto_start>true</auto_start>
+                <trajectory id="0" type="square">
+                    <waypoint>
+                        <time>1.00</time>
+                        <pose>0 0 -9 0 0 0</pose>
+                    </waypoint>
+                </trajectory>
+            </script>
+        </actor>
+
+
+        <actor name="greenddot">
+            <link name="link">
+                <visual name="visual">
+                    <material> <!-- Wheel material -->
+                        <ambient>0 1 0.1 1</ambient>
+                        <diffuse>0 1 0.2 1</diffuse>
+                        <specular>0 1 0 1</specular>
+                        <emissive>0 1 0 1</emissive>
+                    </material> <!-- End wheel material -->
+                    <pose>0 0 -9 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.1</radius>
+                        </sphere>
+                    </geometry>
+                </visual>
+            </link>
+            <script>
+                <loop>true</loop>
+                <delay_start>5.000000</delay_start>
+                <auto_start>true</auto_start>
+                <trajectory id="0" type="square">
+                    <waypoint>
+                        <time>1.00</time>
+                        <pose>0 0 3 0 0 0</pose>
+                    </waypoint>
+                </trajectory>
+            </script>
+        </actor>
 <!--
         <population name="left_cones">
             <model name="coneL">
