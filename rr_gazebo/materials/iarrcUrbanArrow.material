@@ -1,6 +1,6 @@
 import * from "grid.material"
 
-material Gazebo/iarrcurbantrack
+material Gazebo/iarrcUrbanArrow
 {
   technique
   {
@@ -12,7 +12,7 @@ material Gazebo/iarrcurbantrack
 
       texture_unit
       {
-        texture iarrcUrbanTrack.png
+        texture iarrcUrbanArrow.jpg
         filtering trilinear
 	    scale 1 1
       }

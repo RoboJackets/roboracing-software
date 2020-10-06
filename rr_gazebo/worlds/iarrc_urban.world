@@ -12,10 +12,57 @@
         <include>
             <uri>model://sun</uri>
         </include>
-
+        <!--
+        <include>
+            <uri>model://sun</uri>
+            <pose> -0.927440 -13.45 16.19 1 0 0 0 </pose>
+        </include>
+        -->
         <include>
             <uri>model://IARRCUrbanTrack</uri>
-            <pose>34 0.75 0 0 0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
+        </include>
+
+        <!--1st Sign - Right -->
+        <include name="Sign_1">
+            <name>Sign_1</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-2.05 -11.7 .45 1.5708 1.5708 0</pose>
+        </include>
+
+        <!--2nd Sign - Left -->
+        <include>
+            <name>Sign_2</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>5.6 -11 .45 1.5708 -1.5708 -1.5708</pose>
+        </include>
+
+        <!--3rd Sign - Left -->
+        <include>
+            <name>Sign_3</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>5.43 -4.67 .45 1.5708 -1.5708 0</pose>
+        </include>
+
+        <!--4th Sign - Right -->
+        <include>
+            <name>Sign_4</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 -1.97 .45 1.5708 1.5708 1.5708</pose>
+        </include>
+
+        <!--5th Sign - Forward -->
+        <include>
+            <name>Sign_5</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 3 .45 1.5708 0 0</pose>
+        </include>
+
+        <!--6th Sign - Forward -->
+        <include>
+            <name>Sign_6</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 10.6 .45 1.5708 0 0</pose>
         </include>
 <!--
         <population name="left_cones">

@@ -1,13 +1,14 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="IARRCUrbanTrack">
+  <model name="IARRCUrbanArrow">
     <static>true</static>
     <link name="link">
+    <!-- Disbales collision with the sign
       <collision name="collision">
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>14.85 30.825</size>
+            <size>.2 .2</size>
           </plane>
         </geometry>
         <surface>
@@ -19,18 +20,19 @@
           </friction>
         </surface>
       </collision>
+      -->
       <visual name="visual">
         <cast_shadows>true</cast_shadows>
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>14.85 30.825</size>
+            <size>.2 .2</size>
           </plane>
         </geometry>
         <material>
           <script>
-            <uri>model://../materials/iarrcurbantrack.material</uri>
-            <name>Gazebo/iarrcurbantrack</name>
+            <uri>model://../materials/iarrcUrbanArrow.material</uri>
+            <name>Gazebo/iarrcUrbanArrow</name>
           </script>
         </material>
       </visual>
