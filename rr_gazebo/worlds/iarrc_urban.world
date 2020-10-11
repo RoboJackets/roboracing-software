@@ -1,6 +1,11 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
     <world name="IARRC Urban">
+        <gui>
+            <camera name="gzclient_camera">
+                <pose>-2.510217 -18.282948 1.477428 0 0.284000 1.527999</pose>
+            </camera>
+        </gui>
         <scene>
             <ambient>1.0 1.0 1.0 1.0</ambient>
             <background>0.7 0.7 0.7 1.0</background>
@@ -74,7 +79,7 @@
                         <specular>1 0 0 1</specular>
                         <emissive>1 0 0 1</emissive>
                     </material> <!-- End wheel material -->
-                    <pose>0 0 3 0 0 0</pose>
+                    <pose>-2.07 -13.38 .5 0 0 0</pose>
                     <geometry>
                         <sphere>
                             <radius>.1</radius>
@@ -89,7 +94,7 @@
                 <trajectory id="0" type="square">
                     <waypoint>
                         <time>1.00</time>
-                        <pose>0 0 -9 0 0 0</pose>
+                        <pose>0 0 -4.5 0 0 0</pose>
                     </waypoint>
                 </trajectory>
             </script>
@@ -105,7 +110,7 @@
                         <specular>0 1 0 1</specular>
                         <emissive>0 1 0 1</emissive>
                     </material> <!-- End wheel material -->
-                    <pose>0 0 -9 0 0 0</pose>
+                    <pose>-2.07 -13.38 -4 0 0 0</pose>
                     <geometry>
                         <sphere>
                             <radius>.1</radius>
@@ -120,7 +125,7 @@
                 <trajectory id="0" type="square">
                     <waypoint>
                         <time>1.00</time>
-                        <pose>0 0 3 0 0 0</pose>
+                        <pose>0 0 4.5 0 0 0</pose>
                     </waypoint>
                 </trajectory>
             </script>
