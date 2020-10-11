@@ -2,7 +2,7 @@
 
     <include file="$(find rr_gazebo)/launch/macaroni_sim.launch">
         <arg name="world" value="$(find rr_gazebo)/worlds/iarrc_urban.world"/>
-        <arg name="start_pose" value="0 0 0"/>
+        <arg name="start_pose" value="-2.7 -15.33 1.5708"/>
     </include>
 
 </launch>
