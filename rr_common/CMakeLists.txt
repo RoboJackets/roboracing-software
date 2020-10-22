@@ -40,7 +40,7 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-add_library(rr_common src/image_flipper/image_flipper.cpp)
+add_library(rr_common src/image_flipper/image_flipper.cpp include/rr_common/planning/vectordtw.h)
 target_link_libraries(rr_common ${catkin_LIBRARIES})
 
 add_subdirectory(src/planner)
