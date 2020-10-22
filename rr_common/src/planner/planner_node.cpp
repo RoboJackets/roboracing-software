@@ -71,7 +71,7 @@ void processMap() {
         const auto& path = rollout.path;
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
-        std::vector<double> global_path_costs = g_global_path_cost->CalculateCost(path);
+        double global_path_costs = g_global_path_cost->CalculateCost(path);
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
@@ -83,7 +83,7 @@ void processMap() {
                 cost += k_speed_ * std::pow(max_speed - path[i].speed, 2);
                 cost += k_steering_ * std::abs(path[i].steer);
                 cost += k_angle_ * std::abs(path[i].pose.theta);
-                cost += k_global_path_cost_ *  global_path_costs[i];
+                cost += k_global_path_cost_ *  global_path_costs;
             } else {
                 cost += collision_penalty_ * (path.size() - i);
                 break;
