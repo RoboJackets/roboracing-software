@@ -4,14 +4,14 @@
 #include <message_filters/synchronizer.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
+#include <rr_msgs/speed.h>
+#include <rr_msgs/steering.h>
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <iostream>
 #include <opencv2/opencv.hpp>
-
-#include <rr_msgs/speed.h>
-#include <rr_msgs/steering.h>
 
 using namespace std;
 

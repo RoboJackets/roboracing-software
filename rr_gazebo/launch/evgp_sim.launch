@@ -27,8 +27,7 @@
     <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
-                right_steer_position_controller left_steer_position_controller
-                --shutdown-timeout 1"/>
+                right_steer_position_controller left_steer_position_controller"/>
 
     <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" required="true" output="screen">
         <rosparam command="load" file="$(find rr_description)/conf/evgp_car_params.yaml"/>

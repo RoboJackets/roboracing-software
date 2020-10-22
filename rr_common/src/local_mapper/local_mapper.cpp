@@ -1,15 +1,14 @@
-#include <deque>
-
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/transforms.h>
 #include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
-
 #include <rr_common/CameraGeometry.h>
 #include <rr_common/RelativePoseHistoryClient.h>
+#include <sensor_msgs/PointCloud2.h>
+
+#include <deque>
 #include <rr_common/angle_utils.hpp>
 
 // types

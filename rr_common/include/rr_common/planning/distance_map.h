@@ -6,6 +6,7 @@
 #include <tf/tf.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
+
 #include <opencv2/opencv.hpp>
 
 #include "map_cost_interface.h"

@@ -1,11 +1,10 @@
-#include <deque>
-
 #include <nav_msgs/Path.h>
 #include <ros/ros.h>
-#include <tf/transform_datatypes.h>
-
 #include <rr_msgs/axes.h>
 #include <rr_msgs/chassis_state.h>
+#include <tf/transform_datatypes.h>
+
+#include <deque>
 #include <rr_common/angle_utils.hpp>
 
 // Types

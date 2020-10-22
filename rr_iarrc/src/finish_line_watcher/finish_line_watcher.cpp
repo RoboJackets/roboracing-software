@@ -12,6 +12,7 @@
 #include <rr_msgs/speed.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int8.h>
+
 #include <climits>
 #include <cmath>
 #include <opencv2/opencv.hpp>
@@ -51,12 +52,12 @@ int state = LOW;
 int number_of_crosses = 0;
 
 void blockEnvironment(const cv::Mat& img) {
-    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0), CV_FILLED);
+    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0), cv::FILLED);
 
-    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0), CV_FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0), cv::FILLED);
 
     cv::rectangle(img, cv::Point(img.cols / 3, img.rows), cv::Point(2 * img.cols / 3, blockBumper_height),
-                  cv::Scalar(0), CV_FILLED);
+                  cv::Scalar(0), cv::FILLED);
 }
 
 void ImageCB(const sensor_msgs::ImageConstPtr& msg) {

@@ -6,7 +6,7 @@ image_base: &image
     - image: robojackets/roboracing-baseimage:latest
 
 install_deps_base: &install_deps
-  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='libuvc_camera'
+  run: apt-get update && rosdep update && rosdep install -iy --from-paths ./src --skip-keys='rplidar_ros pid libuvc_camera hector_gazebo_plugins'
 
 save_src_cache_base: &save_src_cache
   save_cache:
@@ -71,7 +71,7 @@ jobs:
       - <<: *install_deps
       - <<: *load_compile_cache
       - run: |
-          source /opt/ros/melodic/setup.sh
+          source /opt/ros/noetic/setup.sh
           catkin_make -j2 -DCATKIN_BLACKLIST_PACKAGES="pointgrey_camera_driver;"
       - <<: *save_compile_cache
       - <<: *save_workspace
@@ -88,7 +88,7 @@ jobs:
       - <<: *load_workspace
       - <<: *load_test_cache
       - run: |
-          source /opt/ros/melodic/setup.sh
+          source /opt/ros/noetic/setup.sh
           catkin_make run_tests -j2 -DCATKIN_BLACKLIST_PACKAGES="parameter_assertions;"
           catkin_test_results
       - <<: *save_test_cache
@@ -126,3 +126,4 @@ workflows:
       - test:
           requires:
             - compile
+            

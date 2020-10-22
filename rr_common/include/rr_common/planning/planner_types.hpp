@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+
 #include <eigen3/Eigen/Core>
+#include <vector>
 
 namespace rr {
 

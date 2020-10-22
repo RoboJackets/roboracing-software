@@ -4,6 +4,7 @@
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -23,14 +24,14 @@ cv::Mat kernel(int x, int y) {
 
 void blockEnvironment(const cv::Mat& img) {
     cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height * decreasedSize / originalHeight),
-                  cv::Scalar(0, 0, 0), CV_FILLED);
+                  cv::Scalar(0, 0, 0), cv::FILLED);
 
     cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height * decreasedSize / originalHeight),
-                  cv::Scalar(0, 0, 0), CV_FILLED);
+                  cv::Scalar(0, 0, 0), cv::FILLED);
 
     cv::rectangle(img, cv::Point(img.cols / 3, img.rows),
                   cv::Point(2 * img.cols / 3, blockBumper_height * decreasedSize / originalHeight), cv::Scalar(0, 0, 0),
-                  CV_FILLED);
+                  cv::FILLED);
 }
 
 void publishMessage(ros::Publisher pub, const cv::Mat& img, std::string img_type) {

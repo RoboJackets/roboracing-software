@@ -4,7 +4,6 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
-
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
 #include <rr_common/planning/distance_map.h>
@@ -15,6 +14,7 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+
 #include <rr_common/linear_tracking_filter.hpp>
 #include <rr_common/planning/global_path.h>
 

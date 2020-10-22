@@ -1,9 +1,9 @@
 #pragma once
 
+#include <ros/node_handle.h>
+
 #include <random>
 #include <vector>
-
-#include <ros/node_handle.h>
 
 #include "planning_optimizer.h"
 

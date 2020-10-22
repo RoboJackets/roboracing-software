@@ -28,7 +28,6 @@
   <build_depend>image_transport</build_depend>
   <build_depend>laser_geometry</build_depend>
 
-  <exec_depend>sick_tim</exec_depend>
   <exec_depend>rplidar_ros</exec_depend>
   <exec_depend>libusb-1.0</exec_depend>
   <exec_depend>libusb-1.0-dev</exec_depend>
