@@ -13,8 +13,7 @@ class GlobalPath {
   public:
     explicit GlobalPath(ros::NodeHandle nh);
 
-    std::vector<double> CalculateCost(const std::vector<PathPoint>& plan);
-    double CalculateCost(const Pose& pose);
+    double CalculateCost(const std::vector<PathPoint>& plan);
     void LookupPathTransform();
     void PreProcess();
 
@@ -34,6 +33,8 @@ class GlobalPath {
     std::string robot_base_frame_;
     double cost_scaling_factor;
     nav_msgs::Path global_path_msg_;
+    std::vector<tf::Point> global_path_;
+    std::vector<double> global_cum_dist_;
     std::unique_ptr<tf::TransformListener> listener_;
     tf::StampedTransform robot_to_path_transform_;
 };
