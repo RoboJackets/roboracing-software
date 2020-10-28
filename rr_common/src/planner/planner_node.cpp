@@ -107,7 +107,7 @@ void processMap() {
 
     g_last_controls = controls;
 
-//    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
+    ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
 
     // update impasse state machine
     auto now = ros::Time::now();
@@ -256,7 +256,6 @@ int main(int argc, char** argv) {
             auto start = ros::WallTime::now();
 
             g_map_cost_interface->StopUpdates();
-//            g_global_path_cost->PreProcess();
             processMap();
             g_map_cost_interface->SetMapStale();
             g_map_cost_interface->StartUpdates();
@@ -265,7 +264,7 @@ int main(int argc, char** argv) {
             total_planning_time += seconds;
             total_plans++;
             double sec_avg = total_planning_time / total_plans;
-//            ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
+            ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
     }
 

@@ -54,22 +54,27 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan) {
         global_segment = std::vector<tf::Point>(global_path_.begin() + seg_start_index, global_path_.end());
         global_segment.insert(global_segment.end(), global_path_.begin(), global_path_.begin() + seg_end_index);
     }
-//    ROS_ERROR_STREAM("Completed Global Segment");
+
     // Create Point lists for the dtw
-//    vector<Point> global_points;
-//    std::transform(global_segment.begin(), global_segment.end(), global_points.begin(), [](const tf::Point& tf_pt) {
-//        return Point(tf_pt.getX(), tf_pt.getY());
-//    });
-//    vector<Point> sample_points;
-//    std::transform(sample_path.begin(), sample_path.end(), sample_points.begin(), [](const tf::Point& tf_pt) {
-//        return Point(tf_pt.getX(), tf_pt.getY());
-//    });
+    std::vector<Point> global_points(global_segment.size());
+    std::transform(global_segment.begin(), global_segment.end(), global_points.begin(), [](const tf::Point& tf_pt) {
+        return Point(tf_pt.getX(), tf_pt.getY(), 0);
+    });
+    std::vector<Point> sample_points(sample_path.size());
+    std::transform(sample_path.begin(), sample_path.end(), sample_points.begin(), [](const tf::Point& tf_pt) {
+        return Point(tf_pt.getX(), tf_pt.getY(), 0);
+    });
+    //ensure they are the same length for fast dwt
+    int points_len = std::min(global_points.size(), sample_points.size());
+    if (global_points.size() != sample_points.size()) {
+        global_points.resize(points_len);
+        sample_points.resize(points_len);
+    }
 
     // dtw
-//    VectorDTW dtw1(global_points.size(), 1);
-
-//    return dtw1.fastdynamic(global_points, sample_points);
-    return 0;
+    VectorDTW dtw1(points_len, points_len / 10);
+    double dtw_val = dtw1.fastdynamic(global_points, sample_points);
+    return dtw_val;
 }
 
 std::vector<double> GlobalPath::adjacent_distances(const std::vector<tf::Point>& path) {
