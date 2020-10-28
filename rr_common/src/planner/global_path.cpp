@@ -23,35 +23,29 @@ GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_
     std::string global_path_topic;
     assertions::getParam(nh, "global_path_topic", global_path_topic);
     assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
-
     assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor_, { assertions::greater_eq(0.0) });
 
     global_path_sub_ = nh.subscribe(global_path_topic, 1, &GlobalPath::SetPathMessage, this);
 }
 
 double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan) {
-    std::vector<tf::Point> sample_path;
+    if (!has_global_path_) {
+        return 0.0;
+    }
+    std::vector<tf::Point> sample_path(plan.size());
     std::transform(plan.begin(), plan.end(), sample_path.begin(), [](const PathPoint &pose) {return tf::Point(pose.pose.x, pose.pose.y, 0);});
-    // Find nearst point for plan[0] to global path
     tf::Point sample_start = sample_path[0];
-    std::vector<double> distances_to_origin;
+    std::vector<double> distances_to_origin(global_path_.size());
     std::transform(global_path_.begin(), global_path_.end(), distances_to_origin.begin(), [sample_start](const tf::Point& global_pnt){
-        return global_pnt.distance(sample_start);
+        return GlobalPath::GetPointDistance(global_pnt, sample_start);
     });
     //segement start
-    int seg_start_index = std::distance(distances_to_origin.begin(), std::min_element(distances_to_origin.begin(), distances_to_origin.end()));
-    std::vector<double> sample_adj_dist (sample_path.size());
-    for (u_int i = 1; i < sample_path.size() - 1; i++) sample_adj_dist[i] = sample_path[i + 1].distance(sample_path[i]);
-//    std::adjacent_difference(sample_path.begin(), sample_path.end(), sample_adj_dist.begin(), [](const tf::Point &p1, const tf::Point &p2) {
-//        return p2.distance(p1);
-//    });
-    sample_adj_dist[0] = 0.0;
+    int seg_start_index = std::min_element(distances_to_origin.begin(), distances_to_origin.begin()) - distances_to_origin.begin();
+    vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
-
     //find last point using cumulative distance
     double upper_cum_limit = std::fmod((global_cum_dist_[seg_start_index] + sample_length), global_cum_dist_[global_cum_dist_.size() - 1]);
     int seg_end_index = std::upper_bound(global_cum_dist_.begin(), global_cum_dist_.end(), upper_cum_limit) - global_cum_dist_.begin();
-
     //Assume sample_path.length < global_path.length
     std::vector<tf::Point> global_segment;
     if (seg_start_index <= seg_end_index) {
@@ -60,23 +54,32 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan) {
         global_segment = std::vector<tf::Point>(global_path_.begin() + seg_start_index, global_path_.end());
         global_segment.insert(global_segment.end(), global_path_.begin(), global_path_.begin() + seg_end_index);
     }
+//    ROS_ERROR_STREAM("Completed Global Segment");
     // Create Point lists for the dtw
-    vector<Point> global_points;
-    std::transform(global_segment.begin(), global_segment.end(), global_points.begin(), [](const tf::Point& tf_pt) {
-        return Point(tf_pt.getX(), tf_pt.getY());
-    });
-    vector<Point> sample_points;
-    std::transform(sample_path.begin(), sample_path.end(), sample_points.begin(), [](const tf::Point& tf_pt) {
-        return Point(tf_pt.getX(), tf_pt.getY());
-    });
+//    vector<Point> global_points;
+//    std::transform(global_segment.begin(), global_segment.end(), global_points.begin(), [](const tf::Point& tf_pt) {
+//        return Point(tf_pt.getX(), tf_pt.getY());
+//    });
+//    vector<Point> sample_points;
+//    std::transform(sample_path.begin(), sample_path.end(), sample_points.begin(), [](const tf::Point& tf_pt) {
+//        return Point(tf_pt.getX(), tf_pt.getY());
+//    });
 
     // dtw
-    VectorDTW dtw1(global_points.size(), 1);
+//    VectorDTW dtw1(global_points.size(), 1);
 
-    return dtw1.fastdynamic(global_points, sample_points);
+//    return dtw1.fastdynamic(global_points, sample_points);
+    return 0;
+}
+
+std::vector<double> GlobalPath::adjacent_distances(const std::vector<tf::Point>& path) {
+    std::vector<double> distances(1, 0.0);
+    std::transform(path.begin(), path.end() - 1, path.begin() + 1, std::back_inserter(distances), &GlobalPath::GetPointDistance);
+    return distances;
 }
 
 void GlobalPath::PreProcess() {
+    ROS_ERROR_STREAM("Started Pre Process");
     if (!has_global_path_) {
         return;
     }
@@ -86,6 +89,7 @@ void GlobalPath::PreProcess() {
 
     std::tuple<unsigned int, double> closestIndexPoint = this->FindNearestPathPointIndex(0, w_robotPose);
     closest_point_to_robot_index_ = std::get<0>(closestIndexPoint);
+    ROS_ERROR_STREAM("Finished Pre Process");
 }
 
 void GlobalPath::LookupPathTransform() {
@@ -99,11 +103,12 @@ void GlobalPath::LookupPathTransform() {
     accepting_updates_ = true;
 }
 
-double GlobalPath::GetPointDistance(tf::Pose pose1, tf::Pose pose2) {
-    return std::abs(pose1.getOrigin().distance(pose2.getOrigin()));
+double GlobalPath::GetPointDistance(tf::Point point1, tf::Point point2){
+    return point1.distance(point2);
 }
 
 std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned int startIndex, tf::Pose inputPose) {
+    ROS_ERROR_STREAM("Start of Find Nearest Path Point Index");
     if (!has_global_path_) {
         return std::make_tuple(0, 0.0);
     }
@@ -113,11 +118,11 @@ std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned 
 
     tf::Pose w_currPathPose;
     tf::poseMsgToTF(global_path_msg_.poses[currIndex].pose, w_currPathPose);
-    double distCurr = GlobalPath::GetPointDistance(inputPose, w_currPathPose);
+    double distCurr = GlobalPath::GetPointDistance(inputPose.getOrigin(), w_currPathPose.getOrigin());
 
     tf::Pose w_nextPathPose;
     tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
-    double distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
+    double distNext = GlobalPath::GetPointDistance(inputPose.getOrigin(), w_nextPathPose.getOrigin());
 
     do {
         if (distNext >= distCurr) {
@@ -131,9 +136,10 @@ std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned 
         distCurr = distNext;
 
         tf::poseMsgToTF(global_path_msg_.poses[nextIndex].pose, w_nextPathPose);
-        distNext = GlobalPath::GetPointDistance(inputPose, w_nextPathPose);
+        distNext = GlobalPath::GetPointDistance(inputPose.getOrigin(), w_nextPathPose.getOrigin());
     } while (currIndex != startIndex); //full loop around
 
+    ROS_ERROR_STREAM("End of Find Nearest Path Point Index");
     return std::make_tuple(0, 0.0); //nothing found
 }
 
@@ -152,16 +158,10 @@ void GlobalPath::SetPathMessage(const nav_msgs::Path& global_path_msg) {
         return tf_pose.getOrigin();
     });
     // Get Distances
-    std::vector<double> adj_dist (global_path_.size()); //look adjacent_distancesinto
-    for (u_int i = 1; i < global_path_.size() - 1; i++) adj_dist[i] = global_path_[i + 1].distance(global_path_[i]);
-//    std::adjacent_difference(global_path_.begin(), global_path_.end(), adj_dist.begin(), [](const tf::Point &p1, const tf::Point &p2) {
-//       return p2.distance(p1);
-//    });
-    adj_dist[0] = 0.0;
+    std::vector<double> adj_dist = GlobalPath::adjacent_distances(global_path_);
     // Get Cumalitive Distance
     global_cum_dist_ = std::vector<double>(adj_dist.size());
     std::partial_sum(adj_dist.begin(), adj_dist.end(), global_cum_dist_.begin());
-
     updated_ = true;
 }
 

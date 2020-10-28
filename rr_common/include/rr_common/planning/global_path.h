@@ -16,12 +16,12 @@ class GlobalPath {
     double CalculateCost(const std::vector<PathPoint>& plan);
     void LookupPathTransform();
     void PreProcess();
+    static double GetPointDistance(tf::Point point1, tf::Point point2);
 
   private:
     void SetPathMessage(const nav_msgs::Path& map_msg);
     std::tuple<unsigned int, double> FindNearestPathPointIndex(unsigned int startIndex, tf::Pose inputPose);
-    static double GetPointDistance(tf::Pose pose1, tf::Pose pose2);
-
+    static std::vector<double> adjacent_distances(const std::vector<tf::Point>& path);
     bool has_global_path_;
     bool accepting_updates_;
     bool updated_;
