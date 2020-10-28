@@ -16,7 +16,7 @@
 
 #include <vector>
 #include <cmath>
-#include <cassert>
+#include <assert.h>
 
 typedef unsigned int uint;
 using namespace std;
@@ -25,20 +25,20 @@ using namespace std;
 class Point
 {
 public:
-    double x, y;
+    double x, y, z;
 
-    Point(double X, double Y): x(X), y(Y) { }
+    Point(double X, double Y, double Z): x(X), y(Y), z(Z) { }
 
     //computes the l1 distance with another point
     double l1_distance(const Point &p)
     {
-        return fabs(x - p.x) + fabs(y - p.y);
+        return fabs(x - p.x) + fabs(y - p.y) + fabs(z - p.z);
     }
 
     //euclidean distance
     double euclid_distance(const Point &p)
     {
-        return sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
+        return sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y) + (z - p.z) * (z - p.z));
     }
 };
 
