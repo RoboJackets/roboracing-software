@@ -130,38 +130,5 @@
                 </trajectory>
             </script>
         </actor>
-<!--
-        <population name="left_cones">
-            <model name="coneL">
-                <include>
-                    <uri>model://Cone</uri>
-                </include>
-            </model>
-            <pose>31 2.35 0 0 0 0</pose>
-            <box>
-                <size>60 0.01 0.01</size>
-            </box>
-            <model_count>60</model_count>
-            <distribution>
-                <type>linear-x</type>
-            </distribution>
-        </population>
-
-        <population name="right_cones">
-            <model name="coneR">
-                <include>
-                    <uri>model://Cone</uri>
-                </include>
-            </model>
-            <pose>31 -0.85 0 0 0 0</pose>
-            <box>
-                <size>60 0.01 0.01</size>
-            </box>
-            <model_count>60</model_count>
-            <distribution>
-                <type>linear-x</type>
-            </distribution>
-        </population>
-        -->
     </world>
 </sdf>
