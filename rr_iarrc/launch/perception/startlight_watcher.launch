@@ -1,5 +1,5 @@
 <launch>
-    <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen">
+    <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen" required="true">
 
         <!--Input and output topics-->
         <param name="img_topic" type="string" value="/camera_center/image_color_rect"/>
