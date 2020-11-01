@@ -2,7 +2,7 @@
     <arg name="camera_namespace" default="camera_center"/>
 
     <node name="cone_bottom_detector" pkg="rr_iarrc" type="cone_bottom_detector"
-          output="screen" ns="$(arg camera_namespace)">
+          output="screen" ns="$(arg camera_namespace)" required="true">
         <!--HSV color threshold for orange cones-->
         <param name="orange_low_H" type="int" value="0" />
         <param name="orange_high_H" type="int" value="25" />
