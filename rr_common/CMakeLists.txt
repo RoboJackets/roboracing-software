@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
         cv_bridge
         pcl_ros
         image_transport
-        sound_play
         rr_msgs
         costmap_2d
         tf
@@ -47,7 +46,6 @@ add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
 add_subdirectory(src/pointcloud_combiner)
 add_subdirectory(src/navigation_controller)
-add_subdirectory(src/sound_node)
 add_subdirectory(src/follower)
 add_subdirectory(src/rosbag_remote_recorder)
 add_subdirectory(src/local_mapper)
