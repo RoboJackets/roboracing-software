@@ -71,7 +71,7 @@ void processMap() {
         const auto& path = rollout.path;
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
-        double global_path_costs = g_global_path_cost->CalculateCost(path);
+        double global_path_costs = g_global_path_cost->CalculateCost(path, false);
 //        double global_path_costs = 0;
         double cost = 0;
         double inflator = 1;

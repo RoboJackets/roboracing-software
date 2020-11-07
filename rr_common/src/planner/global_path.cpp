@@ -28,7 +28,7 @@ GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_
     global_path_sub_ = nh.subscribe(global_path_topic, 1, &GlobalPath::SetPathMessage, this);
 }
 
-double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan) {
+double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan, const bool viz) {
     if (!has_global_path_) {
         return 0.0;
     }
@@ -69,6 +69,11 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan) {
     if (global_points.size() != sample_points.size()) {
         global_points.resize(points_len);
         sample_points.resize(points_len);
+    }
+
+    //publish if visulization is enabled
+    if(viz) {
+
     }
 
     // dtw

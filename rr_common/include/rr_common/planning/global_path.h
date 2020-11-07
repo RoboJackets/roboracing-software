@@ -13,7 +13,7 @@ class GlobalPath {
   public:
     explicit GlobalPath(ros::NodeHandle nh);
 
-    double CalculateCost(const std::vector<PathPoint>& plan);
+    double CalculateCost(const std::vector<PathPoint>& plan, const bool viz);
     void LookupPathTransform();
     void PreProcess();
     static double GetPointDistance(tf::Point point1, tf::Point point2);
