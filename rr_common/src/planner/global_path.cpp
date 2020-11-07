@@ -26,6 +26,7 @@ GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_
     assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor_, { assertions::greater_eq(0.0) });
 
     global_path_sub_ = nh.subscribe(global_path_topic, 1, &GlobalPath::SetPathMessage, this);
+    global_path_seg_pub_ = nh.advertise<nav_msgs::Path>("/global_path_seg", 1);
 }
 
 double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan, const bool viz) {
@@ -71,9 +72,17 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan, const bool 
         sample_points.resize(points_len);
     }
 
-    //publish if visulization is enabled
     if(viz) {
-
+        //convert type for publishing
+        nav_msgs::Path global_seg_msg;
+        for (auto path_point : global_points) {
+            geometry_msgs::PoseStamped ps;
+            ps.pose.position.x = path_point.x;
+            ps.pose.position.y = path_point.y;
+            global_seg_msg.poses.push_back(ps);
+        }
+        global_seg_msg.header.frame_id = "map";
+        global_path_seg_pub_.publish(global_seg_msg);
     }
 
     // dtw
@@ -89,7 +98,6 @@ std::vector<double> GlobalPath::adjacent_distances(const std::vector<tf::Point>&
 }
 
 void GlobalPath::PreProcess() {
-    ROS_ERROR_STREAM("Started Pre Process");
     if (!has_global_path_) {
         return;
     }
@@ -99,7 +107,6 @@ void GlobalPath::PreProcess() {
 
     std::tuple<unsigned int, double> closestIndexPoint = this->FindNearestPathPointIndex(0, w_robotPose);
     closest_point_to_robot_index_ = std::get<0>(closestIndexPoint);
-    ROS_ERROR_STREAM("Finished Pre Process");
 }
 
 void GlobalPath::LookupPathTransform() {
@@ -118,7 +125,6 @@ double GlobalPath::GetPointDistance(tf::Point point1, tf::Point point2){
 }
 
 std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned int startIndex, tf::Pose inputPose) {
-    ROS_ERROR_STREAM("Start of Find Nearest Path Point Index");
     if (!has_global_path_) {
         return std::make_tuple(0, 0.0);
     }
@@ -149,7 +155,6 @@ std::tuple<unsigned int, double> GlobalPath::FindNearestPathPointIndex(unsigned 
         distNext = GlobalPath::GetPointDistance(inputPose.getOrigin(), w_nextPathPose.getOrigin());
     } while (currIndex != startIndex); //full loop around
 
-    ROS_ERROR_STREAM("End of Find Nearest Path Point Index");
     return std::make_tuple(0, 0.0); //nothing found
 }
 

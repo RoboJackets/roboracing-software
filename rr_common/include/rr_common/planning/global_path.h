@@ -30,6 +30,7 @@ class GlobalPath {
     double cost_scaling_factor_;
 
     ros::Subscriber global_path_sub_;
+    ros::Publisher global_path_seg_pub_;
     std::string robot_base_frame_;
     double cost_scaling_factor;
     nav_msgs::Path global_path_msg_;

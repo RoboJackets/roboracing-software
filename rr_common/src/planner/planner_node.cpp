@@ -99,9 +99,9 @@ void processMap() {
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
     plan.cost = cost_fn(controls);
-
     g_vehicle_model->RollOutPath(controls, plan.rollout);
     std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.rollout.path);
+    g_global_path_cost->CalculateCost(plan.rollout.path, true);
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
 
