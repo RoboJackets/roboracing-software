@@ -34,14 +34,23 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint>& plan, const bool 
         return 0.0;
     }
     std::vector<tf::Point> sample_path(plan.size());
-    std::transform(plan.begin(), plan.end(), sample_path.begin(), [](const PathPoint &pose) {return tf::Point(pose.pose.x, pose.pose.y, 0);});
+    //convert to world frame
+    this->LookupPathTransform();
+    std::transform(plan.begin(), plan.end(), sample_path.begin(), [&](const PathPoint &pose) {
+        tf::Pose w_pose = robot_to_path_transform_ *
+                tf::Pose(tf::createQuaternionFromYaw(pose.pose.theta), tf::Vector3(pose.pose.x, pose.pose.y, 0));
+        return tf::Point(w_pose.getOrigin().x(), w_pose.getOrigin().y(), 0);
+    });
+    //need to transform points from basefootprint to map if possible I think
     tf::Point sample_start = sample_path[0];
+    std::vector<tf::Point> sample_path_ft(plan.size());
+
     std::vector<double> distances_to_origin(global_path_.size());
     std::transform(global_path_.begin(), global_path_.end(), distances_to_origin.begin(), [sample_start](const tf::Point& global_pnt){
         return GlobalPath::GetPointDistance(global_pnt, sample_start);
     });
-    //segement start
-    int seg_start_index = std::min_element(distances_to_origin.begin(), distances_to_origin.begin()) - distances_to_origin.begin();
+    //segment start
+    int seg_start_index = std::min_element(distances_to_origin.begin(), distances_to_origin.end()) - distances_to_origin.begin();
     vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
     //find last point using cumulative distance
