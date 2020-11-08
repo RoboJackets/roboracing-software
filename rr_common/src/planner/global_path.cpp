@@ -15,8 +15,6 @@
 #include <numeric>
 #include <rr_common/planning/vectordtw.h>
 
-
-
 namespace rr {
 
 GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), accepting_updates_(true), closest_point_to_robot_index_(0), listener_(new tf::TransformListener) {
