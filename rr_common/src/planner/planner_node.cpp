@@ -8,6 +8,7 @@
 #include <rr_common/planning/bicycle_model.h>
 #include <rr_common/planning/distance_map.h>
 #include <rr_common/planning/effector_tracker.h>
+#include <rr_common/planning/global_path.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/inflation_map.h>
 #include <rr_common/planning/map_cost_interface.h>
@@ -16,7 +17,6 @@
 #include <rr_msgs/steering.h>
 
 #include <rr_common/linear_tracking_filter.hpp>
-#include <rr_common/planning/global_path.h>
 
 constexpr int ctrl_dim = 1;
 
@@ -72,7 +72,7 @@ void processMap() {
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
         double global_path_costs = g_global_path_cost->CalculateCost(path, false);
-//        double global_path_costs = 0;
+        //        double global_path_costs = 0;
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;

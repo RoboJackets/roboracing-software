@@ -1,10 +1,12 @@
 #pragma once
 
+#include <nav_msgs/Path.h>
 #include <tf/tf.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
-#include <nav_msgs/Path.h>
+
 #include <tuple>
+
 #include "planner_types.hpp"
 
 namespace rr {
