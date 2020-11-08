@@ -70,11 +70,7 @@ void processMap() {
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
         double cost = 0;
-        double inflator = 1;
-        double gamma = 1.01;
         for (size_t i = 0; i < rollout.path.size(); ++i) {
-            cost *= gamma;
-            inflator *= gamma;
             if (map_costs[i] >= 0) {
                 cost += k_map_cost_ * map_costs[i];
                 cost += k_speed_ * std::pow(max_speed - path[i].speed, 2);
@@ -85,7 +81,7 @@ void processMap() {
                 break;
             }
         }
-        return cost / inflator;
+        return cost;
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
