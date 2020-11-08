@@ -12,11 +12,11 @@
             -urdf -model evgp_opponent
             -x 3 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
 
-    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller"
-          output="screen">
-        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat.csv"/>
-        <param name="model_name" value="evgp_opponent"/>
-        <param name="time_warp" value="0.9"/>
-        <param name="start_delay" value="5.0"/>
-    </node>
+<!--    <node pkg="rr_gazebo" type="opponent_trajectory_controller.py" name="opponent_trajectory_controller"-->
+<!--          output="screen">-->
+<!--        <param name="trajectory_csv" value="$(find rr_gazebo)/config/opponent_trajectory_copycat.csv"/>-->
+<!--        <param name="model_name" value="evgp_opponent"/>-->
+<!--        <param name="time_warp" value="0.9"/>-->
+<!--        <param name="start_delay" value="5.0"/>-->
+<!--    </node>-->
 </launch>

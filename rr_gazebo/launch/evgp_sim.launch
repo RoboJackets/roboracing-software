@@ -44,9 +44,9 @@
 <!--    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />-->
 
     <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/evgp.urdf
+          args="-file $(find rr_description)/urdf/rigatoni.urdf
             -gazebo_namespace /gazebo
-            -urdf -model evgp
+            -urdf -model rigatoni
             -x $(arg x) -y $(arg y) -z 0.1
             -R 0 -P 0 -Y $(arg heading)"/>
 
