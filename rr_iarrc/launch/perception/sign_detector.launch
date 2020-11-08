@@ -1,5 +1,5 @@
 <launch>
-    <node name="sign_detector" pkg="rr_iarrc" type="sign_detector" output="screen">
+    <node name="sign_detector" pkg="rr_iarrc" type="sign_detector" output="screen" required="true">
         <!-- Sign Detector Params -->
         <param name="front_image_subscription" type="string" value="/camera_center/image_color_rect"/>
 
