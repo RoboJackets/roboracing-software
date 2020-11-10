@@ -55,7 +55,7 @@ load_workspace_base: &load_workspace
     at: ~/catkin_ws
 
 checkout_submodules_base: &checkout_submodules
-  run: cd ~/catkin_ws/src/roboracing-software && git submodule sync && git submodule update --init
+  run: cd ~/catkin_ws/src/roboracing-software && git submodule sync && git submodule update --init --force
 
 version: 2
 jobs:
@@ -126,4 +126,3 @@ workflows:
       - test:
           requires:
             - compile
-            

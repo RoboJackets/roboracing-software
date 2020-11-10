@@ -1,0 +1,134 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="IARRC Urban">
+        <gui>
+            <camera name="gzclient_camera">
+                <pose>-2.510217 -18.282948 1.477428 0 0.284000 1.527999</pose>
+            </camera>
+        </gui>
+        <scene>
+            <ambient>1.0 1.0 1.0 1.0</ambient>
+            <background>0.7 0.7 0.7 1.0</background>
+            <shadows>true</shadows>
+            <grid>false</grid>
+            <origin_visual>false</origin_visual>
+        </scene>
+
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <!--
+        <include>
+            <uri>model://sun</uri>
+            <pose> -0.927440 -13.45 16.19 1 0 0 0 </pose>
+        </include>
+        -->
+        <include>
+            <uri>model://IARRCUrbanTrack</uri>
+            <pose>0 0 0 0 0 0</pose>
+        </include>
+
+        <!--1st Sign - Right -->
+        <include name="Sign_1">
+            <name>Sign_1</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-2.05 -11.7 .45 1.5708 1.5708 0</pose>
+        </include>
+
+        <!--2nd Sign - Left -->
+        <include>
+            <name>Sign_2</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>5.6 -11 .45 1.5708 -1.5708 -1.5708</pose>
+        </include>
+
+        <!--3rd Sign - Left -->
+        <include>
+            <name>Sign_3</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>5.43 -4.67 .45 1.5708 -1.5708 0</pose>
+        </include>
+
+        <!--4th Sign - Right -->
+        <include>
+            <name>Sign_4</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 -1.97 .45 1.5708 1.5708 1.5708</pose>
+        </include>
+
+        <!--5th Sign - Forward -->
+        <include>
+            <name>Sign_5</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 3 .45 1.5708 0 0</pose>
+        </include>
+
+        <!--6th Sign - Forward -->
+        <include>
+            <name>Sign_6</name>
+            <uri>model://IARRCUrbanArrow</uri>
+            <pose>-1.96 10.6 .45 1.5708 0 0</pose>
+        </include>
+
+        <actor name="reddot">
+            <link name="link">
+                <visual name="visual">
+                    <material> <!-- Wheel material -->
+                        <ambient>1 0.1 0.1 1</ambient>
+                        <diffuse>1 0.1 0.2 1</diffuse>
+                        <specular>1 0 0 1</specular>
+                        <emissive>1 0 0 1</emissive>
+                    </material> <!-- End wheel material -->
+                    <pose>-2.07 -13.38 .5 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.1</radius>
+                        </sphere>
+                    </geometry>
+                </visual>
+            </link>
+            <script>
+                <loop>true</loop>
+                <delay_start>5.000000</delay_start>
+                <auto_start>true</auto_start>
+                <trajectory id="0" type="square">
+                    <waypoint>
+                        <time>1.00</time>
+                        <pose>0 0 -4.5 0 0 0</pose>
+                    </waypoint>
+                </trajectory>
+            </script>
+        </actor>
+
+
+        <actor name="greenddot">
+            <link name="link">
+                <visual name="visual">
+                    <material> <!-- Wheel material -->
+                        <ambient>0 1 0.1 1</ambient>
+                        <diffuse>0 1 0.2 1</diffuse>
+                        <specular>0 1 0 1</specular>
+                        <emissive>0 1 0 1</emissive>
+                    </material> <!-- End wheel material -->
+                    <pose>-2.07 -13.38 -4 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.1</radius>
+                        </sphere>
+                    </geometry>
+                </visual>
+            </link>
+            <script>
+                <loop>true</loop>
+                <delay_start>5.000000</delay_start>
+                <auto_start>true</auto_start>
+                <trajectory id="0" type="square">
+                    <waypoint>
+                        <time>1.00</time>
+                        <pose>0 0 4.5 0 0 0</pose>
+                    </waypoint>
+                </trajectory>
+            </script>
+        </actor>
+    </world>
+</sdf>
