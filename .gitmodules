@@ -7,3 +7,9 @@
 [submodule "third_party/geometry2"]
 	path = third_party/geometry2
 	url = https://github.com/ros/geometry2.git
+[submodule "third_party/apriltag_ros"]
+	path = third_party/apriltag_ros
+	url = https://github.com/AprilRobotics/apriltag_ros
+[submodule "third_party/apriltag"]
+	path = third_party/apriltag
+	url = https://github.com/AprilRobotics/apriltag
