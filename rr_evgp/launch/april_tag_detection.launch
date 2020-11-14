@@ -1,13 +1,13 @@
 <launch>
     <arg name="launch_prefix" default="" /> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
-    <arg name="node_namespace" default="rr_evgp_continuous_node" />
-    <arg name="camera_name" default="/camera_rect" />
+    <arg name="node_namespace" default="apriltag_ros_continuous_node" />
+    <arg name="camera_name" default="/camera_center" />
     <arg name="camera_frame" default="camera" />
-    <arg name="image_topic" default="image_rect" />
+    <arg name="image_topic" default="image_color_rect" />
 
     <!-- Set parameters -->
-    <rosparam command="load" file="$(find rr_evgp)/conf/april_tags_settings.yaml" ns="$(arg node_namespace)" />
-    <rosparam command="load" file="$(find rr_evgp)/conf/apriltags.yaml" ns="$(arg node_namespace)" />
+    <rosparam command="load" file="$(find rr_evgp)/conf/april_tag_settings.yaml" ns="$(arg node_namespace)" />
+    <rosparam command="load" file="$(find rr_evgp)/conf/april_tag_taglist.yaml" ns="$(arg node_namespace)" />
 
     <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)" >
         <!-- Remap topics from those used in code to those on the ROS network -->
