@@ -13,3 +13,9 @@
 [submodule "third_party/apriltag"]
 	path = third_party/apriltag
 	url = https://github.com/AprilRobotics/apriltag
+[submodule "third_party/gazebo_apriltag"]
+	path = third_party/gazebo_apriltag
+	url = https://github.com/koide3/gazebo_apriltag.git
+[submodule "third_party/velodyne_simulator"]
+	path = third_party/velodyne_simulator
+	url = https://bitbucket.org/DataspeedInc/velodyne_simulator.git
