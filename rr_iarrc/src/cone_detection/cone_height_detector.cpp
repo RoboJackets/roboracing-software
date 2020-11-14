@@ -9,12 +9,14 @@
 #include <std_msgs/Float32.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+
 #include "std_msgs/Float64MultiArray.h"
 
 using namespace std;
@@ -170,7 +172,7 @@ cv::Mat draw_box_and_calc_dist(const cv::Mat& frame, const cv::Mat& sure_bodies)
 
         drawContours(frame, contours, i, cv::Scalar(0, 255), 1, 8, vector<cv::Vec4i>(), 0, Point());
         rectangle(frame, rect[i].tl(), rect[i].br(), cv::Scalar(0, 255), 3, 8, 0);
-        circle(frame, center, 5, cv::Scalar(255, 0, 255), CV_FILLED, 8, 0);
+        circle(frame, center, 5, cv::Scalar(255, 0, 255), cv::FILLED, 8, 0);
         putText(frame, position, Point(center.x - 80, center.y - 30), cv::FONT_HERSHEY_SIMPLEX, 1,
                 cv::Scalar(255, 255, 255), 2, true);
     }
@@ -195,7 +197,7 @@ cv::Mat find_unique_centers(const cv::Mat& img, double thres_value) {
         mask = Mat::zeros(img.size(), CV_8UC1);
         dist_mask = cv::Scalar::all(0);
 
-        drawContours(mask, contours1, i, 255, CV_FILLED);
+        drawContours(mask, contours1, i, 255, cv::FILLED);
 
         dist_transform.copyTo(dist_mask, mask);
 
@@ -267,7 +269,7 @@ cv::Mat cutSmall(const cv::Mat& color_edges, int size_min) {
     cv::findContours(color_edges, contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
     for (int i = 0; i < contours.size(); i++) {
         if (size_min < cv::arcLength(contours[i], false)) {
-            cv::drawContours(contours_color, contours, i, cv::Scalar(255), CV_FILLED, 8);
+            cv::drawContours(contours_color, contours, i, cv::Scalar(255), cv::FILLED, 8);
         }
     }
     return contours_color;
@@ -284,12 +286,13 @@ cv::Mat find_orange_in_ROI(const cv::Mat& img) {
 }
 
 void blockEnvironment(const cv::Mat& img) {
-    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0, 0, 0), CV_FILLED);
+    cv::rectangle(img, cv::Point(0, 0), cv::Point(img.cols, blockSky_height), cv::Scalar(0, 0, 0), cv::FILLED);
 
-    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0, 0, 0), CV_FILLED);
+    cv::rectangle(img, cv::Point(0, img.rows), cv::Point(img.cols, blockWheels_height), cv::Scalar(0, 0, 0),
+                  cv::FILLED);
 
     cv::rectangle(img, cv::Point(img.cols / 3, img.rows), cv::Point(2 * img.cols / 3, blockBumper_height),
-                  cv::Scalar(0, 0, 0), CV_FILLED);
+                  cv::Scalar(0, 0, 0), cv::FILLED);
 }
 
 void img_callback(const sensor_msgs::ImageConstPtr& msg) {

@@ -1,5 +1,5 @@
 <launch>
-  <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen">
+  <node name="finish_line_watcher" pkg="rr_iarrc" type="finish_line_watcher" output="screen" required="true">
       <param name="img_topic" value="/finish_line_detection_img" />
 
       <!-- Params to control blocking of the image. (Image Height = 1280)-->

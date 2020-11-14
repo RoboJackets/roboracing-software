@@ -7,11 +7,9 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-
+#include <rr_common/CameraGeometry.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
-
-#include <rr_common/CameraGeometry.h>
 
 #include <thread>
 

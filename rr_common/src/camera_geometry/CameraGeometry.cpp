@@ -1,9 +1,8 @@
 #include <rr_common/CameraGeometry.h>
-
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
-#include <cmath>
 
+#include <cmath>
 #include <rr_common/angle_utils.hpp>
 
 namespace rr {

@@ -4,6 +4,7 @@
 #include <rr_platform/SerialPort.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+
 #include <boost/asio.hpp>
 #include <boost/regex.hpp>
 

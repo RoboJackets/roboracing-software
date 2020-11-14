@@ -140,7 +140,7 @@ cv::Mat removeSmallBranches(const cv::Mat& img, const int min_branch_length) {
     cv::inRange(filtered_img, cv::Scalar(11), cv::Scalar(12), branches);
 
     std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(branches, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    cv::findContours(branches, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     cv::Mat big_branches(img.rows, img.cols, CV_8U, cv::Scalar(0));
     for (size_t i = 0; i < contours.size(); i++) {

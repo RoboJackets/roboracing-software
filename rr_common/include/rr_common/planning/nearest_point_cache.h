@@ -6,12 +6,12 @@
 
 #pragma once
 
+#include <sensor_msgs/PointCloud2.h>
+
 #include <deque>
 #include <mutex>
 #include <tuple>
 #include <valarray>
-
-#include <sensor_msgs/PointCloud2.h>
 
 #include "map_cost_interface.h"
 #include "planner_types.hpp"

@@ -1,14 +1,12 @@
+#include <math.h>
 #include <ros/ros.h>
 #include <rr_msgs/axes.h>
 #include <rr_msgs/race_reset.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-
 #include <rr_msgs/urc_sign.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int8.h>
-
-#include <math.h>
 #include <stdlib.h>
 
 const int WAITING_FOR_START = 0;
