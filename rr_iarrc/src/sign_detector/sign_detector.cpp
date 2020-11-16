@@ -4,59 +4,46 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <sensor_msgs/Image.h>
-#include <cstdlib>
-#include <thread>
-
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+#include <stdlib.h>
+#include <tuple>
+#include <thread>
+#include <mutex>
 
 cv_bridge::CvImagePtr cv_ptr;
 ros::Publisher pub;
-ros::Publisher pubMove;
+ros::Publisher pub_move;
 
-std_msgs::String moveMsg;
+std::vector<cv::Mat> templates(3);  // 0 = Forward, 1 = Left, 2 = Right
+std_msgs::String move_msg;
 
-int roi_x;
-int roi_y;
-int roi_width;
-int roi_height;
+int roi_x, roi_y, roi_width, roi_height;
+double scalars_start, scalars_end;
+int scalars_num;
+double template_threshold;
 
-cv::Mat sign_forward;
-cv::Mat sign_left;
-cv::Mat sign_right;
-cv::Mat resized;
-cv::Mat edges;
-cv::Mat result;
+// Credits: https://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/, Daniel Martin
+std::tuple<double, cv::Point, int> template_match(const std::vector<cv::Mat> &resized_images, const cv::Mat &template_image) {
+    std::tuple<double, cv::Point, int> found = std::make_tuple(-1, cv::Point(-1, -1), -1);
+    for(int i = 0; i < resized_images.size(); i++) {
+        const cv::Mat &resized_image = resized_images[i];
+        if (resized_image.cols < template_image.cols || resized_image.rows < template_image.rows) {
+            break;
+        }
+        cv::Mat result;
+        cv::matchTemplate(resized_image, template_image, result, CV_TM_CCOEFF_NORMED);
+        double minVal, maxVal;
+        cv::Point minLoc, maxLoc;
+        cv::minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+        if (std::get<0>(found) == -1 || maxVal > std::get<0>(found)) {
+            found = std::make_tuple(maxVal, maxLoc, i);
+        }
+    }
+    return found;
+}
 
-double cannyThresholdLow;
-double cannyThresholdHigh;
-
-double minVal, curValF, curValR, curValL;
-cv::Point minPos, curPosF, curPosR, curPosL;
-
-double templateThresholdMin;
-
-const std::string RIGHT("right");
-const std::string LEFT("left");
-const std::string STRAIGHT("straight");
-const std::string NONE("none");
-
-struct estimate {
-    std::string direction;
-    double maxVal;
-    double maxR;
-    cv::Point maxPos;
-};
-
-std::map<std::string, int> arrowCount = { {RIGHT, 0}, {LEFT, 0}, {STRAIGHT, 0}};
-
-std::vector<double> scales{1.6, 1.4, 1.2, 1};
-
-/*
- * This sign detector uses multi-scale template matching
- * to find arrows
- */
 void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
@@ -69,97 +56,83 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
         crop = frame(roi).clone();
     }
 
+    cv::resize(crop, crop, cv::Size(int(crop.cols / 2), int(crop.rows / 2)));
     cv::cvtColor(crop, crop, CV_BGR2GRAY);
 
-    estimate curBest = {NONE, 0, 0, cv::Point()};
-
-    // ROS_INFO_STREAM(std:: endl << "New frame");
-
-    for (double scale: scales) {
-        cv::resize(crop, resized, cv::Size(crop.cols * scale, crop.rows * scale));
-        double r = 1 / scale;
-
-        if (resized.rows < sign_forward.rows || resized.cols < sign_forward.cols) {
-            break;
-        }
-
-        cv::Canny(resized, edges, cannyThresholdLow, cannyThresholdHigh);
-
-        auto f1 = []() {
-            cv::matchTemplate(edges, sign_left, result, CV_TM_CCOEFF_NORMED);
-            cv::minMaxLoc(result, &minVal, &curValL, &minPos, &curPosL);
-        };
-
-        auto f2 = []() {
-            cv::matchTemplate(edges, sign_right, result, CV_TM_CCOEFF_NORMED);
-            cv::minMaxLoc(result, &minVal, &curValR, &minPos, &curPosR);
-        };
-
-        auto f3 = []() {
-            cv::matchTemplate(edges, sign_forward, result, CV_TM_CCOEFF_NORMED);
-            cv::minMaxLoc(result, &minVal, &curValF, &minPos, &curPosF);
-        };
-
-        std::thread th1(f1);
-        std::thread th2(f2);
-        std::thread th3(f3);
-
-        th1.join();
-        th2.join();
-        th3.join();
-
-        if (curValL > curValF && curValL > curValR && curValL > curBest.maxVal && curValL > templateThresholdMin) {
-            curBest.direction = LEFT;
-            curBest.maxVal = curValL;
-            curBest.maxPos = curPosL;
-            curBest.maxR = r;
-        } else if (curValR > curValF && curValR > curValL && curValR > curBest.maxVal && curValR > templateThresholdMin) {
-            curBest.direction = RIGHT;
-            curBest.maxVal = curValR;
-            curBest.maxPos = curPosR;
-            curBest.maxR = r;
-        } else if (curValF > curValL && curValF > curValR && curValF > curBest.maxVal && curValF > templateThresholdMin) {
-            curBest.direction = STRAIGHT;
-            curBest.maxVal = curValF;
-            curBest.maxPos = curPosF;
-            curBest.maxR = r;
-        }
-
-        //ROS_INFO_STREAM(resized.cols << " " << resized.rows << " " << sign_forward.cols << " " << sign_forward.rows);
+    std::vector<cv::Mat> resized_images(scalars_num);
+    double delta = (scalars_end - scalars_start) / (scalars_start - 1);
+    for (int i = 0; i < scalars_num; i++) {
+        double scale = scalars_end - i * delta;
+        cv::Mat resized_img;
+        cv::resize((i == 0) ? crop : resized_images[i-1], resized_img, cv::Size(int(crop.cols * scale), int(crop.rows * scale)));
+        resized_images[i] = resized_img;
     }
 
-    ROS_INFO_STREAM(curBest.direction << " " << curBest.maxVal << " " << 1 / curBest.maxR);
+    std::tuple<double, cv::Point, int> best_found = std::make_tuple(-1, cv::Point(-1, -1), -1);
+    int best_template = -1;
+    std::mutex best_found_mutex;
+
+    auto worker = [&](int thread_idx) {
+        auto found = template_match(resized_images, templates[thread_idx]);
+        std::lock_guard lock(best_found_mutex);
+        if (std::get<0>(best_found) == -1 || std::get<0>(found) > std::get<0>(best_found)) {
+            best_found = found;
+            best_template = thread_idx;
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (int thread_id = 0; thread_id < templates.size(); thread_id++) {
+        threads.emplace_back(worker, thread_id);
+    }
+
+    for (auto &t : threads) {
+        t.join();
+    }
+
+    auto[maxVal, maxLoc, best_i] = best_found;
+    double r = double(crop.rows) / resized_images[best_i].rows;
+
+    std::vector<std::string> i_to_template = {"FORWARD", "LEFT", "RIGHT"};
 
     cv::Point start, end;
-    start.x = std::round(curBest.maxPos.x * curBest.maxR);
-    start.y = std::round(curBest.maxPos.y * curBest.maxR);
-    end.x = std::round((curBest.maxPos.x + sign_left.cols) * curBest.maxR);
-    end.y = std::round((curBest.maxPos.y + sign_left.rows) * curBest.maxR);
-    cv::rectangle(edges, start, end, (0, 0, 255), 2);
+    start.x = int(maxLoc.x * r);
+    start.y = int(maxLoc.y * r);
+    end.x = int(start.x + templates[best_template].cols * r);
+    end.y = int(start.y + templates[best_template].rows * r);
+
+    cv::cvtColor(crop, crop, CV_GRAY2BGR);
+    cv::rectangle(crop, start, end, (maxVal > template_threshold) ? cv::Scalar(0,255,0) : cv::Scalar(255,0,0), 1);
+
+    // ROS_INFO_STREAM(i_to_template[best_template] << " " << maxVal);
 
     if (pub.getNumSubscribers() > 0) {
         sensor_msgs::Image out;
-        cv_ptr->image = edges;
-        cv_ptr->encoding = "mono8";
+        cv_ptr->image = crop;
+        cv_ptr->encoding = "bgr8";
         cv_ptr->toImageMsg(out);
         pub.publish(out);
     }
+
+    if (pub_move.getNumSubscribers() > 0 && maxVal >= template_threshold) {
+        std_msgs::String out;
+        out.data = i_to_template[best_template];
+        pub_move.publish(out);
+    }
 }
 
-// loads images, scales as need be, and makes the rotated versions
-void loadSignImages(std::string packageName, std::string fileName) {
-    std::string path = ros::package::getPath(packageName);
-    sign_forward = cv::imread(path + fileName);
-    ROS_ERROR_STREAM_COND(sign_forward.empty(), "Arrow sign image not found at " << path + fileName);
+void load_templates(std::string package_name, std::string file_name) {
+    std::string path = ros::package::getPath(package_name);
+    templates[0] = cv::imread(path + file_name);
+    ROS_ERROR_STREAM_COND(templates[0].empty(), "Arrow sign image not found at " << path + file_name);
 
-    cv::cvtColor(sign_forward, sign_forward, CV_RGB2GRAY);
-    cv::resize(sign_forward, sign_forward, cv::Size(sign_forward.rows / 30, sign_forward.cols / 30));
-    cv::Canny(sign_forward, sign_forward, 100, 300);  // get the edges as a binary, thresholds don't matter here
+    cv::resize(templates[0], templates[0], cv::Size(int(templates[0].rows / 30), int(templates[0].cols / 30)));
+    cv::cvtColor(templates[0], templates[0], CV_RGB2GRAY);
 
-    cv::Point2f center(sign_forward.rows / 2, sign_forward.cols / 2);
+    cv::Point2f center(templates[0].rows / 2, templates[0].cols / 2);
     cv::Mat rotateLeft = cv::getRotationMatrix2D(center, 90, 1);
-    cv::warpAffine(sign_forward, sign_left, rotateLeft, cv::Size(sign_forward.cols, sign_forward.rows));
-    cv::flip(sign_left, sign_right, 1);  // 1 = horizontal flip
+    cv::warpAffine(templates[0], templates[1], rotateLeft, cv::Size(templates[0].cols, templates[0].rows));
+    cv::flip(templates[1], templates[2], 1);
 }
 
 int main(int argc, char** argv) {
@@ -173,28 +146,30 @@ int main(int argc, char** argv) {
     std::string sign_file_path_from_package;
     std::string sign_file_package_name;
 
-    nhp.param("roi_x", roi_x, 0);
-    nhp.param("roi_y", roi_y, 0);
-    nhp.param("roi_width", roi_width, -1);  //-1 will default to the whole image
-    nhp.param("roi_height", roi_height, -1);
-
     nhp.param("front_image_subscription", image_sub, std::string("/camera/image_color_rect"));
     nhp.param("sign_file_package_name", sign_file_package_name, std::string("rr_iarrc"));
     nhp.param("sign_file_path_from_package", sign_file_path_from_package, std::string("/src/sign_detector/sign_forward.jpg"));
     nhp.param("sign_string_publisher", sign_pub, std::string("/turn_detected"));
 
-    nhp.param("canny_threshold_low", cannyThresholdLow, 100.0);
-    nhp.param("canny_threshold_high", cannyThresholdHigh, 100.0 * 3);
-    nhp.param("template_threshold_min", templateThresholdMin, 4.5e+06);
+    nhp.param("roi_x", roi_x, 0);
+    nhp.param("roi_y", roi_y, 0);
+    nhp.param("roi_width", roi_width, -1);  //-1 will default to the whole image
+    nhp.param("roi_height", roi_height, -1);
 
-    loadSignImages(sign_file_package_name, sign_file_path_from_package);
+    nhp.param("template_confidence_threshold", template_threshold, 0.5);
+    nhp.param("scalars_start", scalars_start, 0.6);
+    nhp.param("scalars_end", scalars_end, 1.2);
+    nhp.param("scalars_num", scalars_num, 4);
+
+    load_templates(sign_file_package_name, sign_file_path_from_package);
 
     pub = nh.advertise<sensor_msgs::Image>("/sign_detector/signs", 1);  // debug publish of image
 
-    // publish the turn move for Urban Challenge Controller
-    pubMove = nh.advertise<std_msgs::String>(sign_pub, 1);
+    pub_move = nh.advertise<std_msgs::String>(sign_pub, 1);
     auto img_real = nh.subscribe(image_sub, 1, sign_callback);
 
     ros::spin();
     return 0;
 }
+
+

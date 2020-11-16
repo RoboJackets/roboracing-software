@@ -13,9 +13,10 @@
         <param name="sign_file_package_name" type="string" value="rr_iarrc"/>
         <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
 
-        <param name="canny_threshold_low" type="double" value="250" /> <!-- 100, 170 -->
-        <param name="canny_threshold_high" type="double" value="350" /> <!-- usually about 2-3 times the low threshold -->
-        <param name="template_threshold_min" type="double" value="0" />
+        <param name="template_confidence_threshold" type="double" value="0.8" />
+        <param name="scalars_start" type="double" value="0.6" />
+        <param name="scalars_end" type="double" value="1.2" />
+        <param name="scalars_num" type="int" value="4" />
 
     </node>
 </launch>
