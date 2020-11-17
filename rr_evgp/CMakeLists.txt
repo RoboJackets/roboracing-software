@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         costmap_2d
         parameter_assertions
+        pcl_ros
+        pcl_conversions
+
 )
 
 find_package(OpenCV REQUIRED)
@@ -35,5 +38,6 @@ include_directories(
 ## Build ##
 ###########
 
+add_subdirectory(src/opponent_detection)
 add_subdirectory(src/costmap_plugins)
 add_subdirectory(src/UniformCostSearch)
