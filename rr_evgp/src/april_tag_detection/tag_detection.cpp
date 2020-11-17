@@ -2,7 +2,10 @@
 
 void callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg) {
     std::uint32_t second = msg->header.stamp.sec;
-    ROS_INFO("%i", second);
+    auto msgs = msg->detections;
+    for (const auto& message : msgs) {
+        ROS_INFO_STREAM((message.id[0]));
+    }
 }
 
 int main(int argc, char** argv) {
@@ -12,4 +15,3 @@ int main(int argc, char** argv) {
     ros::spin();
     return 0;
 }
-2
