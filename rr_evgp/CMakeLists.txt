@@ -37,3 +37,4 @@ include_directories(
 
 add_subdirectory(src/costmap_plugins)
 add_subdirectory(src/UniformCostSearch)
+add_subdirectory(src/april_tag_detection)

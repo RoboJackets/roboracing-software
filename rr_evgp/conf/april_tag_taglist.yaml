@@ -19,14 +19,8 @@
 #   ]
 standalone_tags:
   [
-  {id: 0, size: 0.17145, name: RIGA_0},
-  {id: 1, size: 0.17145, name: RIGA_1},
-  {id: 2, size: 0.17145, name: RIGA_2},
-  {id: 3, size: 0.17145, name: RIGA_3},
-  {id: 4, size: 0.17145, name: RIGA_4},
-  {id: 5, size: 0.17145, name: RIGA_5},
-  {id: 6, size: 0.17145, name: RIGA_6},
-  {id: 7, size: 0.17145, name: RIGA_7},
+    {id: 0, size: 0.8},
+    {id: 6, size: 1.0}
   ]
 # ## Tag bundle definitions
 # ### Remarks

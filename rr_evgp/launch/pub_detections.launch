@@ -1,0 +1,4 @@
+<launch>
+    <node name="tag_detections" pkg="rr_evgp" type="tag_detection" output="screen">
+    </node>
+</launch>

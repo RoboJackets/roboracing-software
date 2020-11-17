@@ -19,6 +19,7 @@
   <depend>rospy</depend>
   <depend>rr_msgs</depend>
   <depend>costmap_2d</depend>
+  <depend>apriltag_ros</depend>
 
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
