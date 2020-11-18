@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
         message_generation
         std_msgs
         dynamic_reconfigure
+        sensor_msgs
         )
 
 add_message_files(
@@ -25,6 +26,7 @@ add_message_files(
 generate_messages(
         DEPENDENCIES
         std_msgs
+        sensor_msgs
 )
 
 generate_dynamic_reconfigure_options(

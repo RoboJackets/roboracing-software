@@ -1,0 +1,5 @@
+<launch>
+    <node name="opponent_detection" pkg="rr_evgp" type="opponent_detection">
+
+    </node>
+</launch>
