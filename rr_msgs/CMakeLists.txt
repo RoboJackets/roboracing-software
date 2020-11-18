@@ -19,6 +19,7 @@ add_message_files(
         axes.msg
         hsv_tuned.msg
         urc_sign.msg
+        clusters.msg
 )
 
 generate_messages(
