@@ -25,8 +25,8 @@ double scalars_start, scalars_end;
 int scalars_num;
 double template_threshold;
 
-// Credits: https://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/ and
-// Daniel Martin
+// Credits: https://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/
+// and Daniel Martin
 std::tuple<double, cv::Point, int> template_match(const std::vector<cv::Mat> &resized_images,
                                                   const cv::Mat &template_image) {
     std::tuple<double, cv::Point, int> found = std::make_tuple(-1, cv::Point(-1, -1), -1);
