@@ -2,15 +2,16 @@
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
-#include <std_msgs/String.h>
 #include <sensor_msgs/Image.h>
+#include <std_msgs/String.h>
+#include <stdlib.h>
+
+#include <mutex>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <stdlib.h>
-#include <tuple>
 #include <thread>
-#include <mutex>
+#include <tuple>
 
 cv_bridge::CvImagePtr cv_ptr;
 ros::Publisher pub;
@@ -24,10 +25,12 @@ double scalars_start, scalars_end;
 int scalars_num;
 double template_threshold;
 
-// Credits: https://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/ and Daniel Martin
-std::tuple<double, cv::Point, int> template_match(const std::vector<cv::Mat> &resized_images, const cv::Mat &template_image) {
+// Credits: https://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/ and
+// Daniel Martin
+std::tuple<double, cv::Point, int> template_match(const std::vector<cv::Mat> &resized_images,
+                                                  const cv::Mat &template_image) {
     std::tuple<double, cv::Point, int> found = std::make_tuple(-1, cv::Point(-1, -1), -1);
-    for(int i = 0; i < resized_images.size(); i++) {
+    for (int i = 0; i < resized_images.size(); i++) {
         const cv::Mat &resized_image = resized_images[i];
         if (resized_image.cols < template_image.cols || resized_image.rows < template_image.rows) {
             break;
@@ -44,7 +47,7 @@ std::tuple<double, cv::Point, int> template_match(const std::vector<cv::Mat> &re
     return found;
 }
 
-void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
+void sign_callback(const sensor_msgs::ImageConstPtr &msg) {
     cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
@@ -64,7 +67,8 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
     for (int i = 0; i < scalars_num; i++) {
         double scale = scalars_end - i * delta;
         cv::Mat resized_img;
-        cv::resize((i == 0) ? crop : resized_images[i-1], resized_img, cv::Size(int(crop.cols * scale), int(crop.rows * scale)));
+        cv::resize((i == 0) ? crop : resized_images[i - 1], resized_img,
+                   cv::Size(int(crop.cols * scale), int(crop.rows * scale)));
         resized_images[i] = resized_img;
     }
 
@@ -90,10 +94,10 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
         t.join();
     }
 
-    auto[maxVal, maxLoc, best_i] = best_found;
+    auto [maxVal, maxLoc, best_i] = best_found;
     double r = double(crop.rows) / resized_images[best_i].rows;
 
-    std::vector<std::string> i_to_template = {"FORWARD", "LEFT", "RIGHT"};
+    std::vector<std::string> i_to_template = { "FORWARD", "LEFT", "RIGHT" };
 
     cv::Point start, end;
     start.x = int(maxLoc.x * r);
@@ -102,7 +106,7 @@ void sign_callback(const sensor_msgs::ImageConstPtr& msg) {
     end.y = int(start.y + templates[best_template].rows * r);
 
     cv::cvtColor(crop, crop, CV_GRAY2BGR);
-    cv::rectangle(crop, start, end, (maxVal > template_threshold) ? cv::Scalar(0,255,0) : cv::Scalar(255,0,0), 1);
+    cv::rectangle(crop, start, end, (maxVal > template_threshold) ? cv::Scalar(0, 255, 0) : cv::Scalar(255, 0, 0), 1);
 
     // ROS_INFO_STREAM(i_to_template[best_template] << " " << maxVal);
 
@@ -135,7 +139,7 @@ void load_templates(std::string package_name, std::string file_name) {
     cv::flip(templates[1], templates[2], 1);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     ros::init(argc, argv, "sign_detector");
 
     ros::NodeHandle nh;
@@ -148,7 +152,8 @@ int main(int argc, char** argv) {
 
     nhp.param("front_image_subscription", image_sub, std::string("/camera/image_color_rect"));
     nhp.param("sign_file_package_name", sign_file_package_name, std::string("rr_iarrc"));
-    nhp.param("sign_file_path_from_package", sign_file_path_from_package, std::string("/src/sign_detector/sign_forward.jpg"));
+    nhp.param("sign_file_path_from_package", sign_file_path_from_package,
+              std::string("/src/sign_detector/sign_forward.jpg"));
     nhp.param("sign_string_publisher", sign_pub, std::string("/turn_detected"));
 
     nhp.param("roi_x", roi_x, 0);
@@ -171,5 +176,3 @@ int main(int argc, char** argv) {
     ros::spin();
     return 0;
 }
-
-
