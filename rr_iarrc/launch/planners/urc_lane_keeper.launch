@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
+    <remap from="/plan/steering" to="/steering"/>
+    <remap from="/plan/speed" to="/speed"/>
+
     <!-- Sides Merger-->
     <include file="$(find rr_iarrc)/launch/perception/urc_sides_merger.launch"/>
     <!-- CenterLine Planner-->
-    <include file="$(find rr_iarrc)/launch/planners/urc_centerline_planner.launch"/>
-    
+    <include file="$(find rr_iarrc)/launch/planners/urc_centerline_planner_sim.launch"/>
+
     <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_front.launch">
         <arg name="camera_namespace" value="camera_center"/>
     </include>

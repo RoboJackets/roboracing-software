@@ -12,7 +12,7 @@
         <!--Strength of Adaptive Thresholding-->
         <param name="ignore_adaptive" type="bool" value="True" />
 
-        <param name="subscription_node" type="string" value="image_color_rect"/>
+        <param name="subscription_node" type="string" value="image_raw"/>
         <param name="publish_detection_node" type="string" value="lines/detection_img"/>
         <param name="publish_debug_node" type="string" value="lines/debug_img"/>
     </node>
