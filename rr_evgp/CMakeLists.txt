@@ -11,7 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         costmap_2d
         parameter_assertions
-)
+        apriltag_ros
+        pcl_ros
+        )
 
 find_package(OpenCV REQUIRED)
 
