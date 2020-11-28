@@ -1,4 +1,7 @@
 <launch>
-    <node name="tag_detections" pkg="rr_evgp" type="tag_detection" output="screen">
+    <node name="april_tag_pointcloud" pkg="rr_evgp" type="april_tag_pointcloud" output="screen">
+        <param name="camera_frame" type="str" value="/camera_optical" />
+        <param name="pointcloud" type="str" value="/april_tags/pointcloud" />
+<!--        <param name="tag_detections" type="str" value="/tag_detections" />-->
     </node>
 </launch>
