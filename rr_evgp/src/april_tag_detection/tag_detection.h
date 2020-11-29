@@ -4,17 +4,19 @@
 
 #pragma once
 
-#include <vector>
-#include <ros/ros.h>
-#include <pcl/point_cloud.h>
 #include <apriltag_ros/AprilTagDetectionArray.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+
 #include <utility>
+#include <vector>
 
 class tag_detection {
 public:
-    tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud);
+    tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
+                  const std::string &tag_detections_topic);
 
 private:
     ros::Publisher pub_pointcloud;
