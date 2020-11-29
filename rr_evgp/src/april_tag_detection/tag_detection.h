@@ -14,10 +14,11 @@
 
 class tag_detection {
 public:
-    tag_detection(std::string camera_frame, const std::string &pointcloud);
+    tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud);
 
 private:
     ros::Publisher pub_pointcloud;
+    ros::Subscriber sub_detections;
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame;
 

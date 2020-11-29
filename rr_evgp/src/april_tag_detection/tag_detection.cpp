@@ -4,11 +4,10 @@
 
 #include "tag_detection.h"
 
-tag_detection::tag_detection(std::string camera_frame, const std::string& pointcloud) {
-    ros::NodeHandle n;
-    camera_frame = "/camera_optical";
-    ros::Subscriber sub = n.subscribe("/tag_detections", 1, &tag_detection::callback, this);
-    pub_pointcloud = n.advertise<sensor_msgs::PointCloud2>("/april_tag_pointcloud/pointcloud", 1);
+tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud) {
+    camera_frame = "camera_optical";
+    sub_detections = nh->subscribe("/tag_detections", 1, &tag_detection::callback, this);
+    pub_pointcloud = nh->advertise<sensor_msgs::PointCloud2>("/april_tag_pointcloud/pointcloud", 1);
 }
 
 void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg) {
@@ -31,7 +30,7 @@ void tag_detection::draw_opponents(const apriltag_ros::AprilTagDetectionArray::C
 void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
     sensor_msgs::PointCloud2 outmsg;
     pcl::toROSMsg(cloud, outmsg);
-    outmsg.header.frame_id = camera_frame;
+    outmsg.header.frame_id = "camera_optical";
     pub_pointcloud.publish(outmsg);
 }
 
@@ -45,8 +44,8 @@ void tag_detection::draw_opponent(const int &id, geometry_msgs::Pose_<std::alloc
         for (int y = 0; y < num_points; y++) {
             for (int z = 0; z < num_points; z++) {
                 opponent_cloud.push_back(pcl::PointXYZ((float) (start_x + x * ratio),
-                                              (float) (start_y + y * ratio),
-                                              (float) (april_tag_center.position.z + z * ratio)));
+                                                       (float) (start_y + y * ratio),
+                                                       (float) (april_tag_center.position.z + z * ratio)));
             }
         }
     }
