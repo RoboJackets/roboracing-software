@@ -15,11 +15,11 @@
 #include <vector>
 
 class tag_detection {
-  public:
+public:
     tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic);
 
-  private:
+private:
     ros::Publisher pub_pointcloud;
     ros::Subscriber sub_detections;
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
@@ -32,6 +32,4 @@ class tag_detection {
     void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud);
 
     void callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg);
-
-    static Eigen::Matrix3f matrix_rotation(double x, double y, double z);
 };

@@ -3,6 +3,7 @@
 //
 
 #include "tag_detection.h"
+#include "tf/LinearMath/Transform.h"
 
 tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
                              const std::string &tag_detections_topic) {
@@ -36,32 +37,16 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
 }
 
 void tag_detection::draw_opponent(const int &id, geometry_msgs::Pose_<std::allocator<void>> april_tag_center) {
-    int side_length = 5;
+    int side_length = 2;
     int num_points = 10;
-    double ratio = (double)side_length / num_points;
-    double start_y = (april_tag_center.position.y - side_length / 2.0);
+    double ratio = (double) side_length / num_points;
     double start_x = april_tag_center.position.x - side_length / 2.0;
-    Eigen::Matrix3f rotation_matrix;
-    rotation_matrix = matrix_rotation(april_tag_center.orientation.x, april_tag_center.orientation.y,
-                                      april_tag_center.orientation.z);
 
     for (int x = 0; x < num_points; x++) {
-        for (int y = 0; y < num_points; y++) {
-            for (int z = 0; z < num_points; z++) {
-                Eigen::Vector3f coords;
-                coords << (start_x + x * ratio), (start_y + y * ratio), (april_tag_center.position.z + z * ratio);
-                coords = rotation_matrix * coords;
-                opponent_cloud.push_back(pcl::PointXYZ((float)(coords.x()), (float)(coords.y()), (float)(coords.z())));
-            }
+        for (int z = 0; z < num_points; z++) {
+            opponent_cloud.push_back(
+                    pcl::PointXYZ((float) (start_x + x * ratio), 0,
+                                  (float) (april_tag_center.position.z + z * ratio)));
         }
     }
-}
-
-Eigen::Matrix3f tag_detection::matrix_rotation(double x, double y, double z) {
-    Eigen::Matrix3f x_matrix, y_matrix, z_matrix;
-    x_matrix << 1, 0, 0, 0, cos(x), -sin(x), 0, sin(x), cos(x);
-    y_matrix << cos(y), 0, sin(y), 0, 1, 0, -sin(y), 0, cos(y);
-    z_matrix << cos(z), -sin(z), 0, sin(z), cos(z), 0, 0, 0, 1;
-
-    return x_matrix * y_matrix * z_matrix;
 }
