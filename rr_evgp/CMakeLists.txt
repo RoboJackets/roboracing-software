@@ -6,13 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
-        rr_msgs
         sensor_msgs
         geometry_msgs
         costmap_2d
         parameter_assertions
         pcl_ros
         pcl_conversions
+        visualization_msgs
+        boost
 
 )
 

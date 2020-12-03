@@ -1,5 +1,7 @@
 #include <ros/ros.h>
+#include <visualization_msgs/Marker.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <boost/foreach.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -12,9 +14,37 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
-#include <rr_msgs/clusters.h>
 
-rr_msgs::clusters clusters_msg;
+visualization_msgs::Marker cluster_points;
+cluster_points.header.frame_id = "/base_footprint";
+cluster_points.header.stamp = ros::Time::now();
+
+cluster_points.ns = "points";
+cluster_points.id = 0;
+
+cluster_points.type = visualization_msgs::Marker::POINTS;
+cluster_points.action = visualization_msgs::Marker::ADD;
+
+cluster_points.pose.position.x = 0;
+cluster_points.pose.position.y = 0;
+cluster_points.pose.position.z = 0;
+cluster_points.pose.orientation.x = 0.0;
+cluster_points.pose.orientation.y = 0.0;
+cluster_points.pose.orientation.z = 0.0;
+cluster_points.pose.orientation.w = 1.0;
+
+cluster_points.scale.x = 0.1;
+cluster_points.scale.y = 0.1;
+cluster_points.scale.z = 0.1;
+
+cluster_points.color.r = 1.0f;
+cluster_points.color.g = 0.0f;
+cluster_points.color.b = 0.0f;
+cluster_points.color.a = 1.0;
+
+cluster_points.points = [];
+
+cluster_points.lifetime = ros::Duration();
 
 // define callback function
 void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
@@ -31,7 +61,7 @@ void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
   // convert the pcl::PCLPointCloud2 type to pcl::PointCloud<pcl::PointXYZRGB>
   pcl::fromPCLPointCloud2(*cloud, *cloud_filtered);
 
-  // FLOOR SEGMENTATION
+  // **FLOOR SEGMENTATION**
 
   // create a pcl object to hold the passthrough filtered results
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr floor_segmented(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -43,54 +73,18 @@ void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
   pass.setFilterLimits(0.0, 1.0);
   pass.filter(*floor_segmented);
 
+  // set cloud_filtered to the passthrough filter results
   *cloud_filtered = *floor_segmented;
 
-  sensor_msgs::PointCloud2 output;
-  pcl::PCLPointCloud2 outputPCL;
+  // for each point in cloud_filtered, add to points variable of Marker
+  BOOST_FOREACH (pcl::PointXYZRGB pt, cloud_filtered->points)
+    cluster_points.points.push_back(pt);
 
-  // convert to pcl::PCLPointCloud2
-  pcl::toPCLPointCloud2(*cloud_filtered, outputPCL);
+  // **WALL SEGMENTATION**
 
-  // Convert to ROS data type
-  pcl_conversions::fromPCL(outputPCL, output);
+  // perform euclidean cluster segmentation to separate individual objects
 
-  // add the cluster to the array message
-  clusters_msg.clusters.push_back(output);
-
-  // // WALL SEGMENTATION
-
-  // // create a pcl object to hold the ransac filtered results
-  // pcl::PointCloud<pcl::PointXYZRGB> *xyz_cloud_ransac_filtered = new pcl::PointCloud<pcl::PointXYZRGB>;
-  // pcl::PointCloud<pcl::PointXYZRGB>::Ptr xyzCloudPtrRansacFiltered (xyz_cloud_ransac_filtered);
-
-
-  // // perform ransac planar filtration to remove table top
-  // pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  // pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  // // Create the segmentation object
-  // pcl::SACSegmentation<pcl::PointXYZRGB> seg1;
-  // // Optional
-  // seg1.setOptimizeCoefficients (true);
-  // // Mandatory
-  // seg1.setModelType (pcl::SACMODEL_PLANE);
-  // seg1.setMethodType (pcl::SAC_RANSAC);
-  // seg1.setDistanceThreshold (0.04);
-
-  // seg1.setInputCloud (xyzCloudPtrFiltered);
-  // seg1.segment (*inliers, *coefficients);
-
-  // // Create the filtering object
-  // pcl::ExtractIndices<pcl::PointXYZRGB> extract;
-
-  // //extract.setInputCloud (xyzCloudPtrFiltered);
-  // extract.setInputCloud (xyzCloudPtrFiltered);
-  // extract.setIndices (inliers);
-  // extract.setNegative (true);
-  // extract.filter (*xyzCloudPtrRansacFiltered);
-
-  // // perform euclidean cluster segmentation to separate individual objects
-
-  // // Create the KdTree object for the search method of the extraction
+  // Create the KdTree object for the search method of the extraction
   // pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB>);
   // tree->setInputCloud (xyzCloudPtrRansacFiltered);
 
