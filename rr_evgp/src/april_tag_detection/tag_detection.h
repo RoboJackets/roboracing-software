@@ -13,17 +13,23 @@
 #include <Eigen/Core>
 #include <utility>
 #include <vector>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_eigen/tf2_eigen.h>
 
 class tag_detection {
 public:
     tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
-                  const std::string &tag_detections_topic);
+                  const std::string &tag_detections_topic, std::string destination_frame);
 
 private:
     ros::Publisher pub_pointcloud;
     ros::Subscriber sub_detections;
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener;
+
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame;
+    std::string destination_frame;
 
     void draw_opponents(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg);
 
