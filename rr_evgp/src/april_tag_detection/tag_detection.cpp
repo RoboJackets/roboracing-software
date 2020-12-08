@@ -62,8 +62,8 @@ tf::Pose tag_detection::draw_opponent(geometry_msgs::Pose april_tag_center) {
 void tag_detection::create_marker(const int &id, geometry_msgs::Pose april_w) {
     visualization_msgs::Marker marker;
     marker.pose = april_w;
-    marker.pose.position.z += height/2;
-    marker.pose.position.x += height/2;
+    marker.pose.position.z += height / 2;
+    marker.pose.position.x += height / 2;
     marker.id = id;
     marker.header.stamp = ros::Time(0);
     marker.header.frame_id = destination_frame;

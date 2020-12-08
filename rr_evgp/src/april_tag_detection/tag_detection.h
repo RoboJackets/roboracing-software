@@ -9,18 +9,18 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
 
 #include <utility>
-#include <tf/transform_listener.h>
 
 class tag_detection {
-public:
+  public:
     tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
                   double y_offset, double px_per_m, double width, double height);
 
-private:
+  private:
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
     ros::Subscriber sub_detections;
