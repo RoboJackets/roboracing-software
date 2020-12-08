@@ -5,9 +5,16 @@
 #include "tag_detection.h"
 
 tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
-                             const std::string &tag_detections_topic, std::string destination_frame) {
+                             const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
+                             double y_offset, double px_per_m, double width, double height) {
     this->camera_frame = std::move(camera_frame);
     this->destination_frame = std::move(destination_frame);
+    this->x_offset = x_offset;
+    this->y_offset = y_offset;
+    this->px_per_m = px_per_m;
+    this->width = width;
+    this->height = height;
+
     sub_detections = nh->subscribe(tag_detections_topic, 1, &tag_detection::callback, this);
     pub_pointcloud = nh->advertise<sensor_msgs::PointCloud2>(pointcloud, 1);
     pub_markers = nh->advertise<visualization_msgs::Marker>("april_tag_detections/markers", 0);
@@ -36,11 +43,6 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
 }
 
 tf::Pose tag_detection::draw_opponent(geometry_msgs::Pose april_tag_center) {
-    double width = 2; // m
-    double height = 1; // m
-    double x_offset = 0;
-    double y_offset = 0;
-    double px_per_m = 10;
     tf::StampedTransform tf_transform;
     tf::Pose april_w;
     tf::poseMsgToTF(april_tag_center, april_w);
@@ -60,8 +62,8 @@ tf::Pose tag_detection::draw_opponent(geometry_msgs::Pose april_tag_center) {
 void tag_detection::create_marker(const int &id, geometry_msgs::Pose april_w) {
     visualization_msgs::Marker marker;
     marker.pose = april_w;
-    marker.pose.position.z += 0.5;
-    marker.pose.position.x += 0.5;
+    marker.pose.position.z += height/2;
+    marker.pose.position.x += height/2;
     marker.id = id;
     marker.header.stamp = ros::Time(0);
     marker.header.frame_id = destination_frame;

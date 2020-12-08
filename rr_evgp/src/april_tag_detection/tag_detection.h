@@ -17,7 +17,8 @@
 class tag_detection {
 public:
     tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
-                  const std::string &tag_detections_topic, std::string destination_frame);
+                  const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
+                  double y_offset, double px_per_m, double width, double height);
 
 private:
     ros::Publisher pub_pointcloud;
@@ -27,8 +28,8 @@ private:
     tf::TransformListener tf_listener;
 
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
-    std::string camera_frame;
-    std::string destination_frame;
+    std::string camera_frame, destination_frame;
+    double x_offset, y_offset, px_per_m, width, height;
 
     tf::Pose draw_opponent(geometry_msgs::Pose april_tag_center);
 
