@@ -24,10 +24,7 @@ void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPt
     opponent_cloud.clear();
     auto msgs = msg->detections;
     for (const auto &message : msgs) {  // Iterate through all discovered April Tags
-        tf::Pose april_w = draw_opponent(message.pose.pose.pose);
-        geometry_msgs::Pose april_geo_w;
-        tf::poseTFToMsg(april_w, april_geo_w);
-        create_marker(message.id[0], april_geo_w);
+        draw_opponent(message.id[0], message.pose.pose.pose);
     }
     publishPointCloud(opponent_cloud);
     for (const auto &message : msgs) {  // Iterate through all discovered April Tags
@@ -42,7 +39,7 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
     pub_pointcloud.publish(outmsg);
 }
 
-tf::Pose tag_detection::draw_opponent(geometry_msgs::Pose april_tag_center) {
+void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_tag_center) {
     tf::StampedTransform tf_transform;
     tf::Pose april_w;
     tf::poseMsgToTF(april_tag_center, april_w);
@@ -52,29 +49,35 @@ tf::Pose tag_detection::draw_opponent(geometry_msgs::Pose april_tag_center) {
     double left = (april_w.getOrigin().x() + x_offset);
     double bottom = (april_w.getOrigin().y() + y_offset) - height / 2.0;
 
-    for (double x = 0; x < width; x += 1 / px_per_m)
-        for (double y = 0; y < height; y += 1 / px_per_m)
-            opponent_cloud.push_back(pcl::PointXYZ(left + x, bottom + y, april_w.getOrigin().z()));
-
-    return april_w;
-}
-
-void tag_detection::create_marker(const int &id, geometry_msgs::Pose april_w) {
     visualization_msgs::Marker marker;
-    marker.pose = april_w;
-    marker.pose.position.z += height / 2;
-    marker.pose.position.x += height / 2;
-    marker.id = id;
+    std::vector<geometry_msgs::Point> pointList;
+    marker.type = visualization_msgs::Marker::SPHERE_LIST;
+    marker.action = visualization_msgs::Marker::ADD;
+
+    for (double x = 0; x < width; x += 1 / px_per_m) {
+        for (double y = 0; y < height; y += 1 / px_per_m) {
+            opponent_cloud.push_back(pcl::PointXYZ((left + x) * april_w.getRotation().getX(),
+                                                   (bottom + y) * april_w.getRotation().getY(),
+                                                   april_w.getOrigin().z()));
+            geometry_msgs::Point point;
+            point.x = left + x;
+            point.y = bottom + y;
+            point.z = april_w.getOrigin().z();
+            pointList.push_back(point);
+        }
+    }
+
+    marker.points = pointList;
+    geometry_msgs::Pose pose;
+    marker.pose = pose;
+    marker.color.a = 1;
+    marker.color.r = colors[id % colors.size()][0];
+    marker.color.g = colors[id % colors.size()][1];
+    marker.color.b = colors[id % colors.size()][2];
+    marker.scale.x = .1;
+    marker.scale.y = .1;
+    marker.scale.z = .1;
     marker.header.stamp = ros::Time(0);
     marker.header.frame_id = destination_frame;
-    marker.type = visualization_msgs::Marker::CUBE;
-    marker.action = visualization_msgs::Marker::ADD;
-    marker.color.a = 1;
-    marker.color.r = id % 10 * 100 % 255;
-    marker.color.g = id / 10 % 10 * 100 % 255;
-    marker.color.b = id / 100 % 10 * 100 % 255;
-    marker.scale.x = 1;
-    marker.scale.y = 1;
-    marker.scale.z = 1;
     pub_markers.publish(marker);
 }

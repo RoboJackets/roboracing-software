@@ -15,23 +15,24 @@
 #include <utility>
 
 class tag_detection {
-  public:
+public:
     tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
                   double y_offset, double px_per_m, double width, double height);
 
-  private:
+private:
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
     ros::Subscriber sub_detections;
     tf2_ros::Buffer tfBuffer;
     tf::TransformListener tf_listener;
+    std::vector<std::array<int, 3>> colors{{255, 0, 0}, {255, 127, 0}, {0, 255, 215}, {126, 0, 255}, {0, 0, 255}};
 
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame, destination_frame;
     double x_offset, y_offset, px_per_m, width, height;
 
-    tf::Pose draw_opponent(geometry_msgs::Pose april_tag_center);
+    void draw_opponent(int id, geometry_msgs::Pose april_tag_center);
 
     void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud);
 
