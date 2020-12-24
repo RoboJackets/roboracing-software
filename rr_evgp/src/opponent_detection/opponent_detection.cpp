@@ -1,7 +1,7 @@
 #include <ros/ros.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
 #include <sensor_msgs/PointCloud2.h>
-#include <boost/foreach.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -15,36 +15,31 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-visualization_msgs::Marker cluster_points;
-cluster_points.header.frame_id = "/base_footprint";
-cluster_points.header.stamp = ros::Time::now();
+visualization_msgs::MarkerArray cluster;
+visualization_msgs::Marker point;
 
-cluster_points.ns = "points";
-cluster_points.id = 0;
+point.header.frame_id = "/base_footprint";
+point.header.stamp = ros::Time::now();
 
-cluster_points.type = visualization_msgs::Marker::POINTS;
-cluster_points.action = visualization_msgs::Marker::ADD;
+point.ns = "point";
+point.id = 0;
 
-cluster_points.pose.position.x = 0;
-cluster_points.pose.position.y = 0;
-cluster_points.pose.position.z = 0;
-cluster_points.pose.orientation.x = 0.0;
-cluster_points.pose.orientation.y = 0.0;
-cluster_points.pose.orientation.z = 0.0;
-cluster_points.pose.orientation.w = 1.0;
+point.type = visualization_msgs::Marker::SPHERE;
+point.action = visualization_msgs::Marker::ADD;
 
-cluster_points.scale.x = 0.1;
-cluster_points.scale.y = 0.1;
-cluster_points.scale.z = 0.1;
+point.pose.orientation.x = 0.0;
+point.pose.orientation.y = 0.0;
+point.pose.orientation.z = 0.0;
+point.pose.orientation.w = 1.0;
 
-cluster_points.color.r = 1.0f;
-cluster_points.color.g = 0.0f;
-cluster_points.color.b = 0.0f;
-cluster_points.color.a = 1.0;
+point.scale.x = 0.1;
+point.scale.y = 0.1;
+point.scale.z = 0.1;
 
-cluster_points.points = [];
-
-cluster_points.lifetime = ros::Duration();
+point.color.r = 1.0;
+point.color.g = 0.0;
+point.color.b = 0.0;
+point.color.a = 1.0;
 
 // define callback function
 void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
@@ -77,8 +72,11 @@ void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
   *cloud_filtered = *floor_segmented;
 
   // for each point in cloud_filtered, add to points variable of Marker
-  BOOST_FOREACH (pcl::PointXYZRGB pt, cloud_filtered->points)
-    cluster_points.points.push_back(pt);
+  for (pcl::PointXYZRGB pt : cloud_filtered->points)
+    point.pose.position.x = pt.x;
+    point.pose.position.y = pt.y;
+    point.pose.position.z = pt.z;
+    cluster.markers.push_back(point);
 
   // **WALL SEGMENTATION**
 
@@ -147,11 +145,11 @@ int main (int argc, char** argv)
   ros::NodeHandle nh;
 
   ros::Subscriber m_sub = nh.subscribe ("/velodyne_points", 1, &cluster_callback); 
-  ros::Publisher m_clusterPub = nh.advertise<rr_msgs::clusters> ("/clusters", 1);
+  ros::Publisher m_clusterPub = nh.advertise<visualization_msgs::MarkerArray> ("/visualization_marker_array", 1);
 
   while(ros::ok())
   {
-    m_clusterPub.publish(clusters_msg);
+    m_clusterPub.publish(cluster);
     ros::spinOnce();
   }
 
