@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
         parameter_assertions
         apriltag_ros
         pcl_ros
+        tf_conversions
         )
 
 find_package(OpenCV REQUIRED)

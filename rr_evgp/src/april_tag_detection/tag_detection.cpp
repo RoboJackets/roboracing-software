@@ -15,6 +15,14 @@ tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, cons
     this->width = width;
     this->height = height;
 
+    double left = x_offset;
+    double bottom = y_offset - height / 2.0;
+    for (double x = 0; x < width; x += 1 / px_per_m) {
+        for (double y = 0; y < height; y += 1 / px_per_m) {
+            pcl_outline.push_back(pcl::PointXYZ(left + x, bottom + y, 0));
+        }
+    }
+
     sub_detections = nh->subscribe(tag_detections_topic, 1, &tag_detection::callback, this);
     pub_pointcloud = nh->advertise<sensor_msgs::PointCloud2>(pointcloud, 1);
     pub_markers = nh->advertise<visualization_msgs::Marker>("april_tag_detections/markers", 0);
@@ -39,45 +47,26 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
     pub_pointcloud.publish(outmsg);
 }
 
-void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_tag_center) {
-    tf::StampedTransform tf_transform;
+void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) {
+    tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera_w);
+
     tf::Pose april_w;
-    tf::poseMsgToTF(april_tag_center, april_w);
-    tf_listener.lookupTransform(destination_frame, camera_frame, ros::Time(0), tf_transform);
-    april_w = tf_transform * april_w;
-    april_w.getOrigin().setZ(0);
-    double left = (april_w.getOrigin().x() + x_offset);
-    double bottom = (april_w.getOrigin().y() + y_offset) - height / 2.0;
+    tf::poseMsgToTF(april_camera_msg, april_w);
+    april_w = camera_w * april_w;
 
-    visualization_msgs::Marker marker;
-    std::vector<geometry_msgs::Point> pointList;
-    marker.type = visualization_msgs::Marker::SPHERE_LIST;
-    marker.action = visualization_msgs::Marker::ADD;
+    tfScalar roll, pitch, yaw;
+    april_w.getBasis().getRPY(roll, pitch, yaw);
+    tf::Matrix3x3 april_w_basis;
+    april_w_basis.setRPY(0, 0, yaw);
+    april_w.setBasis(april_w_basis);
 
-    for (double x = 0; x < width; x += 1 / px_per_m) {
-        for (double y = 0; y < height; y += 1 / px_per_m) {
-            opponent_cloud.push_back(pcl::PointXYZ((left + x) * april_w.getRotation().getX(),
-                                                   (bottom + y) * april_w.getRotation().getY(),
-                                                   april_w.getOrigin().z()));
-            geometry_msgs::Point point;
-            point.x = left + x;
-            point.y = bottom + y;
-            point.z = april_w.getOrigin().z();
-            pointList.push_back(point);
-        }
-    }
+    tf::Vector3 april_w_origin = april_w.getOrigin();
+    april_w_origin.setZ(0);
+    april_w.setOrigin(april_w_origin);
 
-    marker.points = pointList;
-    geometry_msgs::Pose pose;
-    marker.pose = pose;
-    marker.color.a = 1;
-    marker.color.r = colors[id % colors.size()][0];
-    marker.color.g = colors[id % colors.size()][1];
-    marker.color.b = colors[id % colors.size()][2];
-    marker.scale.x = .1;
-    marker.scale.y = .1;
-    marker.scale.z = .1;
-    marker.header.stamp = ros::Time(0);
-    marker.header.frame_id = destination_frame;
-    pub_markers.publish(marker);
+    pcl::PointCloud<pcl::PointXYZ> car_outline;
+    Eigen::Affine3d affine3d;
+    tf::transformTFToEigen(april_w, affine3d);
+    pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+    opponent_cloud += (car_outline);
 }
