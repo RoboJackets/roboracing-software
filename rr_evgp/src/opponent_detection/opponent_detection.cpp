@@ -15,31 +15,12 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
+// publisher
+ros::Publisher m_clusterPub;
+
+// declaring marker
 visualization_msgs::MarkerArray cluster;
 visualization_msgs::Marker point;
-
-point.header.frame_id = "/base_footprint";
-point.header.stamp = ros::Time::now();
-
-point.ns = "point";
-point.id = 0;
-
-point.type = visualization_msgs::Marker::SPHERE;
-point.action = visualization_msgs::Marker::ADD;
-
-point.pose.orientation.x = 0.0;
-point.pose.orientation.y = 0.0;
-point.pose.orientation.z = 0.0;
-point.pose.orientation.w = 1.0;
-
-point.scale.x = 0.1;
-point.scale.y = 0.1;
-point.scale.z = 0.1;
-
-point.color.r = 1.0;
-point.color.g = 0.0;
-point.color.b = 0.0;
-point.color.a = 1.0;
 
 // define callback function
 void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
@@ -72,11 +53,12 @@ void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
   *cloud_filtered = *floor_segmented;
 
   // for each point in cloud_filtered, add to points variable of Marker
-  for (pcl::PointXYZRGB pt : cloud_filtered->points)
+  for (pcl::PointXYZRGB pt : cloud_filtered->points) {
     point.pose.position.x = pt.x;
     point.pose.position.y = pt.y;
     point.pose.position.z = pt.z;
     cluster.markers.push_back(point);
+  }
 
   // **WALL SEGMENTATION**
 
@@ -133,9 +115,7 @@ void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
 
   // }
 
-  // // publish the clusters
-  // m_clusterPub.publish(CloudClusters);
-
+  m_clusterPub.publish(cluster);
 }
 
 int main (int argc, char** argv)
@@ -144,13 +124,33 @@ int main (int argc, char** argv)
   ros::init (argc, argv, "opponent_detection");
   ros::NodeHandle nh;
 
-  ros::Subscriber m_sub = nh.subscribe ("/velodyne_points", 1, &cluster_callback); 
-  ros::Publisher m_clusterPub = nh.advertise<visualization_msgs::MarkerArray> ("/visualization_marker_array", 1);
+  // setting parameters for markers
+  point.header.frame_id = "base_footprint";
+  point.header.stamp = ros::Time::now();
 
-  while(ros::ok())
-  {
-    m_clusterPub.publish(cluster);
-    ros::spinOnce();
-  }
+  point.ns = "point";
+  point.id = 0;
+
+  point.type = visualization_msgs::Marker::SPHERE;
+  point.action = visualization_msgs::Marker::ADD;
+
+  point.pose.orientation.x = 0.0;
+  point.pose.orientation.y = 0.0;
+  point.pose.orientation.z = 0.0;
+  point.pose.orientation.w = 1.0;
+
+  point.scale.x = 0.1;
+  point.scale.y = 0.1;
+  point.scale.z = 0.1;
+
+  point.color.r = 1.0;
+  point.color.g = 0.0;
+  point.color.b = 0.0;
+  point.color.a = 1.0;
+
+  ros::Subscriber m_sub = nh.subscribe("/velodyne_points", 1, &cluster_callback);
+  m_clusterPub = nh.advertise<visualization_msgs::MarkerArray>("/clusters", 1);
+
+  ros::spin();
 
 }
