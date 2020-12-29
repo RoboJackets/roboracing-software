@@ -15,8 +15,8 @@ tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, cons
     this->width = width;
     this->height = height;
 
-    double left = x_offset;
-    double bottom = y_offset - height / 2.0;
+    double left = x_offset - width / 2;
+    double bottom = y_offset;
     for (double x = 0; x < width; x += 1 / px_per_m) {
         for (double y = 0; y < height; y += 1 / px_per_m) {
             pcl_outline.push_back(pcl::PointXYZ(left + x, bottom + y, 0));

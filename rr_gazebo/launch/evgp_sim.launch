@@ -53,6 +53,13 @@
             -x $(arg x) -y $(arg y) -z 0.1
             -R 0 -P 0 -Y $(arg heading)"/>
 
+    <node name="spawn_tagged6" pkg="gazebo_ros" type="spawn_model"
+          args="-file $(find rr_description)/urdf/rigatoni_april6.urdf
+            -gazebo_namespace /gazebo
+            -urdf -model rigatoni_april6
+            -x $(arg x) -y $(arg y) -z 0.1
+            -R 0 -P 0 -Y $(arg heading)"/>
+
     <node pkg="dynamic_reconfigure" type="dynparam" name="load_gz_physics_params" required="false" output="screen"
           args="load /gazebo $(find rr_gazebo)/config/evgp_gazebo_dynconf.yaml"/>
 

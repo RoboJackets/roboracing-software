@@ -1,4 +1,4 @@
-<robot name="rigatoni" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="rigatoni6" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <xacro:property name="use_gpu" value="false"/>
 
@@ -40,9 +40,9 @@
             <visual>
                 <xacro:mesh_geometry/>
             </visual>
-<!--            <collision>-->
-<!--                <xacro:mesh_geometry/>-->
-<!--            </collision>-->
+            <!--            <collision>-->
+            <!--                <xacro:mesh_geometry/>-->
+            <!--            </collision>-->
         </link>
         <xacro:set_link_color link="body_visual_origin" color="${color}"/>
         <gazebo reference="body_visual_origin">
@@ -181,7 +181,7 @@
         </visual>
     </link>
     <gazebo reference="april">
-        <material>Apriltag0</material>
+        <material>Apriltag6</material>
     </gazebo>
 
 
@@ -270,7 +270,7 @@
     <!-- ******************* Sensors *********************** -->
 
     <!-- Velodyne Puck VLP-16 -->
-    <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
+    <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points_april" hz="10" samples="500" gpu="true">
         <origin xyz="1.25 0 0.3" rpy="0 0 0" />
     </xacro:VLP-16>
 
@@ -299,9 +299,9 @@
             <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <alwaysOn>true</alwaysOn>
                 <cameraName>camera</cameraName>
-                <imageTopicName>image_color_rect</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                <frameName>camera_optical</frameName>
+                <imageTopicName>image_color_rect_april</imageTopicName>
+                <cameraInfoTopicName>camera_info_april</cameraInfoTopicName>
+                <frameName>camera_optical_april</frameName>
                 <distortionK1>0.0</distortionK1>
                 <distortionK2>0.0</distortionK2>
                 <distortionK3>0.0</distortionK3>

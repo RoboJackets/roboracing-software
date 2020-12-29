@@ -1,4 +1,4 @@
-material Apriltag36_11_00000
+material Apriltag6
 {
   technique
   {
@@ -7,11 +7,10 @@ material Apriltag36_11_00000
       lighting off
       texture_unit
       {
-        texture tag36_11_00000.png
+        texture tag36_11_00006.png
         filtering none none none
         scale 1.0 1.0
       }
     }
   }
 }
-
