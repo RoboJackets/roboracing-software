@@ -19,7 +19,13 @@ tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, cons
     double bottom = y_offset;
     for (double x = 0; x < width; x += 1 / px_per_m) {
         for (double y = 0; y < height; y += 1 / px_per_m) {
-            pcl_outline.push_back(pcl::PointXYZ(left + x, bottom + y, 0));
+            geometry_msgs::Point point;
+            point.x = left + x;
+            point.y = bottom + y;
+            point.z = 0;
+
+            pcl_outline.push_back(pcl::PointXYZ(point.x, point.y, 0));
+            marker_outline.push_back(point);
         }
     }
 
@@ -69,4 +75,27 @@ void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) 
     tf::transformTFToEigen(april_w, affine3d);
     pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
     opponent_cloud += (car_outline);
+
+    std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points = car_outline.points;
+    geometry_msgs::Pose pose;
+
+    visualization_msgs::Marker marker;
+    std::vector<geometry_msgs::Point> pointList;
+    marker.type = visualization_msgs::Marker::SPHERE_LIST;
+    marker.action = visualization_msgs::Marker::ADD;
+
+    geometry_msgs::Pose april_msg;
+    tf::poseTFToMsg(april_w, april_msg);
+    marker.points = marker_outline;
+    marker.pose = april_msg;
+    marker.color.a = 1;
+    marker.color.r = colors[id % colors.size()][0];
+    marker.color.g = colors[id % colors.size()][1];
+    marker.color.b = colors[id % colors.size()][2];
+    marker.scale.x = .1;
+    marker.scale.y = .1;
+    marker.scale.z = .1;
+    marker.header.stamp = ros::Time(0);
+    marker.header.frame_id = destination_frame;
+    pub_markers.publish(marker);
 }

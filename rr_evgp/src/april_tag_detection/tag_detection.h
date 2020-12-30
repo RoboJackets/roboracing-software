@@ -28,6 +28,7 @@ class tag_detection {
     ros::Subscriber sub_detections;
     tf::StampedTransform camera_w;
     pcl::PointCloud<pcl::PointXYZ> pcl_outline;
+    std::vector<geometry_msgs::Point> marker_outline;
 
     tf::TransformListener tf_listener;
     std::vector<std::array<int, 3>> colors{ { 255, 0, 0 },
