@@ -1,12 +1,13 @@
 #include <cv_bridge/cv_bridge.h>
+#include <math.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <opencv2/opencv.hpp>
 #include <std_msgs/Bool.h>
-#include <math.h>
 
-//Determines a start light change from red to green
+#include <opencv2/opencv.hpp>
+
+// Determines when the start light changes from red to green
 
 ros::Publisher debug_img_pub;
 ros::Publisher bool_pub;
@@ -50,7 +51,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     cv::inRange(hsv_frame, cv::Scalar(0, 100, 140), cv::Scalar(10, 255, 255), red_found);
     cv::inRange(hsv_frame, cv::Scalar(20, 120, 120), cv::Scalar(100, 255, 255), green_found);
 
-    cv::GaussianBlur(frame, frame, cv::Size(3,3), 0, 0);
+    cv::GaussianBlur(frame, frame, cv::Size(3, 3), 0, 0);
 
     cv::morphologyEx(green_found, green_found, cv::MORPH_OPEN, kernel(3, 3));
     cv::morphologyEx(red_found, red_found, cv::MORPH_OPEN, kernel(3, 3));
