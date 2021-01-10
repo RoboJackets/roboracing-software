@@ -33,3 +33,11 @@ target_link_libraries(planner
         hill_climb_optimizer
         ${catkin_LIBRARIES})
 add_dependencies(planner ${catkin_EXPORTED_TARGETS})
+
+add_executable(path_driver path_driver_node.cpp)
+target_link_libraries(path_driver ${catkin_LIBRARIES})
+add_dependencies(path_driver ${catkin_EXPORTED_TARGETS})
+
+
+#add_executable(path_driver path_driver_node.cpp)
+#add_dependencies(path_driver ${catkin_EXPORTED_TARGETS})

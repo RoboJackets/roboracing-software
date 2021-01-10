@@ -14,6 +14,8 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <rr_msgs/drive_path.h>
+#include <rr_msgs/control_vector.h>
 
 #include <rr_common/linear_tracking_filter.hpp>
 
@@ -32,6 +34,7 @@ rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
 ros::Publisher steer_pub;
+ros::Publisher control_pub;
 ros::Publisher viz_pub;
 
 rr_msgs::speedPtr speed_message;
@@ -106,7 +109,7 @@ void processMap() {
 
     // update impasse state machine
     auto now = ros::Time::now();
-
+    //todo: have it publish path of backing up if it needs to.
     if (OK == reverse_state) {
         if (plan.has_collision) {
             if (caution_duration.toSec() <= 0) {
@@ -140,25 +143,36 @@ void processMap() {
         ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");
     } else {
         g_speed_model->Update(plan.rollout.apply_speed, now.toSec());
+        // this is where the first thing in the path gets added
         update_messages(g_speed_model->GetValue(), plan.rollout.apply_steering * steering_gain);
     }
 
-    speed_pub.publish(speed_message);
-    steer_pub.publish(steer_message);
+    // this is where the 2nd thing in the path gets added
+//    speed_pub.publish(speed_message);
+//    steer_pub.publish(steer_message);
 
     if (viz_pub.getNumSubscribers() > 0) {
         nav_msgs::Path pathMsg;
-
         for (auto path_point : plan.rollout.path) {
             geometry_msgs::PoseStamped ps;
             ps.pose.position.x = path_point.pose.x;
             ps.pose.position.y = path_point.pose.y;
             pathMsg.poses.push_back(ps);
         }
-
         pathMsg.header.frame_id = "base_footprint";
         viz_pub.publish(pathMsg);
     }
+    rr_msgs::drive_path drive_path;
+    drive_path.dt = g_vehicle_model->getDt();
+    for (auto path_point : plan.rollout.path) {
+        rr_msgs::control_vector cv;
+        cv.angle = path_point.steer;
+        cv.speed = path_point.speed;
+        cv.time = path_point.time;
+        cv.header.stamp = ros::Time::now();
+        drive_path.control_vectors.push_back(cv);
+    }
+    control_pub.publish(drive_path);
 }
 
 int main(int argc, char** argv) {
@@ -218,6 +232,7 @@ int main(int argc, char** argv) {
 
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
+    control_pub = nh.advertise<rr_msgs::drive_path>("plan/drive_path", 1);
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
     speed_message.reset(new rr_msgs::speed);
