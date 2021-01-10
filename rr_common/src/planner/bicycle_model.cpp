@@ -101,4 +101,8 @@ double BicycleModel::SteeringToSpeed(double steer_angle) const {
     return out;
 }
 
+double BicycleModel::getDt() const {
+    return dt_;
+}
+
 }  // namespace rr

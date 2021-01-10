@@ -31,7 +31,7 @@ class BicycleModel {
     void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
 
     //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
-
+    double getDt() const;
   private:
     /**
      * Calculate a desired speed from a steering angle based on
