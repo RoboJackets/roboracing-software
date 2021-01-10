@@ -19,6 +19,8 @@ add_message_files(
         axes.msg
         hsv_tuned.msg
         urc_sign.msg
+        control_vector.msg
+        drive_path.msg
 )
 
 generate_messages(
