@@ -17,35 +17,34 @@
 #include <utility>
 
 class tag_detection {
-  public:
-    tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
-                  const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
+public:
+    tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
+                  const std::string &tag_detections_topic, const std::string &destination_frame,
+                  const std::string &tag_detection_markers, double x_offset,
                   double y_offset, double px_per_m, double width, double height);
 
-  private:
+private:
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
-    ros::Subscriber sub_detections;
+    ros::Subscriber sub_detections; //Used to keep subscriber alive
     tf::StampedTransform camera_w;
     pcl::PointCloud<pcl::PointXYZ> pcl_outline;
     std::vector<geometry_msgs::Point> marker_outline;
 
     tf::TransformListener tf_listener;
-    std::vector<std::array<int, 3>> colors{ { 255, 0, 0 },
-                                            { 255, 127, 0 },
-                                            { 0, 255, 215 },
-                                            { 126, 0, 255 },
-                                            { 0, 0, 255 } };
+    std::vector<std::array<int, 3>> colors{{255, 0,   0},
+                                           {255, 127, 0},
+                                           {0,   255, 215},
+                                           {126, 0,   255},
+                                           {0,   0,   255}};
 
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame, destination_frame;
-    double x_offset, y_offset, px_per_m, width, height;
+    double width;
 
     void draw_opponent(int id, geometry_msgs::Pose april_camera);
 
     void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud);
 
     void callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg);
-
-    void create_marker(const int &id, geometry_msgs::Pose april_w);
 };

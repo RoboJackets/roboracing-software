@@ -4,16 +4,13 @@
 
 #include "tag_detection.h"
 
-tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, const std::string &pointcloud,
-                             const std::string &tag_detections_topic, std::string destination_frame, double x_offset,
+tag_detection::tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
+                             const std::string &tag_detections_topic, const std::string &destination_frame,
+                             const std::string &tag_detection_markers, double x_offset,
                              double y_offset, double px_per_m, double width, double height) {
-    this->camera_frame = std::move(camera_frame);
-    this->destination_frame = std::move(destination_frame);
-    this->x_offset = x_offset;
-    this->y_offset = y_offset;
-    this->px_per_m = px_per_m;
+    this->camera_frame = camera_frame;
+    this->destination_frame = destination_frame;
     this->width = width;
-    this->height = height;
 
     double left = x_offset - width / 2;
     double bottom = y_offset;
@@ -29,9 +26,10 @@ tag_detection::tag_detection(ros::NodeHandle *nh, std::string camera_frame, cons
         }
     }
 
+    //Storing as an instance variable keeps subscriber alive
     sub_detections = nh->subscribe(tag_detections_topic, 1, &tag_detection::callback, this);
     pub_pointcloud = nh->advertise<sensor_msgs::PointCloud2>(pointcloud, 1);
-    pub_markers = nh->advertise<visualization_msgs::Marker>("april_tag_detections/markers", 0);
+    pub_markers = nh->advertise<visualization_msgs::Marker>(tag_detection_markers, 0);
 }
 
 void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg) {
@@ -76,11 +74,7 @@ void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) 
     pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
     opponent_cloud += (car_outline);
 
-    std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points = car_outline.points;
-    geometry_msgs::Pose pose;
-
     visualization_msgs::Marker marker;
-    std::vector<geometry_msgs::Point> pointList;
     marker.type = visualization_msgs::Marker::SPHERE_LIST;
     marker.action = visualization_msgs::Marker::ADD;
 
@@ -88,6 +82,7 @@ void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) 
     tf::poseTFToMsg(april_w, april_msg);
     marker.points = marker_outline;
     marker.pose = april_msg;
+    marker.id = id;
     marker.color.a = 1;
     marker.color.r = colors[id % colors.size()][0];
     marker.color.g = colors[id % colors.size()][1];

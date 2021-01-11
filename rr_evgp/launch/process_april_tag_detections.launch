@@ -4,6 +4,7 @@
         <param name="pointcloud" type="str" value="/april_tag_pointcloud/pointcloud"/>
         <param name="destination_frame" type="str" value="base_footprint"/>
         <param name="tag_detections_topic" type="str" value="/tag_detections"/>
+        <param name="tag_detection_markers" type="str" value="/tag_detection_markers"/>
         <param name="x_offset" type="int" value="0"/>
         <param name="y_offset" type="int" value="0"/>
         <param name="px_per_m" type="int" value="10"/>
