@@ -1,6 +1,6 @@
 <launch>
-    <remap from="/plan/speed" to="/speed"/>
-    <remap from="/plan/steering" to="/steering"/>
+<!--    <remap from="/plan/speed" to="/speed"/>-->
+<!--    <remap from="/plan/steering" to="/steering"/>-->
 
 <!--    Only use pointcloud_combiner when using nearest_point_cache for planner map_type-->
 <!--    <node pkg="rr_common" type="pointcloud_combiner" name="transform_scan" output="screen">-->

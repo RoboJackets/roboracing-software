@@ -39,6 +39,7 @@ ros::Publisher viz_pub;
 
 rr_msgs::speedPtr speed_message;
 rr_msgs::steeringPtr steer_message;
+rr_msgs::speed spss;
 
 enum reverse_state_t { OK, CAUTION, REVERSE };
 
@@ -164,6 +165,8 @@ void processMap() {
     }
     rr_msgs::drive_path drive_path;
     drive_path.dt = g_vehicle_model->getDt();
+    // use time for dt instead for more dynamic
+    // also types for float or rr_msg
     for (auto path_point : plan.rollout.path) {
         rr_msgs::control_vector cv;
         cv.angle = path_point.steer;
@@ -230,8 +233,8 @@ int main(int argc, char** argv) {
 
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
 
-    speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
-    steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
+//    speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
+//    steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
     control_pub = nh.advertise<rr_msgs::drive_path>("plan/drive_path", 1);
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
