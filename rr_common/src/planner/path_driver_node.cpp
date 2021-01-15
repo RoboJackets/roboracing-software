@@ -12,11 +12,13 @@ ros::Subscriber control_sub;
 std::vector<rr_msgs::control_vector> curr_drive_path;
 std::mutex mtx;
 ros::Time curr_path_time;
+unsigned int curr_index;
 
 void drive_path_callback(const rr_msgs::drive_path::ConstPtr& msg) {
     mtx.lock();
     curr_path_time = ros::Time::now();
     curr_drive_path = msg->control_vectors; // this should make a copy
+    curr_index = 0;
     mtx.unlock();
 //    ROS_INFO("callback finished");
 }
@@ -30,13 +32,14 @@ rr_msgs::control_vector get_path_point(ros::Time t) {
     unsigned int path_size = curr_drive_path.size();
     mtx.unlock();
     // not sure how to handle if curr_drive_path changes mid loop
-    for (unsigned int i = 0; i < path_size; i++) {
+    for (unsigned int i = 0; i < path_size;) {
         prev_vec = curr_vec;
         mtx.lock();
         if (i < curr_drive_path.size()) {
             curr_vec = curr_drive_path[i];
         }
         path_time = curr_path_time;
+        i = curr_index++;
         mtx.unlock();
         if (path_time + ros::Duration(curr_vec.time) > t) {
             return prev_vec;
@@ -53,12 +56,14 @@ int main(int argc, char **argv) {
     steer_pub = nh.advertise<rr_msgs::steering>("steering", 1);
     control_sub = nh.subscribe<rr_msgs::drive_path>("plan/drive_path", 1, drive_path_callback);
 
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
     rr_msgs::speed curr_speed;
     rr_msgs::steering curr_angle;
-    ros::Rate r(10); // 10hz
+    ros::Rate r(15); // 10hz
     while(ros::ok()) {
         auto now = ros::Time::now();
-        ros::spinOnce();
+//        ros::spinOnce();
         rr_msgs::control_vector vec = get_path_point(ros::Time::now());
         curr_speed.header.stamp = now;
         curr_angle.header.stamp = now;
