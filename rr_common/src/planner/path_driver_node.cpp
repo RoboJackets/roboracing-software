@@ -30,7 +30,6 @@ std::pair<double, double> get_path_point(ros::Time t) {
     for (unsigned int i = local_index; i < local_drive_path.size(); i++) {
         if (i == local_drive_path.size() - 1 || t < recv_drive_path + ros::Duration(local_drive_path[i + 1].time)) {
             send_control = local_drive_path[i];
-            //why no mtx for this current index?
             mtx.lock();
             curr_index = i;
             mtx.unlock();
