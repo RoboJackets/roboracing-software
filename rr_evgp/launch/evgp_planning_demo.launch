@@ -17,7 +17,7 @@
         <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml" subst_value="true"/>
     </node>
 
-<!--    <node pkg="rr_common" type="path_driver" name="path_driver" required="true"/>-->
+    <node pkg="rr_common" type="path_driver" name="path_driver" required="true"/>
 
     <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false"
           args="-d $(find rr_evgp)/rviz/evgp.rviz"/>
