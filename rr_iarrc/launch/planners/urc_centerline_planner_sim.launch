@@ -1,11 +1,11 @@
 <launch>
     <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
         <!--PID Controller Constants-->
-        <param name="PID_kP" type="double" value="0.008" />
+        <param name="PID_kP" type="double" value="0.001" />
         <param name="PID_kI" type="double" value="0.0" />
-        <param name="PID_kD" type="double" value="0.0013" />
+        <param name="PID_kD" type="double" value="0.0026" />
 
-        <param name="speed" type="double" value="1.9" /> <!-- 3.1-->
+        <param name="speed" type="double" value="0.75" /> <!-- 3.1-->
 
         <param name="useHistogramFinder" type="bool" value="true" />
 
