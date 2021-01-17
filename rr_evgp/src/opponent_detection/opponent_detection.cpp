@@ -1,156 +1,155 @@
-#include <ros/ros.h>
-#include <visualization_msgs/MarkerArray.h>
-#include <visualization_msgs/Marker.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/segmentation/extract_clusters.h>
+#include <rr_evgp/opponent_detection.h>
 
-// publisher
-ros::Publisher m_clusterPub;
-
-// declaring marker
-visualization_msgs::MarkerArray cluster;
-visualization_msgs::Marker point;
-
-// define callback function
-void cluster_callback(sensor_msgs::PointCloud2 cloud_msg)
+// publishes clustered clouds
+void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr)
 {
-  // initialize PCLPointCloud2 object
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2);
+  cloud_ptr->header.frame_id = "base_footprint";
 
-  // convert cloud_msg to PointCloud2 type
-  pcl_conversions::toPCL(cloud_msg, *cloud);
+  // initialize PCLPointCloud2 for output
+  pcl::PCLPointCloud2 outputPCL;
 
-  // initialize PointCloud<pcl::PointXYZRGB> object
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
+  // convert cloud_result back to PCLPointCloud2
+  pcl::toPCLPointCloud2(*cloud_ptr, outputPCL);
 
-  // convert the pcl::PCLPointCloud2 type to pcl::PointCloud<pcl::PointXYZRGB>
-  pcl::fromPCLPointCloud2(*cloud, *cloud_filtered);
+  // initialize sensor_msgs PointCloud2 for output
+  sensor_msgs::PointCloud2 output;
 
-  // **FLOOR SEGMENTATION**
+  // convert outputPCL back to ROS data type (sensor_msgs::PointCloud2)
+  pcl_conversions::fromPCL(outputPCL, output);
 
-  // create a pcl object to hold the passthrough filtered results
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr floor_segmented(new pcl::PointCloud<pcl::PointXYZRGB>);
-
-  // passthrough filter to segment out ground
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
-  pass.setInputCloud(cloud_filtered);
-  pass.setFilterFieldName("z");
-  pass.setFilterLimits(0.0, 1.0);
-  pass.filter(*floor_segmented);
-
-  // set cloud_filtered to the passthrough filter results
-  *cloud_filtered = *floor_segmented;
-
-  // for each point in cloud_filtered, add to points variable of Marker
-  for (pcl::PointXYZRGB pt : cloud_filtered->points) {
-    point.pose.position.x = pt.x;
-    point.pose.position.y = pt.y;
-    point.pose.position.z = pt.z;
-    cluster.markers.push_back(point);
-  }
-
-  // **WALL SEGMENTATION**
-
-  // perform euclidean cluster segmentation to separate individual objects
-
-  // Create the KdTree object for the search method of the extraction
-  // pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB>);
-  // tree->setInputCloud (xyzCloudPtrRansacFiltered);
-
-  // // create the extraction object for the clusters
-  // std::vector<pcl::PointIndices> cluster_indices;
-  // pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
-  // // specify euclidean cluster parameters
-  // ec.setClusterTolerance (0.02); // 2cm
-  // ec.setMinClusterSize (10);
-  // ec.setMaxClusterSize (1000);
-  // ec.setSearchMethod (tree);
-  // ec.setInputCloud (xyzCloudPtrRansacFiltered);
-  // // exctract the indices pertaining to each cluster and store in a vector of pcl::PointIndices
-  // ec.extract (cluster_indices);
-
-  // // declare an instance of the SegmentedClustersArray message
-  // rr_msgs::clusters CloudClusters;
-
-  // // declare the output variable instances
-  // sensor_msgs::PointCloud2 output;
-  // pcl::PCLPointCloud2 outputPCL;
-
-  // // here, cluster_indices is a vector of indices for each cluster. iterate through each indices object to work with them seporately
-  // for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-  // {
-
-  //   // create a pcl object to hold the extracted cluster
-  //   pcl::PointCloud<pcl::PointXYZRGB> *cluster = new pcl::PointCloud<pcl::PointXYZRGB>;
-  //   pcl::PointCloud<pcl::PointXYZRGB>::Ptr clusterPtr (cluster);
-
-  //   // now we are in a vector of indices pertaining to a single cluster.
-  //   // Assign each point corresponding to this cluster in xyzCloudPtrPassthroughFiltered a specific color for identification purposes
-  //   for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-  //   {
-  //     clusterPtr->points.push_back(xyzCloudPtrRansacFiltered->points[*pit]);
-
-  //       }
-
-  //   // convert to pcl::PCLPointCloud2
-  //   pcl::toPCLPointCloud2( *clusterPtr ,outputPCL);
-
-  //   // Convert to ROS data type
-  //   pcl_conversions::fromPCL(outputPCL, output);
-
-  //   // add the cluster to the array message
-  //   //clusterData.cluster = output;
-  //   CloudClusters.clusters.push_back(output);
-
-  // }
-
-  m_clusterPub.publish(cluster);
+  cloud_pub.publish(output);
 }
 
-int main (int argc, char** argv)
+// publishes clustered clouds as Markers
+void publishMarker(std::vector<geometry_msgs::Point> markers, int color)
 {
-  // Initialize ROS
-  ros::init (argc, argv, "opponent_detection");
+  visualization_msgs::Marker marker;
+
+  marker.header.stamp = ros::Time::now();
+  marker.lifetime = ros::Duration();
+  marker.header.frame_id = "base_footprint";
+
+  marker.ns = "marked_clusters";
+
+  marker.type = visualization_msgs::Marker::SPHERE_LIST;
+  marker.action = visualization_msgs::Marker::ADD;
+
+  marker.points = markers;
+
+  marker.pose.position.x = 1;
+  marker.pose.position.y = 0;
+  marker.pose.position.z = 0.5;
+  marker.pose.orientation.x = 0.0;
+  marker.pose.orientation.y = 0.0;
+  marker.pose.orientation.z = 0.0;
+  marker.pose.orientation.w = 1.0;
+
+  marker.color.a = 1.0;
+  marker.color.r = colors[color % colors.size()][0];
+  marker.color.g = colors[color % colors.size()][1];
+  marker.color.b = colors[color % colors.size()][2];
+
+  marker.scale.x = 0.05;
+  marker.scale.y = 0.05;
+  marker.scale.z = 0.05;
+
+  marker_pub.publish(marker);
+}
+
+void callback(sensor_msgs::PointCloud2 cloud_msg)
+{
+  // initialize PCLPointCloud2 object
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
+
+  // convert cloud_msg to PCLPointCloud2 type
+  pcl_conversions::toPCL(cloud_msg, *cloud);
+
+  // initialize PointCloud of PointXYZ objects
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ>);
+
+  // convert cloud_msg from PCLPointCloud2 to PointCloud of PointXYZ objects
+  pcl::fromPCLPointCloud2(*cloud, *cloud2);
+
+  // **GROUND SEGMENTATION**
+
+  // initialize another PC of PointXYZ objects to hold the passthrough filter results
+  pcl::PointCloud<pcl::PointXYZ>::Ptr ground_segmented (new pcl::PointCloud<pcl::PointXYZ>);
+
+  // passthrough filter to segment out ground
+  pcl::PassThrough<pcl::PointXYZ> pass;
+  pass.setInputCloud(cloud2);
+  pass.setFilterFieldName("z");
+  pass.setFilterLimits(-0.4, 5.0);
+  pass.filter(*ground_segmented);
+
+  // **DOWNSAMPLING/CLUSTERING**
+
+  pcl::VoxelGrid<pcl::PointXYZ> vg;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+  vg.setInputCloud(ground_segmented);
+  vg.setLeafSize(0.1f, 0.1f, 0.1f);
+  vg.filter(*voxel_filtered);
+
+  // creating KdTree object for extracting clusters
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+  tree->setInputCloud (voxel_filtered);
+
+  std::vector<pcl::PointIndices> cluster_indices;
+  pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+  ec.setClusterTolerance(0.35);
+  ec.setMinClusterSize(10);
+  ec.setMaxClusterSize(100);
+  ec.setSearchMethod(tree);
+  ec.setInputCloud(voxel_filtered);
+  ec.extract(cluster_indices);
+
+  // **PUBLISHING**
+
+  // holding containers for PCs and Markers
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<geometry_msgs::Point> marker_cluster = {};
+  geometry_msgs::Point marker_point;
+
+  // iterators
+  std::vector<pcl::PointIndices>::const_iterator it;
+  std::vector<int>::const_iterator pit;
+
+  // for each PointIndices object, turn it into a PointCloud of PointXYZ objects
+  for (it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  {
+    for (pit = it->indices.begin(); pit != it->indices.end(); ++pit)
+    {
+      cloud_cluster->push_back((*voxel_filtered)[*pit]);
+
+      marker_point.x = (*voxel_filtered)[*pit].x;
+      marker_point.y = (*voxel_filtered)[*pit].y;
+      marker_point.z = (*voxel_filtered)[*pit].z;
+
+      marker_cluster.push_back(marker_point);
+    }
+
+    cloud_cluster->width = cloud_cluster->size();
+    cloud_cluster->height = 1;
+    cloud_cluster->is_dense = true;
+
+    publishCloud(cloud_cluster);
+    publishMarker(marker_cluster, *pit);
+
+    cloud_cluster->clear();
+    marker_cluster.clear();
+  }
+}
+
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "opponent_detection");
+
   ros::NodeHandle nh;
 
-  // setting parameters for markers
-  point.header.frame_id = "base_footprint";
-  point.header.stamp = ros::Time::now();
-
-  point.ns = "point";
-  point.id = 0;
-
-  point.type = visualization_msgs::Marker::SPHERE;
-  point.action = visualization_msgs::Marker::ADD;
-
-  point.pose.orientation.x = 0.0;
-  point.pose.orientation.y = 0.0;
-  point.pose.orientation.z = 0.0;
-  point.pose.orientation.w = 1.0;
-
-  point.scale.x = 0.1;
-  point.scale.y = 0.1;
-  point.scale.z = 0.1;
-
-  point.color.r = 1.0;
-  point.color.g = 0.0;
-  point.color.b = 0.0;
-  point.color.a = 1.0;
-
-  ros::Subscriber m_sub = nh.subscribe("/velodyne_points", 1, &cluster_callback);
-  m_clusterPub = nh.advertise<visualization_msgs::MarkerArray>("/clusters", 1);
+  ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
+  cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);
+  marker_pub = nh.advertise<visualization_msgs::Marker>("/markers", 1);
 
   ros::spin();
-
+  return 0;
 }

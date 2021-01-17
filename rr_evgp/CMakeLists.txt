@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
+        rr_msgs
         sensor_msgs
         geometry_msgs
         costmap_2d
@@ -31,7 +32,12 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
+
+link_directories(${PCL_LIBRARY_DIRS})
+
+add_definitions(${PCL_DEFINITIONS})
 
 
 ###########
