@@ -19,8 +19,7 @@
 #   ]
 standalone_tags:
   [
-    {id: 0, size: 0.8},
-    {id: 6, size: 0.24}
+#        { id: 6, size: 0.24, name: "tag" }
   ]
 # ## Tag bundle definitions
 # ### Remarks
@@ -45,4 +44,12 @@ standalone_tags:
 #   ]
 tag_bundles:
   [
+    {
+      name: 'ROBOT_Two',
+      layout:
+        [
+              { id: 6, size: 0.24 },
+              { id: 0, size: 0.24, x: -0.3, qw: 0.92388, qy: 0.38268 },
+        ]
+    }
   ]

@@ -39,9 +39,6 @@ void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPt
         draw_opponent(message.id[0], message.pose.pose.pose);
     }
     publishPointCloud(opponent_cloud);
-    for (const auto &message : msgs) {  // Iterate through all discovered April Tags
-        ROS_INFO_STREAM((message.id[0]));
-    }
 }
 
 void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {

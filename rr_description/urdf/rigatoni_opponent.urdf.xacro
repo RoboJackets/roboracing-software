@@ -1,4 +1,4 @@
-<robot name="rigatoni6" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="rigatoni_opponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <xacro:property name="use_gpu" value="false"/>
 
@@ -172,7 +172,7 @@
     </link>
     <xacro:set_link_color link="imu_bottom_link" color="Gold"/>
 
-    <link name='april'>
+    <link name="april">
         <xacro:null_inertia/>
         <visual>
             <geometry>
@@ -182,6 +182,18 @@
     </link>
     <gazebo reference="april">
         <material>Apriltag6</material>
+    </gazebo>
+
+    <link name="corner_april">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="corner_april">
+        <material>Apriltag0</material>
     </gazebo>
 
 
@@ -264,6 +276,12 @@
         <parent link="base_footprint"/>
         <child link="april"/>
         <origin xyz="-.3 0 0.51" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="base_footprint_to_corner_april" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="corner_april"/>
+        <origin xyz="-.3 .3 0.51" rpy="0 0 -${pi/4}"/>
     </joint>
 
 
