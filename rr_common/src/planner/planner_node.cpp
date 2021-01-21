@@ -156,23 +156,12 @@ void processMap() {
 //        update_messages(g_speed_model->GetValue(), plan.rollout.apply_steering * steering_gain);
 
         // this is where the 2nd thing in the path gets added
-        if (viz_pub.getNumSubscribers() > 0) {
-            nav_msgs::Path pathMsg;
-            for (auto path_point : plan.rollout.path) {
-                geometry_msgs::PoseStamped ps;
-                ps.pose.position.x = path_point.pose.x;
-                ps.pose.position.y = path_point.pose.y;
-                pathMsg.poses.push_back(ps);
-            }
-            pathMsg.header.frame_id = "base_footprint";
-            viz_pub.publish(pathMsg);
-        }
         drive_path.dt = g_vehicle_model->getDt();
         // use time for dt instead for more dynamic
         // also types for float or rr_msg
         for (const auto & path_point : plan.rollout.path) {
             rr_msgs::control_vector cv;
-            cv.angle = path_point.steer;
+            cv.angle = path_point.steer * steering_gain;
             cv.speed = path_point.speed;
             cv.time = path_point.time;
             cv.header.stamp = ros::Time::now();
@@ -180,7 +169,17 @@ void processMap() {
         }
         control_pub.publish(drive_path);
     }
-
+    if (viz_pub.getNumSubscribers() > 0) {
+        nav_msgs::Path pathMsg;
+        for (auto path_point : plan.rollout.path) {
+            geometry_msgs::PoseStamped ps;
+            ps.pose.position.x = path_point.pose.x;
+            ps.pose.position.y = path_point.pose.y;
+            pathMsg.poses.push_back(ps);
+        }
+        pathMsg.header.frame_id = "base_footprint";
+        viz_pub.publish(pathMsg);
+    }
 }
 
 int main(int argc, char** argv) {
