@@ -181,7 +181,7 @@
         </visual>
     </link>
     <gazebo reference="back_mid_april">
-        <material>Apriltag0</material>
+        <material>Apriltag4</material>
     </gazebo>
 
     <link name="back_left_april">
@@ -193,7 +193,7 @@
         </visual>
     </link>
     <gazebo reference="back_left_april">
-        <material>Apriltag1</material>
+        <material>Apriltag5</material>
     </gazebo>
 
     <link name="side_left_april">
@@ -205,7 +205,7 @@
         </visual>
     </link>
     <gazebo reference="side_left_april">
-        <material>Apriltag2</material>
+        <material>Apriltag6</material>
     </gazebo>
 
     <link name="front_left_april">
@@ -217,7 +217,7 @@
         </visual>
     </link>
     <gazebo reference="front_left_april">
-        <material>Apriltag3</material>
+        <material>Apriltag7</material>
     </gazebo>
 
     <link name="front_mid_april">
@@ -229,7 +229,7 @@
         </visual>
     </link>
     <gazebo reference="front_mid_april">
-        <material>Apriltag4</material>
+        <material>Apriltag0</material>
     </gazebo>
 
     <link name="front_right_april">
@@ -241,7 +241,7 @@
         </visual>
     </link>
     <gazebo reference="front_right_april">
-        <material>Apriltag5</material>
+        <material>Apriltag1</material>
     </gazebo>
 
     <link name="side_right_april">
@@ -253,7 +253,7 @@
         </visual>
     </link>
     <gazebo reference="side_right_april">
-        <material>Apriltag6</material>
+        <material>Apriltag2</material>
     </gazebo>
 
     <link name="back_right_april">
@@ -265,7 +265,7 @@
         </visual>
     </link>
     <gazebo reference="back_right_april">
-        <material>Apriltag7</material>
+        <material>Apriltag3</material>
     </gazebo>
 
     <!-- ************************** Joints *************************** -->
@@ -352,43 +352,43 @@
     <joint name="base_footprint_to_back_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="back_left_april"/>
-        <origin xyz="-.3 .3 0.51" rpy="0 0 -${pi/4}"/>
+        <origin xyz="-.21581 .3937 0.51" rpy="0 0 -${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_side_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="side_left_april"/>
-        <origin xyz=".8 .3 0.51" rpy="0 0 -${pi/2}"/>
+        <origin xyz=".512 .3937 0.51" rpy="0 0 -${pi/2}"/>
     </joint>
 
     <joint name="base_footprint_to_front_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="front_left_april"/>
-        <origin xyz="1.5 .3 0.51" rpy="0 0 ${pi/4}"/>
+        <origin xyz="1.2414 .3937 0.51" rpy="0 0 ${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_front_mid_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="front_mid_april"/>
-        <origin xyz="1.5 0 0.51" rpy="0 0 0"/>
+        <origin xyz="1.3256 0 0.51" rpy="0 0 0"/>
     </joint>
 
     <joint name="base_footprint_to_front_right_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="front_right_april"/>
-        <origin xyz="1.5 -.3 0.51" rpy="0 0 -${pi/4}"/>
+        <origin xyz="1.2414 -.3937 0.51" rpy="0 0 -${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_side_right_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="side_right_april"/>
-        <origin xyz=".8 -.3 0.51" rpy="0 0 -${pi/2}"/>
+        <origin xyz=".512 -.3937 0.51" rpy="0 0 -${pi/2}"/>
     </joint>
 
     <joint name="base_footprint_to_back_right_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="back_right_april"/>
-        <origin xyz="-.3 -.3 0.51" rpy="0 0 ${pi/4}"/>
+        <origin xyz="-.21581 -.3937 0.51" rpy="0 0 ${pi/4}"/>
     </joint>
 
     <!-- ******************* Sensors *********************** -->
