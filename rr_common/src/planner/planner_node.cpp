@@ -14,8 +14,9 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-
 #include <rr_common/linear_tracking_filter.hpp>
+#include <dynamic_reconfigure/server.h>
+#include <rr_common/planning/PathPlannerConfig.h>
 
 constexpr int ctrl_dim = 1;
 
@@ -161,8 +162,20 @@ void processMap() {
     }
 }
 
+void callback(beginner_tutorials::TutorialConfig &config, uint32_t level) {
+  // need a smart way of only displaying the param that was changed
+  // for now just display a generic message
+  ROS_INFO("Reconfigure Request Processed");
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
+
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServer;
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
+
+    f = boost::bind(&callback, _1, _2);
+    DynReconfigServer.setCallback(f);
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
