@@ -16,9 +16,18 @@ find_package(catkin REQUIRED COMPONENTS
         tf
         tf2_geometry_msgs
         parameter_assertions
+        dynamic_reconfigure
         )
 
 find_package(OpenCV REQUIRED)
+
+##########################
+## dynamic reconfigure  ##
+##########################
+
+generate_dynamic_reconfigure_options(
+        cfg/planner_configuration.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
