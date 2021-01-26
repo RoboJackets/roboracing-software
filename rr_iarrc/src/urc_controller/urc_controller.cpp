@@ -1,223 +1,94 @@
-#include <math.h>
 #include <ros/ros.h>
-#include <rr_msgs/axes.h>
-#include <rr_msgs/race_reset.h>
+#include <iostream>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <rr_msgs/urc_sign.h>
 #include <std_msgs/Bool.h>
-#include <std_msgs/Int8.h>
-#include <stdlib.h>
+#include <std_msgs/String.h>
 
-const int WAITING_FOR_START = 0;
-const int RUNNING_PLANNER = 1;
-const int FINISHED = 2;
-const int TURNING = 3;
-int state;
+enum states {LANE_KEEPING, AT_STOP_BAR, TURNING, FINISHED} state;
 
-std::string startSignal;
-std::string resetSignal;
+double laneKeepingSpeed;
+double laneKeepingSteering;
+double turningSpeed;
+double turningSteering;
+
+std::string signDirection;
+bool stopBarArrived;
+
+double speed;
+double steering;
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
 
-double planSpeed, speed;
-double planSteering, steering;
+std::string lane_keeper;
+std::string turning_action;
+std::string turn_detected;
+std::string stop_bar_arrived;
+std::string urc_turn_action;
 
-bool raceStarted;
-bool turnDetected = false;
-bool completed;
-
-int imu_quadrant;
-float imu_yaw, initial_yaw, target_yaw;
-
-double left_offset;
-double right_offset;
-double turn_speed;
-double left_turn_steering;
-double right_turn_steering;
-
-double forward_timeout;
-
-const std::string RIGHT("right");
-const std::string LEFT("left");
-const std::string STRAIGHT("straight");
-const std::string NONE("none");
-std::string turn_direction = NONE;
-double stop_bar_angle;
-
-/*
-// As you turn counterclockwise, the yaw value received from the IMU ranges from
-[0, 3.14] U [-3.14, 0]
-// This function returns a new yaw value in the range of [0, 6.28]
-*/
-double setInRange(double yaw_read) {
-    double new_yaw;
-    if (yaw_read < 0) {
-        new_yaw = yaw_read + 2 * M_PI;
-        return new_yaw;
-    } else {
-        return yaw_read;
-    }
-}
-
-/*
-// Checks to see in which quadrant the current yaw reading is in. Turning right
-while in Q1, and turning left in Q4 are special cases.
-*/
-void checkQuadrant() {
-    if (imu_yaw <= 2 * M_PI && imu_yaw >= 1.5 * M_PI) {
-        imu_quadrant = 4;
-    } else if (imu_yaw >= 0 && imu_yaw <= .5 * M_PI) {
-        imu_quadrant = 1;
-    }
-}
-
-// Used to calculate the distance from the target IMU yaw to the current IMU yaw
-// within range of [0 ,6.28]
-bool comp(double a, double b) {
-    return (a < b);
-}
-
-float angleDist(float target, float current) {
-    double diff = static_cast<double>(target - current);
-    float min = std::min({ std::fabs(diff), std::fabs(diff - 2 * M_PI), std::fabs(diff + 2 * M_PI) }, comp);
-    return min;
-}
-
-void publishSpeedandSteering() {
-    rr_msgs::speed speedMsg;
-    speedMsg.speed = speed;
-    speedMsg.header.stamp = ros::Time::now();
-    speedPub.publish(speedMsg);
-
-    rr_msgs::steering steerMsg;
-    steerMsg.angle = steering;
-    steerMsg.header.stamp = ros::Time::now();
-    steerPub.publish(steerMsg);
-}
 
 void updateState() {
     switch (state) {
-        case WAITING_FOR_START:
-            speed = 0.0;
-            steering = 0.0;
-            if (raceStarted) {
-                state = RUNNING_PLANNER;
+        case LANE_KEEPING:
+            speed = laneKeepingSpeed;
+            steering = laneKeepingSteering;
+            if (stopBarArrived){
+                state = AT_STOP_BAR;
             }
             break;
+        case AT_STOP_BAR:
+            speed = 0;
+            steering = 0;
 
-        case RUNNING_PLANNER:
-            speed = planSpeed;
-            steering = planSteering;
+            state = TURNING;
+            ros::ServiceClient client = nh.serviceClient<rr_iarrc::urc_turn_action>(urc_turn_action);
+            rr_iarrc::urc_turn_action srv;
+            srv.request.sign = signDirection;
 
-            if (turnDetected) {
-                state = TURNING;
-            } else if (completed) {
-                state = FINISHED;
+            if (client.call(srv)){
+                // Service call finished
+                state = LANE_KEEPING;
+            } else {
+                ROS_ERROR("Failed to call service");
+                return 1;
             }
-            break;
 
+            break;
         case TURNING:
-            ros::spinOnce();
-            checkQuadrant();
-            initial_yaw = imu_yaw;
-
-            if (turn_direction.compare(LEFT) == 0) {
-                if (imu_quadrant == 4) {
-                    target_yaw = initial_yaw - 1.5 * M_PI - left_offset;
-                } else {
-                    target_yaw = initial_yaw + 0.5 * M_PI + left_offset;
-                }
-
-                while (ros::ok()) {
-                    if (angleDist(target_yaw, imu_yaw) <= 0.1) {
-                        break;
-                    }
-
-                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
-
-                    speed = turn_speed;
-                    steering = left_turn_steering;
-                    publishSpeedandSteering();
-                    ros::Duration(0.01).sleep();
-                    ros::spinOnce();
-                }
-
-            } else if (turn_direction.compare(RIGHT) == 0) {
-                if (imu_quadrant == 1) {
-                    target_yaw = initial_yaw + 1.5 * M_PI + right_offset;
-                } else {
-                    target_yaw = initial_yaw - 0.5 * M_PI - right_offset;
-                }
-
-                while (ros::ok()) {
-                    if (angleDist(target_yaw, imu_yaw) <= 0.1) {
-                        break;
-                    }
-
-                    ROS_INFO("initial %.2f target %.2f current %.2f", initial_yaw, target_yaw, imu_yaw);
-
-                    speed = turn_speed;
-                    steering = right_turn_steering;
-                    publishSpeedandSteering();
-                    ros::Duration(0.01).sleep();
-                    ros::spinOnce();
-                }
-
-            } else if (turn_direction.compare(STRAIGHT) == 0) {
-                ros::Time start_time = ros::Time::now();
-                ros::Duration timeout(forward_timeout);  // Timeout of 2 seconds
-                while (ros::Time::now() < start_time + timeout && ros::ok()) {
-                    speed = turn_speed;
-                    steering = 0;
-                    publishSpeedandSteering();
-                    ros::Duration(0.01).sleep();
-                }
-            }
-            turnDetected = false;
-            state = RUNNING_PLANNER;
-            break;
-
-        case FINISHED:
-            ROS_INFO("Finished URC");
-            speed = -1.0;  //@note: -1 brakes, 0 coasts
-            steering = 0.0;
-            break;
-
+            speed = turningSpeed;    
+            steering = turningSteering;
+            break;    
         default:
-            ROS_WARN("URC state machine defaulted");
-            state = WAITING_FOR_START;
+            ROS_WARN("State machine defaulted");
+            state = WAITING_FOR_START;    
     }
 }
 
-void planSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
-    planSpeed = speed_msg->speed;
+void laneKeeperSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
+    laneKeepingSpeed = speed_msg -> speed;
 }
 
-void planSteerCB(const rr_msgs::steering::ConstPtr &steer_msg) {
-    planSteering = steer_msg->angle;
+void laneKeeperSteeringCB(const rr_msgs::steering::ConstPtr &steer_msg) {
+    laneKeepingSteering = steer_msg -> angle;
 }
 
-void startLightCB(const std_msgs::Bool::ConstPtr &bool_msg) {
-    raceStarted = bool_msg->data;
+void turningActionSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
+    turningSpeed = speed_msg -> speed;
 }
 
-void resetCB(const rr_msgs::race_reset &reset_msg) {
-    state = WAITING_FOR_START;
-    raceStarted = false;
-    updateState();
+void turningActionSteeringCB(const rr_msgs::steering::ConstPtr &steer_msg) {
+    turningSteering = steer_msg -> angle;
 }
 
-void signCB(const rr_msgs::urc_sign &msg) {
-    turn_direction = msg.direction;
-    stop_bar_angle = msg.angle;
-    turnDetected = true;
+void turnDetectedCB(const std_msgs::StringConstPtr &sign_msg) {
+    signDirection = sign_msg -> data;
 }
 
-void imuCB(const rr_msgs::axesConstPtr &msg) {
-    imu_yaw = setInRange(msg->yaw);
+void stopBarArrivedCB(const std_msgs::BoolConstPtr &stop_msg) {
+    stopBarArrived = stop_msg -> data;
 }
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "urc_controller");
@@ -225,36 +96,39 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    state = WAITING_FOR_START;
-    planSpeed = 0.0;
-    planSteering = 0.0;
-    completed = false;
+    nhp.getParam("lane_keeper", lane_keeper);
+    nhp.getParam("turning_action", turning_action);
+    nhp.getParam("turn_detected", turn_detected);
+    nhp.getParam("stop_bar_arrived", stop_bar_arrived);
+    nhp.getParam("urc_turn_action", urc_turn_action);
 
-    nhp.getParam("startSignal", startSignal);
-    nhp.getParam("resetSignal", resetSignal);
-    nhp.getParam("turn_speed", turn_speed);
-    nhp.getParam("left_turn_steering", left_turn_steering);
-    nhp.getParam("right_turn_steering", right_turn_steering);
-    nhp.getParam("left_offset", left_offset);
-    nhp.getParam("right_offset", right_offset);
-    nhp.getParam("forward_timeout", forward_timeout);
+    ros::Subscriber laneKeeperSpeedSub = nh.subscribe(lane_keeper + "/speed", 1, &laneKeeperSpeedCB);
+    ros::Subscriber laneKeeperSteeringSub = nh.subscribe(lane_keeper + "/steering", 1, &laneKeeperSteeringCB);
+    ros::Subscriber turningActionSpeedSub = nh.subscribe(turning_action + "/speed", 1, &turningActionSpeedCB);
+    ros::Subscriber turningActionSteeringSub = nh.subscribe(turning_action + "/steering", 1, &turningActionSteeringCB);
+    ros::Subscriber turnDetectedSub = nh.subscribe(turn_detected, 1, &turnDetectedCB);
+    ros::Subscriber stopBarArrivedSum = nh.subscribe(stop_bar_arrived, 1, &stopBarArrivedCB);
 
-    auto planSpeedSub = nh.subscribe("/plan/speed", 1, planSpeedCB);
-    auto planSteerSub = nh.subscribe("/plan/steering", 1, planSteerCB);
-    auto startLightSub = nh.subscribe(startSignal, 1, startLightCB);
-    auto imuSub = nh.subscribe("/axes", 1, imuCB);
-    auto signSub = nh.subscribe("/turn_detected", 1, signCB);
-    auto resetSub = nh.subscribe(resetSignal, 1, resetCB);
-
-    speedPub = nh.advertise<rr_msgs::speed>("/speed", 1);
-    steerPub = nh.advertise<rr_msgs::steering>("/steering", 1);
+    speedPub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
+    steerPub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);
 
     ros::Rate rate(30.0);
     while (ros::ok()) {
         ros::spinOnce();
         updateState();
-        ROS_INFO_STREAM("URC Current State: " + std::to_string(state));
-        publishSpeedandSteering();
+
+        rr_msgs::speed speedMsg;
+        speedMsg.speed = speed;
+        speedMsg.header.stamp = ros::Time::now();
+        speedPub.publish(speedMsg);
+
+        rr_msgs::steering steerMsg;
+        steerMsg.angle = steering;
+        steerMsg.header.stamp = ros::Time::now();
+        steerPub.publish(steerMsg);
+
+        ROS_INFO_STREAM("Current State: " + std::to_string(state));
+
         rate.sleep();
     }
 
