@@ -1,11 +1,12 @@
 #include <ros/ros.h>
-#include <iostream>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 
-enum states {LANE_KEEPING, AT_STOP_BAR, TURNING, FINISHED} state;
+#include <iostream>
+
+enum states { LANE_KEEPING, AT_STOP_BAR, TURNING, FINISHED } state;
 
 double laneKeepingSpeed;
 double laneKeepingSteering;
@@ -27,13 +28,12 @@ std::string turn_detected;
 std::string stop_bar_arrived;
 std::string urc_turn_action;
 
-
 void updateState() {
     switch (state) {
         case LANE_KEEPING:
             speed = laneKeepingSpeed;
             steering = laneKeepingSteering;
-            if (stopBarArrived){
+            if (stopBarArrived) {
                 state = AT_STOP_BAR;
             }
             break;
@@ -46,7 +46,7 @@ void updateState() {
             rr_iarrc::urc_turn_action srv;
             srv.request.sign = signDirection;
 
-            if (client.call(srv)){
+            if (client.call(srv)) {
                 // Service call finished
                 state = LANE_KEEPING;
             } else {
@@ -56,39 +56,38 @@ void updateState() {
 
             break;
         case TURNING:
-            speed = turningSpeed;    
+            speed = turningSpeed;
             steering = turningSteering;
-            break;    
+            break;
         default:
             ROS_WARN("State machine defaulted");
-            state = WAITING_FOR_START;    
+            state = WAITING_FOR_START;
     }
 }
 
 void laneKeeperSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
-    laneKeepingSpeed = speed_msg -> speed;
+    laneKeepingSpeed = speed_msg->speed;
 }
 
 void laneKeeperSteeringCB(const rr_msgs::steering::ConstPtr &steer_msg) {
-    laneKeepingSteering = steer_msg -> angle;
+    laneKeepingSteering = steer_msg->angle;
 }
 
 void turningActionSpeedCB(const rr_msgs::speed::ConstPtr &speed_msg) {
-    turningSpeed = speed_msg -> speed;
+    turningSpeed = speed_msg->speed;
 }
 
 void turningActionSteeringCB(const rr_msgs::steering::ConstPtr &steer_msg) {
-    turningSteering = steer_msg -> angle;
+    turningSteering = steer_msg->angle;
 }
 
 void turnDetectedCB(const std_msgs::StringConstPtr &sign_msg) {
-    signDirection = sign_msg -> data;
+    signDirection = sign_msg->data;
 }
 
 void stopBarArrivedCB(const std_msgs::BoolConstPtr &stop_msg) {
-    stopBarArrived = stop_msg -> data;
+    stopBarArrived = stop_msg->data;
 }
-
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "urc_controller");
