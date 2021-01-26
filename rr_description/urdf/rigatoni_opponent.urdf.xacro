@@ -358,7 +358,7 @@
     <joint name="base_footprint_to_side_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="side_left_april"/>
-        <origin xyz=".512 .3937 0.51" rpy="0 0 -${pi/2}"/>
+        <origin xyz=".512 .45 0.51" rpy="0 0 -${pi/2}"/>
     </joint>
 
     <joint name="base_footprint_to_front_left_april" type="fixed">
