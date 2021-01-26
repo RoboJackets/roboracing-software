@@ -16,8 +16,8 @@ costmap:
         combination_method: 0
         track_unknown_space: true
         laserscan:
-            data_type: LaserScan
-            topic: /scan
+            data_type: PointCloud2
+            topic: /lidar_thresholded
             frame_name: lidar
             expected_update_rate: 15.0
             observation_persistence: 0.0
