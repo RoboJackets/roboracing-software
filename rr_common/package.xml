@@ -32,5 +32,6 @@
 
     <export>
         <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
+        <nodelet plugin="${prefix}dyn_reconf_plugins.xml"/>
     </export>
 </package>

@@ -1,0 +1,7 @@
+<library path="lib/librr_common">
+    <class name="planner_dyn_reconf_ns/planner_node" type="planner_dyn_reconf_ns::planner_node" base_class_type="nodelet::Nodelet">
+        <description>
+            Enable Dynamic Reconfigure For Planner Node
+        </description>
+    </class>
+</library>
