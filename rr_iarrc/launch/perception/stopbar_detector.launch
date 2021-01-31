@@ -1,0 +1,15 @@
+<launch>
+    <node name="stopbar_detector" pkg="rr_iarrc" type="stopbar_detector" output="screen" required="true">
+        <!-- Stop Bar Detector Params -->
+        <param name="overhead_image_subscription" type="string" value="/camera_center/lines/detection_img_transformed" />
+        <param name="stopBarGoalAngle" type="double" value="0.0" /> <!-- angle in degrees -->
+        <param name="stopBarGoalAngleRange" type="double" value="25.0" /> <!-- we can come at the line from many angles! -->
+        <param name="stopBarTriggerDistance" type="double" value="1.6" /> <!-- distance in meters -->
+        <param name="stopBarTriggerDistanceRight" type="double" value="2.0" /> <!-- distance in meters -->
+        <param name="pixels_per_meter" type="int" value="50" />
+        <param name="houghThreshold" type="int" value="65" /> <!-- see opencv HoughLinesP for more info -->
+        <param name="houghMinLineLength" type="double" value="50" />
+        <param name="houghMaxLineGap" type="double" value="10" />
+
+    </node>
+</launch>
