@@ -1,9 +1,11 @@
+#include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
+#include <rr_common/PathPlannerConfig.h>
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
 #include <rr_common/planning/distance_map.h>
@@ -14,10 +16,8 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
-#include <rr_common/linear_tracking_filter.hpp>
 
-#include <dynamic_reconfigure/server.h>
-#include <rr_common/PathPlannerConfig.h>
+#include <rr_common/linear_tracking_filter.hpp>
 
 constexpr int ctrl_dim = 1;
 
@@ -163,7 +163,7 @@ void processMap() {
     }
 }
 
-void dynamic_callback(rr_common::PathPlannerConfig &config, uint32_t level) {
+void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
     // need a smart way of only displaying the param that was changed
     // for now just display a generic message
     ROS_INFO("Reconfigure Request Processed");
