@@ -17,7 +17,10 @@ std_msgs::Bool prev_start_msg;
 ros::Time last_red_time;
 
 double circularityThreshold;
+int minArea;
 
+int minGreenHue, maxGreenHue, minRedHue, maxRedHue;
+double redToGreenTime;
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
@@ -30,7 +33,7 @@ bool colorOn(cv::Mat color_img) {
         double area = cv::contourArea(contour, false);
         double circularity = 4 * M_PI * (area / (perimeter * perimeter));
 
-        if (circularityThreshold < circularity && area > 100)  // These could be launch params
+        if (circularityThreshold < circularity && area > minArea)
             return true;
     }
     return false;
@@ -48,8 +51,8 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
 
     cv::Mat hsv_frame, red_found, green_found;
     cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv_frame, cv::Scalar(0, 100, 140), cv::Scalar(10, 255, 255), red_found);
-    cv::inRange(hsv_frame, cv::Scalar(20, 120, 120), cv::Scalar(100, 255, 255), green_found);
+    cv::inRange(hsv_frame, cv::Scalar(minRedHue, 100, 140), cv::Scalar(maxRedHue, 255, 255), red_found);
+    cv::inRange(hsv_frame, cv::Scalar(minGreenHue, 120, 120), cv::Scalar(maxGreenHue, 255, 255), green_found);
 
     cv::GaussianBlur(frame, frame, cv::Size(3, 3), 0, 0);
 
@@ -65,7 +68,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     if (red_on)
         last_red_time = msg->header.stamp;
 
-    prev_start_msg.data = green_on && (msg->header.stamp - last_red_time).toSec() < 1;
+    prev_start_msg.data = green_on && (msg->header.stamp - last_red_time).toSec() < redToGreenTime;
     bool_pub.publish(prev_start_msg);
 
     sensor_msgs::Image outmsg;
@@ -76,21 +79,30 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
 }
 
 int main(int argc, char *argv[]) {
-    ros::init(argc, argv, "stoplight_watcher_v2");
+    ros::init(argc, argv, "startlight_watcher");
     ros::NodeHandle nhp("~");
 
     std::string img_topic;
-    std::string stoplight_topic;
+    std::string startlight_topic;
     nhp.param("img_topic", img_topic, std::string("/camera/image_color_rect"));
-    nhp.param("stoplight_watcher_topic", stoplight_topic, std::string("/start_detected"));
+    nhp.param("startlight_watcher_topic", startlight_topic, std::string("/start_detected"));
 
     nhp.param("circularity_threshold", circularityThreshold, 0.7);
+
+    nhp.param("min_green_hue", minGreenHue, 20);
+    nhp.param("max_green_hue", maxGreenHue, 100);
+    nhp.param("min_red_hue", minRedHue, 0);
+    nhp.param("max_red_hue", maxRedHue, 20);
+
+    nhp.param("min_area", minArea, 100);
+
+    nhp.param("red_to_green_time", redToGreenTime, 1.0);
 
     // Subscribe to ROS topic with callback
     prev_start_msg.data = false;
     ros::Subscriber img_sub = nhp.subscribe(img_topic, 1, img_callback);
     debug_img_pub = nhp.advertise<sensor_msgs::Image>("/startlight_debug", 1);
-    bool_pub = nhp.advertise<std_msgs::Bool>(stoplight_topic, 1);
+    bool_pub = nhp.advertise<std_msgs::Bool>(startlight_topic, 1);
 
     ros::spin();
     return 0;

@@ -2,9 +2,21 @@
     <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen" required="true">
         <!--Input and output topics-->
         <param name="img_topic" type="string" value="/camera_center/image_color_rect"/>
-        <param name="stoplight_watcher_topic" type="string" value="/start_detected"/>
+        <param name="startlight_watcher_topic" type="string" value="/start_detected"/>
+
+        <!--Controls the sensitivity for detecting red and green lights-->
+        <param name="min_green_hue" type="int" value="20"/>
+        <param name="max_green_hue" type="int" value="100"/>
+        <param name="min_red_hue" type="int" value="0"/>
+        <param name="max_red_hue" type="int" value="10"/>
+
+        <!--Controls the maximum time between red and green light-->
+        <param name="red_to_green_time" type="double" value="1"/>
 
         <!--Controls the sensitivity of circle detection (lower = more circles detected)-->
         <param name="circularity_threshold" type="double" value="0.7"/>
+
+        <!--Controls the minimum area needed to detect a light-->
+        <param name="min_area" type="int" value="100"/>
     </node>
 </launch>
