@@ -17,7 +17,7 @@
 
 #include <rr_common/linear_tracking_filter.hpp>
 
-constexpr int ctrl_dim = 1;
+constexpr int ctrl_dim = 2;
 
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
@@ -89,7 +89,8 @@ void processMap() {
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
-    ctrl_limits << g_steer_model->GetValMin(), g_steer_model->GetValMax();
+    ctrl_limits << g_steer_model->GetValMin(), g_steer_model->GetValMax(),
+                   g_speed_model->GetValMin(), g_speed_model->GetValMax();
 
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);

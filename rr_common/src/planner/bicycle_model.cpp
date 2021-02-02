@@ -13,7 +13,7 @@ BicycleModel::BicycleModel(const ros::NodeHandle& nh, const std::shared_ptr<rr::
     speed_model_ = speed_model_ptr;
 }
 
-void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const {
+void BicycleModel::RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const {
     const size_t path_size = 1 + (segment_size_ * controls.cols());
     if (rollout.path.size() != path_size) {
         rollout.path.resize(static_cast<size_t>(path_size));
@@ -26,14 +26,14 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.path[0].steer = steering_model_->GetValue();
     rollout.path[0].time = 0;
 
-    rollout.apply_steering = controls(0);
+    rollout.apply_steering = controls(0,0);
 
     rr::LinearTrackingFilter steering_model_temp = *steering_model_;  // copy
     rr::LinearTrackingFilter speed_model_temp = *speed_model_;
 
     int i = 1;
     for (int segment = 0; segment < controls.cols(); segment++) {
-        steering_model_temp.SetTarget(controls(segment));
+        steering_model_temp.SetTarget(controls(0, segment));
 
         for (auto j = i; j < i + segment_size_; j++) {
             const PathPoint& last_path_point = rollout.path[j - 1];
@@ -43,7 +43,8 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
 
             steering_model_temp.UpdateRawDT(dt_);
 
-            speed_model_temp.SetTarget(SteeringToSpeed(steering_model_temp.GetValue()));
+//            speed_model_temp.SetTarget(SteeringToSpeed(steering_model_temp.GetValue()));
+            speed_model_temp.SetTarget(controls(1,segment));
             speed_model_temp.UpdateRawDT(dt_);
 
             path_point.steer = steering_model_temp.GetValue();
