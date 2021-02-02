@@ -89,8 +89,10 @@ void processMap() {
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
-    ctrl_limits << g_steer_model->GetValMin(), g_steer_model->GetValMax(),
-                   g_speed_model->GetValMin(), g_speed_model->GetValMax();
+    ctrl_limits.row(0) << g_steer_model->GetValMin(), g_steer_model->GetValMax();
+    ctrl_limits.row(1) << g_speed_model->GetValMin(), g_speed_model->GetValMax();
+
+    g_last_controls(1,0) = 1;
 
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);

@@ -4,13 +4,30 @@ costmap:
     always_send_full_costmap: true
 
     rolling_window: true
-    width: 100
-    height: 100
+    width: 300
+    height: 300
 
     plugins:
-        - {name: "global", type: "costmap_2d::StaticLayer"}
+        # - {name: "global", type: "costmap_2d::StaticLayer"}
 #        - {name: "track_closing", type: "rr::TrackClosingLayer"}
 #        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
+        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+
+    obstacles:
+        observation_sources: laserscan
+        combination_method: 0
+        track_unknown_space: true
+        laserscan:
+            data_type: LaserScan
+            topic: /scan
+            frame_name: lidar
+            expected_update_rate: 15.0
+            observation_persistence: 0.0
+            marking: true
+            clearing: true
+            inf_is_valid: true  # inf's are set to scan msg max range
+            obstacle_range: 50.0  # must be smaller than scan msg max range
+            raytrace_range: 49.0  # clear and explore this distance
 
 
     global:
