@@ -1,0 +1,7 @@
+int32 LEFT = 0
+int32 RIGHT = 0
+int32 STRAIGHT = 0
+
+int32 direction
+---
+bool success
