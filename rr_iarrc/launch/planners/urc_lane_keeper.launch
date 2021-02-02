@@ -3,6 +3,9 @@
     <remap from="/plan/steering" to="/steering"/>
     <remap from="/plan/speed" to="/speed"/>
 
+    <!-- Sides Merger-->
+    <include file="$(find rr_iarrc)/launch/perception/urc_sides_merger.launch"/>
+
     <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
         <!--PID Controller Constants-->
         <param name="PID_kP" type="double" value="0.001" />
