@@ -1,5 +1,3 @@
-#pragma once
-
 #include <ros/ros.h>
 
 #include <pcl/ModelCoefficients.h>
@@ -12,7 +10,6 @@
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/sample_consensus/method_types.h>
@@ -22,19 +19,27 @@
 
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+#include <algorithm>
 
 // publishers
 ros::Publisher cloud_pub;
 ros::Publisher marker_pub;
 
+// individual marker
+visualization_msgs::Marker marker;
+
+// final marker array
+visualization_msgs::MarkerArray marker_array;
+
 // colors
-std::vector<std::array<int, 3>> colors = {{255,127,0},{255,127,0},{0,255,127},{126,0,255},{0,0,255}};
+std::vector<std::array<int, 3>> colors = {{255,0,0},{255,127,0},{0,255,127},{255,0,255},{0,0,255}};
 
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
 
-// publishes clustered clouds as Markers
-void publishMarker(pcl::PointCloud<pcl::PointXYZ>::Ptr marker_ptr, int color);
+// adds markers to array
+void addMarkers(std::vector<geometry_msgs::Point> markers, int color);
 
 // callback of subscriber
 void callback(sensor_msgs::PointCloud2 cloud_msg);

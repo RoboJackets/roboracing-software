@@ -3,7 +3,7 @@
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr)
 {
-  cloud_ptr->header.frame_id = "base_footprint";
+  cloud_ptr->header.frame_id = "lidar";
 
   // initialize PCLPointCloud2 for output
   pcl::PCLPointCloud2 outputPCL;
@@ -20,25 +20,24 @@ void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr)
   cloud_pub.publish(output);
 }
 
-// publishes clustered clouds as Markers
-void publishMarker(std::vector<geometry_msgs::Point> markers, int color)
+// adds markers to array
+void addMarkers(std::vector<geometry_msgs::Point> markers, int color)
 {
-  visualization_msgs::Marker marker;
-
   marker.header.stamp = ros::Time::now();
   marker.lifetime = ros::Duration();
-  marker.header.frame_id = "base_footprint";
+  marker.header.frame_id = "lidar";
 
   marker.ns = "marked_clusters";
+  marker.id = color;
 
   marker.type = visualization_msgs::Marker::SPHERE_LIST;
   marker.action = visualization_msgs::Marker::ADD;
 
   marker.points = markers;
 
-  marker.pose.position.x = 1;
+  marker.pose.position.x = 0;
   marker.pose.position.y = 0;
-  marker.pose.position.z = 0.5;
+  marker.pose.position.z = 0;
   marker.pose.orientation.x = 0.0;
   marker.pose.orientation.y = 0.0;
   marker.pose.orientation.z = 0.0;
@@ -53,9 +52,10 @@ void publishMarker(std::vector<geometry_msgs::Point> markers, int color)
   marker.scale.y = 0.05;
   marker.scale.z = 0.05;
 
-  marker_pub.publish(marker);
+  marker_array.markers.push_back(marker);
 }
 
+// main callback function
 void callback(sensor_msgs::PointCloud2 cloud_msg)
 {
   // initialize PCLPointCloud2 object
@@ -96,8 +96,8 @@ void callback(sensor_msgs::PointCloud2 cloud_msg)
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance(0.35);
-  ec.setMinClusterSize(10);
+  ec.setClusterTolerance(0.7);
+  ec.setMinClusterSize(15);
   ec.setMaxClusterSize(100);
   ec.setSearchMethod(tree);
   ec.setInputCloud(voxel_filtered);
@@ -110,20 +110,19 @@ void callback(sensor_msgs::PointCloud2 cloud_msg)
   std::vector<geometry_msgs::Point> marker_cluster = {};
   geometry_msgs::Point marker_point;
 
-  // iterators
-  std::vector<pcl::PointIndices>::const_iterator it;
-  std::vector<int>::const_iterator pit;
+  // cluster count
+  int cluster_ct = 0;
 
   // for each PointIndices object, turn it into a PointCloud of PointXYZ objects
-  for (it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (const pcl::PointIndices& point_idx : cluster_indices)
   {
-    for (pit = it->indices.begin(); pit != it->indices.end(); ++pit)
+    for (const int& point : point_idx.indices)
     {
-      cloud_cluster->push_back((*voxel_filtered)[*pit]);
+      cloud_cluster->push_back((*voxel_filtered)[point]);
 
-      marker_point.x = (*voxel_filtered)[*pit].x;
-      marker_point.y = (*voxel_filtered)[*pit].y;
-      marker_point.z = (*voxel_filtered)[*pit].z;
+      marker_point.x = (*voxel_filtered)[point].x;
+      marker_point.y = (*voxel_filtered)[point].y;
+      marker_point.z = (*voxel_filtered)[point].z;
 
       marker_cluster.push_back(marker_point);
     }
@@ -132,12 +131,15 @@ void callback(sensor_msgs::PointCloud2 cloud_msg)
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
-    publishCloud(cloud_cluster);
-    publishMarker(marker_cluster, *pit);
+    addMarkers(marker_cluster, cluster_ct);
 
     cloud_cluster->clear();
     marker_cluster.clear();
+
+    cluster_ct += 1;
   }
+
+  marker_pub.publish(marker_array);
 }
 
 int main(int argc, char **argv)
@@ -148,7 +150,7 @@ int main(int argc, char **argv)
 
   ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
   cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);
-  marker_pub = nh.advertise<visualization_msgs::Marker>("/markers", 1);
+  marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);
 
   ros::spin();
   return 0;
