@@ -10,5 +10,6 @@
         <param name="px_per_m" type="int" value="10"/>
         <param name="width" type="double" value="1"/>
         <param name="height" type="double" value="1.5"/>
+        <rosparam file="$(find rr_evgp)/conf/april_tag_locations.yaml" />
     </node>
 </launch>

@@ -257,6 +257,109 @@
   <gazebo reference="imu_bottom_link">
     <material>Gazebo/Gold</material>
   </gazebo>
+  <link name="white">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="white">
+    <material>none</material>
+  </gazebo>
+  <link name="white_back_left">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="white_back_left">
+    <material>none</material>
+  </gazebo>
+  <link name="white_side_left">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="white_side_left">
+    <material>none</material>
+  </gazebo>
+  <link name="white_front_left">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="white_front_left">
+    <material>none</material>
+  </gazebo>
+  <link name="white_front_mid">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="white_front_mid">
+    <material>none</material>
+  </gazebo>
+  <link name="white_front_right">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="white_side_right">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="white_back_right">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.001 0.3 0.3 "/>
+      </geometry>
+    </visual>
+  </link>
   <link name="back_mid_april">
     <inertial>
       <mass value="0.0001"/>
@@ -450,40 +553,80 @@
     <child link="back_mid_april"/>
     <origin rpy="0 0 0" xyz="-.3 0 0.51"/>
   </joint>
+  <joint name="base_footprint_to_back_mid_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white"/>
+    <origin rpy="0 0 0" xyz="-.29 0 0.51"/>
+  </joint>
   <joint name="base_footprint_to_back_left_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="back_left_april"/>
     <origin rpy="0 0 -0.7853981633974483" xyz="-.21581 .3937 0.51"/>
+  </joint>
+  <joint name="base_footprint_to_back_left_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_back_left"/>
+    <origin rpy="0 0 -0.7853981633974483" xyz="-.20581 .3837 0.51"/>
   </joint>
   <joint name="base_footprint_to_side_left_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="side_left_april"/>
     <origin rpy="0 0 -1.5707963267948966" xyz=".512 .45 0.51"/>
   </joint>
+  <joint name="base_footprint_to_side_left_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_side_left"/>
+    <origin rpy="0 0 -1.5707963267948966" xyz=".512 .44 0.51"/>
+  </joint>
   <joint name="base_footprint_to_front_left_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="front_left_april"/>
     <origin rpy="0 0 0.7853981633974483" xyz="1.2414 .3937 0.51"/>
+  </joint>
+  <joint name="base_footprint_to_front_left_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_front_left"/>
+    <origin rpy="0 0 0.7853981633974483" xyz="1.2314 .3837 0.51"/>
   </joint>
   <joint name="base_footprint_to_front_mid_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="front_mid_april"/>
     <origin rpy="0 0 0" xyz="1.3256 0 0.51"/>
   </joint>
+  <joint name="base_footprint_to_front_mid_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_front_mid"/>
+    <origin rpy="0 0 0" xyz="1.3156 0 0.51"/>
+  </joint>
   <joint name="base_footprint_to_front_right_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="front_right_april"/>
     <origin rpy="0 0 -0.7853981633974483" xyz="1.2414 -.3937 0.51"/>
+  </joint>
+  <joint name="base_footprint_to_front_right_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_front_right"/>
+    <origin rpy="0 0 -0.7853981633974483" xyz="1.2314 -.3837 0.51"/>
   </joint>
   <joint name="base_footprint_to_side_right_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="side_right_april"/>
     <origin rpy="0 0 -1.5707963267948966" xyz=".512 -.3937 0.51"/>
   </joint>
+  <joint name="base_footprint_to_side_right_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_side_right"/>
+    <origin rpy="0 0 -1.5707963267948966" xyz=".512 -.3837 0.51"/>
+  </joint>
   <joint name="base_footprint_to_back_right_april" type="fixed">
     <parent link="base_footprint"/>
     <child link="back_right_april"/>
     <origin rpy="0 0 0.7853981633974483" xyz="-.21581 -.3937 0.51"/>
+  </joint>
+  <joint name="base_footprint_to_back_right_april_white" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="white_back_right"/>
+    <origin rpy="0 0 0.7853981633974483" xyz="-.20581 -.3837 0.51"/>
   </joint>
   <!-- ******************* Sensors *********************** -->
   <joint name="lidar_base_mount_joint" type="fixed">

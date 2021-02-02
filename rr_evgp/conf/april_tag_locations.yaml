@@ -1,0 +1,16 @@
+tags: [
+  {
+    name: 'ROBOT_ONE',
+    layout:
+      [
+        { id: 4, size: 0.24 }, #Back mid
+        { id: 5, size: 0.24, x: -0.3937, y: 0.08419,  qw: 0.92388, qy: -0.38268 }, #Back left
+        { id: 6, size: 0.24, x: -0.45, y: 0, qw: 0.70711, qy: -0.70711 }, #Side left
+        { id: 7, size: 0.24, x: -0.3937, y: -1.5414, qw: 0.92388, qy: 0.38268 }, #Front left
+        { id: 0, size: 0.24, x: -0.3937, y: 1.6256 }, #Front mid
+        { id: 1, size: 0.24, x: -0.3937, y: 1.5414, qw: 0.92388, qy: 0.38268 }, #Front right
+        { id: 2, size: 0.24, x: 0.3937, y: -0.812, qw: 0.70711, qy: 0.70711 }, #Side right
+        { id: 3, size: 0.24, x: 0.3937, y: 0.08419, qw: 0.92388, qy: 0.38268 }, #Back right y: y: 0.08419
+      ]
+  }
+]

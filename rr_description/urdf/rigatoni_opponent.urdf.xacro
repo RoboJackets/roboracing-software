@@ -172,6 +172,93 @@
     </link>
     <xacro:set_link_color link="imu_bottom_link" color="Gold"/>
 
+    <link name="white">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="white">
+        <material>none</material>
+    </gazebo>
+
+    <link name="white_back_left">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="white_back_left">
+        <material>none</material>
+    </gazebo>
+
+    <link name="white_side_left">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="white_side_left">
+        <material>none</material>
+    </gazebo>
+
+    <link name="white_front_left">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="white_front_left">
+        <material>none</material>
+    </gazebo>
+
+    <link name="white_front_mid">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="white_front_mid">
+        <material>none</material>
+    </gazebo>
+
+    <link name="white_front_right">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="white_side_right">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="white_back_right">
+        <xacro:null_inertia/>
+        <visual>
+            <geometry>
+                <box size="0.001 0.3 0.3 "/>
+            </geometry>
+        </visual>
+    </link>
+
     <link name="back_mid_april">
         <xacro:null_inertia/>
         <visual>
@@ -349,10 +436,22 @@
         <origin xyz="-.3 0 0.51" rpy="0 0 0"/>
     </joint>
 
+    <joint name="base_footprint_to_back_mid_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white"/>
+        <origin xyz="-.29 0 0.51" rpy="0 0 0"/>
+    </joint>
+
     <joint name="base_footprint_to_back_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="back_left_april"/>
         <origin xyz="-.21581 .3937 0.51" rpy="0 0 -${pi/4}"/>
+    </joint>
+
+    <joint name="base_footprint_to_back_left_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_back_left"/>
+        <origin xyz="-.20581 .3837 0.51" rpy="0 0 -${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_side_left_april" type="fixed">
@@ -361,10 +460,22 @@
         <origin xyz=".512 .45 0.51" rpy="0 0 -${pi/2}"/>
     </joint>
 
+    <joint name="base_footprint_to_side_left_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_side_left"/>
+        <origin xyz=".512 .44 0.51" rpy="0 0 -${pi/2}"/>
+    </joint>
+
     <joint name="base_footprint_to_front_left_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="front_left_april"/>
         <origin xyz="1.2414 .3937 0.51" rpy="0 0 ${pi/4}"/>
+    </joint>
+
+    <joint name="base_footprint_to_front_left_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_front_left"/>
+        <origin xyz="1.2314 .3837 0.51" rpy="0 0 ${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_front_mid_april" type="fixed">
@@ -373,10 +484,22 @@
         <origin xyz="1.3256 0 0.51" rpy="0 0 0"/>
     </joint>
 
+    <joint name="base_footprint_to_front_mid_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_front_mid"/>
+        <origin xyz="1.3156 0 0.51" rpy="0 0 0"/>
+    </joint>
+
     <joint name="base_footprint_to_front_right_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="front_right_april"/>
         <origin xyz="1.2414 -.3937 0.51" rpy="0 0 -${pi/4}"/>
+    </joint>
+
+    <joint name="base_footprint_to_front_right_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_front_right"/>
+        <origin xyz="1.2314 -.3837 0.51" rpy="0 0 -${pi/4}"/>
     </joint>
 
     <joint name="base_footprint_to_side_right_april" type="fixed">
@@ -385,10 +508,22 @@
         <origin xyz=".512 -.3937 0.51" rpy="0 0 -${pi/2}"/>
     </joint>
 
+    <joint name="base_footprint_to_side_right_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_side_right"/>
+        <origin xyz=".512 -.3837 0.51" rpy="0 0 -${pi/2}"/>
+    </joint>
+
     <joint name="base_footprint_to_back_right_april" type="fixed">
         <parent link="base_footprint"/>
         <child link="back_right_april"/>
         <origin xyz="-.21581 -.3937 0.51" rpy="0 0 ${pi/4}"/>
+    </joint>
+
+    <joint name="base_footprint_to_back_right_april_white" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="white_back_right"/>
+        <origin xyz="-.20581 -.3837 0.51" rpy="0 0 ${pi/4}"/>
     </joint>
 
     <!-- ******************* Sensors *********************** -->
