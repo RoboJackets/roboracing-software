@@ -5,38 +5,24 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 #include <rr_msgs/turning.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Int8.h>
-#include <stdlib.h> /* abs */
+#include <stdlib.h>
 
 using namespace std;
 
-const float PI = 3.14;
-
-ros::Publisher steerPub;
-ros::Publisher speedPub;
+ros::Publisher steerPub,speedPub;
 ros::ServiceServer service;
 
-double speed;
-double steering;
+double imu_yaw;
 
-int imu_quadrant;
-float imu_yaw;
-float initial_yaw;
-float target_yaw;
-
-double left_offset;
-double right_offset;
+double left_offset, right_offset;
 double turn_speed;
-double left_turn_steering;
-double right_turn_steering;
+double left_turn_steering, right_turn_steering;
 
 double forward_timeout;
+double angle_threshold;
 
-std::string turn_direction;
-ros::Time finishTime;
 
-void publishSpeedandSteering() {
+void publishSpeedandSteering(double speed, double steering) {
     rr_msgs::speed speedMsg;
     speedMsg.speed = speed;
     speedMsg.header.stamp = ros::Time::now();
@@ -48,84 +34,48 @@ void publishSpeedandSteering() {
     steerPub.publish(steerMsg);
 }
 
-// Used to calculate the distance from the target IMU yaw to the current IMU yaw
-// within range of [0 ,6.28]
-bool comp(int a, int b) {
-    return (a < b);
-}
-
-float angleDist(float target, float current) {
-    double diff = static_cast<double>(target - current);
-    float min = std::min({ std::fabs(diff), std::fabs(diff - 2 * M_PI), std::fabs(diff + 2 * M_PI) }, comp);
-    return min;
-}
-
-void makeTurn() {
+void makeTurn(int turn_direction, double approach_angle) {
     ros::spinOnce();
-    imu_quadrant = ceil((2 * imu_yaw) / PI);
-    initial_yaw = imu_yaw;
+    double initial_yaw = imu_yaw;
 
-    if (turn_direction.compare("LEFT") == 0) {
-        if (imu_quadrant == 4) {
-            target_yaw = initial_yaw - 1.5 * PI - left_offset;
-        } else {
-            target_yaw = initial_yaw + .5 * PI + left_offset;
-        }
-
-        while (ros::ok()) {
-            if (angleDist(target_yaw, imu_yaw) <= 0.015) {
-                break;
-            }
-
-            speed = turn_speed;
-            steering = left_turn_steering;
-            publishSpeedandSteering();
-            ros::Duration(0.01).sleep();
+    if (turn_direction == rr_msgs::turning::Request::LEFT) {
+        double target_yaw = initial_yaw + approach_angle + .5 * M_PI + left_offset;
+        while (abs(angles::shortest_angular_distance(target_yaw, imu_yaw)) > angle_threshold) {
+            publishSpeedandSteering(turn_speed, left_turn_steering);
             ros::spinOnce();
-        }
-
-    } else if (turn_direction.compare("RIGHT") == 0) {
-        if (imu_quadrant == 1) {
-            target_yaw = initial_yaw + 1.5 * PI + right_offset;
-        } else {
-            target_yaw = initial_yaw - .5 * PI + right_offset;
-        }
-
-        while (ros::ok()) {
-            if (angleDist(target_yaw, imu_yaw) <= 0.015) {
-                break;
-            }
-
-            speed = turn_speed;
-            steering = right_turn_steering;
-            publishSpeedandSteering();
             ros::Duration(0.01).sleep();
-            ros::spinOnce();
         }
-    } else if (turn_direction.compare("STRAIGHT") == 0) {
+    } else if (turn_direction == rr_msgs::turning::Request::RIGHT) {
+        double target_yaw = initial_yaw + approach_angle - .5 * M_PI + right_offset;
+
+        while (abs(angles::shortest_angular_distance(target_yaw, imu_yaw)) > angle_threshold) {
+            publishSpeedandSteering(turn_speed, right_turn_steering);
+            ros::spinOnce();
+            ros::Duration(0.01).sleep();
+        }
+    } else if (turn_direction == rr_msgs::turning::Request::STRAIGHT) {
         ros::Time start_time = ros::Time::now();
         ros::Duration timeout(forward_timeout);  // Timeout of 2 seconds
-        while (ros::Time::now() < start_time + timeout && ros::ok()) {
-            speed = turn_speed;
-            steering = 0;
-            publishSpeedandSteering();
+
+        while (ros::Time::now() < start_time + timeout) {
+            publishSpeedandSteering(turn_speed, 0);
             ros::Duration(0.01).sleep();
         }
     }
 
     ROS_INFO("Turn made");
-    speed = 0.0;
-    steering = 0.0;
-    publishSpeedandSteering();
+    publishSpeedandSteering(0, 0);
 }
 
-//Sets the yaw to a positive, normalized angle between [0, 2PI]
+// Sets the yaw to a positive, normalized angle between [0, 2PI]
 void imuCB(const rr_msgs::axesConstPtr& msg) {
     imu_yaw = angles::normalize_angle_positive(msg->yaw);
 }
 
 bool turnCallback(rr_msgs::turning::Request &req, rr_msgs::turning::Response &res) {
     ROS_INFO_STREAM(req.direction);
+    makeTurn(req.direction, req.approach_angle);
+    res.success = true;
     return true;
 }
 
@@ -142,19 +92,15 @@ int main(int argc, char** argv) {
     nhp.getParam("left_offset", left_offset);
     nhp.getParam("right_offset", right_offset);
     nhp.getParam("forward_timeout", forward_timeout);
-    nhp.getParam("turn_direction", turn_direction);
+    nhp.getParam("angle_threshold", angle_threshold);
 
     auto imuSub = nh.subscribe("/axes", 1, imuCB);
     speedPub = nh.advertise<rr_msgs::speed>("/speed", 1);
     steerPub = nh.advertise<rr_msgs::steering>("/steering", 1);
 
-    service = nh.advertiseService("turn", turnCallback);
+    service = nh.advertiseService("/turn_action", turnCallback);
 
-    ros::Rate loopRate(1.0);
-    ros::spinOnce();
-    loopRate.sleep();
-
-    //makeTurn();
+    ros::spin();
 
     return 0;
 }

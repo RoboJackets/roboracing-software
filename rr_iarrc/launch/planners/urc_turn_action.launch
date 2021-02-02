@@ -7,8 +7,8 @@
         <param name="right_turn_steering" type="double" value="0.20"/>
         <param name="left_offset" type="double" value="0.0"/>
         <param name="right_offset" type="double" value="0.0"/>
-       	<param name="forward_timeout" type="double" value="10.0"/>
-        <param name="turn_direction" type="string" value="FORWARD"/>
+       	<param name="forward_timeout" type="double" value="4.0"/>
+        <param name="angle_threshold" type="double" value="0.1"/>
     </node>
 
 </launch>
