@@ -4,6 +4,9 @@
         <param name="img_topic" type="string" value="/camera_center/image_color_rect"/>
         <param name="startlight_watcher_topic" type="string" value="/start_detected"/>
 
+        <!--Publishes debug image after the start has been detected-->
+        <param name="keep_publishing" type="bool" value="false"/>
+
         <!--Controls the sensitivity for detecting red and green lights-->
         <param name="min_green_hue" type="int" value="20"/>
         <param name="max_green_hue" type="int" value="100"/>
