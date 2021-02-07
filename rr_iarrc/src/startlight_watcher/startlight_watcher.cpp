@@ -49,7 +49,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     cv::Mat frame = cv_ptr->image;
 
-    cv::Mat hsv_frame, red_found, green_found;
+    cv::Mat hsv_frame, red_found, green_found, debugImage;
     cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
     cv::inRange(hsv_frame, cv::Scalar(minRedHue, 100, 140), cv::Scalar(maxRedHue, 255, 255), red_found);
     cv::inRange(hsv_frame, cv::Scalar(minGreenHue, 120, 120), cv::Scalar(maxGreenHue, 255, 255), green_found);
@@ -72,8 +72,17 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     bool_pub.publish(prev_start_msg);
 
     sensor_msgs::Image outmsg;
-    cv_ptr->image = red_found;
-    cv_ptr->encoding = "mono8";
+
+    //sets the found pixels in the image to the either red or green
+    cv::cvtColor(red_found, red_found, cv::COLOR_GRAY2RGB);
+    red_found.setTo(cv::Scalar(255, 0, 0), red_found);
+    cv::cvtColor(green_found, green_found, cv::COLOR_GRAY2RGB);
+    green_found.setTo(cv::Scalar(0, 255, 0), green_found);
+
+    debugImage = red_found + green_found;
+
+    cv_ptr->image = debugImage;
+    cv_ptr->encoding = "rgb8";
     cv_ptr->toImageMsg(outmsg);
     debug_img_pub.publish(outmsg);
 }
