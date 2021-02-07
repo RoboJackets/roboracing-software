@@ -21,10 +21,10 @@
         <param name="subscription_node" type="string" value="/urc_side_lanes"/>
     </node>
 
+    <!-- Front -->
     <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_front.launch">
         <arg name="camera_namespace" value="camera_center"/>
     </include>
-
     <!-- Left -->
     <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_side.launch">
         <arg name="camera_namespace" value="camera_left"/>

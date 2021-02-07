@@ -87,7 +87,7 @@
                     </geometry>
                 </visual>
             </link>
-            <script>
+            <!-- <script>
                 <loop>true</loop>
                 <delay_start>5.000000</delay_start>
                 <auto_start>true</auto_start>
@@ -97,7 +97,7 @@
                         <pose>0 0 -4.5 0 0 0</pose>
                     </waypoint>
                 </trajectory>
-            </script>
+            </script> -->
         </actor>
 
 
@@ -118,7 +118,7 @@
                     </geometry>
                 </visual>
             </link>
-            <script>
+            <!-- <script>
                 <loop>true</loop>
                 <delay_start>5.000000</delay_start>
                 <auto_start>true</auto_start>
@@ -128,7 +128,7 @@
                         <pose>0 0 4.5 0 0 0</pose>
                     </waypoint>
                 </trajectory>
-            </script>
+            </script> -->
         </actor>
     </world>
 </sdf>
