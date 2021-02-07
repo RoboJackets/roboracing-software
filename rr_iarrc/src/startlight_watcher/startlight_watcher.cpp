@@ -75,7 +75,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
 
     sensor_msgs::Image outmsg;
 
-    //sets the found pixels in the image to the either red or green
+    // sets the found pixels in the image to either red or green
     cv::cvtColor(red_found, red_found, cv::COLOR_GRAY2RGB);
     red_found.setTo(cv::Scalar(255, 0, 0), red_found);
     cv::cvtColor(green_found, green_found, cv::COLOR_GRAY2RGB);
