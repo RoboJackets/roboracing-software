@@ -21,6 +21,8 @@ int minArea;
 
 int minGreenHue, maxGreenHue, minRedHue, maxRedHue;
 double redToGreenTime;
+
+bool keepPublishing;
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
@@ -41,7 +43,7 @@ bool colorOn(cv::Mat color_img) {
 
 void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     // keeps publishing true if green was previously seen
-    if (prev_start_msg.data) {
+    if (prev_start_msg.data && !keepPublishing) {
         bool_pub.publish(prev_start_msg);
         return;
     }
@@ -106,6 +108,8 @@ int main(int argc, char *argv[]) {
     nhp.param("min_area", minArea, 100);
 
     nhp.param("red_to_green_time", redToGreenTime, 1.0);
+
+    nhp.param("keep_publishing", keepPublishing, false);
 
     // Subscribe to ROS topic with callback
     prev_start_msg.data = false;
