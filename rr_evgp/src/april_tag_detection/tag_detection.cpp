@@ -4,13 +4,17 @@
 
 #include "tag_detection.h"
 
+#include <utility>
+
 tag_detection::tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
                              const std::string &tag_detections_topic, const std::string &destination_frame,
                              const std::string &tag_detection_markers, double x_offset,
-                             double y_offset, double px_per_m, double width, double height) {
+                             double y_offset, double px_per_m, double width, double height,
+                             std::vector<april_robot> robots) {
     this->camera_frame = camera_frame;
     this->destination_frame = destination_frame;
     this->width = width;
+    this->robots = std::move(robots);
 
     double left = x_offset - width / 2;
     double bottom = y_offset;
@@ -35,7 +39,11 @@ tag_detection::tag_detection(ros::NodeHandle *nh, const std::string &camera_fram
 void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg) {
     opponent_cloud.clear();
     auto msgs = msg->detections;
+    std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> tag_groups(5); //TODO: Add as param
     for (const auto &message : msgs) {  // Iterate through all discovered April Tags
+        int car_number = message.id[0] / 10; // By the specs, car 1 has tags 10,11,12... car 2 has 20,21,22...
+        tag_groups[car_number].push_back(std::pair(message.id[0], message.pose.pose.pose));
+//        message.id[0]
         draw_opponent(message.id[0], message.pose.pose.pose);
     }
     publishPointCloud(opponent_cloud);
@@ -50,6 +58,11 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
 
 void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) {
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera_w);
+
+//    april_robot& curr;
+    for (april_robot &robot : robots) {
+
+    }
 
     tf::Pose april_w;
     tf::poseMsgToTF(april_camera_msg, april_w);

@@ -13,6 +13,7 @@
 #include <tf/transform_listener.h>
 #include <tf_conversions/tf_eigen.h>
 #include <visualization_msgs/Marker.h>
+#include "start_tag_detection.h"
 
 #include <utility>
 
@@ -21,7 +22,7 @@ public:
     tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic, const std::string &destination_frame,
                   const std::string &tag_detection_markers, double x_offset,
-                  double y_offset, double px_per_m, double width, double height);
+                  double y_offset, double px_per_m, double width, double height, std::vector<april_robot> robots);
 
 private:
     ros::Publisher pub_pointcloud;
@@ -30,6 +31,7 @@ private:
     tf::StampedTransform camera_w;
     pcl::PointCloud<pcl::PointXYZ> pcl_outline;
     std::vector<geometry_msgs::Point> marker_outline;
+    std::vector<april_robot> robots;
 
     tf::TransformListener tf_listener;
     std::vector<std::array<int, 3>> colors{{255, 0,   0},
