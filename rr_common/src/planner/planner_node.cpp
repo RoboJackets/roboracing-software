@@ -60,6 +60,41 @@ void update_messages(double speed, double angle) {
     steer_message->header.stamp = now;
 }
 
+void publish_path_viz(const std::vector<rr::PathPoint>& path_rollout) {
+    visualization_msgs::Marker line_strip;
+    line_strip.type = visualization_msgs::Marker::LINE_STRIP;
+    line_strip.scale.x = 1;
+    line_strip.id = 374;  // Unique ID (from issue number)
+    line_strip.pose.orientation.x = 0;
+    line_strip.pose.orientation.y = 0;
+    line_strip.pose.orientation.z = 0;
+    line_strip.pose.orientation.w = 1;
+    for (const rr::PathPoint& path_point : path_rollout) {
+        geometry_msgs::Point p;
+        p.x = path_point.pose.x;
+        p.y = path_point.pose.y;
+        std_msgs::ColorRGBA c;
+        if (OK == reverse_state) {
+            c.r = 0;
+            c.g = std::abs(path_point.speed) / g_speed_model->GetValMax();
+            c.b = 0;
+        } else if (CAUTION == reverse_state) {
+            c.r = 1.0;
+            c.g = 1.0;
+            c.b = 0;
+        } else if (REVERSE == reverse_state) {
+            c.r = 1.0;
+            c.g = 0;
+            c.b = 0;
+        }
+        c.a = 1.0;
+        line_strip.points.push_back(p);
+        line_strip.colors.push_back(c);
+    }
+    line_strip.header.frame_id = "base_footprint";
+    viz_pub.publish(line_strip);
+}
+
 void processMap() {
     auto max_speed = g_speed_model->GetValMax();
 
@@ -147,38 +182,7 @@ void processMap() {
     steer_pub.publish(steer_message);
 
     if (viz_pub.getNumSubscribers() > 0) {
-        visualization_msgs::Marker line_strip;
-        line_strip.type = visualization_msgs::Marker::LINE_STRIP;
-        line_strip.scale.x = 1;
-        line_strip.id = 374;
-        line_strip.pose.orientation.x = 0;
-        line_strip.pose.orientation.y = 0;
-        line_strip.pose.orientation.z = 0;
-        line_strip.pose.orientation.w = 1;
-        for (auto path_point : plan.rollout.path) {
-            geometry_msgs::Point p;
-            p.x = path_point.pose.x;
-            p.y = path_point.pose.y;
-            std_msgs::ColorRGBA c;
-            if (OK == reverse_state) {
-                c.r = 0;
-                c.g = std::abs(path_point.speed) / g_speed_model->GetValMax();
-                c.b = 0;
-            } else if (CAUTION == reverse_state) {
-                c.r = 1.0;
-                c.g = 1.0;
-                c.b = 0;
-            } else if (REVERSE == reverse_state) {
-                c.r = 1.0;
-                c.g = 0;
-                c.b = 0;
-            }
-            c.a = 1.0;
-            line_strip.points.push_back(p);
-            line_strip.colors.push_back(c);
-        }
-        line_strip.header.frame_id = "base_footprint";
-        viz_pub.publish(line_strip);
+        publish_path_viz(plan.rollout.path);
     }
 }
 
