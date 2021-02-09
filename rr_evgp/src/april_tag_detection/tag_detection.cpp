@@ -44,8 +44,9 @@ void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPt
         int car_number = message.id[0] / 10; // By the specs, car 1 has tags 10,11,12... car 2 has 20,21,22...
         tag_groups[car_number].push_back(std::pair(message.id[0], message.pose.pose.pose));
 //        message.id[0]
-        draw_opponent(message.id[0], message.pose.pose.pose);
+//        draw_opponent(message.id[0], message.pose.pose.pose);
     }
+    draw_opponents(&tag_groups);
     publishPointCloud(opponent_cloud);
 }
 
@@ -58,11 +59,6 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
 
 void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) {
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera_w);
-
-//    april_robot& curr;
-    for (april_robot &robot : robots) {
-
-    }
 
     tf::Pose april_w;
     tf::poseMsgToTF(april_camera_msg, april_w);
@@ -102,5 +98,37 @@ void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) 
     marker.scale.z = .1;
     marker.header.stamp = ros::Time(0);
     marker.header.frame_id = destination_frame;
+
     pub_markers.publish(marker);
+}
+
+void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> *real_tags) {
+    tf::StampedTransform camera;
+    tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera);
+    for (const auto &robot: *real_tags) {
+        tf::Pose robot_pose;
+
+        for (const auto &tag: robot) {
+            tf::Pose real_pose;
+            tf::poseMsgToTF(tag.second, real_pose);
+            bool first = true;
+
+            tf::Vector3 robot_pos_tag_estimate = real_pose.getOrigin() - robots[tag.first / 10].tags[tag.first].pose.getOrigin();
+            ROS_INFO_STREAM(tag.first << " (" << real_pose.getOrigin().x() << ", " << real_pose.getOrigin().y() << ", " << real_pose.getOrigin().z() << "), ("<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().x() << ", "<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().y() << ", "<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().z() << "), ("<< robot_pos_tag_estimate.x() << ", " << robot_pos_tag_estimate.y() << ", " << robot_pos_tag_estimate.z() << "), robot: (" << robot_pose.getOrigin().x() << ", " << robot_pose.getOrigin().y() << ", " << robot_pose.getOrigin().z() << ")");
+
+            if (!first) {
+                ROS_INFO_STREAM("zero");
+                robot_pose.setOrigin((robot_pose.getOrigin() + (robot_pos_tag_estimate)) / 2);
+            } else {
+                robot_pose.setOrigin(robot_pos_tag_estimate);
+                first = false;
+            }
+        }
+
+        pcl::PointCloud<pcl::PointXYZ> car_outline;
+        Eigen::Affine3d affine3d;
+        tf::transformTFToEigen(camera * robot_pose, affine3d);
+        pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+        opponent_cloud += (car_outline);
+    }
 }

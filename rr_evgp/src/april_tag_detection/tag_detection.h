@@ -49,4 +49,6 @@ private:
     void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud);
 
     void callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg);
+
+    void draw_opponents(std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> *real_tags);
 };

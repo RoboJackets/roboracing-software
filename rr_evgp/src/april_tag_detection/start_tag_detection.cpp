@@ -47,13 +47,15 @@ std::vector<april_robot> constructRobots(XmlRpc::XmlRpcValue xml) {
             april_tag tag{};
             tag.id = static_cast<int>(xmlTag["id"]);
             tag.size = static_cast<double>(xmlTag["size"]);
-            tag.x = static_cast<double>(xmlTag["x"]);
-            tag.y = static_cast<double>(xmlTag["y"]);
-            tag.z = static_cast<double>(xmlTag["z"]);
-            tag.qw = static_cast<double>(xmlTag["qw"]);
-            tag.qx = static_cast<double>(xmlTag["qx"]);
-            tag.qy = static_cast<double>(xmlTag["qy"]);
-            tag.qz = static_cast<double>(xmlTag["qz"]);
+            auto x = static_cast<double>(xmlTag["x"]);
+            auto y = static_cast<double>(xmlTag["y"]);
+            auto z = static_cast<double>(xmlTag["z"]);
+            auto qw = static_cast<double>(xmlTag["qw"]);
+            auto qx = static_cast<double>(xmlTag["qx"]);
+            auto qy = static_cast<double>(xmlTag["qy"]);
+            auto qz = static_cast<double>(xmlTag["qz"]);
+
+            tag.pose = tf::Pose(tf::Quaternion(qw, qx, qy, qz), tf::Vector3(x, y, z));
             robot.tags[tag.id] = tag;
         }
 

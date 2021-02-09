@@ -7,13 +7,7 @@
 struct april_tag {
     int id;
     double size;
-    double x;
-    double y;
-    double z;
-    double qw;
-    double qx;
-    double qy;
-    double qz;
+    tf::Pose pose;
 };
 
 struct april_robot {
