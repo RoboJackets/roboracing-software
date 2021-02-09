@@ -1,5 +1,4 @@
 #include <geometry_msgs/Pose.h>
-#include <visualization_msgs/Marker.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -14,6 +13,7 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <visualization_msgs/Marker.h>
 
 #include <rr_common/linear_tracking_filter.hpp>
 
@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
     g_steer_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "steering_filter"));
     g_speed_model = std::make_shared<rr::LinearTrackingFilter>(ros::NodeHandle(nhp, "speed_filter"));
     g_vehicle_model =
-            std::make_unique<rr::BicycleModel>(ros::NodeHandle(nhp, "bicycle_model"), g_steer_model, g_speed_model);
+          std::make_unique<rr::BicycleModel>(ros::NodeHandle(nhp, "bicycle_model"), g_steer_model, g_speed_model);
 
     std::string planner_type;
     assertions::getParam(nhp, "planner_type", planner_type);
@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
     g_effector_tracker =
-            std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
+          std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
 
     total_planning_time = 0;
     total_plans = 0;
