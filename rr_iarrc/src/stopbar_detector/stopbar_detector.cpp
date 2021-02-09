@@ -37,7 +37,9 @@ struct ArrowSign {
     int count;
 };
 
+std::vector<ArrowSign> arrowTrackList{ { RIGHT, 0, 0 }, { LEFT, 0, 0 }, { STRAIGHT, 0, 0 } };
 ArrowSign bestMove = { NONE, 0, 0 };
+
 /*
  * Uses probablistic Hough to find line segments and determine if they are the
  * stop bar An angle close to 0 is horizontal.
@@ -55,7 +57,7 @@ ArrowSign bestMove = { NONE, 0, 0 };
  * @param maxLineGap HoughLinesP maxmimum distance between points in the same
  * line
  */
-int findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, double stopBarGoalAngle,
+bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, double stopBarGoalAngle,
                          double stopBarGoalAngleRange, double triggerDistance, double triggerDistanceRight,
                          int threshold, double minLineLength, double maxLineGap) {
     cv::Mat edges;
@@ -79,32 +81,25 @@ int findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, 
         cv::line(output, p1, p2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 
         // calc angle and decide if it is a stop bar
-        double dx = p2.x - p1.x;
-        double dy = p2.y - p1.y;
-        double currAngle = atan(std::fabs(dy / dx)) * 180 / CV_PI;  // in degrees
+        double distanceX = p2.x - p1.x;
+        double distanceY = p2.y - p1.y;
+        double currAngle = atan(fabs(distanceY / distanceX)) * 180 / CV_PI;  // in degrees
 
         cv::Point midpoint = (p1 + p2) * 0.5;
-        cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
-        std::stringstream streamAngle;
-        streamAngle << std::fixed << std::setprecision(2) << currAngle;  // show angle with a couple decimals
-        cv::putText(output, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
         if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
-            float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
+            float dist = (edges.rows - midpoint.y) / pixels_per_meter;
 
-            cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
-            std::stringstream streamDist;
-            streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
-            cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2), cv::FONT_HERSHEY_PLAIN,
-                        1, cv::Scalar(0, 255, 0), 1);
+            if (dist <= triggerDistance) {
+                cv::Point midpoint = (p1 + p2) * 0.5;
+                cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
+                std::stringstream streamAngle;
+                streamAngle << std::fixed << std::setprecision(2) << currAngle;  // show angle with a couple decimals
+                cv::putText(output, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
-            if (bestMove.direction == RIGHT && dist <= triggerDistanceRight) {
                 stopBarAngle = currAngle;
-                return 2;
-            } else if (dist <= triggerDistance) {
-                stopBarAngle = currAngle;
-                return 1;  // stop bar detected close to us!
+                return true;  // stop bar detected close to us!
             }
         }
     }
@@ -117,7 +112,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat frame = cv_ptrLine->image;
     cv::Mat debug;
     double stopBarAngle;
-    int stopBarDetected = findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
+    bool stopBarDetected = findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
                                                stopBarTriggerDistance, stopBarTriggerDistanceRight, houghThreshold,
                                                houghMinLineLength, houghMaxLineGap);
 
@@ -130,7 +125,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
     cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0, 150, 0), 1, cv::LINE_AA);
 
-    if (stopBarDetected == 2 && bestMove.direction != NONE) {
+    if (stopBarDetected) {
         // let the world know
         moveMsg.header.stamp = ros::Time::now();
         moveMsg.direction = bestMove.direction;
@@ -140,19 +135,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
         // reset things
         bestMove.direction = NONE;
         bestMove.area = 0.0;
-    } else if (stopBarDetected == 1 && bestMove.direction != NONE) {
-        // let the world know
-        moveMsg.header.stamp = ros::Time::now();
-        moveMsg.direction = bestMove.direction;
-        moveMsg.angle = stopBarAngle;
-        pubMove.publish(moveMsg);
-
-        // reset things
-        bestMove.direction = NONE;
-        bestMove.area = 0.0;
-    } else {
     }
-
     if (pubLine.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptrLine->image = debug;
