@@ -1,5 +1,5 @@
 <launch>
-    <node name="dynamic_exposure" pkg="rr_platform" type="dynamic_exposure.py" output="screen">
+    <node name="dynamic_exposure" pkg="rr_platform" type="dynamic_exposure.py" output="screen" required="true">
         <param name="goal_brightness_level" type="int" value="80" />
         <param name="brightness_tolerance" type="int" value="5" />
         <param name="max_shutter_speed" type="double" value="0.02" />

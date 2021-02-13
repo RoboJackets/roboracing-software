@@ -87,17 +87,6 @@
                     </geometry>
                 </visual>
             </link>
-            <!-- <script>
-                <loop>true</loop>
-                <delay_start>5.000000</delay_start>
-                <auto_start>true</auto_start>
-                <trajectory id="0" type="square">
-                    <waypoint>
-                        <time>1.00</time>
-                        <pose>0 0 -4.5 0 0 0</pose>
-                    </waypoint>
-                </trajectory>
-            </script> -->
         </actor>
 
 
@@ -118,17 +107,6 @@
                     </geometry>
                 </visual>
             </link>
-            <!-- <script>
-                <loop>true</loop>
-                <delay_start>5.000000</delay_start>
-                <auto_start>true</auto_start>
-                <trajectory id="0" type="square">
-                    <waypoint>
-                        <time>1.00</time>
-                        <pose>0 0 4.5 0 0 0</pose>
-                    </waypoint>
-                </trajectory>
-            </script> -->
         </actor>
     </world>
 </sdf>
