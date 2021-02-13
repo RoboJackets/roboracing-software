@@ -17,7 +17,6 @@ catkin_package(
 file(GLOB xacro_files
         urdf/evgp.urdf.xacro
         urdf/evgp_opponent.urdf.xacro
-        urdf/opponents/evgp.urdf.xacro
         urdf/opponents/evgp_opponent_0.urdf.xacro
         urdf/opponents/evgp_opponent_1.urdf.xacro
         urdf/opponents/evgp_opponent_2.urdf.xacro
