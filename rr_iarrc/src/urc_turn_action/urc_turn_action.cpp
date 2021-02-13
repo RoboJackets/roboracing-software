@@ -1,6 +1,6 @@
+#include <angles/angles.h>
 #include <math.h>
 #include <ros/ros.h>
-#include <angles/angles.h>
 #include <rr_msgs/axes.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-ros::Publisher steerPub,speedPub;
+ros::Publisher steerPub, speedPub;
 ros::ServiceServer service;
 
 double imu_yaw;
@@ -20,7 +20,6 @@ double left_turn_steering, right_turn_steering;
 
 double forward_timeout;
 double angle_threshold;
-
 
 void publishSpeedandSteering(double speed, double steering) {
     rr_msgs::speed speedMsg;
@@ -72,7 +71,7 @@ void imuCB(const rr_msgs::axesConstPtr& msg) {
     imu_yaw = angles::normalize_angle_positive(msg->yaw);
 }
 
-bool turnCallback(rr_msgs::turning::Request &req, rr_msgs::turning::Response &res) {
+bool turnCallback(rr_msgs::turning::Request& req, rr_msgs::turning::Response& res) {
     ROS_INFO_STREAM(req.direction);
     makeTurn(req.direction, req.approach_angle);
     res.success = true;
