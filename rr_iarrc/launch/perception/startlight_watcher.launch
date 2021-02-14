@@ -21,5 +21,9 @@
 
         <!--Controls the minimum area needed to detect a light-->
         <param name="min_area" type="int" value="100"/>
+
+        <!--Determines if the green light is detected in the right proximity to the red light-->
+        <param name="tolerance" type="int" value="20"/>
+        <param name="distance_under" type="int" value="100"/>
     </node>
 </launch>

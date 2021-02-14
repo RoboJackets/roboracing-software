@@ -16,6 +16,8 @@ sensor_msgs::Image outmsg;
 std_msgs::Bool prev_start_msg;
 ros::Time last_red_time;
 
+std::vector<std::vector<cv::Point>> lastRedCircles;
+
 double circularityThreshold;
 int minArea;
 
@@ -23,12 +25,15 @@ int minGreenHue, maxGreenHue, minRedHue, maxRedHue;
 double redToGreenTime;
 
 bool keepPublishing;
+
+int tolerance, distanceUnder;
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
-bool colorOn(cv::Mat color_img) {
+std::vector<std::vector<cv::Point>> findCircularContours(cv::Mat color_img) {
     std::vector<std::vector<cv::Point>> contours;
+    std::vector<std::vector<cv::Point>> circles;
     findContours(color_img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
     for (const auto &contour : contours) {
         double perimeter = cv::arcLength(contour, true);
@@ -36,9 +41,9 @@ bool colorOn(cv::Mat color_img) {
         double circularity = 4 * M_PI * (area / (perimeter * perimeter));
 
         if (circularityThreshold < circularity && area > minArea)
-            return true;
+            circles.push_back(contour);
     }
-    return false;
+    return circles;
 }
 
 void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
@@ -64,13 +69,33 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     cv::dilate(green_found, green_found, kernel(3, 3));
     cv::dilate(red_found, red_found, kernel(3, 3));
 
-    bool red_on = colorOn(red_found);
-    bool green_on = colorOn(green_found);
+    std::vector<std::vector<cv::Point>> redCircles = findCircularContours(red_found);
+    std::vector<std::vector<cv::Point>> greenCircles = findCircularContours(green_found);
 
-    if (red_on)
+    if (redCircles.size() != 0) {
         last_red_time = msg->header.stamp;
+        lastRedCircles = redCircles;
+    }
+    prev_start_msg.data = false;
 
-    prev_start_msg.data = green_on && (msg->header.stamp - last_red_time).toSec() < redToGreenTime;
+    if (greenCircles.size() > 0 && (msg->header.stamp - last_red_time).toSec() < redToGreenTime) {
+        for (const auto &redCircle : lastRedCircles) {
+            cv::Moments redMoment = cv::moments(redCircle);
+            int redCenterX = redMoment.m10 / redMoment.m00;
+            int redCenterY = redMoment.m01 / redMoment.m00;
+            for (const auto &greenCircle : greenCircles) {
+                cv::Moments greenMoment = cv::moments(greenCircle);
+                int greenCenterX = greenMoment.m10 / greenMoment.m00;
+                int greenCenterY = greenMoment.m01 / greenMoment.m00;
+                if (abs(redCenterX - greenCenterX) < tolerance && greenCenterY - redCenterY > 0 &&
+                    greenCenterY - redCenterY < distanceUnder) {
+                    prev_start_msg.data = true;
+                    break;
+                }
+            }
+        }
+    }
+
     bool_pub.publish(prev_start_msg);
 
     sensor_msgs::Image outmsg;
@@ -110,6 +135,9 @@ int main(int argc, char *argv[]) {
     nhp.param("red_to_green_time", redToGreenTime, 1.0);
 
     nhp.param("keep_publishing", keepPublishing, false);
+
+    nhp.param("tolerance", tolerance, 20);
+    nhp.param("distance_under", distanceUnder, 100);
 
     // Subscribe to ROS topic with callback
     prev_start_msg.data = false;
