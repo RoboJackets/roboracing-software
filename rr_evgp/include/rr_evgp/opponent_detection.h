@@ -1,23 +1,20 @@
-#include <ros/ros.h>
 #include <math.h>
-
 #include <pcl/ModelCoefficients.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-#include <pcl/conversions.h>
-#include <pcl_ros/transforms.h>
 #include <pcl/common/transforms.h>
-
-#include <pcl/filters/passthrough.h>
-#include <pcl/filters/extract_indices.h>
+#include <pcl/conversions.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/passthrough.h>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/transforms.h>
+#include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -33,7 +30,11 @@ visualization_msgs::Marker marker;
 visualization_msgs::MarkerArray marker_array;
 
 // colors
-std::vector<std::array<int, 3>> colors = {{255,0,0},{255,127,0},{0,255,127},{255,0,255},{0,0,255}};
+std::vector<std::array<int, 3>> colors = { { 255, 0, 0 },
+                                           { 255, 127, 0 },
+                                           { 0, 255, 127 },
+                                           { 255, 0, 255 },
+                                           { 0, 0, 255 } };
 
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
