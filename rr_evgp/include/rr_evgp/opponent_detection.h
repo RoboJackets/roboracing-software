@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <math.h>
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -20,7 +21,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <algorithm>
 
 // publishers
 ros::Publisher cloud_pub;

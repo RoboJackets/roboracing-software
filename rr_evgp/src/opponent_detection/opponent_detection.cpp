@@ -82,33 +82,28 @@ void callback(sensor_msgs::PointCloud2 cloud_msg)
   pass.setFilterLimits(-0.4, 5.0);
   pass.filter(*ground_segmented);
 
-  // **DOWNSAMPLING/CLUSTERING**
-
-  pcl::VoxelGrid<pcl::PointXYZ> vg;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-  vg.setInputCloud(ground_segmented);
-  vg.setLeafSize(0.1f, 0.1f, 0.1f);
-  vg.filter(*voxel_filtered);
+  // **CLUSTERING**
 
   // creating KdTree object for extracting clusters
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud (voxel_filtered);
+  tree->setInputCloud (ground_segmented);
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance(0.7);
-  ec.setMinClusterSize(15);
-  ec.setMaxClusterSize(100);
+  ec.setClusterTolerance(0.3);
+  ec.setMinClusterSize(100);
+  ec.setMaxClusterSize(700);
   ec.setSearchMethod(tree);
-  ec.setInputCloud(voxel_filtered);
+  ec.setInputCloud(ground_segmented);
   ec.extract(cluster_indices);
 
   // **PUBLISHING**
 
   // holding containers for PCs and Markers
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+  // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<geometry_msgs::Point> marker_cluster = {};
   geometry_msgs::Point marker_point;
+  bool notWall = true;
 
   // cluster count
   int cluster_ct = 0;
@@ -118,25 +113,36 @@ void callback(sensor_msgs::PointCloud2 cloud_msg)
   {
     for (const int& point : point_idx.indices)
     {
-      cloud_cluster->push_back((*voxel_filtered)[point]);
+      // cloud_cluster->push_back((*ground_segmented)[point]);
 
-      marker_point.x = (*voxel_filtered)[point].x;
-      marker_point.y = (*voxel_filtered)[point].y;
-      marker_point.z = (*voxel_filtered)[point].z;
+      marker_point.x = (*ground_segmented)[point].x;
+      marker_point.y = (*ground_segmented)[point].y;
+      marker_point.z = (*ground_segmented)[point].z;
 
-      marker_cluster.push_back(marker_point);
+      if (marker_point.x < 2.5 && marker_point.x > -2.5 && marker_point.y < 1.5 && marker_point.y > -1.5)
+      {
+        marker_cluster.push_back(marker_point);
+      }
+      else
+      {
+        notWall = false;
+        break;
+      }
     }
 
-    cloud_cluster->width = cloud_cluster->size();
+    /* cloud_cluster->width = cloud_cluster->size();
     cloud_cluster->height = 1;
-    cloud_cluster->is_dense = true;
+    cloud_cluster->is_dense = true; */
 
-    addMarkers(marker_cluster, cluster_ct);
+    if (notWall)
+    {
+      addMarkers(marker_cluster, cluster_ct);
+      cluster_ct += 1;
+    }
 
-    cloud_cluster->clear();
+    // cloud_cluster->clear();
     marker_cluster.clear();
-
-    cluster_ct += 1;
+    notWall = true;
   }
 
   marker_pub.publish(marker_array);
@@ -149,7 +155,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
-  cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);
+  // cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);
   marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);
 
   ros::spin();
