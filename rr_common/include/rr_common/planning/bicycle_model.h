@@ -32,6 +32,26 @@ class BicycleModel {
 
     //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
 
+    /**
+     * Setter for the lateral acceleration.
+     * @param imax_lateral_accel input lateral acceleration
+     */
+    void set_max_lateral_accel(double imax_lateral_accel);
+
+    /**
+     * Setter for segment size.
+     * @param isegment_size input segment size
+     */
+    void set_segment_size(int isegment_size);
+    
+    /**
+     * Setter for the dt
+     * @param idt input dt
+     */
+    void set_dt(double idt);
+
+    double get_dt();
+
   private:
     /**
      * Calculate a desired speed from a steering angle based on

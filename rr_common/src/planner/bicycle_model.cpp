@@ -63,6 +63,23 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.apply_speed = speed_model_temp.GetValue();
 }
 
+
+void BicycleModel::set_max_lateral_accel(double imax_lateral_accel) {
+    max_lateral_accel_ = imax_lateral_accel;
+}
+
+void BicycleModel::set_segment_size(int isegment_size) {
+    segment_size_ = isegment_size;
+}
+
+void BicycleModel::set_dt(double idt) {
+    dt_ = idt;
+}
+
+double BicycleModel::get_dt(){
+    return dt_;
+}
+
 void BicycleModel::StepKinematics(const PathPoint& prev, Pose& next) const {
     double deltaX, deltaY, deltaTheta;
     double distance_increment = prev.speed * dt_;

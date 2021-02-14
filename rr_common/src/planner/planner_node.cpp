@@ -164,9 +164,15 @@ void processMap() {
 }
 
 void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
-    // need a smart way of only displaying the param that was changed
-    // for now just display a generic message
-    ROS_INFO("Reconfigure Request Processed");
+    // g_vehicle_model -> set_max_lateral_accel(config.max_lateral_accel);
+    // g_vehicle_model -> set_segment_size(config.segment_size);
+    // g_vehicle_model -> set_dt(config.dt);
+
+    int n_segments = config.n_segments;
+    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_segments);
+    g_last_controls.setZero();
+
+    ROS_INFO("\n\nReconfigure Request Occurred %d\n\n", n_segments);
 }
 
 int main(int argc, char** argv) {
