@@ -46,6 +46,26 @@ std::vector<std::vector<cv::Point>> findCircularContours(cv::Mat color_img) {
     return circles;
 }
 
+bool greenOn(std::vector<std::vector<cv::Point>> greenCircles, std::vector<std::vector<cv::Point>> lastRedCircles) {
+    if (greenCircles.size() > 0) {
+        for (const auto &redCircle : lastRedCircles) {
+            cv::Moments redMoment = cv::moments(redCircle);
+            int redCenterX = redMoment.m10 / redMoment.m00;
+            int redCenterY = redMoment.m01 / redMoment.m00;
+            for (const auto &greenCircle : greenCircles) {
+                cv::Moments greenMoment = cv::moments(greenCircle);
+                int greenCenterX = greenMoment.m10 / greenMoment.m00;
+                int greenCenterY = greenMoment.m01 / greenMoment.m00;
+                if (abs(redCenterX - greenCenterX) < tolerance && greenCenterY - redCenterY > 0 &&
+                    greenCenterY - redCenterY < distanceUnder) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     // keeps publishing true if green was previously seen
     if (prev_start_msg.data && !keepPublishing) {
@@ -76,25 +96,9 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
         last_red_time = msg->header.stamp;
         lastRedCircles = redCircles;
     }
-    prev_start_msg.data = false;
 
-    if (greenCircles.size() > 0 && (msg->header.stamp - last_red_time).toSec() < redToGreenTime) {
-        for (const auto &redCircle : lastRedCircles) {
-            cv::Moments redMoment = cv::moments(redCircle);
-            int redCenterX = redMoment.m10 / redMoment.m00;
-            int redCenterY = redMoment.m01 / redMoment.m00;
-            for (const auto &greenCircle : greenCircles) {
-                cv::Moments greenMoment = cv::moments(greenCircle);
-                int greenCenterX = greenMoment.m10 / greenMoment.m00;
-                int greenCenterY = greenMoment.m01 / greenMoment.m00;
-                if (abs(redCenterX - greenCenterX) < tolerance && greenCenterY - redCenterY > 0 &&
-                    greenCenterY - redCenterY < distanceUnder) {
-                    prev_start_msg.data = true;
-                    break;
-                }
-            }
-        }
-    }
+    prev_start_msg.data =
+            (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCircles, lastRedCircles);
 
     bool_pub.publish(prev_start_msg);
 
