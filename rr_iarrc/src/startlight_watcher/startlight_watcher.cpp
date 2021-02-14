@@ -16,7 +16,7 @@ sensor_msgs::Image outmsg;
 std_msgs::Bool prev_start_msg;
 ros::Time last_red_time;
 
-std::vector<std::vector<cv::Point>> lastRedCircles;
+std::vector<cv::Moments> lastRedCircles;
 
 double circularityThreshold;
 int minArea;
@@ -26,38 +26,38 @@ double redToGreenTime;
 
 bool keepPublishing;
 
-int tolerance, distanceUnder;
+int tolerance;
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
-std::vector<std::vector<cv::Point>> findCircularContours(cv::Mat color_img) {
+std::vector<cv::Moments> findCircularContours(cv::Mat color_img) {
     std::vector<std::vector<cv::Point>> contours;
-    std::vector<std::vector<cv::Point>> circles;
+    std::vector<cv::Moments> circles;
     findContours(color_img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
     for (const auto &contour : contours) {
         double perimeter = cv::arcLength(contour, true);
         double area = cv::contourArea(contour, false);
         double circularity = 4 * M_PI * (area / (perimeter * perimeter));
 
-        if (circularityThreshold < circularity && area > minArea)
-            circles.push_back(contour);
+        if (circularityThreshold < circularity && area > minArea) {
+            cv::Moments moments = cv::moments(contour);
+            circles.push_back(moments);
+        }
     }
     return circles;
 }
 
-bool greenOn(std::vector<std::vector<cv::Point>> greenCircles, std::vector<std::vector<cv::Point>> lastRedCircles) {
+bool greenOn(std::vector<cv::Moments> greenCircles, std::vector<cv::Moments> lastRedCircles) {
     if (greenCircles.size() > 0) {
-        for (const auto &redCircle : lastRedCircles) {
-            cv::Moments redMoment = cv::moments(redCircle);
-            int redCenterX = redMoment.m10 / redMoment.m00;
-            int redCenterY = redMoment.m01 / redMoment.m00;
-            for (const auto &greenCircle : greenCircles) {
-                cv::Moments greenMoment = cv::moments(greenCircle);
-                int greenCenterX = greenMoment.m10 / greenMoment.m00;
-                int greenCenterY = greenMoment.m01 / greenMoment.m00;
-                if (abs(redCenterX - greenCenterX) < tolerance && greenCenterY - redCenterY > 0 &&
-                    greenCenterY - redCenterY < distanceUnder) {
+        for (const auto &greenCircle : greenCircles) {
+            int greenCenterX = greenCircle.m10 / greenCircle.m00;
+            int greenCenterY = greenCircle.m01 / greenCircle.m00;
+            for (const auto &redCircle : lastRedCircles) {
+                int redCenterX = redCircle.m10 / redCircle.m00;
+                int redCenterY = redCircle.m01 / redCircle.m00;
+                int distanceSquared = pow((redCenterX - greenCenterX), 2) + pow((redCenterY - greenCenterY), 2);
+                if (distanceSquared < tolerance * tolerance) {
                     return true;
                 }
             }
@@ -89,8 +89,8 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     cv::dilate(green_found, green_found, kernel(3, 3));
     cv::dilate(red_found, red_found, kernel(3, 3));
 
-    std::vector<std::vector<cv::Point>> redCircles = findCircularContours(red_found);
-    std::vector<std::vector<cv::Point>> greenCircles = findCircularContours(green_found);
+    std::vector<cv::Moments> redCircles = findCircularContours(red_found);
+    std::vector<cv::Moments> greenCircles = findCircularContours(green_found);
 
     if (redCircles.size() != 0) {
         last_red_time = msg->header.stamp;
@@ -98,7 +98,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     }
 
     prev_start_msg.data =
-            (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCircles, lastRedCircles);
+          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCircles, lastRedCircles);
 
     bool_pub.publish(prev_start_msg);
 
@@ -141,7 +141,6 @@ int main(int argc, char *argv[]) {
     nhp.param("keep_publishing", keepPublishing, false);
 
     nhp.param("tolerance", tolerance, 20);
-    nhp.param("distance_under", distanceUnder, 100);
 
     // Subscribe to ROS topic with callback
     prev_start_msg.data = false;
