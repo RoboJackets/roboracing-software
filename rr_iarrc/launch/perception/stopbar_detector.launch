@@ -1,5 +1,9 @@
 <launch>
     <node name="stopbar_detector" pkg="rr_iarrc" type="stopbar_detector" output="screen" required="true">
+        <!-- Output Param -->
+        <param name="stopbar_near" type="string" value="/stopbar_near"/>
+        <param name="stopbar_angle" type="string" value="/stopbar_angle"/>
+
         <!-- Stop Bar Detector Params -->
         <param name="overhead_image_subscription" type="string" value="/camera_center/lines/detection_img_transformed" />
         <param name="stopBarGoalAngle" type="double" value="0.0" /> <!-- angle in degrees -->

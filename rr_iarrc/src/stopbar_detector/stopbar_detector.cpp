@@ -2,7 +2,8 @@
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
-#include <rr_msgs/urc_sign.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/Float64.h>
 #include <sensor_msgs/Image.h>
 #include <stdlib.h>
 
@@ -12,10 +13,12 @@
 #include <opencv2/opencv.hpp>
 
 cv_bridge::CvImagePtr cv_ptrLine;
-ros::Publisher pubLine;
-ros::Publisher pubMove;
+ros::Publisher pub_line;
+ros::Publisher pub_near_stopbar;
+ros::Publisher pub_angle;
 
-rr_msgs::urc_sign moveMsg;
+std_msgs::Bool stop_bar_near;
+std_msgs::Float64 stop_bar_angle;
 
 double stopBarGoalAngle;
 double stopBarGoalAngleRange;
@@ -26,19 +29,6 @@ double houghMinLineLength;
 double houghMaxLineGap;
 int pixels_per_meter;
 
-const std::string RIGHT("right");
-const std::string LEFT("left");
-const std::string STRAIGHT("straight");
-const std::string NONE("none");
-
-struct ArrowSign {
-    std::string direction;
-    int area;
-    int count;
-};
-
-std::vector<ArrowSign> arrowTrackList{ { RIGHT, 0, 0 }, { LEFT, 0, 0 }, { STRAIGHT, 0, 0 } };
-ArrowSign bestMove = { NONE, 0, 0 };
 
 /*
  * Uses probablistic Hough to find line segments and determine if they are the
@@ -125,23 +115,17 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
     cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0, 150, 0), 1, cv::LINE_AA);
 
-    if (stopBarDetected) {
-        // let the world know
-        moveMsg.header.stamp = ros::Time::now();
-        moveMsg.direction = bestMove.direction;
-        moveMsg.angle = stopBarAngle;
-        pubMove.publish(moveMsg);
-
-        // reset things
-        bestMove.direction = NONE;
-        bestMove.area = 0.0;
-    }
-    if (pubLine.getNumSubscribers() > 0) {
+    stop_bar_near.data = stopBarDetected;
+    if (stopBarDetected)
+        stop_bar_angle.data = stopBarAngle;
+    pub_near_stopbar.publish(stop_bar_near);
+    pub_angle.publish(stop_bar_angle);
+    if (pub_line.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptrLine->image = debug;
         cv_ptrLine->encoding = "bgr8";
         cv_ptrLine->toImageMsg(outmsg);
-        pubLine.publish(outmsg);
+        pub_line.publish(outmsg);
     }
 }
 
@@ -151,10 +135,11 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
     std::string overhead_image_sub;
-    std::string sign_file_path_from_package;
-    std::string sign_file_package_name;
+    std::string stopbar_near_topic;
+    std::string stopbar_angle_topic;
+    nhp.param("stopbar_near", stopbar_near_topic, std::string("/stopbar_near"));
+    nhp.param("stopbar_angle", stopbar_angle_topic, std::string("/stopbar_angle"));
 
-    // stop bar detector params
     nhp.param("overhead_image_subscription", overhead_image_sub, std::string("/lines/detection_img_transformed"));
     nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);  // angle in degrees
     nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange,
@@ -168,10 +153,10 @@ int main(int argc, char** argv) {
     nhp.param("houghMinLineLength", houghMinLineLength, 0.0);
     nhp.param("houghMaxLineGap", houghMaxLineGap, 0.0);
 
-    pubLine = nh.advertise<sensor_msgs::Image>("/stopbar_detector/stop_bar",
+    pub_line = nh.advertise<sensor_msgs::Image>("/stopbar_detector/stop_bar",
                                                1);  // debug publish of image
-    // publish the turn move for Urban Challenge Controller
-    pubMove = nh.advertise<rr_msgs::urc_sign>("/turn_detected", 1);
+    pub_near_stopbar = nhp.advertise<std_msgs::Bool>(stopbar_near_topic, 1);
+    pub_angle = nhp.advertise<std_msgs::Float64>(stopbar_angle_topic, 1);
     auto stopBar = nh.subscribe(overhead_image_sub, 1, stopBar_callback);
 
     ros::spin();
