@@ -76,7 +76,7 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud(cloud2);
     pass.setFilterFieldName("z");
-    pass.setFilterLimits(-0.4, 5.0);
+    pass.setFilterLimits(low_passthru_lim, high_passthru_lim);
     pass.filter(*ground_segmented);
 
     // **CLUSTERING**
@@ -87,9 +87,9 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
 
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.3);
-    ec.setMinClusterSize(100);
-    ec.setMaxClusterSize(700);
+    ec.setClusterTolerance(cluster_tolerance);
+    ec.setMinClusterSize(min_cluster_size);
+    ec.setMaxClusterSize(max_cluster_size);
     ec.setSearchMethod(tree);
     ec.setInputCloud(ground_segmented);
     ec.extract(cluster_indices);
@@ -114,7 +114,7 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
             marker_point.y = (*ground_segmented)[point].y;
             marker_point.z = (*ground_segmented)[point].z;
 
-            if (marker_point.x < 2.5 && marker_point.x > -2.5 && marker_point.y < 1.5 && marker_point.y > -1.5) {
+            if (marker_point.x < front_lim && marker_point.x > back_lim && marker_point.y < left_lim && marker_point.y > right_lim) {
                 marker_cluster.push_back(marker_point);
             } else {
                 notWall = false;
@@ -131,18 +131,39 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
             cluster_ct += 1;
         }
 
+        /* if (notWall && std::find(added_clusters.begin(), added_clusters.end(), cluster_ct) == added_clusters.end()) {
+            addMarkers(marker_cluster, cluster_ct);
+            added_clusters.push_back(cluster_ct);
+            cluster_ct += 1;
+        } */
+
         // cloud_cluster->clear();
         marker_cluster.clear();
         notWall = true;
     }
 
     marker_pub.publish(marker_array);
+    marker_array = {};
 }
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "opponent_detection");
 
     ros::NodeHandle nh;
+
+    ros::NodeHandle nhp("~");
+
+    nhp.getParam("low_passthru_lim", low_passthru_lim);
+    nhp.getParam("high_passthru_lim", high_passthru_lim);
+
+    nhp.getParam("cluster_tolerance", cluster_tolerance);
+    nhp.getParam("min_cluster_size", min_cluster_size);
+    nhp.getParam("max_cluster_size", max_cluster_size);
+
+    nhp.getParam("front_lim", front_lim);
+    nhp.getParam("back_lim", back_lim);
+    nhp.getParam("left_lim", left_lim);
+    nhp.getParam("right_lim", right_lim);
 
     ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
     // cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);

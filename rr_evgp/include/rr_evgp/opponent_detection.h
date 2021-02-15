@@ -1,4 +1,5 @@
-#include <math.h>
+#include <vector>
+#include <algorithm>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/transforms.h>
 #include <pcl/conversions.h>
@@ -19,6 +20,19 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+// parameters set in launch file
+double low_passthru_lim;
+double high_passthru_lim;
+
+double cluster_tolerance;
+int min_cluster_size;
+int max_cluster_size;
+
+double front_lim;
+double back_lim;
+double left_lim;
+double right_lim;
+
 // publishers
 ros::Publisher cloud_pub;
 ros::Publisher marker_pub;
@@ -35,6 +49,9 @@ std::vector<std::array<int, 3>> colors = { { 255, 0, 0 },
                                            { 0, 255, 127 },
                                            { 255, 0, 255 },
                                            { 0, 0, 255 } };
+
+// tracks clusters that have already been added
+std::vector<int> added_clusters;
 
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
