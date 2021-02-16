@@ -42,9 +42,9 @@ void addMarkers(std::vector<geometry_msgs::Point> markers, int color) {
     marker.pose.orientation.w = 1.0;
 
     marker.color.a = 1.0;
-    marker.color.r = colors[color % colors.size()][0];
-    marker.color.g = colors[color % colors.size()][1];
-    marker.color.b = colors[color % colors.size()][2];
+    marker.color.r = rand() % 256;
+    marker.color.g = rand() % 256;
+    marker.color.b = rand() % 256;
 
     marker.scale.x = 0.05;
     marker.scale.y = 0.05;
@@ -130,12 +130,6 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
             addMarkers(marker_cluster, cluster_ct);
             cluster_ct += 1;
         }
-
-        /* if (notWall && std::find(added_clusters.begin(), added_clusters.end(), cluster_ct) == added_clusters.end()) {
-            addMarkers(marker_cluster, cluster_ct);
-            added_clusters.push_back(cluster_ct);
-            cluster_ct += 1;
-        } */
 
         // cloud_cluster->clear();
         marker_cluster.clear();

@@ -4,14 +4,14 @@
     <param name="low_passthru_lim" value="-0.4"/>
     <param name="high_passthru_lim" value="3.0"/>
 
-    <param name="cluster_tolerance" value="0.5"/>
+    <param name="cluster_tolerance" value="0.3"/>
     <param name="min_cluster_size" value="50"/>
-    <param name="max_cluster_size" value="1000"/>
+    <param name="max_cluster_size" value="700"/>
 
-    <param name="front_lim" value="2.5"/>
-    <param name="back_lim" value="-2.5"/>
-    <param name="left_lim" value="2.0"/>
-    <param name="right_lim" value="-2.0"/>
+    <param name="front_lim" value="40"/>
+    <param name="back_lim" value="-50"/>
+    <param name="left_lim" value="5"/>
+    <param name="right_lim" value="-5"/>
 
   </node>
 </launch>

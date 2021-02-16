@@ -1,5 +1,3 @@
-#include <vector>
-#include <algorithm>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/transforms.h>
 #include <pcl/conversions.h>
@@ -49,9 +47,6 @@ std::vector<std::array<int, 3>> colors = { { 255, 0, 0 },
                                            { 0, 255, 127 },
                                            { 255, 0, 255 },
                                            { 0, 0, 255 } };
-
-// tracks clusters that have already been added
-std::vector<int> added_clusters;
 
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
