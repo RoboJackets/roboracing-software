@@ -16,7 +16,7 @@ sensor_msgs::Image outmsg;
 std_msgs::Bool prev_start_msg;
 ros::Time last_red_time;
 
-std::vector<cv::Moments> lastRedCircles;
+std::vector<cv::Point> lastRedCenters;
 
 double circularityThreshold;
 int minArea;
@@ -31,9 +31,9 @@ cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
-std::vector<cv::Moments> findCircularContours(cv::Mat color_img) {
+std::vector<cv::Point> findCenters(cv::Mat color_img) {
     std::vector<std::vector<cv::Point>> contours;
-    std::vector<cv::Moments> circles;
+    std::vector<cv::Point> centers;
     findContours(color_img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
     for (const auto &contour : contours) {
         double perimeter = cv::arcLength(contour, true);
@@ -42,21 +42,20 @@ std::vector<cv::Moments> findCircularContours(cv::Mat color_img) {
 
         if (circularityThreshold < circularity && area > minArea) {
             cv::Moments moments = cv::moments(contour);
-            circles.push_back(moments);
+            int centerX = moments.m10 / moments.m00;
+            int centerY = moments.m01 / moments.m00;
+            centers.push_back(cv::Point(centerX, centerY));
         }
     }
-    return circles;
+    return centers;
 }
 
-bool greenOn(std::vector<cv::Moments> greenCircles, std::vector<cv::Moments> lastRedCircles) {
-    if (greenCircles.size() > 0) {
-        for (const auto &greenCircle : greenCircles) {
-            int greenCenterX = greenCircle.m10 / greenCircle.m00;
-            int greenCenterY = greenCircle.m01 / greenCircle.m00;
-            for (const auto &redCircle : lastRedCircles) {
-                int redCenterX = redCircle.m10 / redCircle.m00;
-                int redCenterY = redCircle.m01 / redCircle.m00;
-                int distanceSquared = pow((redCenterX - greenCenterX), 2) + pow((redCenterY - greenCenterY), 2);
+bool greenOn(std::vector<cv::Point> greenCenters, std::vector<cv::Point> lastRedCenters) {
+    if (greenCenters.size() > 0) {
+        for (const auto &greenCenter : greenCenters) {
+            for (const auto &redCenter : lastRedCenters) {
+                int distanceSquared = (redCenter.x - greenCenter.x) * (redCenter.x - greenCenter.x) +
+                                      (redCenter.y - greenCenter.y) * (redCenter.y - greenCenter.y);
                 if (distanceSquared < tolerance * tolerance) {
                     return true;
                 }
@@ -89,16 +88,16 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     cv::dilate(green_found, green_found, kernel(3, 3));
     cv::dilate(red_found, red_found, kernel(3, 3));
 
-    std::vector<cv::Moments> redCircles = findCircularContours(red_found);
-    std::vector<cv::Moments> greenCircles = findCircularContours(green_found);
+    std::vector<cv::Point> redCenters = findCenters(red_found);
+    std::vector<cv::Point> greenCenters = findCenters(green_found);
 
-    if (redCircles.size() != 0) {
+    if (redCenters.size() != 0) {
         last_red_time = msg->header.stamp;
-        lastRedCircles = redCircles;
+        lastRedCenters = redCenters;
     }
 
     prev_start_msg.data =
-          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCircles, lastRedCircles);
+          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCenters, lastRedCenters);
 
     bool_pub.publish(prev_start_msg);
 
