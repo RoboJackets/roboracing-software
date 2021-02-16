@@ -17,9 +17,6 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 
-/* temp */
-#include <mutex>
-
 #include <rr_common/linear_tracking_filter.hpp>
 
 constexpr int ctrl_dim = 1;
@@ -168,28 +165,18 @@ void processMap() {
 }
 
 void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
-    mtx.lock();
-    g_vehicle_model -> set_max_lateral_accel(config.max_lateral_accel);
-    // g_vehicle_model -> set_segment_size(config.segment_size);
-    // g_vehicle_model -> set_dt(config.dt);
+    g_vehicle_model->set_dyn_param(config.max_lateral_accel, config.segment_size, config.dt);
 
     int n_segments = config.n_segments;
     g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_segments);
     g_last_controls.setZero();
 
-    mtx.unlock();
-    ROS_INFO("\n\nReconfigure Request Occurred %d\n\n", n_segments);
-    ROS_INFO(typeid(config.n_segments).name());
+    ROS_INFO("\n\nReconfigure Request Occurred\nBicycle Model: %f %d %f \n", config.max_lateral_accel,
+             config.segment_size, config.dt);
 }
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
-
-    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServer;
-    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
-
-    f = boost::bind(&dynamic_callback, _1, _2);
-    DynReconfigServer.setCallback(f);
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
@@ -247,6 +234,12 @@ int main(int argc, char** argv) {
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
+    // init dynamic reconfigure
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServer;
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
+    f = boost::bind(&dynamic_callback, _1, _2);
+    DynReconfigServer.setCallback(f);
+
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);
     update_messages(0, 0);
@@ -274,13 +267,10 @@ int main(int argc, char** argv) {
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
 
-            mtx.lock();
             g_map_cost_interface->StopUpdates();
             processMap();
             g_map_cost_interface->SetMapStale();
             g_map_cost_interface->StartUpdates();
-            mtx.unlock();
-
 
             double seconds = (ros::WallTime::now() - start).toSec();
             total_planning_time += seconds;

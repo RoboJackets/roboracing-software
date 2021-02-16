@@ -63,21 +63,10 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.apply_speed = speed_model_temp.GetValue();
 }
 
-
-void BicycleModel::set_max_lateral_accel(double imax_lateral_accel) {
-    max_lateral_accel_ = imax_lateral_accel;
-}
-
-void BicycleModel::set_segment_size(int isegment_size) {
-    segment_size_ = isegment_size;
-}
-
-void BicycleModel::set_dt(double idt) {
-    dt_ = idt;
-}
-
-double BicycleModel::get_dt(){
-    return dt_;
+void BicycleModel::set_dyn_param(double max_lateral_accel, int segment_size, double dt) {
+    max_lateral_accel_ = max_lateral_accel;
+    segment_size_ = segment_size;
+    dt_ = dt;
 }
 
 void BicycleModel::StepKinematics(const PathPoint& prev, Pose& next) const {
