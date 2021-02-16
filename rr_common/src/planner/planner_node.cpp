@@ -254,11 +254,14 @@ int main(int argc, char** argv) {
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
-
+//            g_global_path_cost->LookupPathTransform();
             g_map_cost_interface->StopUpdates();
             processMap();
             g_map_cost_interface->SetMapStale();
             g_map_cost_interface->StartUpdates();
+
+            // Get the transform here;
+            // also prevent the
 
             double seconds = (ros::WallTime::now() - start).toSec();
             total_planning_time += seconds;

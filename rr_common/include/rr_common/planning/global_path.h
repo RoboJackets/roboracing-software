@@ -22,7 +22,9 @@ class GlobalPath {
 
   private:
     void SetPathMessage(const nav_msgs::Path& map_msg);
-    static std::vector<double> adjacent_distances(const std::vector<tf::Point>& path);
+    std::vector<double> adjacent_distances(const std::vector<tf::Point>& path);
+    std::vector<tf::Point> get_global_segment(const std::vector<tf::Point> &sample_path);
+    double dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2);
     bool has_global_path_;
     bool accepting_updates_;
     bool updated_{};
