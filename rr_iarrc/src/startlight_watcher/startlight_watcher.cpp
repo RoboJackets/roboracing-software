@@ -31,7 +31,7 @@ cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
-std::vector<cv::Point> findCenters(cv::Mat color_img) {
+std::vector<cv::Point> findCenters(const cv::Mat &color_img) {
     std::vector<std::vector<cv::Point>> contours;
     std::vector<cv::Point> centers;
     findContours(color_img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -50,15 +50,12 @@ std::vector<cv::Point> findCenters(cv::Mat color_img) {
     return centers;
 }
 
-bool greenOn(std::vector<cv::Point> greenCenters, std::vector<cv::Point> lastRedCenters) {
-    if (greenCenters.size() > 0) {
-        for (const auto &greenCenter : greenCenters) {
-            for (const auto &redCenter : lastRedCenters) {
-                int distanceSquared = (redCenter.x - greenCenter.x) * (redCenter.x - greenCenter.x) +
-                                      (redCenter.y - greenCenter.y) * (redCenter.y - greenCenter.y);
-                if (distanceSquared < tolerance * tolerance) {
-                    return true;
-                }
+bool isClose(const std::vector<cv::Point> &greenCenters, const std::vector<cv::Point> &lastRedCenters) {
+    for (const auto &greenCenter : greenCenters) {
+        for (const auto &redCenter : lastRedCenters) {
+            double distance = cv::norm(redCenter - greenCenter);
+            if (distance < tolerance) {
+                return true;
             }
         }
     }
@@ -97,7 +94,7 @@ void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
     }
 
     prev_start_msg.data =
-          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && greenOn(greenCenters, lastRedCenters);
+          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && isClose(greenCenters, lastRedCenters);
 
     bool_pub.publish(prev_start_msg);
 
