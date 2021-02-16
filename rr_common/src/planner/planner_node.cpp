@@ -17,6 +17,9 @@
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
 
+/* temp */
+#include <mutex>
+
 #include <rr_common/linear_tracking_filter.hpp>
 
 constexpr int ctrl_dim = 1;
@@ -28,6 +31,7 @@ std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
+std::mutex mtx;
 
 double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
@@ -164,7 +168,8 @@ void processMap() {
 }
 
 void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
-    // g_vehicle_model -> set_max_lateral_accel(config.max_lateral_accel);
+    mtx.lock();
+    g_vehicle_model -> set_max_lateral_accel(config.max_lateral_accel);
     // g_vehicle_model -> set_segment_size(config.segment_size);
     // g_vehicle_model -> set_dt(config.dt);
 
@@ -172,7 +177,9 @@ void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
     g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_segments);
     g_last_controls.setZero();
 
+    mtx.unlock();
     ROS_INFO("\n\nReconfigure Request Occurred %d\n\n", n_segments);
+    ROS_INFO(typeid(config.n_segments).name());
 }
 
 int main(int argc, char** argv) {
@@ -267,10 +274,13 @@ int main(int argc, char** argv) {
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
 
+            mtx.lock();
             g_map_cost_interface->StopUpdates();
             processMap();
             g_map_cost_interface->SetMapStale();
             g_map_cost_interface->StartUpdates();
+            mtx.unlock();
+
 
             double seconds = (ros::WallTime::now() - start).toSec();
             total_planning_time += seconds;
