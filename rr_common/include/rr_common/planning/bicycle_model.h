@@ -33,24 +33,12 @@ class BicycleModel {
     //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
 
     /**
-     * Setter for the lateral acceleration.
-     * @param imax_lateral_accel input lateral acceleration
+     * Setter for the dynamic reconfigure variables in the bicycle model.
+     * @param max_lateral_accel input lateral acceleration
+     * @param segment_size input segment size
+     * @param dt input dt
      */
-    void set_max_lateral_accel(double imax_lateral_accel);
-
-    /**
-     * Setter for segment size.
-     * @param isegment_size input segment size
-     */
-    void set_segment_size(int isegment_size);
-    
-    /**
-     * Setter for the dt
-     * @param idt input dt
-     */
-    void set_dt(double idt);
-
-    double get_dt();
+    void set_dyn_param(double max_lateral_accel, int segment_size, double dt);
 
   private:
     /**
