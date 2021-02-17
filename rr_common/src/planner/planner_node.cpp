@@ -1,5 +1,4 @@
-#include <geometry_msgs/PoseStamped.h>
-#include <nav_msgs/Path.h>
+#include <geometry_msgs/Pose.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -14,6 +13,7 @@
 #include <rr_common/planning/nearest_point_cache.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <visualization_msgs/Marker.h>
 
 #include <rr_common/linear_tracking_filter.hpp>
 
@@ -58,6 +58,41 @@ void update_messages(double speed, double angle) {
 
     steer_message->angle = angle;
     steer_message->header.stamp = now;
+}
+
+void publish_path_viz(const std::vector<rr::PathPoint>& path_rollout) {
+    visualization_msgs::Marker line_strip;
+    line_strip.type = visualization_msgs::Marker::LINE_STRIP;
+    line_strip.scale.x = 1;
+    line_strip.id = 374;  // Unique ID (from issue number)
+    line_strip.pose.orientation.x = 0;
+    line_strip.pose.orientation.y = 0;
+    line_strip.pose.orientation.z = 0;
+    line_strip.pose.orientation.w = 1;
+    for (const rr::PathPoint& path_point : path_rollout) {
+        geometry_msgs::Point p;
+        p.x = path_point.pose.x;
+        p.y = path_point.pose.y;
+        std_msgs::ColorRGBA c;
+        if (OK == reverse_state) {
+            c.r = 0;
+            c.g = std::abs(path_point.speed) / g_speed_model->GetValMax();
+            c.b = 0;
+        } else if (CAUTION == reverse_state) {
+            c.r = 1.0;
+            c.g = 1.0;
+            c.b = 0;
+        } else if (REVERSE == reverse_state) {
+            c.r = 1.0;
+            c.g = 0;
+            c.b = 0;
+        }
+        c.a = 1.0;
+        line_strip.points.push_back(p);
+        line_strip.colors.push_back(c);
+    }
+    line_strip.header.frame_id = "base_footprint";
+    viz_pub.publish(line_strip);
 }
 
 void processMap() {
@@ -147,17 +182,7 @@ void processMap() {
     steer_pub.publish(steer_message);
 
     if (viz_pub.getNumSubscribers() > 0) {
-        nav_msgs::Path pathMsg;
-
-        for (auto path_point : plan.rollout.path) {
-            geometry_msgs::PoseStamped ps;
-            ps.pose.position.x = path_point.pose.x;
-            ps.pose.position.y = path_point.pose.y;
-            pathMsg.poses.push_back(ps);
-        }
-
-        pathMsg.header.frame_id = "base_footprint";
-        viz_pub.publish(pathMsg);
+        publish_path_viz(plan.rollout.path);
     }
 }
 
@@ -218,7 +243,7 @@ int main(int argc, char** argv) {
 
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
-    viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
+    viz_pub = nh.advertise<visualization_msgs::Marker>("plan/path", 1);
 
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);

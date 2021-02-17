@@ -6,7 +6,7 @@ Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software reposit
 
 [![Software Lead](https://img.shields.io/badge/Software%20Lead-Daniel%20Martin-blue.svg)](https://github.com/daniel-martin576)
 
-[![Project Manager](https://img.shields.io/badge/Project%20Manager-Austin%20Keener-blue.svg)](https://github.com/akeener97)
+![Project Manager](https://img.shields.io/badge/Project%20Manager-Shishir%20Pandit--Rao-blue.svg)
 
 [![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
 

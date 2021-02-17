@@ -7,9 +7,9 @@
     <remap from="~output" to="/lidar_thresholded"/>
     <rosparam>
       filter_field_name: z
-      filter_limit_min: 0
-      filter_limit_max: 0.1
-      filter_limit_negative: False
+      filter_limit_min: -2
+      filter_limit_max: 0
+      filter_limit_negative: True
     </rosparam>
   </node>
 </launch>
