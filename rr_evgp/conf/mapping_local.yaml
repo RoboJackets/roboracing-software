@@ -8,9 +8,10 @@ costmap:
     height: 350
 
     plugins:
+        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
 #        - {name: "track_closing", type: "rr::TrackClosingLayer"}
 #        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
-        - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+
 
     obstacles:
         observation_sources: laserscan
