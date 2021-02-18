@@ -15,7 +15,7 @@ steering_filter:
 
 speed_filter:
     init_val: 0
-    val_max: 15.0
+    val_max: 25
     val_min: -2
     rate_max: 30.0
     rate_min: -35.0
@@ -51,10 +51,11 @@ distance_map:
         min_y: -0.7
         max_y: 0.7
     cost_scaling_factor: 5
-    lethal_wall_inflation: .2
+    lethal_wall_inflation: .3
     nonlethal_wall_inflation: .5
 
 steering_gain: 1.4
+viz_path_scale: .5
 
 k_map_cost: 100
 k_speed: 2
@@ -64,6 +65,7 @@ collision_penalty: 100000
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
+impasse_reverse_speed: -2.0
 
 planner_type: "hill_climbing"
 hill_climb_optimizer:
