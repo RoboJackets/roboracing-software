@@ -8,7 +8,6 @@ costmap:
     height: 350
 
     plugins:
-        # - {name: "global", type: "costmap_2d::StaticLayer"}
 #        - {name: "track_closing", type: "rr::TrackClosingLayer"}
 #        - {name: "distance_field", type: "costmap_2d::InflationLayer"}
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
@@ -29,12 +28,6 @@ costmap:
             obstacle_range: 50.0  # must be smaller than scan msg max range
             raytrace_range: 49.0  # clear and explore this distance
 
-
-    global:
-        map_topic: "/global_mapper/costmap/costmap"
-        subscribe_to_updates: true
-        trinary_costmap: true
-        track_unknown_space: false
 
 #    track_closing:
 #        branch_pruning_size: 5
