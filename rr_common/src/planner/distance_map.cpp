@@ -18,7 +18,7 @@ DistanceMap::DistanceMap(ros::NodeHandle nh)
     assertions::getParam(nh, "publish_distance_map", publish_distance_map);
     assertions::getParam(nh, "publish_inscribed_circle", publish_inscribed_circle);
 
-    assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor, { assertions::greater_eq(0.0) });
+    assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor);
     assertions::getParam(nh, "lethal_wall_inflation", lethal_wall_inflation, { assertions::greater_eq(0.0) });
     assertions::getParam(nh, "nonlethal_wall_inflation", nonlethal_wall_inflation, { assertions::greater_eq(0.0) });
 
@@ -49,10 +49,6 @@ std::pair<unsigned int, unsigned int> DistanceMap::PoseToGridPosition(const rr::
 }
 
 void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
-    if (!accepting_updates_) {
-        return;
-    }
-
     try {
         listener->waitForTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), ros::Duration(.05));
         listener->lookupTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), transform);
@@ -71,15 +67,19 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     cv::distanceTransform(distance_map, distance_map, cv::DIST_L2, 3, CV_32F);
     distance_map *= mapMetaData.resolution;
 
+    // Layers are: Obstacle, Lethal (lethal inflaction + inscribed circle), nonlethal, and e^-x function
     double lethal_boundary = lethal_wall_inflation + inscribed_circle_radius;
-
-    cv::exp(-(distance_map - (lethal_boundary + nonlethal_wall_inflation)) * cost_scaling_factor, distance_cost_map);
-    distance_cost_map.setTo(0, lethal_boundary + nonlethal_wall_inflation < distance_map);
-    distance_cost_map.setTo(1.0, (lethal_boundary < distance_map) & (distance_map <= lethal_boundary + nonlethal_wall_inflation));
+    if (cost_scaling_factor >= 0) {
+        // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)
+        cv::exp(-(distance_map - (lethal_boundary + nonlethal_wall_inflation)) * cost_scaling_factor,
+                distance_cost_map);
+    } else {
+        // Just set it to 0
+        distance_cost_map = cv::Mat::zeros(distance_map.size(), CV_32F);
+    }
+    distance_cost_map.setTo(1.0, distance_map <= lethal_boundary + nonlethal_wall_inflation);
     distance_cost_map *= 100;
     distance_cost_map.setTo(-1.0, distance_map <= lethal_boundary);
-
-    // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)
 
     updated_ = true;
 

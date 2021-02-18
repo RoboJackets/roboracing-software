@@ -43,19 +43,22 @@ distance_map:
     publish_distance_map: true
     publish_inscribed_circle: true
     hitbox:
+        origin_x: 0
+        origin_y: 0
+        origin_theta: 0
         min_x: -0.2
         max_x: 1.6
         min_y: -0.7
         max_y: 0.7
     cost_scaling_factor: 5
-    lethal_wall_inflation: .3
-    nonlethal_wall_inflation: 1
+    lethal_wall_inflation: .2
+    nonlethal_wall_inflation: .5
 
 steering_gain: 1.4
 
-k_map_cost: 1
+k_map_cost: 100
 k_speed: 2
-k_steering: 0.01
+k_steering: 5
 k_angle: 0
 collision_penalty: 100000
 
@@ -64,9 +67,9 @@ impasse_reverse_duration: 4.0
 
 planner_type: "hill_climbing"
 hill_climb_optimizer:
-    num_workers: 10
+    num_workers: 5
     num_restarts: 5
-    neighbor_stddev: [0.015, .1]
+    neighbor_stddev: [0.015, 1]
     local_optimum_tries: 60
 
 effector_tracker:

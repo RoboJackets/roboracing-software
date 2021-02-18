@@ -4,8 +4,8 @@ costmap:
     always_send_full_costmap: true
 
     rolling_window: true
-    width: 300
-    height: 300
+    width: 350
+    height: 350
 
     plugins:
         # - {name: "global", type: "costmap_2d::StaticLayer"}

@@ -29,7 +29,7 @@ class BicycleModel {
      * @param path_points Output parameter into which points are placed
      */
     void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
-    
+
     void RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const;
 
     //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
