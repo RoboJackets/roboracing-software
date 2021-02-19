@@ -44,9 +44,9 @@ distance_map:
     publish_inscribed_circle: true
     hitbox:
         min_x: -0.2
-        max_x: 1.5
-        min_y: -0.75
-        max_y: 0.75
+        max_x: 1.6
+        min_y: -0.8
+        max_y: 0.8
     cost_scaling_factor: .2
     wall_inflation: .3
 

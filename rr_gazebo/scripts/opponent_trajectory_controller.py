@@ -28,7 +28,7 @@ def make_request(traj_point, next_traj_point, model_name, time_warp):
     request.model_state.reference_frame = "world"
     request.model_state.pose.position.x = x0
     request.model_state.pose.position.y = y0
-    request.model_state.pose.position.z = z0 + .15
+    request.model_state.pose.position.z = z0
     request.model_state.pose.orientation.x = q00
     request.model_state.pose.orientation.y = q10
     request.model_state.pose.orientation.z = q20
