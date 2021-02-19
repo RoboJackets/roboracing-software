@@ -3,7 +3,7 @@
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="heading" default="0"/>
-    <arg name="model_type" default="evgp"/>
+    <arg name="model_type" default="rigatoni"/>
 
     <param name="/use_sim_time" value="true" />
 
@@ -23,10 +23,6 @@
         <arg name="model_type" value="$(arg model_type)"/>
     </include>
 
-    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
-        <param name="min_point_dist" type="double" value="0.1"/>
-    </node>
-
     <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
@@ -43,8 +39,6 @@
             right_motor_joint_name: base_footprint_to_wheel_BR
         </rosparam>
     </node>
-
-<!--    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />-->
 
     <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
           args="-file $(find rr_description)/urdf/$(arg model_type).urdf

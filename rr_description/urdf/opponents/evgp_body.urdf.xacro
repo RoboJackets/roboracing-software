@@ -9,7 +9,7 @@
 
     <xacro:macro name="mesh_geometry">
         <geometry>
-            <mesh filename="package://rr_description/meshes/EVGP_robot.STL" scale="0.001 0.001 0.001"/>
+            <mesh filename="package://rr_description/meshes/rigatoni.stl" scale="0.01 0.01 0.01"/>
         </geometry>
     </xacro:macro>
 
@@ -46,13 +46,16 @@
                 </surface>
             </collision>
         </gazebo>
+        <gazebo reference="body_visual_origin">
+            <turnGravityOff>true</turnGravityOff>
+        </gazebo>
 
         <!-- ************************** Joints *************************** -->
 
         <joint name="base_footprint_to_mesh_origin" type="fixed">
             <parent link="base_footprint"/>
             <child link="body_visual_origin"/>
-            <origin xyz="1.45 0.515 -0.051" rpy="${pi/2} 0 ${-pi/2}"/>
+            <origin xyz="0.53 0 0.1" rpy="${pi/2} 0 ${pi/2}"/>
         </joint>
 
     </xacro:macro>

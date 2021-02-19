@@ -12,20 +12,33 @@ costmap:
         - {name: "center_line", type: "rr::GlobalCenterPathLayer"}
 
     obstacles:
-        observation_sources: laserscan
         combination_method: 0
+        observation_sources: laser_down laser_up
         track_unknown_space: true
-        laserscan:
+        laser_up:
             data_type: PointCloud2
-            topic: /lidar_thresholded
+            topic: /lidar_up
             frame_name: lidar
-            expected_update_rate: 15.0
+            expected_update_rate: 10.0
             observation_persistence: 0.0
             marking: true
             clearing: true
-            inf_is_valid: true  # inf's are set to scan msg max range
-            obstacle_range: 50.0  # must be smaller than scan msg max range
-            raytrace_range: 49.0  # clear and explore this distance
+            obstacle_range: 50.0
+            raytrace_range: 49.0
+            max_obstacle_height: 100
+            min_obstacle_height: -100
+        laser_down:
+            data_type: PointCloud2
+            topic: /lidar_down
+            frame_name: lidar
+            expected_update_rate: 10.0
+            observation_persistence: 0.0
+            marking: false
+            clearing: true
+            obstacle_range: 50.0
+            raytrace_range: 49.0
+            max_obstacle_height: 100
+            min_obstacle_height: -100
 
     center_line:
         output_topic: /global_center_path
