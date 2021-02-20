@@ -80,10 +80,10 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
+        "": true
         Collision Check: true
         Footprint: true
         Global Map: true
-        Global Path: true
         Grid: true
         Local Map: true
         Map: true
@@ -237,30 +237,6 @@ Visualization Manager:
       Topic: /planner/distance_map/inscribed_circle
       Unreliable: false
       Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.20000000298023224
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Global Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: Axes
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /global_center_path
-      Unreliable: true
-      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /plan/path
@@ -272,8 +248,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.8238828182220459
-        Min Value: 0.03791677951812744
+        Max Value: 0.8276008367538452
+        Min Value: 0.037762731313705444
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -298,6 +274,30 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /global_center_path
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
@@ -327,7 +327,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 39.45111846923828
+      Distance: 63.6307487487793
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
