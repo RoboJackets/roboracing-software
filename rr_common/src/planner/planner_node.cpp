@@ -28,7 +28,6 @@ std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
-std::mutex mtx;
 
 double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
