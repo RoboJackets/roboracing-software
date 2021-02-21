@@ -63,7 +63,7 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.apply_speed = speed_model_temp.GetValue();
 }
 
-void BicycleModel::set_dyn_param(double max_lateral_accel, int segment_size, double dt) {
+void BicycleModel::SetDynParam(double max_lateral_accel, int segment_size, double dt) {
     max_lateral_accel_ = max_lateral_accel;
     segment_size_ = segment_size;
     dt_ = dt;

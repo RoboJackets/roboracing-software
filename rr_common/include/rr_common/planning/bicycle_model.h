@@ -38,7 +38,7 @@ class BicycleModel {
      * @param segment_size input segment size
      * @param dt input dt
      */
-    void set_dyn_param(double max_lateral_accel, int segment_size, double dt);
+    void SetDynParam(double max_lateral_accel, int segment_size, double dt);
 
   private:
     /**

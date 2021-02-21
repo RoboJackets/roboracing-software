@@ -165,14 +165,16 @@ void processMap() {
 }
 
 void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
-    g_vehicle_model->set_dyn_param(config.max_lateral_accel, config.segment_size, config.dt);
+    g_vehicle_model->SetDynParam(config.max_lateral_accel, config.segment_size, config.dt);
 
-    int n_segments = config.n_segments;
-    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_segments);
+    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, config.n_segments);
     g_last_controls.setZero();
 
-    ROS_INFO("\n\nReconfigure Request Occurred\nBicycle Model: %f %d %f \n", config.max_lateral_accel,
-             config.segment_size, config.dt);
+    g_speed_model->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
+    g_steer_model->SetDynParam(config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
+
+    ROS_INFO("\n\nSPF: %f %f %f %f\nSTF: %f %f %f %f \n ", config.spf_val_max, config.spf_val_min, config.spf_rate_max,
+             config.spf_rate_min, config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
 }
 
 int main(int argc, char** argv) {

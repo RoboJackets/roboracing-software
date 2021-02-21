@@ -51,6 +51,20 @@ class LinearTrackingFilter {
         target_ = x;
     }
 
+    /**
+     * Setter for the dynamic reconfigure variables in the linear tracking filter.
+     * @param val_max input max val
+     * @param val_min input min val
+     * @param rate_max input max rate
+     * @param rate_min input min rate
+     */
+    inline void SetDynParam(double val_max, double val_min, double rate_max, double rate_min) {
+        val_max_ = val_max;
+        val_min_ = val_min;
+        rate_max_ = rate_max;
+        rate_min_ = rate_min;
+    }
+
     inline void Update(double t) {
         if (last_update_ > 0) {
             double dt = t - last_update_;
