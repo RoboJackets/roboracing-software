@@ -63,12 +63,10 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
 }
 
 std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Point> &sample_path) {
-    vector<tf::Point> global_path = global_path_; // copy global path in case it changes part way through
-    vector<double> global_cum_dist = global_cum_dist_; // ditto
     //get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
-    std::vector<double> distances_to_origin(global_path.size());
-    std::transform(global_path.begin(), global_path.end(), distances_to_origin.begin(),
+    std::vector<double> distances_to_origin(global_path_.size());
+    std::transform(global_path_.begin(), global_path_.end(), distances_to_origin.begin(),
                    [sample_origin](const tf::Point &global_pnt) {
                         return GlobalPath::GetPointDistance(global_pnt, sample_origin);
     });
@@ -78,16 +76,16 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
     //get the ending point of the global segment using the length of the segment
-    double upper_cum_limit = std::fmod((global_cum_dist[seg_start_index] + sample_length), global_cum_dist[global_cum_dist.size() - 1]);
-    int seg_end_index = std::upper_bound(global_cum_dist.begin(), global_cum_dist.end(), upper_cum_limit) -
-                        global_cum_dist.begin();
+    double upper_cum_limit = std::fmod((global_cum_dist_[seg_start_index] + sample_length), global_cum_dist_[global_cum_dist_.size() - 1]);
+    int seg_end_index = std::upper_bound(global_cum_dist_.begin(), global_cum_dist_.end(), upper_cum_limit) -
+                        global_cum_dist_.begin();
     //create the global segment
     std::vector<tf::Point> global_segment;
     if (seg_start_index <= seg_end_index) { //assume sample path length < global path length
-        global_segment = std::vector<tf::Point>(global_path.begin() + seg_start_index, global_path.begin() + seg_end_index);
+        global_segment = std::vector<tf::Point>(global_path_.begin() + seg_start_index, global_path_.begin() + seg_end_index);
     } else {
-        global_segment = std::vector<tf::Point>(global_path.begin() + seg_start_index, global_path.end());
-        global_segment.insert(global_segment.end(), global_path.begin(), global_path.begin() + seg_end_index);
+        global_segment = std::vector<tf::Point>(global_path_.begin() + seg_start_index, global_path_.end());
+        global_segment.insert(global_segment.end(), global_path_.begin(), global_path_.begin() + seg_end_index);
     }
     return global_segment;
 }
@@ -95,20 +93,29 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
 double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2) {
     int n = path1.size();
     int m = path2.size();
-    double dtw[n][m];
-    int w = std::abs(n - m); //run through the min diagonal of the graph
+    std::vector<std::vector<double>> dtw(n, std::vector<double>(m, INFINITY));
+//    double dtw[n][m];
+//    int w = std::abs(n - m); //run through the min diagonal of the graph
     dtw[0][0] = 0;
+//    for (int i = 1; i < n; i++) {
+//        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+//            dtw[i][j] = 0;
+//        }
+//    }
+//    for (int i = 1; i < n; i++) {
+//        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+//            double cost = tf::tfDistance(path1[i], path2[j]);
+//            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
+//        }
+//    }
     for (int i = 1; i < n; i++) {
-        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
-            dtw[i][j] = 0;
-        }
-    }
-    for (int i = 1; i < n; i++) {
-        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+        for (int j = 1; j < m; j++) {
             double cost = tf::tfDistance(path1[i], path2[j]);
-            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
+            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]),dtw[i - 1][j - 1]);
         }
     }
+//    ROS_INFO("Dtw cost: %f", dtw[n - 1][m - 1]);
+//    std::cout << "Dtw cost" << dtw[n - 1][m - 1] << std::endl;
     return dtw[n - 1][m - 1];
 }
 
