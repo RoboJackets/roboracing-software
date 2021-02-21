@@ -35,7 +35,6 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
         return 0.0;
     }
     //convert points to world frame
-    this->LookupPathTransform();
     std::vector<tf::Point> sample_path(plan.size());
     std::transform(plan.begin(), plan.end(), sample_path.begin(), [&](const PathPoint &pose) {
         tf::Pose w_pose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(pose.pose.theta),
