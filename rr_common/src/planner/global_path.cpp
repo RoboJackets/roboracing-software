@@ -35,6 +35,7 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
         return 0.0;
     }
     //convert points to world frame
+    this->LookupPathTransform();
     std::vector<tf::Point> sample_path(plan.size());
     std::transform(plan.begin(), plan.end(), sample_path.begin(), [&](const PathPoint &pose) {
         tf::Pose w_pose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(pose.pose.theta),
@@ -44,22 +45,8 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
     //get the global segment
     vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
 
-    // dtw
-//    std::vector<Point> global_points(global_segment.size());
-//    std::transform(global_segment.begin(), global_segment.end(), global_points.begin(),
-//                   [](const tf::Point &tf_pt) { return Point(tf_pt.getX(), tf_pt.getY(), 0); });
-//    std::vector<Point> sample_points(sample_path.size());
-//    std::transform(sample_path.begin(), sample_path.end(), sample_points.begin(),
-//                   [](const tf::Point &tf_pt) { return Point(tf_pt.getX(), tf_pt.getY(), 0); });
-//    int points_len = std::min(global_points.size(), sample_points.size());
-//    // vectors must be same length for fast dtw, so similar point density assumed
-//    if (global_points.size() != sample_points.size()) {
-//        global_points.resize(points_len);
-//        sample_points.resize(points_len);
-//    }
-//    VectorDTW dtw1(points_len, points_len / 10);
-//    double dtw_val = dtw1.fastdynamic(global_points, sample_points);
-    double dtw_dist = GlobalPath::dtw_distance(global_segment, sample_path);
+    // use dtw to comp sample to global
+    double dtw_val = GlobalPath::dtw_distance(global_segment, sample_path);
 
     // for publishing / debugging
     if (viz) {
@@ -73,13 +60,12 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
         global_seg_msg.header.frame_id = "map";
         global_path_seg_pub_.publish(global_seg_msg);
     }
-    return dtw_dist;
+    return dtw_val;
 }
 
 std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Point> &sample_path) {
     vector<tf::Point> global_path = global_path_; // copy global path in case it changes part way through
     vector<double> global_cum_dist = global_cum_dist_; // ditto
-    this->LookupPathTransform();
     //get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
     std::vector<double> distances_to_origin(global_path.size());
@@ -110,8 +96,8 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
 double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2) {
     int n = path1.size();
     int m = path2.size();
-    std::vector<std::vector<double>> dtw(n, std::vector<double>(m, INFINITY));
-    int w = std::abs(n - m);
+    double dtw[n][m];
+    int w = std::abs(n - m); //run through the min diagonal of the graph
     dtw[0][0] = 0;
     for (int i = 1; i < n; i++) {
         for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
