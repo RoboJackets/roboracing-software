@@ -94,28 +94,19 @@ double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::
     int n = path1.size();
     int m = path2.size();
     std::vector<std::vector<double>> dtw(n, std::vector<double>(m, INFINITY));
-//    double dtw[n][m];
-//    int w = std::abs(n - m); //run through the min diagonal of the graph
+    int w = std::abs(n - m) + 1; //run through the min diagonal of the graph
     dtw[0][0] = 0;
-//    for (int i = 1; i < n; i++) {
-//        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
-//            dtw[i][j] = 0;
-//        }
-//    }
-//    for (int i = 1; i < n; i++) {
-//        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
-//            double cost = tf::tfDistance(path1[i], path2[j]);
-//            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
-//        }
-//    }
     for (int i = 1; i < n; i++) {
-        for (int j = 1; j < m; j++) {
-            double cost = tf::tfDistance(path1[i], path2[j]);
-            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]),dtw[i - 1][j - 1]);
+        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+            dtw[i][j] = 0;
         }
     }
-//    ROS_INFO("Dtw cost: %f", dtw[n - 1][m - 1]);
-//    std::cout << "Dtw cost" << dtw[n - 1][m - 1] << std::endl;
+    for (int i = 1; i < n; i++) {
+        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+            double cost = tf::tfDistance(path1[i], path2[j]);
+            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
+        }
+    }
     return dtw[n - 1][m - 1];
 }
 
