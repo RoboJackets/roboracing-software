@@ -48,7 +48,7 @@ ros::Time caution_start_time;
 ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
-double steering_gain;
+double steering_gain_;
 
 double total_planning_time;
 size_t total_plans;
@@ -143,7 +143,7 @@ void processMap() {
         ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");
     } else {
         g_speed_model->Update(plan.rollout.apply_speed, now.toSec());
-        update_messages(g_speed_model->GetValue(), plan.rollout.apply_steering * steering_gain);
+        update_messages(g_speed_model->GetValue(), plan.rollout.apply_steering * steering_gain_);
     }
 
     speed_pub.publish(speed_message);
@@ -173,8 +173,14 @@ void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
     g_speed_model->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
     g_steer_model->SetDynParam(config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
 
-    ROS_INFO("\n\nSPF: %f %f %f %f\nSTF: %f %f %f %f \n ", config.spf_val_max, config.spf_val_min, config.spf_rate_max,
-             config.spf_rate_min, config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
+    k_map_cost_ = config.k_map_cost;
+    k_speed_ = config.k_speed;
+    k_steering_ = config.k_steering;
+    k_angle_ = config.k_angle;
+    collision_penalty_ = config.collision_penalty;
+    steering_gain_ = config.steering_gain;
+
+    ROS_INFO("Dyn Reconf Updated");
 }
 
 int main(int argc, char** argv) {
@@ -230,7 +236,7 @@ int main(int argc, char** argv) {
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
 
-    steering_gain = assertions::param(nhp, "steering_gain", 1.0);
+    steering_gain_ = assertions::param(nhp, "steering_gain_", 1.0);
 
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
