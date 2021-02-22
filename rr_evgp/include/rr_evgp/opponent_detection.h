@@ -26,11 +26,6 @@ double cluster_tolerance;
 int min_cluster_size;
 int max_cluster_size;
 
-double front_lim;
-double back_lim;
-double left_lim;
-double right_lim;
-
 // publishers
 ros::Publisher cloud_pub;
 ros::Publisher marker_pub;

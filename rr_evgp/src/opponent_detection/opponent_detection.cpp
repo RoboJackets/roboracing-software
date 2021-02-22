@@ -114,26 +114,18 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
             marker_point.y = (*ground_segmented)[point].y;
             marker_point.z = (*ground_segmented)[point].z;
 
-            if (marker_point.x < front_lim && marker_point.x > back_lim && marker_point.y < left_lim && marker_point.y > right_lim) {
-                marker_cluster.push_back(marker_point);
-            } else {
-                notWall = false;
-                break;
-            }
+            marker_cluster.push_back(marker_point);
         }
 
         /* cloud_cluster->width = cloud_cluster->size();
         cloud_cluster->height = 1;
         cloud_cluster->is_dense = true; */
 
-        if (notWall) {
-            addMarkers(marker_cluster, cluster_ct);
-            cluster_ct += 1;
-        }
+        addMarkers(marker_cluster, cluster_ct);
+        cluster_ct += 1;
 
         // cloud_cluster->clear();
         marker_cluster.clear();
-        notWall = true;
     }
 
     marker_pub.publish(marker_array);
@@ -153,11 +145,6 @@ int main(int argc, char** argv) {
     nhp.getParam("cluster_tolerance", cluster_tolerance);
     nhp.getParam("min_cluster_size", min_cluster_size);
     nhp.getParam("max_cluster_size", max_cluster_size);
-
-    nhp.getParam("front_lim", front_lim);
-    nhp.getParam("back_lim", back_lim);
-    nhp.getParam("left_lim", left_lim);
-    nhp.getParam("right_lim", right_lim);
 
     ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
     // cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);

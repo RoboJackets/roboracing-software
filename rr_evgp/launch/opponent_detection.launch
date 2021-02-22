@@ -5,13 +5,8 @@
     <param name="high_passthru_lim" value="3.0"/>
 
     <param name="cluster_tolerance" value="0.3"/>
-    <param name="min_cluster_size" value="50"/>
-    <param name="max_cluster_size" value="700"/>
-
-    <param name="front_lim" value="40"/>
-    <param name="back_lim" value="-50"/>
-    <param name="left_lim" value="5"/>
-    <param name="right_lim" value="-5"/>
+    <param name="min_cluster_size" value="10"/>
+    <param name="max_cluster_size" value="10000"/>
 
   </node>
 </launch>
