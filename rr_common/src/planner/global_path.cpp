@@ -10,7 +10,6 @@
 #include <nav_msgs/Path.h>
 #include <parameter_assertions/assertions.h>
 #include <rr_common/planning/global_path.h>
-#include <rr_common/planning/vectordtw.h>
 
 #include <cmath>
 #include <numeric>
@@ -41,7 +40,7 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
         return tf::Point(w_pose.getOrigin().x(), w_pose.getOrigin().y(),0);
     });
     //get the global segment
-    vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
+    std::vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
 
     // use dtw to comp sample to global
     int window = (int) (dtw_window_factor_ * std::max(global_segment.size(), sample_path.size()));
@@ -74,7 +73,7 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     int seg_start_index = std::min_element(distances_to_origin.begin(), distances_to_origin.end()) - distances_to_origin.begin();
 
     //get the length of sample path by summing all the dists btwn the points
-    vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
+    std::vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
     //get the ending point of the global segment using the length of the segment
     double upper_cum_limit = std::fmod((global_cum_dist_[seg_start_index] + sample_length), global_cum_dist_[global_cum_dist_.size() - 1]);
