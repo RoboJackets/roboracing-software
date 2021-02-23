@@ -48,11 +48,11 @@ distance_map:
         min_y: -0.8
         max_y: 0.8
     cost_scaling_factor: .2
-    wall_inflation: .3
+    wall_inflation: .2
 
 steering_gain: 1.4
 
-k_map_cost: 0.1
+k_map_cost: .5
 k_speed: 0.05
 k_steering: 0.01
 k_angle: 0
