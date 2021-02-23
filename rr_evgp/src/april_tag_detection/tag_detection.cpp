@@ -107,22 +107,26 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera);
     for (const auto &robot: *real_tags) {
         tf::Pose robot_pose;
+        robot_pose.setRotation(tf::Quaternion::getIdentity());
 
         for (const auto &tag: robot) {
-            tf::Pose real_pose;
-            tf::poseMsgToTF(tag.second, real_pose);
-            bool first = true;
+            tf::Pose april_w;
+            tf::poseMsgToTF(tag.second, april_w);
 
-            tf::Vector3 robot_pos_tag_estimate = real_pose.getOrigin() - robots[tag.first / 10].tags[tag.first].pose.getOrigin();
-            ROS_INFO_STREAM(tag.first << " (" << real_pose.getOrigin().x() << ", " << real_pose.getOrigin().y() << ", " << real_pose.getOrigin().z() << "), ("<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().x() << ", "<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().y() << ", "<< robots[tag.first / 10].tags[tag.first].pose.getOrigin().z() << "), ("<< robot_pos_tag_estimate.x() << ", " << robot_pos_tag_estimate.y() << ", " << robot_pos_tag_estimate.z() << "), robot: (" << robot_pose.getOrigin().x() << ", " << robot_pose.getOrigin().y() << ", " << robot_pose.getOrigin().z() << ")");
+            //Update location in respects to camera
+            tf::Pose back_pose = camera * april_w;
 
-            if (!first) {
-                ROS_INFO_STREAM("zero");
-                robot_pose.setOrigin((robot_pose.getOrigin() + (robot_pos_tag_estimate)) / 2);
-            } else {
-                robot_pose.setOrigin(robot_pos_tag_estimate);
-                first = false;
-            }
+            tf::StampedTransform tag_transformation;
+
+            //Target frame is rightmost digit + _april
+            //eg: April tag id = 34, target frame is "4_april"
+            tf_listener.lookupTransform(std::to_string(tag.first % 10) + "_april", "5_april", ros::Time(0),
+                                        tag_transformation);
+
+            back_pose.setRotation(tag_transformation.getRotation() * back_pose.getRotation());
+            back_pose.setOrigin(tag_transformation.getOrigin() + back_pose.getOrigin());
+
+            robot_pose = back_pose;
         }
 
         pcl::PointCloud<pcl::PointXYZ> car_outline;
@@ -131,4 +135,21 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
         pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
         opponent_cloud += (car_outline);
     }
+}
+
+tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
+    tf::Vector3 averagedVectors;
+    tf::Quaternion averagedQuaternions;
+    Eigen::Matrix4Xf quaternionMatrix;
+
+    for(int i = 0; i < poses.size(); i++) {
+        averagedVectors += poses[i].getOrigin();
+        quaternionMatrix(0, i) = poses[i].getRotation().getW();
+        quaternionMatrix(1, i) = poses[i].getRotation().getX();
+        quaternionMatrix(2, i) = poses[i].getRotation().getY();
+        quaternionMatrix(3, i) = poses[i].getRotation().getZ();
+    }
+
+    Eigen::EigenSolver<Eigen::Matrix4Xf> solver(quaternionMatrix, true);
+    return poses[0];
 }
