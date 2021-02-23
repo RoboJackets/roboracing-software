@@ -27,7 +27,6 @@ int min_cluster_size;
 int max_cluster_size;
 
 // publishers
-ros::Publisher cloud_pub;
 ros::Publisher marker_pub;
 
 // individual marker
@@ -36,18 +35,11 @@ visualization_msgs::Marker marker;
 // final marker array
 visualization_msgs::MarkerArray marker_array;
 
-// colors
-std::vector<std::array<int, 3>> colors = { { 255, 0, 0 },
-                                           { 255, 127, 0 },
-                                           { 0, 255, 127 },
-                                           { 255, 0, 255 },
-                                           { 0, 0, 255 } };
-
 // publishes clustered clouds
 void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
 
 // adds markers to array
-void addMarkers(std::vector<geometry_msgs::Point> markers, int color);
+void addMarkers(std::vector<geometry_msgs::Point> markers);
 
 // callback of subscriber
 void callback(sensor_msgs::PointCloud2 cloud_msg);

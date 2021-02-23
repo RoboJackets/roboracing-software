@@ -1,32 +1,13 @@
 #include <rr_evgp/opponent_detection.h>
 
-// publishes clustered clouds
-void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr) {
-    cloud_ptr->header.frame_id = "lidar";
-
-    // initialize PCLPointCloud2 for output
-    pcl::PCLPointCloud2 outputPCL;
-
-    // convert cloud_result back to PCLPointCloud2
-    pcl::toPCLPointCloud2(*cloud_ptr, outputPCL);
-
-    // initialize sensor_msgs PointCloud2 for output
-    sensor_msgs::PointCloud2 output;
-
-    // convert outputPCL back to ROS data type (sensor_msgs::PointCloud2)
-    pcl_conversions::fromPCL(outputPCL, output);
-
-    cloud_pub.publish(output);
-}
-
-// adds markers to array
-void addMarkers(std::vector<geometry_msgs::Point> markers, int color) {
+// adds markers to marker array
+void addMarkers(std::vector<geometry_msgs::Point> markers, int id) {
     marker.header.stamp = ros::Time::now();
     marker.lifetime = ros::Duration();
     marker.header.frame_id = "lidar";
 
     marker.ns = "marked_clusters";
-    marker.id = color;
+    marker.id = id;
 
     marker.type = visualization_msgs::Marker::SPHERE_LIST;
     marker.action = visualization_msgs::Marker::ADD;
@@ -56,16 +37,16 @@ void addMarkers(std::vector<geometry_msgs::Point> markers, int color) {
 // main callback function
 void callback(sensor_msgs::PointCloud2 cloud_msg) {
     // initialize PCLPointCloud2 object
-    pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2);
+    pcl::PCLPointCloud2::Ptr pcl_cloud2(new pcl::PCLPointCloud2);
 
     // convert cloud_msg to PCLPointCloud2 type
-    pcl_conversions::toPCL(cloud_msg, *cloud);
+    pcl_conversions::toPCL(cloud_msg, *pcl_cloud2);
 
     // initialize PointCloud of PointXYZ objects
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
     // convert cloud_msg from PCLPointCloud2 to PointCloud of PointXYZ objects
-    pcl::fromPCLPointCloud2(*cloud, *cloud2);
+    pcl::fromPCLPointCloud2(*pcl_cloud2, *xyz_cloud);
 
     // **GROUND SEGMENTATION**
 
@@ -74,7 +55,7 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
 
     // passthrough filter to segment out ground
     pcl::PassThrough<pcl::PointXYZ> pass;
-    pass.setInputCloud(cloud2);
+    pass.setInputCloud(xyz_cloud);
     pass.setFilterFieldName("z");
     pass.setFilterLimits(low_passthru_lim, high_passthru_lim);
     pass.filter(*ground_segmented);
@@ -97,10 +78,8 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
     // **PUBLISHING**
 
     // holding containers for PCs and Markers
-    // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
     std::vector<geometry_msgs::Point> marker_cluster = {};
     geometry_msgs::Point marker_point;
-    bool notWall = true;
 
     // cluster count
     int cluster_ct = 0;
@@ -108,8 +87,6 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
     // for each PointIndices object, turn it into a PointCloud of PointXYZ objects
     for (const pcl::PointIndices& point_idx : cluster_indices) {
         for (const int& point : point_idx.indices) {
-            // cloud_cluster->push_back((*ground_segmented)[point]);
-
             marker_point.x = (*ground_segmented)[point].x;
             marker_point.y = (*ground_segmented)[point].y;
             marker_point.z = (*ground_segmented)[point].z;
@@ -117,14 +94,9 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
             marker_cluster.push_back(marker_point);
         }
 
-        /* cloud_cluster->width = cloud_cluster->size();
-        cloud_cluster->height = 1;
-        cloud_cluster->is_dense = true; */
-
         addMarkers(marker_cluster, cluster_ct);
-        cluster_ct += 1;
+        cluster_ct++;
 
-        // cloud_cluster->clear();
         marker_cluster.clear();
     }
 
@@ -147,7 +119,6 @@ int main(int argc, char** argv) {
     nhp.getParam("max_cluster_size", max_cluster_size);
 
     ros::Subscriber sub = nh.subscribe("/velodyne_points", 1, &callback);
-    // cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/clusters", 1);
     marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);
 
     ros::spin();
