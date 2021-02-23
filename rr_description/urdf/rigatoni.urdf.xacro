@@ -186,11 +186,11 @@
             <material>${tag_number}</material>
         </gazebo>
     </xacro:macro>
-    <xacro:april_link name="april_0" tag_number="tag36_11_00000"/>
-    <xacro:april_link name="april_1" tag_number="tag36_11_00001"/>
-    <xacro:april_link name="april_2" tag_number="tag36_11_00002"/>
-    <xacro:april_link name="april_3" tag_number="tag36_11_00003"/>
-    <xacro:april_link name="april_4" tag_number="tag36_11_00004"/>
+    <xacro:april_link name="april_0" tag_number="tag36_11_00052"/>
+    <xacro:april_link name="april_1" tag_number="tag36_11_00053"/>
+    <xacro:april_link name="april_2" tag_number="tag36_11_00054"/>
+    <xacro:april_link name="april_3" tag_number="tag36_11_00055"/>
+    <xacro:april_link name="april_4" tag_number="tag36_11_00056"/>
 
 
     <!-- ************************** Joints *************************** -->
@@ -259,11 +259,11 @@
     <xacro:set_base_footprint_to_link link_name="imu_bottom_link" xyz="0 0 0.21" rpy="0 0 0"/>
     <xacro:set_base_footprint_to_link link_name="imu_top_link" xyz="0.60 0.39 0.95" rpy="0 0 0"/>
 
-    <xacro:set_base_footprint_to_link link_name="april_0" xyz="-.38 0 0.26"  rpy="0 0 0"/>
-    <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
-    <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
-    <xacro:set_base_footprint_to_link link_name="april_3" xyz=".48 -0.55 0.26" rpy="0 0 ${pi/2}"/>
-    <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48  0.55 0.26" rpy="0 0 ${pi/2}"/>
+    <xacro:set_base_footprint_to_link link_name="april_0" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
+    <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
+    <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.38  0    0.26" rpy="0 0 0"/>
+    <xacro:set_base_footprint_to_link link_name="april_3" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
+    <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
 
     <!-- ******************* Sensors *********************** -->

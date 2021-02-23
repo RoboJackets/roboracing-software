@@ -3,14 +3,10 @@
     <xacro:include filename="evgp_body.urdf.xacro"/>
 
     <xacro:evgp_body collision_bitmask="0x20" color="Red"
-    april0="tag36_11_00000"
-    april1="tag36_11_00000"
-    april2="tag36_11_00000"
-    april3="tag36_11_00000"
-    april4="tag36_11_00000"/>
-
-    <gazebo reference="base_footprint">
-        <kinematic>true</kinematic>
-    </gazebo>
+    april0="tag36_11_00032"
+    april1="tag36_11_00033"
+    april2="tag36_11_00034"
+    april3="tag36_11_00035"
+    april4="tag36_11_00036"/>
 
 </robot>

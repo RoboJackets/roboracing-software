@@ -87,12 +87,15 @@
             </joint>
         </xacro:macro>
 
-        <xacro:set_base_footprint_to_link link_name="april_0" xyz="-.38  0    0.26" rpy="0 0 0"/>
-        <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
-        <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
-        <xacro:set_base_footprint_to_link link_name="april_3" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
+        <xacro:set_base_footprint_to_link link_name="april_0" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
+        <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
+        <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.38  0    0.26" rpy="0 0 0"/>
+        <xacro:set_base_footprint_to_link link_name="april_3" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
         <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
+        <gazebo reference="base_footprint">
+            <kinematic>true</kinematic>
+        </gazebo>
     </xacro:macro>
 
 </robot>
