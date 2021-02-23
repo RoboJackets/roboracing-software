@@ -23,8 +23,7 @@ GlobalPath::GlobalPath(ros::NodeHandle nh)
     std::string global_path_topic;
     assertions::getParam(nh, "global_path_topic", global_path_topic);
     assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
-    // remove
-    assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor_, { assertions::greater_eq(0.0) });
+    assertions::getParam(nh, "dtw_window_factor", dtw_window_factor_);
 
     global_path_sub_ = nh.subscribe(global_path_topic, 1, &GlobalPath::SetPathMessage, this);
     global_path_seg_pub_ = nh.advertise<nav_msgs::Path>("/global_path_seg", 1);
@@ -45,7 +44,8 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
     vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
 
     // use dtw to comp sample to global
-    double dtw_val = GlobalPath::dtw_distance(global_segment, sample_path);
+    int window = (int) (dtw_window_factor_ * std::max(global_segment.size(), sample_path.size()));
+    double dtw_val = GlobalPath::dtw_distance(global_segment, sample_path, window);
 
     // for publishing / debugging
     if (viz) {
@@ -72,6 +72,7 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     });
     //get the index of the closest global point to the start of the sample path
     int seg_start_index = std::min_element(distances_to_origin.begin(), distances_to_origin.end()) - distances_to_origin.begin();
+
     //get the length of sample path by summing all the dists btwn the points
     vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
@@ -79,6 +80,7 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     double upper_cum_limit = std::fmod((global_cum_dist_[seg_start_index] + sample_length), global_cum_dist_[global_cum_dist_.size() - 1]);
     int seg_end_index = std::upper_bound(global_cum_dist_.begin(), global_cum_dist_.end(), upper_cum_limit) -
                         global_cum_dist_.begin();
+
     //create the global segment
     std::vector<tf::Point> global_segment;
     if (seg_start_index <= seg_end_index) { //assume sample path length < global path length
@@ -90,23 +92,27 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     return global_segment;
 }
 
-double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2) {
+double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2, int w) {
     int n = path1.size();
     int m = path2.size();
+
     std::vector<std::vector<double>> dtw(n + 1, std::vector<double>(m + 1, INFINITY));
-    int w = std::abs(n - m); //run through the min diagonal of the graph
+    w = std::max(w, std::abs(n - m)); // adapt window size
     dtw[0][0] = 0;
+
     for (int i = 1; i < n + 1; i++) {
         for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
             dtw[i][j] = 0;
         }
     }
+
     for (int i = 1; i < n + 1; i++) {
         for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
             double cost = tf::tfDistance(path1[i - 1], path2[j - 1]);
             dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
         }
     }
+
     return dtw[n][m];
 }
 

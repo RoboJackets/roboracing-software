@@ -62,7 +62,7 @@ collision_penalty: 10000
 global_path_cost:
     global_path_topic: "/global_center_path"
     robot_base_frame: base_footprint
-    cost_scaling_factor: 1.0
+    dtw_window_factor: 0.25
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
