@@ -19,7 +19,7 @@
         </gazebo>
     </xacro:macro>
 
-    <xacro:macro name="evgp_body" params="collision_bitmask color april0 april1 april2 april3 april4">
+    <xacro:macro name="evgp_body" params="collision_bitmask color april2 april3 april4 april5 april6">
 
         <!-- ************************** Links *************************** -->
 
@@ -65,11 +65,11 @@
             </gazebo>
         </xacro:macro>
 
-        <xacro:april_link name="april_0" tag_number="${april0}"/>
-        <xacro:april_link name="april_1" tag_number="${april1}"/>
         <xacro:april_link name="april_2" tag_number="${april2}"/>
         <xacro:april_link name="april_3" tag_number="${april3}"/>
         <xacro:april_link name="april_4" tag_number="${april4}"/>
+        <xacro:april_link name="april_5" tag_number="${april5}"/>
+        <xacro:april_link name="april_6" tag_number="${april6}"/>
 
         <!-- ************************** Joints *************************** -->
 
@@ -87,11 +87,11 @@
             </joint>
         </xacro:macro>
 
-        <xacro:set_base_footprint_to_link link_name="april_0" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
-        <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
-        <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.38  0    0.26" rpy="0 0 0"/>
-        <xacro:set_base_footprint_to_link link_name="april_3" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
-        <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
+        <xacro:set_base_footprint_to_link link_name="april_2" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
+        <xacro:set_base_footprint_to_link link_name="april_3" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
+        <xacro:set_base_footprint_to_link link_name="april_4" xyz="-.38  0    0.26" rpy="0 0 0"/>
+        <xacro:set_base_footprint_to_link link_name="april_5" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
+        <xacro:set_base_footprint_to_link link_name="april_6" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
         <gazebo reference="base_footprint">
             <kinematic>true</kinematic>
