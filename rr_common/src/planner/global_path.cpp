@@ -93,21 +93,21 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
 double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2) {
     int n = path1.size();
     int m = path2.size();
-    std::vector<std::vector<double>> dtw(n, std::vector<double>(m, INFINITY));
-    int w = std::abs(n - m) + 1; //run through the min diagonal of the graph
+    std::vector<std::vector<double>> dtw(n + 1, std::vector<double>(m + 1, INFINITY));
+    int w = std::abs(n - m); //run through the min diagonal of the graph
     dtw[0][0] = 0;
-    for (int i = 1; i < n; i++) {
-        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
+    for (int i = 1; i < n + 1; i++) {
+        for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
             dtw[i][j] = 0;
         }
     }
-    for (int i = 1; i < n; i++) {
-        for (int j = std::max(1, i - w); j < std::min(m, i + w); j++) {
-            double cost = tf::tfDistance(path1[i], path2[j]);
+    for (int i = 1; i < n + 1; i++) {
+        for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
+            double cost = tf::tfDistance(path1[i - 1], path2[j - 1]);
             dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
         }
     }
-    return dtw[n - 1][m - 1];
+    return dtw[n][m];
 }
 
 std::vector<double> GlobalPath::adjacent_distances(const std::vector<tf::Point> &path) {
