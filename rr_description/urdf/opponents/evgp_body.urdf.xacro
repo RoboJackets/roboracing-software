@@ -19,7 +19,7 @@
         </gazebo>
     </xacro:macro>
 
-    <xacro:macro name="evgp_body" params="collision_bitmask color">
+    <xacro:macro name="evgp_body" params="collision_bitmask color april0 april1 april2 april3 april4">
 
         <!-- ************************** Links *************************** -->
 
@@ -50,13 +50,48 @@
             <turnGravityOff>true</turnGravityOff>
         </gazebo>
 
+        <xacro:macro name="april_link" params="name tag_number">
+            <link name="${name}">
+                <xacro:null_inertia/>
+                <visual>
+                    <geometry>
+                        <box size="0.001 0.127 0.127 "/>
+                    </geometry>
+                </visual>
+            </link>
+
+            <gazebo reference="${name}">
+                <material>${tag_number}</material>
+            </gazebo>
+        </xacro:macro>
+
+        <xacro:april_link name="april_0" tag_number="${april0}"/>
+        <xacro:april_link name="april_1" tag_number="${april1}"/>
+        <xacro:april_link name="april_2" tag_number="${april2}"/>
+        <xacro:april_link name="april_3" tag_number="${april3}"/>
+        <xacro:april_link name="april_4" tag_number="${april4}"/>
+
         <!-- ************************** Joints *************************** -->
 
         <joint name="base_footprint_to_mesh_origin" type="fixed">
             <parent link="base_footprint"/>
             <child link="body_visual_origin"/>
-            <origin xyz="0.53 0 0.1" rpy="${pi/2} 0 ${pi/2}"/>
+            <origin xyz="0.53 0 -0.05" rpy="${pi/2} 0 ${pi/2}"/>
         </joint>
+
+        <xacro:macro name="set_base_footprint_to_link" params="link_name xyz rpy">
+            <joint name="base_footprint_to_${link_name}" type="fixed">
+                <parent link="base_footprint"/>
+                <child link="${link_name}"/>
+                <origin xyz="${xyz}" rpy="${rpy}"/>
+            </joint>
+        </xacro:macro>
+
+        <xacro:set_base_footprint_to_link link_name="april_0" xyz="-.38  0    0.26" rpy="0 0 0"/>
+        <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
+        <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
+        <xacro:set_base_footprint_to_link link_name="april_3" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
+        <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
     </xacro:macro>
 

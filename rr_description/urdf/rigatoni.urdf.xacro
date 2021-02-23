@@ -70,7 +70,7 @@
         <joint name="base_footprint_to_mesh_origin" type="fixed">
             <parent link="base_footprint"/>
             <child link="body_visual_origin"/>
-            <origin xyz="0.53 0 0" rpy="${pi/2} 0 ${pi/2}"/>
+            <origin xyz="0.53 0 -0.05" rpy="${pi/2} 0 ${pi/2}"/>
         </joint>
 
         <joint name="base_footprint_to_body_inertial_center" type="fixed">
@@ -172,17 +172,25 @@
     </link>
     <xacro:set_link_color link="imu_bottom_link" color="Gold"/>
 
-    <link name='april'>
-        <xacro:null_inertia/>
-        <visual>
-            <geometry>
-                <box size="0.001 0.3 0.3 "/>
-            </geometry>
-        </visual>
-    </link>
-    <gazebo reference="april">
-        <material>Apriltag</material>
-    </gazebo>
+    <xacro:macro name="april_link" params="name tag_number">
+        <link name="${name}">
+            <xacro:null_inertia/>
+            <visual>
+                <geometry>
+                    <box size="0.001 0.127 0.127 "/>
+                </geometry>
+            </visual>
+        </link>
+
+        <gazebo reference="${name}">
+            <material>${tag_number}</material>
+        </gazebo>
+    </xacro:macro>
+    <xacro:april_link name="april_0" tag_number="tag36_11_00000"/>
+    <xacro:april_link name="april_1" tag_number="tag36_11_00001"/>
+    <xacro:april_link name="april_2" tag_number="tag36_11_00002"/>
+    <xacro:april_link name="april_3" tag_number="tag36_11_00003"/>
+    <xacro:april_link name="april_4" tag_number="tag36_11_00004"/>
 
 
     <!-- ************************** Joints *************************** -->
@@ -223,18 +231,6 @@
     <xacro:steering_joints steering_link="steering_link_left" wheel_link="wheel_FL" y="${props['track'] / 2}"/>
     <xacro:steering_joints steering_link="steering_link_right" wheel_link="wheel_FR" y="${-props['track'] / 2}"/>
 
-    <joint name="base_footprint_to_gps" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="gps_link"/>
-        <origin xyz="0.63 0.4 1.27" rpy="0 0 0"/>
-    </joint>
-
-    <joint name="base_footprint_to_camera" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="camera"/>
-        <origin xyz="0.68 0.4 0.8" rpy="0 0.2 0"/>
-    </joint>
-
     <xacro:macro name="camera_optical_frame" params="camera_link">
         <link name="${camera_link}_optical">
             <xacro:null_inertia/>
@@ -248,30 +244,33 @@
 
     <xacro:camera_optical_frame camera_link="camera"/>
 
-    <joint name="base_footprint_to_imu" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="imu_top_link"/>
-        <origin xyz="0.67 0.4 0.67" rpy="0 0 0"/>
-    </joint>
+    <xacro:macro name="set_base_footprint_to_link" params="link_name xyz rpy">
+        <joint name="base_footprint_to_${link_name}" type="fixed">
+            <parent link="base_footprint"/>
+            <child link="${link_name}"/>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+        </joint>
+    </xacro:macro>
 
-    <joint name="base_footprint_to_imu2" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="imu_bottom_link"/>
-        <origin xyz="0 0 0.21" rpy="0 0 0"/>
-    </joint>
+    <xacro:set_base_footprint_to_link link_name="gps_link" xyz="0.55 0.39 1.22" rpy="0 0 0"/>
 
-    <joint name="base_footprint_to_april" type="fixed">
-        <parent link="base_footprint"/>
-        <child link="april"/>
-        <origin xyz="-.3 0 0.51" rpy="0 0 0"/>
-    </joint>
+    <xacro:set_base_footprint_to_link link_name="camera" xyz="0.61 0.39 1.03" rpy="0 0.4 0"/>
+
+    <xacro:set_base_footprint_to_link link_name="imu_bottom_link" xyz="0 0 0.21" rpy="0 0 0"/>
+    <xacro:set_base_footprint_to_link link_name="imu_top_link" xyz="0.60 0.39 0.95" rpy="0 0 0"/>
+
+    <xacro:set_base_footprint_to_link link_name="april_0" xyz="-.38 0 0.26"  rpy="0 0 0"/>
+    <xacro:set_base_footprint_to_link link_name="april_1" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
+    <xacro:set_base_footprint_to_link link_name="april_2" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
+    <xacro:set_base_footprint_to_link link_name="april_3" xyz=".48 -0.55 0.26" rpy="0 0 ${pi/2}"/>
+    <xacro:set_base_footprint_to_link link_name="april_4" xyz=".48  0.55 0.26" rpy="0 0 ${pi/2}"/>
 
 
     <!-- ******************* Sensors *********************** -->
 
     <!-- Velodyne Puck VLP-16 -->
     <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
-        <origin xyz="1.25 0 0.3" rpy="0 0 0" />
+        <origin xyz="1.175 0 0.175" rpy="0 0 0" />
     </xacro:VLP-16>
 
     <!-- FLIR Blackfly + wide-angle lens -->
