@@ -1,0 +1,69 @@
+<sdf version="1.6">
+    <world name="EV Grand Prix Cones">
+        <scene>
+            <ambient>1 1 1 1</ambient>
+            <background>0.7 0.7 0.7 1</background>
+            <shadows>true</shadows>
+            <grid>false</grid>
+            <origin_visual>false</origin_visual>
+            <sky>
+                <clouds>
+                    <speed>12</speed>
+                </clouds>
+            </sky>
+        </scene>
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <include>
+            <uri>model://ground_plane</uri>
+            <pose>0 20 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://ground_plane</uri>
+            <pose>50 20 0 0 0 0 0</pose>
+        </include>
+	    <include>
+            <uri>model://ground_plane</uri>
+            <pose>100 20 0 0 0 0 0</pose>
+        </include>
+
+        <population name="inner_cones">
+            <model name="cone_in">
+                <include>
+                    <uri>model://TallerCone</uri>
+                </include>
+            </model>
+            <pose>31 2.35 0 0 0 0</pose>
+            <box>
+                <size>60 0.01 0.01</size>
+            </box>
+            <model_count>60</model_count>
+            <distribution>
+                <type>linear-x</type>
+            </distribution>
+        </population>
+
+        <population name="outer_cones">
+            <model name="cone_out">
+                <include>
+                    <uri>model://TallerCone</uri>
+                </include>
+            </model>
+            <pose>35 5.35 0 0 0 0</pose>
+            <box>
+                <size>80 0.01 0.01</size>
+            </box>
+            <model_count>80</model_count>
+            <distribution>
+                <type>linear-x</type>
+            </distribution>
+        </population>
+
+        <include>
+            <uri>model://EVGPTrack2</uri>
+	    <pose>-50 70 0 0 0 0</pose>
+        </include>
+        
+    </world>
+</sdf>
