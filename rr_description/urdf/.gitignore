@@ -1,4 +1,4 @@
 # ignore URDF generated from xacro
 evgp.urdf
-evgp_opponent.urdf
-rigatoni_april6.urdf
+opponents/*.urdf
+rigatoni.urdf

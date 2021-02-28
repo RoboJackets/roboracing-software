@@ -30,6 +30,8 @@ def main():
                         help="moving reference frame (default: 'base_footprint')")
     parser.add_argument("--timestep", default=0.1, type=float,
                         help="time delta between output trajectory waypoints in seconds (default 0.1)")
+    parser.add_argument("-x", type=float, default=0.0, help="starting x coord")
+    parser.add_argument("-y", type=float, default=0.0, help="starting y coord")
     args = parser.parse_args()
 
     bag = rosbag.Bag(args.in_bag, 'r')
@@ -67,7 +69,10 @@ def main():
 
     trajectory_data = [["t", "x", "y", "z", "q0", "q1", "q2", "q3"]]
     for trans, rot, t in stamped_poses:
-        trajectory_data.append([str(round(v, 5)) for v in [t] + list(trans) + list(rot)])
+        x,y,z = trans
+        x += args.x
+        y += args.y
+        trajectory_data.append([str(round(v, 5)) for v in [t] + [x,y,z] + list(rot)])
 
     with open(args.out_csv, 'w') as f:
         writer = csv.writer(f, dialect='excel')

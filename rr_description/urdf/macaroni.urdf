@@ -307,7 +307,7 @@
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
         </inertial>
     </link>
-    <gazebo reference="camera_left">
+    <gazebo reference="camera_right">
         <sensor name="camera_sensor" type="camera">
             <camera>
                 <horizontal_fov>1.02974<!-- 59 deg in rad --></horizontal_fov>
@@ -430,9 +430,9 @@
     </joint>
 
     <joint name="camera_joint_left" type="fixed">
-        <parent link="chassis"/>
+        <parent link="base_footprint"/>
         <child link="camera_left"/>
-        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+        <origin xyz="0.21 0.115 0.27" rpy="0 0.7854 1.5708"/>
     </joint>
 
     <joint name="camera_optical_joint_left" type="fixed">
@@ -442,9 +442,9 @@
     </joint>
 
     <joint name="camera_joint_right" type="fixed">
-        <parent link="chassis"/>
+        <parent link="base_footprint"/>
         <child link="camera_right"/>
-        <origin xyz="0.21793 0 0.22" rpy="0 0 0"/>
+        <origin xyz="0.21 -0.115 0.27" rpy="0 0.7854 -1.5708"/>
     </joint>
 
     <joint name="camera_optical_joint_right" type="fixed">
