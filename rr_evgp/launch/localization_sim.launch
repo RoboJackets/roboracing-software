@@ -13,6 +13,11 @@
                   subst_value="True"/>
     </node>
 
+    <node pkg="robot_localization" type="ekf_localization_node" name="localization2" output="screen">
+        <rosparam command="load" file="$(find rr_evgp)/conf/opponent_localization_from_ground_truth.yaml"
+                    subst_value="True"/>
+    </node>
+
     <!-- @Note: see https://github.com/ros-agriculture/tractor_localization for a good explanation of parameters -->
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
         <param name="magnetic_declination_radians" value="0"/> <!-- #TODO: mag declination of shop / speedway -->
