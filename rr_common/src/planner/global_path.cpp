@@ -49,7 +49,7 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
     // for publishing / debugging
     if (viz) {
         nav_msgs::Path global_seg_msg;  // convert type
-        for (auto path_point : global_segment) {
+        for (const auto path_point : global_segment) {
             geometry_msgs::PoseStamped ps;
             ps.pose.position.x = path_point.getX();
             ps.pose.position.y = path_point.getY();
@@ -61,6 +61,7 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
     return dtw_val;
 }
 
+// follows the pseudocode found in https://en.wikipedia.org/wiki/Dynamic_time_warping
 std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Point> &sample_path) {
     // get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
@@ -98,20 +99,14 @@ double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::
     int n = path1.size();
     int m = path2.size();
 
-    std::vector<std::vector<double>> dtw(n + 1, std::vector<double>(m + 1, INFINITY));
+    std::vector<std::vector<double>> dtw(n + 1, std::vector<double>(m + 1, std::numeric_limits<double>::infinity()));
     w = std::max(w, std::abs(n - m));  // adapt window size
     dtw[0][0] = 0;
 
     for (int i = 1; i < n + 1; i++) {
         for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
-            dtw[i][j] = 0;
-        }
-    }
-
-    for (int i = 1; i < n + 1; i++) {
-        for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
             double cost = tf::tfDistance(path1[i - 1], path2[j - 1]);
-            dtw[i][j] = cost + std::min(std::min(dtw[i - 1][j], dtw[i][j - 1]), dtw[i - 1][j - 1]);
+            dtw[i][j] = cost + std::min({dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]});
         }
     }
 

@@ -68,11 +68,11 @@ void processMap() {
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         rr::TrajectoryRollout rollout;
         g_vehicle_model->RollOutPath(controls, rollout);
-        const auto& path = rollout.path;
-
+        auto& path = rollout.path;
+        //add first point back onto the end so it's fully connected
+        path.push_back(path[0]);
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
         double global_path_costs = g_global_path_cost->CalculateCost(path, false);
-        //        double global_path_costs = 0;
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
