@@ -56,61 +56,17 @@ void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
     pub_pointcloud.publish(outmsg);
 }
 
-void tag_detection::draw_opponent(int id, geometry_msgs::Pose april_camera_msg) {
-    tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), camera_w);
-
-    tf::Pose april_w;
-    tf::poseMsgToTF(april_camera_msg, april_w);
-    april_w = camera_w * april_w;
-
-    tfScalar roll, pitch, yaw;
-    april_w.getBasis().getRPY(roll, pitch, yaw);
-    tf::Matrix3x3 april_w_basis;
-    april_w_basis.setRPY(0, 0, yaw);
-    april_w.setBasis(april_w_basis);
-
-    tf::Vector3 april_w_origin = april_w.getOrigin();
-    april_w_origin.setZ(0);
-    april_w.setOrigin(april_w_origin);
-
-    pcl::PointCloud<pcl::PointXYZ> car_outline;
-    Eigen::Affine3d affine3d;
-    tf::transformTFToEigen(april_w, affine3d);
-    pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
-    opponent_cloud += (car_outline);
-
-    visualization_msgs::Marker marker;
-    marker.type = visualization_msgs::Marker::SPHERE_LIST;
-    marker.action = visualization_msgs::Marker::ADD;
-
-    geometry_msgs::Pose april_msg;
-    tf::poseTFToMsg(april_w, april_msg);
-    marker.points = marker_outline;
-    marker.pose = april_msg;
-    marker.id = id;
-    marker.color.a = 1;
-    marker.color.r = colors[id % colors.size()][0];
-    marker.color.g = colors[id % colors.size()][1];
-    marker.color.b = colors[id % colors.size()][2];
-    marker.scale.x = .1;
-    marker.scale.y = .1;
-    marker.scale.z = .1;
-    marker.header.stamp = ros::Time(0);
-    marker.header.frame_id = destination_frame;
-
-    pub_markers.publish(marker);
-}
-
 void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> *real_tags) {
     // w := our base footprint (world), o := optical camera, a := april image, l := april link,
     // b := their base footprint
-    // x_T_y := Transfrom from y to x
-    
+    // x_T_y := Transform from y to x
+
     tf::StampedTransform w_T_o;
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), w_T_o);
     for (const auto &robot : *real_tags) {
-        tf::Pose robot_pose;
+        std::vector<tf::Pose> robot_pose(robot.size());
 
+        int index = 0;
         for (const auto &tag : robot) {
             tf::Pose o_T_a;
             tf::poseMsgToTF(tag.second, o_T_a);
@@ -128,15 +84,16 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             // Update location
             tf::Pose p_w = w_T_o * o_T_a * a_T_l * l_T_b;
 
-            // To make your box outline point the right dirction,
+            // To make your box outline point the right direction,
             // Not needed if you make the outline different dimension
             tf::Transform random_T;
             random_T.setRotation(tf::createQuaternionFromRPY(0, 0, -M_PI / 2));
 
-            robot_pose = p_w * random_T;
+            robot_pose[index++] = p_w * random_T;
 
-            ROS_INFO_STREAM(april_link << " " << robot_pose.getOrigin().getX()
-                                << " " << robot_pose.getOrigin().getY() << " " << robot_pose.getOrigin().getZ());
+            ROS_INFO_STREAM(april_link << " " << robot_pose[index].getOrigin().getX()
+                                       << " " << robot_pose[index].getOrigin().getY() << " "
+                                       << robot_pose[index].getOrigin().getZ());
 
             // Just to viz points for debugging
             visualization_msgs::Marker marker;
@@ -146,8 +103,8 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             marker.id = 1;
             marker.type = visualization_msgs::Marker::SPHERE;
             marker.action = visualization_msgs::Marker::ADD;
-            marker.pose.position.x = robot_pose.getOrigin().getX();
-            marker.pose.position.y = robot_pose.getOrigin().getY();
+            marker.pose.position.x = robot_pose[index].getOrigin().getX();
+            marker.pose.position.y = robot_pose[index].getOrigin().getY();
             marker.pose.position.z = 0;
             marker.pose.orientation.x = 0.0;
             marker.pose.orientation.y = 0.0;
@@ -159,29 +116,45 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             marker.color.a = 1.0;
             marker.color.g = 1.0;
             pub_markers.publish(marker);
-
-            pcl::PointCloud<pcl::PointXYZ> car_outline;
-            Eigen::Affine3d affine3d;
-            tf::transformTFToEigen(robot_pose, affine3d);
-            pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
-            opponent_cloud += (car_outline);
         }
+
+        tf::Pose pose = poseAverage(robot_pose);
+
+        pcl::PointCloud<pcl::PointXYZ> car_outline;
+        Eigen::Affine3d affine3d;
+        tf::transformTFToEigen(pose, affine3d);
+        pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+        opponent_cloud += (car_outline);
     }
 }
-
+const double pose_distance = 0.1;
 tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
-    tf::Vector3 averagedVectors;
-    tf::Quaternion averagedQuaternions;
-    Eigen::Matrix4Xf quaternionMatrix;
+    if (poses.size() > 1) {
+        //throw out outliers
+        std::vector<tf::Pose> pose_no_outliers(poses.size());
+        for(int i = 0; i < poses.size(); i++) {
+            for(int j = 0; j < poses.size(); j++) {
+                if (j != i) {
+                    double distance = sqrt(pow((poses[i].getOrigin().getX()-poses[j].getOrigin().getX()),2));
+                }
+            }
+        }
 
-    for (int i = 0; i < poses.size(); i++) {
-        averagedVectors += poses[i].getOrigin();
-        quaternionMatrix(0, i) = poses[i].getRotation().getW();
-        quaternionMatrix(1, i) = poses[i].getRotation().getX();
-        quaternionMatrix(2, i) = poses[i].getRotation().getY();
-        quaternionMatrix(3, i) = poses[i].getRotation().getZ();
+        tf::Vector3 averagedVectors;
+        tf::Quaternion averagedQuaternions;
+        Eigen::Matrix4Xf quaternionMatrix;
+
+        for (int i = 0; i < poses.size(); i++) {
+            averagedVectors += poses[i].getOrigin();
+            quaternionMatrix(0, i) = poses[i].getRotation().getW();
+            quaternionMatrix(1, i) = poses[i].getRotation().getX();
+            quaternionMatrix(2, i) = poses[i].getRotation().getY();
+            quaternionMatrix(3, i) = poses[i].getRotation().getZ();
+        }
+        Eigen::EigenSolver<Eigen::Matrix4Xf> solver(quaternionMatrix, true);
+        return poses[0];
+    } else if (poses.size() == 1){
+        return poses[0];
     }
-
-    Eigen::EigenSolver<Eigen::Matrix4Xf> solver(quaternionMatrix, true);
-    return poses[0];
+    return tf::Pose::getIdentity();
 }
