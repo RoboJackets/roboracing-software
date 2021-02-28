@@ -77,7 +77,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
 
             // Target frame is rightmost digit + _april
             // eg: April tag id = 34, target frame is "4_april"
-            std::string april_link = std::to_string(tag.first % 10) + "_april";
+            std::string april_link = "april_" + std::to_string(tag.first % 10);
             tf::StampedTransform l_T_b;
             tf_listener.lookupTransform(april_link, "base_footprint", ros::Time(0), l_T_b);
 
@@ -127,15 +127,21 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
         opponent_cloud += (car_outline);
     }
 }
+
 const double pose_distance = 0.1;
 tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
     if (poses.size() > 1) {
         //throw out outliers
+        std::set<tf::Pose> visited;
         std::vector<tf::Pose> pose_no_outliers(poses.size());
-        for(int i = 0; i < poses.size(); i++) {
-            for(int j = 0; j < poses.size(); j++) {
+        for(int i = 0; i < poses.size() && pose_no_outliers.size() < poses.size(); i++) {
+            for(int j = 0; j < poses.size() && pose_no_outliers.size() < poses.size(); j++) {
                 if (j != i) {
                     double distance = sqrt(pow((poses[i].getOrigin().getX()-poses[j].getOrigin().getX()),2));
+                    if (distance > 0.1) {
+                        pose_no_outliers[i] = poses[i];
+                        pose_no_outliers[j] = poses[j];
+                    }
                 }
             }
         }
