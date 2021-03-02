@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rr_common/PathPlannerConfig.h>
+
 #include <rr_common/linear_tracking_filter.hpp>
 #include <tuple>
 
@@ -39,7 +41,7 @@ class BicycleModel {
      * @param dt input dt
      */
     void SetDynParam(double max_lateral_accel, int segment_size, double dt);
-    void GetDynParamDefaults(double max_lateral_accel, int segment_size, double dt);
+    void GetDynParamDefaults(rr_common::PathPlannerConfig& config);
 
   private:
     /**
