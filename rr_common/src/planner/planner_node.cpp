@@ -52,6 +52,10 @@ double steering_gain_;
 double total_planning_time;
 size_t total_plans;
 
+int n_control_points_ = 0;
+
+static bool firstLoop = true;
+
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
 
@@ -164,21 +168,43 @@ void processMap() {
 }
 
 void dynamic_callback(rr_common::PathPlannerConfig& config, uint32_t level) {
-    g_vehicle_model->SetDynParam(config.max_lateral_accel, config.segment_size, config.dt);
+    if (firstLoop) {
+        g_vehicle_model->GetDynParamDefaults(config.max_lateral_accel, config.segment_size, config.dt);
 
-    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, config.n_segments);
-    g_last_controls.setZero();
+        g_speed_model->GetDynParamDefaults(config.spf_val_max, config.spf_val_min, config.spf_rate_max,
+                                           config.spf_rate_min);
+        g_steer_model->GetDynParamDefaults(config.stf_val_max, config.stf_val_min, config.stf_rate_max,
+                                           config.stf_rate_min);
 
-    g_speed_model->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
-    g_steer_model->SetDynParam(config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
+        config.n_segments = n_control_points_;
+        config.k_map_cost = k_map_cost_;
+        config.k_speed = k_speed_;
+        config.k_steering = k_steering_;
+        config.k_angle = k_angle_;
+        config.collision_penalty = collision_penalty_;
+        config.steering_gain = steering_gain_;
+        ROS_INFO("\n\nCallback First Loop: %d \n\n", config.n_segments);
 
-    k_map_cost_ = config.k_map_cost;
-    k_speed_ = config.k_speed;
-    k_steering_ = config.k_steering;
-    k_angle_ = config.k_angle;
-    collision_penalty_ = config.collision_penalty;
-    steering_gain_ = config.steering_gain;
+    } else {
+        g_vehicle_model->SetDynParam(config.max_lateral_accel, config.segment_size, config.dt);
 
+        g_speed_model->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
+        g_steer_model->SetDynParam(config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
+
+        g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, config.n_segments);
+        g_last_controls.setZero();
+
+        k_map_cost_ = config.k_map_cost;
+        k_speed_ = config.k_speed;
+        k_steering_ = config.k_steering;
+        k_angle_ = config.k_angle;
+        collision_penalty_ = config.collision_penalty;
+        steering_gain_ = config.steering_gain;
+        ROS_INFO("\n\nCallback First Loop: %d \n\n", config.n_segments);
+    }
+
+    // ROS_INFO("\n\n Bicycle Model Values Callback: %f, %d, %f \n\n", config.max_lateral_accel,config.segment_size,
+    // config.dt);
     ROS_INFO("Dyn Reconf Updated");
 }
 
@@ -224,9 +250,8 @@ int main(int argc, char** argv) {
         ros::shutdown();
     }
 
-    int n_control_points = 0;
-    assertions::getParam(nhp, "n_segments", n_control_points);
-    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_control_points);
+    assertions::getParam(nhp, "n_segments", n_control_points_);
+    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_control_points_);
     g_last_controls.setZero();
 
     caution_duration = ros::Duration(assertions::param(nhp, "impasse_caution_duration", 0.0));
@@ -285,6 +310,7 @@ int main(int argc, char** argv) {
             double sec_avg = total_planning_time / total_plans;
             ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }
+        firstLoop = false;
     }
 
     return 0;

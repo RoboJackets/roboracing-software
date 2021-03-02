@@ -69,6 +69,13 @@ void BicycleModel::SetDynParam(double max_lateral_accel, int segment_size, doubl
     dt_ = dt;
 }
 
+void BicycleModel::GetDynParamDefaults(double max_lateral_accel, int segment_size, double dt) {
+    max_lateral_accel = max_lateral_accel_;
+    segment_size = segment_size_;
+    dt = dt_;
+    ROS_INFO("\n\n Bicycle Model Values: %f, %d, %f \n\n", max_lateral_accel, segment_size, dt);
+}
+
 void BicycleModel::StepKinematics(const PathPoint& prev, Pose& next) const {
     double deltaX, deltaY, deltaTheta;
     double distance_increment = prev.speed * dt_;

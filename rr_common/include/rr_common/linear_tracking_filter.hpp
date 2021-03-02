@@ -65,6 +65,13 @@ class LinearTrackingFilter {
         rate_min_ = rate_min;
     }
 
+    inline void GetDynParamDefaults(double val_max, double val_min, double rate_max, double rate_min) {
+        val_max = val_max_;
+        val_min = val_min_;
+        rate_max = rate_max_;
+        rate_min = rate_min_;
+    }
+
     inline void Update(double t) {
         if (last_update_ > 0) {
             double dt = t - last_update_;
