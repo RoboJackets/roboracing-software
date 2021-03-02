@@ -119,12 +119,13 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
         }
 
         tf::Pose pose = poseAverage(robot_pose);
-
-        pcl::PointCloud<pcl::PointXYZ> car_outline;
-        Eigen::Affine3d affine3d;
-        tf::transformTFToEigen(pose, affine3d);
-        pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
-        opponent_cloud += (car_outline);
+//        if (pose != tf::Pose::getIdentity()) {
+//            pcl::PointCloud<pcl::PointXYZ> car_outline;
+//            Eigen::Affine3d affine3d;
+//            tf::transformTFToEigen(pose, affine3d);
+//            pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+//            opponent_cloud += (car_outline);
+//        }
     }
 }
 
@@ -146,18 +147,18 @@ tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
             }
         }
 
-        tf::Vector3 averagedVectors;
-        tf::Quaternion averagedQuaternions;
-        Eigen::Matrix4Xf quaternionMatrix;
-
-        for (int i = 0; i < poses.size(); i++) {
-            averagedVectors += poses[i].getOrigin();
-            quaternionMatrix(0, i) = poses[i].getRotation().getW();
-            quaternionMatrix(1, i) = poses[i].getRotation().getX();
-            quaternionMatrix(2, i) = poses[i].getRotation().getY();
-            quaternionMatrix(3, i) = poses[i].getRotation().getZ();
-        }
-        Eigen::EigenSolver<Eigen::Matrix4Xf> solver(quaternionMatrix, true);
+//        tf::Vector3 averagedVectors;
+//        tf::Quaternion averagedQuaternions;
+//        Eigen::Matrix4Xf quaternionMatrix;
+//
+//        for (int i = 0; i < poses.size(); i++) {
+//            averagedVectors += poses[i].getOrigin();
+//            quaternionMatrix(0, i) = poses[i].getRotation().getW();
+//            quaternionMatrix(1, i) = poses[i].getRotation().getX();
+//            quaternionMatrix(2, i) = poses[i].getRotation().getY();
+//            quaternionMatrix(3, i) = poses[i].getRotation().getZ();
+//        }
+//        Eigen::EigenSolver<Eigen::Matrix4Xf> solver(quaternionMatrix, true);
         return poses[0];
     } else if (poses.size() == 1){
         return poses[0];
