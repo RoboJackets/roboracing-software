@@ -48,7 +48,7 @@ def make_request(traj_point, next_traj_point, model_name, time_warp):
 
 
 def main():
-    rospy.init_node("opponent_trajectory_controller")
+    rospy.init_node("opponent_trajectory_controller", anonymous=True)
 
     def handler(signum, frame):
         print("shutting down", rospy.get_name())
@@ -87,7 +87,7 @@ def main():
     for loop in itertools.count():
         for traj_point, next_traj_point in zip(trajectory_data[:-1], trajectory_data[1:]):
             t0 = traj_point[0]
-            next_update_time = start_delay + t0 + start_t - first_t + ((last_t - first_t) * loop)
+            next_update_time = start_delay + t0 + start_t - first_t + ((last_t - first_t) * loop) # could prob just make this longer over the course of a minute
             while (rospy.get_time() - start_t) * time_warp < next_update_time:
                 time.sleep(0.001)
 
