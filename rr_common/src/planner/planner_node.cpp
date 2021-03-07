@@ -69,7 +69,7 @@ void processMap() {
         rr::TrajectoryRollout rollout;
         g_vehicle_model->RollOutPath(controls, rollout);
         auto& path = rollout.path;
-        //add first point back onto the end so it's fully connected
+        // add first point back onto the end so it's fully connected
         path.push_back(path[0]);
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
         double global_path_costs = g_global_path_cost->CalculateCost(path, false);

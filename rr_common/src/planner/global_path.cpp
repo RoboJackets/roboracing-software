@@ -17,8 +17,7 @@
 
 namespace rr {
 
-GlobalPath::GlobalPath(ros::NodeHandle nh)
-      : has_global_path_(false), accepting_updates_(true), listener_(new tf::TransformListener) {
+GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), listener_(new tf::TransformListener) {
     std::string global_path_topic;
     assertions::getParam(nh, "global_path_topic", global_path_topic);
     assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
@@ -61,7 +60,6 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool 
     return dtw_val;
 }
 
-// follows the pseudocode found in https://en.wikipedia.org/wiki/Dynamic_time_warping
 std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Point> &sample_path) {
     // get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
@@ -95,6 +93,7 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     return global_segment;
 }
 
+// follows the pseudocode found in https://en.wikipedia.org/wiki/Dynamic_time_warping
 double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::vector<tf::Point> &path2, int w) {
     int n = path1.size();
     int m = path2.size();
@@ -106,7 +105,7 @@ double GlobalPath::dtw_distance(const std::vector<tf::Point> &path1, const std::
     for (int i = 1; i < n + 1; i++) {
         for (int j = std::max(1, i - w); j < std::min(m, i + w) + 1; j++) {
             double cost = tf::tfDistance(path1[i - 1], path2[j - 1]);
-            dtw[i][j] = cost + std::min({dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]});
+            dtw[i][j] = cost + std::min({ dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1] });
         }
     }
 
@@ -129,7 +128,6 @@ void GlobalPath::PreProcess() {
 
 void GlobalPath::LookupPathTransform() {
     if (has_global_path_) {
-        accepting_updates_ = false;
         try {
             listener_->waitForTransform(global_path_msg_.header.frame_id, robot_base_frame_, ros::Time(0),
                                         ros::Duration(.05));
@@ -138,7 +136,6 @@ void GlobalPath::LookupPathTransform() {
         } catch (tf::TransformException &ex) {
             ROS_ERROR_STREAM(ex.what());
         }
-        accepting_updates_ = true;
     }
 }
 
@@ -161,7 +158,6 @@ void GlobalPath::SetPathMessage(const nav_msgs::Path &global_path_msg) {
     std::vector<double> adj_dist = GlobalPath::adjacent_distances(global_path_);
     global_cum_dist_ = std::vector<double>(adj_dist.size());
     std::partial_sum(adj_dist.begin(), adj_dist.end(), global_cum_dist_.begin());
-    updated_ = true;
 }
 
 }  // namespace rr
