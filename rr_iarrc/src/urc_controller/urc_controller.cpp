@@ -61,7 +61,7 @@ void updateState() {
         default:
         {
             ROS_WARN("State machine defaulted");
-            state = WAITING_FOR_START;
+            state = LANE_KEEPING;
         }
     }
 }
