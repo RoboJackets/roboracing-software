@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <remap from="/plan/steering" to="/steering"/>
+    <remap from="/plan/speed" to="/speed"/>
+
+    <!-- Sides Merger-->
+    <include file="$(find rr_iarrc)/launch/perception/urc_sides_merger.launch"/>
+
+    <!-- Front -->
+    <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera_center"/>
+    </include>
+    <!-- Left -->
+    <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_left"/>
+    </include>
+    <!-- Right -->
+    <include file="$(find rr_iarrc)/launch/perception/laplacian_line_detector_side.launch">
+        <arg name="camera_namespace" value="camera_right"/>
+    </include>
+
+    <!-- Controller -->
+    <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
+        <param name="lane_keeper" type="string" value="/lane_keeper"/>
+        <param name="turning_action" type="string" value="/turning_action"/>
+        <param name="turn_detected" type="string" value="/turn_detected"/>
+        <param name="stop_bar_arrived" type="string" value="/stop_bar_arrived"/>
+        <param name="urc_turn_action" type="string" value="/urc_turn_action"/>
+    </node>
+
+    <!-- Center Line -->
+    <node name="drag_centerline_planner" pkg="rr_iarrc" type="drag_centerline_planner" output="screen">
+        <!--PID Controller Constants-->
+        <param name="PID_kP" type="double" value="0.001" />
+        <param name="PID_kI" type="double" value="0.0" />
+        <param name="PID_kD" type="double" value="0.0026" />
+
+        <param name="speed" type="double" value="0.75" /> <!-- 3.1-->
+
+        <param name="useHistogramFinder" type="bool" value="true" />
+
+        <param name="maxTurnLimitRadians" type="double" value="0.16" />
+
+        <param name="subscription_node" type="string" value="/urc_side_lanes"/>
+    </node>
+
+    <!-- Turn Action -->
+    <node name="urc_turn_action" pkg="rr_iarrc" type="urc_turn_action" output="screen">
+        <param name="turn_speed" type="double" value="0.6"/>
+        <param name="left_turn_steering" type="double" value="-0.15"/>
+        <param name="right_turn_steering" type="double" value="0.24"/>
+        <param name="left_offset" type="double" value="0.0"/>
+        <param name="right_offset" type="double" value="0.0"/>
+       	<param name="forward_timeout" type="double" value="4.0"/>
+        <param name="angle_threshold" type="double" value="0.1"/>
+    </node>
+
+</launch>
