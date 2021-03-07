@@ -1,12 +1,13 @@
 #include <ros/ros.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <rr_msgs/turning.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 
 #include <iostream>
 
-enum states { LANE_KEEPING, AT_STOP_BAR, TURNING, FINISHED } state;
+enum states { WAITING_FOR_START, LANE_KEEPING, AT_STOP_BAR, FINISHED } state;
 
 double laneKeepingSpeed;
 double laneKeepingSteering;
@@ -21,6 +22,7 @@ double steering;
 
 ros::Publisher steerPub;
 ros::Publisher speedPub;
+ros::ServiceClient turn_client;
 
 std::string lane_keeper;
 std::string turning_action;
@@ -31,37 +33,36 @@ std::string urc_turn_action;
 void updateState() {
     switch (state) {
         case LANE_KEEPING:
+        {
             speed = laneKeepingSpeed;
             steering = laneKeepingSteering;
             if (stopBarArrived) {
                 state = AT_STOP_BAR;
             }
             break;
+        }
         case AT_STOP_BAR:
+        {
             speed = 0;
             steering = 0;
 
-            state = TURNING;
-            ros::ServiceClient client = nh.serviceClient<rr_iarrc::urc_turn_action>(urc_turn_action);
-            rr_iarrc::urc_turn_action srv;
-            srv.request.sign = signDirection;
+            rr_msgs::turning srv;
+            srv.request.direction = signDirection;
 
-            if (client.call(srv)) {
+            // Turning
+            if (turn_client.call(srv)) {
                 // Service call finished
                 state = LANE_KEEPING;
             } else {
                 ROS_ERROR("Failed to call service");
-                return 1;
             }
-
             break;
-        case TURNING:
-            speed = turningSpeed;
-            steering = turningSteering;
-            break;
+        }
         default:
+        {
             ROS_WARN("State machine defaulted");
             state = WAITING_FOR_START;
+        }
     }
 }
 
@@ -107,6 +108,8 @@ int main(int argc, char **argv) {
     ros::Subscriber turningActionSteeringSub = nh.subscribe(turning_action + "/steering", 1, &turningActionSteeringCB);
     ros::Subscriber turnDetectedSub = nh.subscribe(turn_detected, 1, &turnDetectedCB);
     ros::Subscriber stopBarArrivedSum = nh.subscribe(stop_bar_arrived, 1, &stopBarArrivedCB);
+
+    turn_client = nh.serviceClient<rr_msgs::turning>(urc_turn_action);
 
     speedPub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
     steerPub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);

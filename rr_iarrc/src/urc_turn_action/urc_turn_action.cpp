@@ -33,18 +33,18 @@ void publishSpeedandSteering(double speed, double steering) {
     steerPub.publish(steerMsg);
 }
 
-void makeTurn(int turn_direction, double approach_angle) {
+void makeTurn(string turn_direction, double approach_angle) {
     ros::spinOnce();
     double initial_yaw = imu_yaw;
 
-    if (turn_direction == rr_msgs::turning::Request::LEFT) {
+    if (turn_direction == "LEFT") {
         double target_yaw = initial_yaw + approach_angle + .5 * M_PI + left_offset;
         while (abs(angles::shortest_angular_distance(target_yaw, imu_yaw)) > angle_threshold) {
             publishSpeedandSteering(turn_speed, left_turn_steering);
             ros::spinOnce();
             ros::Duration(0.01).sleep();
         }
-    } else if (turn_direction == rr_msgs::turning::Request::RIGHT) {
+    } else if (turn_direction == "RIGHT") {
         double target_yaw = initial_yaw + approach_angle - .5 * M_PI + right_offset;
 
         while (abs(angles::shortest_angular_distance(target_yaw, imu_yaw)) > angle_threshold) {
@@ -52,7 +52,7 @@ void makeTurn(int turn_direction, double approach_angle) {
             ros::spinOnce();
             ros::Duration(0.01).sleep();
         }
-    } else if (turn_direction == rr_msgs::turning::Request::STRAIGHT) {
+    } else if (turn_direction == "STRAIGHT") {
         ros::Time start_time = ros::Time::now();
         ros::Duration timeout(forward_timeout);  // Timeout of 2 seconds
 
