@@ -2,6 +2,7 @@
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
+#include <rr_msgs/speed.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/Image.h>
@@ -20,15 +21,22 @@ ros::Publisher pub_angle;
 std_msgs::Bool stop_bar_near;
 std_msgs::Float64 stop_bar_angle;
 
+
+
 double stopBarGoalAngle;
 double stopBarGoalAngleRange;
 double stopBarTriggerDistance;
-double stopBarTriggerDistanceRight;
 int houghThreshold;
 double houghMinLineLength;
 double houghMaxLineGap;
 int pixels_per_meter;
 
+double speed;
+double sleepConstant;
+
+cv::Mat kernel(int x, int y) {
+    return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
+}
 
 /*
  * Uses probablistic Hough to find line segments and determine if they are the
@@ -48,13 +56,14 @@ int pixels_per_meter;
  * line
  */
 bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, double stopBarGoalAngle,
-                         double stopBarGoalAngleRange, double triggerDistance, double triggerDistanceRight,
+                         double stopBarGoalAngleRange, double triggerDistance,
                          int threshold, double minLineLength, double maxLineGap) {
     cv::Mat edges;
     int ddepth = CV_8UC1;
     cv::Laplacian(frame, edges, ddepth);  // use edge to get better Hough results
     convertScaleAbs(edges, edges);
-    edges = frame;                                    //#TOOD: probably laplace then dilate.
+    edges = frame;
+    cv::dilate(edges, edges, kernel(4, 4));
     cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR);  // for debugging
 
     // Standard Hough Line Transform
@@ -79,22 +88,31 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
 
         if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
-            float dist = (edges.rows - midpoint.y) / pixels_per_meter;
+            float dist = static_cast<float>((edges.rows - midpoint.y))  / pixels_per_meter;
 
             if (dist <= triggerDistance) {
-                cv::Point midpoint = (p1 + p2) * 0.5;
+                // places circle in the center of the line and displays angle of line in debug image
                 cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
                 streamAngle << std::fixed << std::setprecision(2) << currAngle;  // show angle with a couple decimals
                 cv::putText(output, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
+                // draw line to stopbar in debug image and displays the distance in meters to it
+                cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
+                std::stringstream streamDist;
+                streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
+                cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2), cv::FONT_HERSHEY_PLAIN,
+                            1, cv::Scalar(0, 255, 0), 1);
+
                 stopBarAngle = currAngle;
+                double timeToStopBar = dist / speed - sleepConstant;
+                ros::Duration(timeToStopBar).sleep();
                 return true;  // stop bar detected close to us!
             }
         }
     }
 
-    return 0;  // not close enough or no stop bar here
+    return false;  // not close enough or no stop bar here
 }
 
 void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
@@ -103,17 +121,14 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat debug;
     double stopBarAngle;
     bool stopBarDetected = findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
-                                               stopBarTriggerDistance, stopBarTriggerDistanceRight, houghThreshold,
+                                               stopBarTriggerDistance,  houghThreshold,
                                                houghMinLineLength, houghMaxLineGap);
 
     // debugging draw a line where we trigger
-    cv::Point leftTriggerPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
-    cv::Point rightTriggerPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
-    cv::line(debug, leftTriggerPoint, rightTriggerPoint, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
+    cv::Point leftPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
+    cv::Point rightPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
+    cv::line(debug, leftPoint, rightPoint, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
 
-    cv::Point leftTriggerPoint2(0, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
-    cv::Point rightTriggerPoint2(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistanceRight * pixels_per_meter);
-    cv::line(debug, leftTriggerPoint2, rightTriggerPoint2, cv::Scalar(0, 150, 0), 1, cv::LINE_AA);
 
     stop_bar_near.data = stopBarDetected;
     if (stopBarDetected)
@@ -129,24 +144,33 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     }
 }
 
+void speed_callback(const rr_msgs::speed& speedMsg) {
+    speed = speedMsg.speed;
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "sign_detector");
 
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
+
     std::string overhead_image_sub;
     std::string stopbar_near_topic;
     std::string stopbar_angle_topic;
+    std::string speed_topic;
+
     nhp.param("stopbar_near", stopbar_near_topic, std::string("/stopbar_near"));
     nhp.param("stopbar_angle", stopbar_angle_topic, std::string("/stopbar_angle"));
+    nhp.param("sleep_adjust", sleepConstant, 1.0);
 
     nhp.param("overhead_image_subscription", overhead_image_sub, std::string("/lines/detection_img_transformed"));
+
+    nhp.param("speed_subscription", speed_topic, std::string("/speed"));
+
     nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);  // angle in degrees
     nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange,
               15.0);  // angle in degrees
     nhp.param("stopBarTriggerDistance", stopBarTriggerDistance,
-              0.5);  // distance in meters
-    nhp.param("stopBarTriggerDistanceRight", stopBarTriggerDistanceRight,
               0.5);  // distance in meters
     nhp.param("pixels_per_meter", pixels_per_meter, 100);
     nhp.param("houghThreshold", houghThreshold, 50);
@@ -157,6 +181,7 @@ int main(int argc, char** argv) {
                                                1);  // debug publish of image
     pub_near_stopbar = nhp.advertise<std_msgs::Bool>(stopbar_near_topic, 1);
     pub_angle = nhp.advertise<std_msgs::Float64>(stopbar_angle_topic, 1);
+    auto speed_sub = nhp.subscribe(speed_topic, 1, speed_callback);
     auto stopBar = nh.subscribe(overhead_image_sub, 1, stopBar_callback);
 
     ros::spin();
