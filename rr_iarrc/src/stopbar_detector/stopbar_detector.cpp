@@ -3,9 +3,9 @@
 #include <ros/publisher.h>
 #include <ros/ros.h>
 #include <rr_msgs/speed.h>
+#include <sensor_msgs/Image.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
-#include <sensor_msgs/Image.h>
 #include <stdlib.h>
 
 #include <opencv2/highgui/highgui.hpp>
@@ -20,8 +20,6 @@ ros::Publisher pub_angle;
 
 std_msgs::Bool stop_bar_near;
 std_msgs::Float64 stop_bar_angle;
-
-
 
 double stopBarGoalAngle;
 double stopBarGoalAngleRange;
@@ -56,8 +54,8 @@ cv::Mat kernel(int x, int y) {
  * line
  */
 bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, double stopBarGoalAngle,
-                         double stopBarGoalAngleRange, double triggerDistance,
-                         int threshold, double minLineLength, double maxLineGap) {
+                          double stopBarGoalAngleRange, double triggerDistance, int threshold, double minLineLength,
+                          double maxLineGap) {
     cv::Mat edges;
     int ddepth = CV_8UC1;
     cv::Laplacian(frame, edges, ddepth);  // use edge to get better Hough results
@@ -88,7 +86,7 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
 
         if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
-            float dist = static_cast<float>((edges.rows - midpoint.y))  / pixels_per_meter;
+            float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
 
             if (dist <= triggerDistance) {
                 // places circle in the center of the line and displays angle of line in debug image
@@ -101,8 +99,8 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
                 cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
                 std::stringstream streamDist;
                 streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
-                cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2), cv::FONT_HERSHEY_PLAIN,
-                            1, cv::Scalar(0, 255, 0), 1);
+                cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2),
+                            cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 stopBarAngle = currAngle;
                 double timeToStopBar = dist / speed - sleepConstant;
@@ -120,15 +118,14 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat frame = cv_ptrLine->image;
     cv::Mat debug;
     double stopBarAngle;
-    bool stopBarDetected = findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
-                                               stopBarTriggerDistance,  houghThreshold,
-                                               houghMinLineLength, houghMaxLineGap);
+    bool stopBarDetected =
+          findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
+                               stopBarTriggerDistance, houghThreshold, houghMinLineLength, houghMaxLineGap);
 
     // debugging draw a line where we trigger
     cv::Point leftPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
     cv::Point rightPoint(debug.cols - 1, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
     cv::line(debug, leftPoint, rightPoint, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
-
 
     stop_bar_near.data = stopBarDetected;
     if (stopBarDetected)
@@ -178,7 +175,7 @@ int main(int argc, char** argv) {
     nhp.param("houghMaxLineGap", houghMaxLineGap, 0.0);
 
     pub_line = nh.advertise<sensor_msgs::Image>("/stopbar_detector/stop_bar",
-                                               1);  // debug publish of image
+                                                1);  // debug publish of image
     pub_near_stopbar = nhp.advertise<std_msgs::Bool>(stopbar_near_topic, 1);
     pub_angle = nhp.advertise<std_msgs::Float64>(stopbar_angle_topic, 1);
     auto speed_sub = nhp.subscribe(speed_topic, 1, speed_callback);
