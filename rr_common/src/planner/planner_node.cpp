@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
+#include <rr_common/planning/cost_heuristic.h>
 #include <rr_common/planning/distance_map.h>
 #include <rr_common/planning/effector_tracker.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
@@ -23,11 +24,11 @@ std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
 std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
+std::unique_ptr<rr::CostHeuristic> g_cost_heuristic;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
 
-double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
@@ -101,26 +102,15 @@ void processMap() {
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         rr::TrajectoryRollout rollout;
         g_vehicle_model->RollOutPath(controls, rollout);
-        const auto& path = rollout.path;
+        std::vector<double> map_costs = g_map_cost_interface->DistanceCost(rollout.path);
+        double cost_total = 0;
 
-        std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
-        double cost = 0;
-        double inflator = 1;
-        double gamma = 1.01;
-        for (size_t i = 0; i < rollout.path.size(); ++i) {
-            cost *= gamma;
-            inflator *= gamma;
-            if (map_costs[i] >= 0) {
-                cost += k_map_cost_ * map_costs[i];
-                cost += k_speed_ * std::pow(max_speed - path[i].speed, 2);
-                cost += k_steering_ * std::abs(path[i].steer);
-                cost += k_angle_ * std::abs(path[i].pose.theta);
-            } else {
-                cost += collision_penalty_ * (path.size() - i);
-                break;
-            }
-        }
-        return cost / inflator;
+        cost_total += g_cost_heuristic->getMapCost(rollout, map_costs);
+        cost_total += g_cost_heuristic->getSpeedCost(rollout, max_speed);
+        cost_total += g_cost_heuristic->getSteeringCost(rollout);
+        cost_total += g_cost_heuristic->getAngleCost(rollout);
+
+        return cost_total;
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
@@ -192,12 +182,6 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
-    assertions::getParam(nhp, "k_map_cost", k_map_cost_);
-    assertions::getParam(nhp, "k_speed", k_speed_);
-    assertions::getParam(nhp, "k_steering", k_steering_);
-    assertions::getParam(nhp, "k_angle", k_angle_);
-    assertions::getParam(nhp, "collision_penalty", collision_penalty_);
-
     std::string map_type;
     assertions::getParam(nhp, "map_type", map_type);
     if (map_type == "obstacle_points") {
@@ -250,6 +234,8 @@ int main(int argc, char** argv) {
     update_messages(0, 0);
     g_effector_tracker =
           std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
+
+    g_cost_heuristic = std::make_unique<rr::CostHeuristic>(ros::NodeHandle(nhp, "cost_heuristic"));
 
     total_planning_time = 0;
     total_plans = 0;

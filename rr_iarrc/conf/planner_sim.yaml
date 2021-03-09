@@ -39,11 +39,12 @@ obstacle_points_map:
 
 steering_gain: 1.1
 
-k_map_cost: 1.0
-k_speed: 0.2
-k_steering: 0
-k_angle: 0.5
-collision_penalty: 1000
+cost_heuristic:
+    k_map_cost: 1.0
+    k_speed: 0.2
+    k_steering: 0
+    k_angle: 0.5
+    collision_penalty: 1000
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0

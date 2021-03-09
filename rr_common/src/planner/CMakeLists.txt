@@ -14,7 +14,10 @@ add_library(effector_tracker effector_tracker.cpp)
 target_link_libraries(effector_tracker ${catkin_LIBRARIES})
 add_dependencies(effector_tracker ${catkin_EXPORTED_TARGETS})
 
-set(planning_libs nearest_point_cache inflation_map distance_map bicycle_model effector_tracker)
+add_library(cost_heuristic cost_heuristic.cpp)
+target_link_libraries(cost_heuristic ${catkin_LIBRARIES})
+
+set(planning_libs nearest_point_cache inflation_map distance_map bicycle_model effector_tracker cost_heuristic)
 
 add_library(annealing_optimizer annealing_optimizer.cpp)
 target_link_libraries(annealing_optimizer ${catkin_LIBRARIES})
@@ -31,5 +34,6 @@ target_link_libraries(planner
         annealing_optimizer
         effector_tracker
         hill_climb_optimizer
+        cost_heuristic
         ${catkin_LIBRARIES})
 add_dependencies(planner ${catkin_EXPORTED_TARGETS})
