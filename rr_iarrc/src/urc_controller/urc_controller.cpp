@@ -38,6 +38,7 @@ void updateState() {
             steering = laneKeepingSteering;
             if (stopBarArrived) {
                 state = AT_STOP_BAR;
+                stopBarArrived = false;
             }
             break;
         }
@@ -110,6 +111,7 @@ int main(int argc, char **argv) {
     ros::Subscriber stopBarArrivedSum = nh.subscribe(stop_bar_arrived, 1, &stopBarArrivedCB);
 
     turn_client = nh.serviceClient<rr_msgs::turning>(urc_turn_action);
+    turn_client.waitForExistence();
 
     speedPub = nh.advertise<rr_msgs::speed>("/plan/speed", 1);
     steerPub = nh.advertise<rr_msgs::steering>("/plan/steering", 1);

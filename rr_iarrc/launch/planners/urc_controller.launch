@@ -25,7 +25,7 @@
         <param name="turning_action" type="string" value="/turning_action"/>
         <param name="turn_detected" type="string" value="/turn_detected"/>
         <param name="stop_bar_arrived" type="string" value="/stop_bar_arrived"/>
-        <param name="urc_turn_action" type="string" value="/urc_turn_action"/>
+        <param name="urc_turn_action" type="string" value="/turn_action"/>
     </node>
 
     <!-- Center Line -->
@@ -35,13 +35,15 @@
         <param name="PID_kI" type="double" value="0.0" />
         <param name="PID_kD" type="double" value="0.0026" />
 
-        <param name="speed" type="double" value="0.75" /> <!-- 3.1-->
+        <param name="speed" type="double" value="0.5" /> <!-- 3.1-->
 
         <param name="useHistogramFinder" type="bool" value="true" />
 
         <param name="maxTurnLimitRadians" type="double" value="0.16" />
 
         <param name="subscription_node" type="string" value="/urc_side_lanes"/>
+        <remap from="/plan/steering" to="/lane_keeper/steering"/>
+        <remap from="/plan/speed" to="/lane_keeper/speed"/>
     </node>
 
     <!-- Turn Action -->
@@ -53,6 +55,27 @@
         <param name="right_offset" type="double" value="0.0"/>
        	<param name="forward_timeout" type="double" value="4.0"/>
         <param name="angle_threshold" type="double" value="0.1"/>
+    </node>
+
+    <node name="sign_detector" pkg="rr_iarrc" type="sign_detector" output="screen" required="true">
+        <!-- Sign Detector Params -->
+        <param name="front_image_subscription" type="string" value="/camera_center/image_color_rect"/>
+        <param name="sign_string_publisher" type="string" value="/turn_detected"/>
+
+        <!--Crop Area for detecting signs (-1 keeps whole screen)-->
+        <param name="roi_x" type="int" value="600" />
+        <param name="roi_y" type="int" value="300" />
+        <param name="roi_width" type="int" value="680" />
+        <param name="roi_height" type="int" value="350" />
+
+        <param name="sign_file_package_name" type="string" value="rr_iarrc"/>
+        <param name="sign_file_path_from_package" type="string" value="/src/sign_detector/sign_forward.jpg"/>
+
+        <param name="template_confidence_threshold" type="double" value="0.8" />
+        <param name="scalars_start" type="double" value="0.3" />
+        <param name="scalars_end" type="double" value="1.2" />
+        <param name="scalars_num" type="int" value="5" />
+
     </node>
 
 </launch>
