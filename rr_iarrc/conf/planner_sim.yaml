@@ -37,7 +37,7 @@ obstacle_points_map:
         max_y: 0.15
 
 
-steering_gain: 1.1
+steering_gain: 1.5
 
 k_map_cost: 1.0
 k_speed: 0.2
