@@ -6,6 +6,7 @@
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -32,6 +33,7 @@ PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
 double speedGoal;
 bool useHistogramFinder;
+double lookAheadDistance;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
@@ -47,7 +49,7 @@ cv::Mat getColHist(cv::Mat img) {
 }
 
 // re-center around the average x coordinate of the line segment
-// returns true if he currCenter changed.
+// returns true if the currCenter changed.
 bool centerOnLineSegment(cv::Mat imGray, cv::Point& currCenter, cv::Point offset, int width, int height) {
     cv::Point topLeft = currCenter - offset;
     int sumX = 0;
@@ -177,7 +179,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::polylines(output, centerLane, false, cv::Scalar(255, 0, 0), 2);
 
     // find error, P term. Maybe add curvature and stuff
-    cv::Point goal = centerLane[centerLane.size() / 2];
+    cv::Point goal = centerLane[round((centerLane.size() - 1) * lookAheadDistance)];
     int error = (frame.cols / 2) - goal.x;
 
     // double steering = error * 0.01; //kP
@@ -225,6 +227,8 @@ int main(int argc, char** argv) {
 
     double maxTurnLimit;
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
+
+    nhp.param("lookAheadDistance", lookAheadDistance);
 
     // setup PID controllers
     myPID.SetTunings(kP, kI, kD);
