@@ -25,6 +25,12 @@ public:
                   double y_offset, double px_per_m, double width, double height, std::vector<april_robot> robots);
 
 private:
+    const std::string rear_april_tag = "april_4";
+    constexpr static const double pose_distance = 0.1;
+
+    std::vector<visualization_msgs::Marker> previous_marker;
+    std::vector<pcl::PointCloud<pcl::PointXYZ>> previous_outline;
+
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
     ros::Subscriber sub_detections; //Used to keep subscriber alive
