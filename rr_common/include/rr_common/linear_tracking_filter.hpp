@@ -2,7 +2,7 @@
 
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
-#include <rr_common/PathPlannerConfig.h>
+#include <rr_common/LinearTrackingConfig.h>
 
 namespace rr {
 
@@ -66,14 +66,14 @@ class LinearTrackingFilter {
         rate_min_ = rate_min;
     }
 
-    inline void GetDynParamDefaultsSpeed(rr_common::PathPlannerConfig& config) {
+    inline void GetDynParamDefaultsSpeed(rr_common::LinearTrackingConfig& config) {
         config.spf_val_max = val_max_;
         config.spf_val_min = val_min_;
         config.spf_rate_max = rate_max_;
         config.spf_rate_min = rate_min_;
     }
 
-    inline void GetDynParamDefaultsTurn(rr_common::PathPlannerConfig& config) {
+    inline void GetDynParamDefaultsTurn(rr_common::LinearTrackingConfig& config) {
         config.stf_val_max = val_max_;
         config.stf_val_min = val_min_;
         config.stf_rate_max = rate_max_;

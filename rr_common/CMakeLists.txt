@@ -27,6 +27,7 @@ find_package(OpenCV REQUIRED)
 
 generate_dynamic_reconfigure_options(
         cfg/planner_configuration.cfg
+        cfg/lin-tracking-reconf.cfg
 )
 
 ###################################
