@@ -1,7 +1,6 @@
 <launch>
     <node name="stopbar_detector" pkg="rr_iarrc" type="stopbar_detector" output="screen" required="true">
         <!-- Input and Output Topics -->
-        <param name="speed_subscription" type="string" value="/speed"/>
         <param name="stopbar_near" type="string" value="/stopbar_near"/>
         <param name="stopbar_angle" type="string" value="/stopbar_angle"/>
 
@@ -14,7 +13,7 @@
         <param name="houghThreshold" type="int" value="65" /> <!-- see opencv HoughLinesP for more info -->
         <param name="houghMinLineLength" type="double" value="50" />
         <param name="houghMaxLineGap" type="double" value="10" />
-        <param name="sleep_adjust" type="double" value="1.4"/>
+        <param name="sleep_adjust" type="double" value="3.25"/>
 
     </node>
 </launch>
