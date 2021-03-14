@@ -88,7 +88,7 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
             // get distance to the line
             float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
 
-            if (dist <= triggerDistance) {
+            if (dist <= triggerDistance && speed != 0) {
                 // places circle in the center of the line and displays angle of line in debug image
                 cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
