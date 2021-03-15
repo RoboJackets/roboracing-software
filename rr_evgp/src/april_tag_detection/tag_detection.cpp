@@ -63,15 +63,14 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
     // w := our base footprint (world), o := optical camera, a := april image, l := april link,
     // b := their base footprint
     // x_T_y := Transform from y to x
-
     tf::StampedTransform w_T_o;
+
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), w_T_o);
     for (const auto &robot : *real_tags) {
         if (!robot.empty()) {
             tf::Pose robot_pose;
             std::vector<tf::Pose> robot_pose_vector(robot.size());
             int num = robot[0].first / 10;
-            ROS_INFO_STREAM(" 3");
             int index = 0;
             for (const auto &tag : robot) {
                 tf::Pose o_T_a;
@@ -107,46 +106,28 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                                            << " " << robot_pose.getOrigin().getY() << " "
                                            << robot_pose.getOrigin().getZ());
 
-//            // Just to viz points for debugging
-//            visualization_msgs::Marker marker;
-//            marker.header.frame_id = "base_footprint";
-//            marker.header.stamp = ros::Time();
-//            marker.ns = "";
-//            marker.id = 1;
-//            marker.type = visualization_msgs::Marker::SPHERE;
-//            marker.action = visualization_msgs::Marker::ADD;
-//            marker.pose.position.x = robot_pose.getOrigin().getX();
-//            marker.pose.position.y = robot_pose.getOrigin().getY();
-//            marker.pose.position.z = 0;
-//            marker.pose.orientation.x = 0.0;
-//            marker.pose.orientation.y = 0.0;
-//            marker.pose.orientation.z = 0.0;
-//            marker.pose.orientation.w = 1.0;
-//            marker.scale.x = 0.1;
-//            marker.scale.y = 0.1;
-//            marker.scale.z = 0.1;
-//            marker.color.a = 1.0;
-//            marker.color.g = 1.0;
-//            pub_markers.publish(marker);
-                // Update point cloud for the tag
-                pcl::PointCloud<pcl::PointXYZ> car_outline;
-                Eigen::Affine3d affine3d;
-                tf::transformTFToEigen(robot_pose, affine3d);
-                pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+                // Necessary for pointcloud to generate
+//                pcl::PointCloud<pcl::PointXYZ> car_outline;
+//                Eigen::Affine3d affine3d;
+//                tf::transformTFToEigen(robot_pose, affine3d);
+//                pcl::transformPointCloud(pcl_outline, car_outline, affine3d);
+//                opponent_cloud += car_outline;
 
                 index++;
             }
 
             tf::Pose robot_pose_av = poseAverage(robot_pose_vector);
             if (robot_pose_av.getOrigin().getX() != 0) {
+                ROS_INFO_STREAM(num);
                 ROS_INFO_STREAM(
                         "Average" << " " << robot_pose_av.getOrigin().getX() << " " << robot_pose_av.getOrigin().getY()
                                   << " " << robot_pose_av.getOrigin().getZ());
+
                 visualization_msgs::Marker marker;
                 marker.header.frame_id = "april_4";
                 marker.header.stamp = ros::Time();
                 marker.ns = "";
-                marker.id = 2;
+                marker.id = num;
                 marker.type = visualization_msgs::Marker::SPHERE;
                 marker.action = visualization_msgs::Marker::ADD;
                 marker.pose.position.x = robot_pose_av.getOrigin().getX();
@@ -172,7 +153,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                 previous_outline[num] = car_outline;
             } else {
                 pub_markers.publish(previous_marker[num]);
-                opponent_cloud = previous_outline[num];
+                opponent_cloud += previous_outline[num];
             }
         }
     }
@@ -210,8 +191,8 @@ tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
             for (tf::Pose pose : pose_no_outliers) {
                 ROS_INFO_STREAM("out" << " " << pose.getOrigin().getX() << " " << pose.getOrigin().getY()
                                        << " " << pose.getOrigin().getZ());
-                result.getOrigin().setX(result.getOrigin().getX() + pose.getOrigin().getX() / poses.size());
-                result.getOrigin().setY(result.getOrigin().getY() + pose.getOrigin().getY() / poses.size());
+                result.getOrigin().setX(result.getOrigin().getX() + pose.getOrigin().getX() / pose_no_outliers.size());
+                result.getOrigin().setY(result.getOrigin().getY() + pose.getOrigin().getY() / pose_no_outliers.size());
             }
 
             //just take the orientation of one of them, no averaging here
