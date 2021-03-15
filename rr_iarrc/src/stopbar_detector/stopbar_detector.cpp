@@ -28,9 +28,9 @@ int houghThreshold;
 double houghMinLineLength;
 double houghMaxLineGap;
 int pixels_per_meter;
+double sleepConstant;
 
 double speed;
-double sleepConstant;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
@@ -61,7 +61,7 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
     cv::Laplacian(frame, edges, ddepth);  // use edge to get better Hough results
     convertScaleAbs(edges, edges);
     edges = frame;
-    cv::dilate(edges, edges, kernel(4, 4));
+    cv::dilate(edges, edges, kernel(4, 4));           // clearer debug image and slightly better detection
     cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR);  // for debugging
 
     // Standard Hough Line Transform
@@ -86,9 +86,9 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
 
         if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
-            float dist = static_cast<float>((edges.rows - midpoint.y)) / pixels_per_meter;
+            float dist = static_cast<float>(edges.rows - midpoint.y) / pixels_per_meter;
 
-            if (dist <= triggerDistance && speed != 0) {
+            if (dist <= triggerDistance) {
                 // places circle in the center of the line and displays angle of line in debug image
                 cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
@@ -103,8 +103,10 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
                             cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 stopBarAngle = currAngle;
-                double timeToStopBar = dist / speed - sleepConstant;
-                ros::Duration(timeToStopBar).sleep();
+                if (speed != 0) {
+                    double timeToStopBar = (dist / speed) * sleepConstant;
+                    ros::Duration(timeToStopBar).sleep();
+                }
                 return true;  // stop bar detected close to us!
             }
         }
@@ -164,11 +166,9 @@ int main(int argc, char** argv) {
 
     nhp.param("speed_subscription", speed_topic, std::string("/speed"));
 
-    nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);  // angle in degrees
-    nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange,
-              15.0);  // angle in degrees
-    nhp.param("stopBarTriggerDistance", stopBarTriggerDistance,
-              0.5);  // distance in meters
+    nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);              // angle in degrees
+    nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange, 15.0);   // angle in degrees
+    nhp.param("stopBarTriggerDistance", stopBarTriggerDistance, 0.5);  // distance in meters
     nhp.param("pixels_per_meter", pixels_per_meter, 100);
     nhp.param("houghThreshold", houghThreshold, 50);
     nhp.param("houghMinLineLength", houghMinLineLength, 0.0);
