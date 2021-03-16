@@ -63,7 +63,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
     for (const auto &robot : *real_tags) {
         if (!robot.empty()) {
             std::vector<tf::Pose> robot_pose_vector(robot.size());
-            int robot_num = robot[0].first / 10; // Get id of robot
+            int robot_num = robot[0].first / 10;  // Get id of robot
             tf::Pose robot_pose;
             int index = 0;
             for (const auto &tag : robot) {
@@ -79,7 +79,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                 std::string april_link = "april_" + std::to_string(tag.first % 10);
                 tf::StampedTransform l_T_b;
 
-                //Use back of the car for a simple transform
+                // Use back of the car for a simple transform
                 tf_listener.lookupTransform(april_link, "april_4", ros::Time(0), l_T_b);
 
                 // Update location
@@ -237,12 +237,8 @@ tf::Quaternion tag_detection::getAverageQuaternion(std::vector<tf::Quaternion> &
     // Get corresponding Eigenvector, normalize it and return it as the average quat
     auto eigenvector = es.eigenvectors().col(max_idx).normalized();
 
-    tf::Quaternion mean_orientation(
-            eigenvector[0].real(),
-            eigenvector[1].real(),
-            eigenvector[2].real(),
-            eigenvector[3].real()
-    );
+    tf::Quaternion mean_orientation(eigenvector[0].real(), eigenvector[1].real(), eigenvector[2].real(),
+                                    eigenvector[3].real());
 
     return mean_orientation;
 }

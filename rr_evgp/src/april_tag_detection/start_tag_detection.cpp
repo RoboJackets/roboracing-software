@@ -20,8 +20,7 @@ int main(int argc, char **argv) {
     nhp.getParam("height", height);
     nhp.getParam("tags", tags);
     tag_detection tagDetection(&nh, camera_frame, pointcloud, tag_detections_topic, destination_frame,
-                               tag_detection_markers, x_offset,
-                               y_offset, px_per_m, width, height);
+                               tag_detection_markers, x_offset, y_offset, px_per_m, width, height);
 
     ros::spin();
     return 0;

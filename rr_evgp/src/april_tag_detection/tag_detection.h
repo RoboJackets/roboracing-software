@@ -17,13 +17,13 @@
 #include <utility>
 
 class tag_detection {
-public:
+  public:
     tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic, const std::string &destination_frame,
-                  const std::string &tag_detection_markers, double x_offset,
-                  double y_offset, double px_per_m, double width, double height);
+                  const std::string &tag_detection_markers, double x_offset, double y_offset, double px_per_m,
+                  double width, double height);
 
-private:
+  private:
     const std::string rear_april_tag = "april_4";
     constexpr static const double pose_distance = 0.1;
 
@@ -32,16 +32,16 @@ private:
 
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
-    ros::Subscriber sub_detections; //Used to keep subscriber alive
+    ros::Subscriber sub_detections;  // Used to keep subscriber alive
     tf::StampedTransform camera_w;
     pcl::PointCloud<pcl::PointXYZ> pcl_outline;
 
     tf::TransformListener tf_listener;
-    std::vector<std::array<int, 3>> colors{{255, 0,   0},
-                                           {255, 127, 0},
-                                           {0,   255, 215},
-                                           {126, 0,   255},
-                                           {0,   0,   255}};
+    std::vector<std::array<int, 3>> colors{ { 255, 0, 0 },
+                                            { 255, 127, 0 },
+                                            { 0, 255, 215 },
+                                            { 126, 0, 255 },
+                                            { 0, 0, 255 } };
 
     pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame, destination_frame;
@@ -55,6 +55,5 @@ private:
 
     static tf::Pose poseAverage(std::vector<tf::Pose> poses);
 
-    static tf::Quaternion
-    getAverageQuaternion(std::vector<tf::Quaternion> &quaternions, std::vector<double> &weights);
+    static tf::Quaternion getAverageQuaternion(std::vector<tf::Quaternion> &quaternions, std::vector<double> &weights);
 };
