@@ -93,9 +93,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                 robot_pose = p_w * random_T;
                 robot_pose_vector[index] = robot_pose;
 
-                ROS_INFO_STREAM(robot_pose.getOrigin().getX());
-
-                // Just to viz points for debugging (without them, accuracy is greatly reduced)
+                // Just to viz points for debugging (without them, only one car is rendered also however)
                 visualization_msgs::Marker marker;
                 marker.header.frame_id = "april_4";
                 marker.header.stamp = ros::Time();
@@ -132,7 +130,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             opponent_cloud += (car_outline);
 
             visualization_msgs::Marker marker;
-            marker.header.frame_id = "april_4";
+            marker.header.frame_id = "base_footprint";
             marker.header.stamp = ros::Time();
             marker.ns = "";
             marker.id = robot_num;
@@ -149,13 +147,11 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             marker.scale.y = 0.1;
             marker.scale.z = 0.1;
             marker.color.a = 1.0;
-            marker.color.r = 1.0;
+            marker.color.b = 1.0;
             pub_markers.publish(marker);
         }
     }
 }
-
-const double pose_distance = 0.5;
 
 tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
     if (poses.size() > 1) {
@@ -174,7 +170,6 @@ tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
                 }
             }
         }
-
         if (!pose_no_outliers.empty()) {
             tf::Pose result;
             result.getOrigin().setX(0);
@@ -185,9 +180,15 @@ tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
             std::vector<tf::Quaternion> quaternions;
 
             for (tf::Pose pose : pose_no_outliers) {
-                quaternions.push_back(pose.getRotation());
-                result.getOrigin().setX(result.getOrigin().getX() + pose.getOrigin().getX() / poses.size());
-                result.getOrigin().setY(result.getOrigin().getY() + pose.getOrigin().getY() / poses.size());
+                tf::Quaternion qt;
+                qt = pose.getRotation();
+                tf::Matrix3x3 mat(qt);
+                double roll, pitch, yaw;
+                mat.getRPY(roll, pitch, yaw);
+                qt.setRPY(0, 0, yaw);  // disregard rotation up and down since car should be flat on the ground!
+                quaternions.push_back(qt);
+                result.getOrigin().setX(result.getOrigin().getX() + pose.getOrigin().getX() / pose_no_outliers.size());
+                result.getOrigin().setY(result.getOrigin().getY() + pose.getOrigin().getY() / pose_no_outliers.size());
             }
 
             std::vector<double> weights(quaternions.size(), 1);
@@ -196,11 +197,18 @@ tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {
 
             return result;
         } else {
-            return poses[0];
+            tf::Pose result;
+            result.getOrigin().setX(poses[0].getOrigin().getX());
+            result.getOrigin().setY(poses[0].getOrigin().getY());
+            result.getOrigin().setZ(0);
+            return result;
         }
-
     } else if (poses.size() == 1) {
-        return poses[0];
+        tf::Pose result;
+        result.getOrigin().setX(poses[0].getOrigin().getX());
+        result.getOrigin().setY(poses[0].getOrigin().getY());
+        result.getOrigin().setZ(0);
+        return result;
     }
     return tf::Pose::getIdentity();
 }
