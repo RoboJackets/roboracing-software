@@ -96,6 +96,25 @@ void publish_path_viz(const std::vector<rr::PathPoint>& path_rollout) {
     viz_pub.publish(line_strip);
 }
 
+std::vector<double> getDiagnostics(const rr::Controls<ctrl_dim>& controls) {
+    rr::TrajectoryRollout rollout;
+    auto max_speed = g_speed_model->GetValMax();
+    g_vehicle_model->RollOutPath(controls, rollout);
+    std::vector<double> map_costs = g_map_cost_interface->DistanceCost(rollout.path);
+    std::vector<double> cost_vector;
+
+    cost_vector.push_back(g_cost_heuristic->getMapCost(rollout, map_costs));
+    cost_vector.push_back(g_cost_heuristic->getSpeedCost(rollout, max_speed));
+    cost_vector.push_back(g_cost_heuristic->getSteeringCost(rollout));
+    cost_vector.push_back(g_cost_heuristic->getAngleCost(rollout));
+
+    for (int i = 0; i < cost_vector.size(); i++) {
+        cost_vector[i] /= std::accumulate(cost_vector.begin(), cost_vector.end(), 0);
+    }
+
+    return cost_vector;
+}
+
 void processMap() {
     auto max_speed = g_speed_model->GetValMax();
 
@@ -119,6 +138,7 @@ void processMap() {
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
     plan.cost = cost_fn(controls);
+    std::vector<double> cost_diagnostics = getDiagnostics(controls);
 
     g_vehicle_model->RollOutPath(controls, plan.rollout);
     std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.rollout.path);
@@ -128,6 +148,8 @@ void processMap() {
     g_last_controls = controls;
 
     ROS_INFO_STREAM("Best path cost is " << plan.cost << ", collision = " << plan.has_collision);
+    ROS_INFO_STREAM("Map/Collision: " << cost_diagnostics[0] << ", Speed: " << cost_diagnostics[1] <<
+                    ", Steering: " << cost_diagnostics[2] << ", Angle: "<< cost_diagnostics[3]);
 
     // update impasse state machine
     auto now = ros::Time::now();

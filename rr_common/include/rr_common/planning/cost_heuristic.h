@@ -23,10 +23,6 @@ class CostHeuristic {
     double getSpeedCost(const rr::TrajectoryRollout& rollout, double max_speed);
     double getSteeringCost(const rr::TrajectoryRollout& rollout);
     double getAngleCost(const rr::TrajectoryRollout& rollout);
-    std::vector<double> getDiagnostics(const rr::Controls<1>& controls,
-                                                      rr::BicycleModel* g_vehicle_model,
-                                                      rr::MapCostInterface* g_map_cost_interface,
-                                                      rr::LinearTrackingFilter* g_speed_model);
 
   private:
     double k_map_cost_;

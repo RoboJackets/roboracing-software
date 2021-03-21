@@ -51,26 +51,4 @@ double CostHeuristic::getAngleCost(const rr::TrajectoryRollout& rollout) {
     return angle_cost;
 }
 
-std::vector<double> CostHeuristic::getDiagnostics(const rr::Controls<1>& controls,
-                                                  rr::BicycleModel* g_vehicle_model,
-                                                  rr::MapCostInterface* g_map_cost_interface,
-                                                  rr::LinearTrackingFilter* g_speed_model) {
-    rr::TrajectoryRollout rollout;
-    g_vehicle_model->RollOutPath(controls, rollout);
-    auto max_speed = g_speed_model->GetValMax();
-    std::vector<double> map_costs = g_map_cost_interface->DistanceCost(rollout.path);
-    std::vector<double> cost_vector;
-
-    cost_vector.push_back(getMapCost(rollout, map_costs));
-    cost_vector.push_back(getSpeedCost(rollout, max_speed));
-    cost_vector.push_back(getSteeringCost(rollout));
-    cost_vector.push_back(getAngleCost(rollout));
-
-    for (int i = 0; i < cost_vector.size(); i++) {
-        cost_vector[i] /= std::accumulate(cost_vector.begin(), cost_vector.end(), 0);
-    }
-
-    return cost_vector;
-}
-
 }  // namespace rr
