@@ -57,6 +57,7 @@ k_speed: 0.05
 k_steering: 0.01
 k_angle: 0
 k_global_path_cost: 5
+k_path_progress_cost: 100
 collision_penalty: 10000
 
 global_path_cost:
