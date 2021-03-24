@@ -52,12 +52,12 @@ distance_map:
         max_y: 0.7
     cost_scaling_factor: 5
     lethal_wall_inflation: .3
-    nonlethal_wall_inflation: .5
+    nonlethal_wall_inflation: .6
 
 steering_gain: 1.4
 viz_path_scale: .5
 
-k_map_cost: 100
+k_map_cost: 30
 k_speed: 2
 k_steering: 0.01
 k_angle: 0
