@@ -57,7 +57,7 @@ distance_map:
 steering_gain: 1.4
 viz_path_scale: .5
 
-k_map_cost: 30
+k_map_cost: 20
 k_speed: 2
 k_steering: 0.01
 k_angle: 0
