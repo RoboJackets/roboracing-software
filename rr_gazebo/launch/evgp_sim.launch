@@ -17,7 +17,7 @@
           args="-e ode $(arg world)" required="true"/>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
-<!--
+
     <include file="$(find rr_platform)/launch/evgp_state_publisher.launch"/>
 
     <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
@@ -52,5 +52,5 @@
 
     <node pkg="dynamic_reconfigure" type="dynparam" name="load_gz_physics_params" required="false" output="screen"
           args="load /gazebo $(find rr_gazebo)/config/evgp_gazebo_dynconf.yaml"/>
--->
+
 </launch>
