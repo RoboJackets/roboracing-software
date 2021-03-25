@@ -17,7 +17,7 @@
 
 #include <rr_common/linear_tracking_filter.hpp>
 
-constexpr int ctrl_dim = 1;
+constexpr int ctrl_dim = 2;
 
 std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
@@ -41,11 +41,13 @@ enum reverse_state_t { OK, CAUTION, REVERSE };
 
 ros::Duration caution_duration;
 ros::Duration reverse_duration;
+double reverse_speed;
 ros::Time caution_start_time;
 ros::Time reverse_start_time;
 reverse_state_t reverse_state;
 
 double steering_gain;
+double viz_path_scale;
 
 double total_planning_time;
 size_t total_plans;
@@ -63,7 +65,7 @@ void update_messages(double speed, double angle) {
 void publish_path_viz(const std::vector<rr::PathPoint>& path_rollout) {
     visualization_msgs::Marker line_strip;
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
-    line_strip.scale.x = 1;
+    line_strip.scale.x = viz_path_scale;
     line_strip.id = 374;  // Unique ID (from issue number)
     line_strip.pose.orientation.x = 0;
     line_strip.pose.orientation.y = 0;
@@ -95,7 +97,7 @@ void publish_path_viz(const std::vector<rr::PathPoint>& path_rollout) {
     viz_pub.publish(line_strip);
 }
 
-void processMap() {
+void generatePath() {
     auto max_speed = g_speed_model->GetValMax();
 
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
@@ -124,7 +126,8 @@ void processMap() {
     };
 
     rr::Matrix<ctrl_dim, 2> ctrl_limits;
-    ctrl_limits << g_steer_model->GetValMin(), g_steer_model->GetValMax();
+    ctrl_limits.row(0) << g_steer_model->GetValMin(), g_steer_model->GetValMax();
+    ctrl_limits.row(1) << g_speed_model->GetValMin(), g_speed_model->GetValMax();
 
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
@@ -169,7 +172,7 @@ void processMap() {
     }
 
     if (REVERSE == reverse_state) {
-        update_messages(-0.8, 0);
+        update_messages(reverse_speed, 0);
         ROS_WARN_STREAM("Planner reversing");
     } else if (plan.has_collision) {
         ROS_WARN_STREAM("Planner: no path found but not reversing; reusing previous message");
@@ -235,11 +238,13 @@ int main(int argc, char** argv) {
 
     caution_duration = ros::Duration(assertions::param(nhp, "impasse_caution_duration", 0.0));
     reverse_duration = ros::Duration(assertions::param(nhp, "impasse_reverse_duration", 0.0));
+    reverse_speed = assertions::param(nhp, "impasse_reverse_speed", -0.8);
     caution_start_time = ros::Time(0);
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
 
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
+    assertions::getParam(nhp, "viz_path_scale", viz_path_scale);
 
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
@@ -272,10 +277,8 @@ int main(int argc, char** argv) {
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
 
-            g_map_cost_interface->StopUpdates();
-            processMap();
+            generatePath();
             g_map_cost_interface->SetMapStale();
-            g_map_cost_interface->StartUpdates();
 
             double seconds = (ros::WallTime::now() - start).toSec();
             total_planning_time += seconds;

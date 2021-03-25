@@ -24,7 +24,7 @@ costmap:
             observation_persistence: 0.0
             marking: true
             clearing: true
-            obstacle_range: 50.0  
+            obstacle_range: 50.0
             raytrace_range: 49.0
             max_obstacle_height: 100
             min_obstacle_height: -100
