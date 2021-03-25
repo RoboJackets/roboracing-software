@@ -48,8 +48,9 @@ distance_map:
         origin_theta: 0
         min_x: -0.2
         max_x: 1.6
-        min_y: -0.7
-        max_y: 0.7
+
+        min_y: -0.8
+        max_y: 0.8
     cost_scaling_factor: 5
     lethal_wall_inflation: .3
     nonlethal_wall_inflation: .6
@@ -72,7 +73,7 @@ hill_climb_optimizer:
     num_workers: 5
     num_restarts: 5
     neighbor_stddev: [0.015, 1]
-    local_optimum_tries: 60
+    local_optimum_tries: 30
 
 effector_tracker:
     speed:

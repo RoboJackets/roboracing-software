@@ -17,19 +17,23 @@
         </include>
         <include>
             <uri>model://ground_plane</uri>
+            <name>ground_plane0</name>
             <pose>0 20 0 0 0 0 0</pose>
         </include>
         <include>
             <uri>model://ground_plane</uri>
+            <name>ground_plane1</name>
             <pose>50 20 0 0 0 0 0</pose>
+            
         </include>
-	<include>
+	    <include>
             <uri>model://ground_plane</uri>
+            <name>ground_plane2</name>
             <pose>100 20 0 0 0 0 0</pose>
         </include>
         <include>
             <uri>model://EVGPTrack2</uri>
-	    <pose>-50 70 0 0 0 0</pose>
+	        <pose>-50 70 0 0 0 0</pose>
         </include>
     </world>
 </sdf>

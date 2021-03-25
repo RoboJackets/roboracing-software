@@ -19,7 +19,7 @@ def smallest_angle(a0, a1):
     return min([a1 - a0, a1 - a0 - 2 * math.pi, a1 - a0 + 2 * math.pi], key=abs)
 
 
-def make_request(traj_point, next_traj_point, model_name, time_warp):
+def make_request(traj_point, next_traj_point, model_name, time_warp, z_offset):
     t1, x1, y1, z1, q01, q11, q21, q31 = next_traj_point
     t0, x0, y0, z0, q00, q10, q20, q30 = traj_point
 
@@ -28,7 +28,7 @@ def make_request(traj_point, next_traj_point, model_name, time_warp):
     request.model_state.reference_frame = "world"
     request.model_state.pose.position.x = x0
     request.model_state.pose.position.y = y0
-    request.model_state.pose.position.z = z0
+    request.model_state.pose.position.z = z0 + z_offset
     request.model_state.pose.orientation.x = q00
     request.model_state.pose.orientation.y = q10
     request.model_state.pose.orientation.z = q20
@@ -41,8 +41,8 @@ def make_request(traj_point, next_traj_point, model_name, time_warp):
     request.model_state.twist.linear.y = (y1 - y0) / dt
     request.model_state.twist.linear.z = (z1 - z0) / dt
     request.model_state.twist.angular.x = smallest_angle(R0, R1) / dt
-    request.model_state.twist.angular.x = smallest_angle(P0, P1) / dt
-    request.model_state.twist.angular.x = smallest_angle(Y0, Y1) / dt
+    request.model_state.twist.angular.y = smallest_angle(P0, P1) / dt
+    request.model_state.twist.angular.z = smallest_angle(Y0, Y1) / dt
 
     return request
 
@@ -60,6 +60,7 @@ def main():
     model_name = rospy.get_param("~model_name")
     time_warp = rospy.get_param("~time_warp", 1.0)
     start_delay = rospy.get_param("~start_delay", 0.0)
+    z_offset = rospy.get_param("~z_offset", 0.0)  # Added later, Sometimes model are too low
 
     with open(in_csv) as f:
         reader = csv.reader(f, dialect='excel')
@@ -73,7 +74,7 @@ def main():
 
     success = False
     while not success:  # it's that easy
-        res = set_model_state(make_request(trajectory_data[0], trajectory_data[1], model_name, 1e-30))
+        res = set_model_state(make_request(trajectory_data[0], trajectory_data[1], model_name, 1e-30, z_offset))
         success = res.success
         time.sleep(0.1)
 
@@ -91,7 +92,7 @@ def main():
             while (rospy.get_time() - start_t) * time_warp < next_update_time:
                 time.sleep(0.001)
 
-            set_model_state(make_request(traj_point, next_traj_point, model_name, time_warp))
+            set_model_state(make_request(traj_point, next_traj_point, model_name, time_warp, z_offset))
 
 
 if __name__ == '__main__':

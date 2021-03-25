@@ -16,4 +16,9 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>xacro</build_depend>
+  <depend>gazebo_ros</depend>
+  <export>
+    <gazebo_ros gazebo_media_path="${prefix}"/>
+  </export>
+
 </package>

@@ -1,5 +1,6 @@
 <launch>
-    <param name="robot_description" command="cat $(find rr_description)/urdf/evgp.urdf"/>
+    <arg name="model_type" default="evgp"/>
+    <param name="robot_description" command="cat $(find rr_description)/urdf/$(arg model_type).urdf"/>
     <node name="evgp_state_publisher" pkg ="robot_state_publisher" type="robot_state_publisher"/>
 
     <node name="tf_pub_left_wheel" pkg="tf2_ros" type="static_transform_publisher" output="screen" required="false"

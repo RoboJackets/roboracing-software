@@ -6,9 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /Path1
       Splitter Ratio: 0.5
-    Tree Height: 1664
+    Tree Height: 490
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -27,7 +26,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: PointCloud2
   - Class: rviz/Help
     Name: Help
 Preferences:
@@ -55,74 +54,6 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 0.13157415390014648
-        Min Value: -12.11644172668457
-        Value: true
-      Axis: X
-      Channel Name: intensity
-      Class: rviz/PointCloud2
-      Color: 245; 121; 0
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: false
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: Detection
-      Position Transformer: XYZ
-      Queue Size: 1
-      Selectable: false
-      Size (Pixels): 4
-      Size (m): 0.30000001192092896
-      Style: Points
-      Topic: /scan/pointcloud
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: false
-      Value: false
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: -9999
-        Min Value: 9999
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: false
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: Map
-      Position Transformer: XYZ
-      Queue Size: 2
-      Selectable: false
-      Size (Pixels): 2
-      Size (m): 0.029999999329447746
-      Style: Flat Squares
-      Topic: /local_map
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: false
-    - Alpha: 1
-      Class: rviz/Axes
-      Enabled: false
-      Length: 1
-      Name: Axes
-      Radius: 0.10000000149011612
-      Reference Frame: <Fixed Frame>
-      Value: false
     - Class: rviz/TF
       Enabled: false
       Frame Timeout: 15
@@ -138,30 +69,6 @@ Visualization Manager:
         {}
       Update Interval: 0
       Value: false
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
-      Enabled: false
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.20000000298023224
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: pose_history
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: Axes
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /pose_history
-      Unreliable: true
-      Value: false
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
@@ -173,19 +80,17 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
-        "": true
-        Axes: true
-        Detection: true
+        Collision Check: true
+        Footprint: true
         Global Map: true
         Grid: true
         Local Map: true
         Map: true
         Path: true
-        Polygon: true
+        PointCloud2: true
         RobotModel: true
         TF: true
         Value: true
-        pose_history: true
       Zoom Factor: 1
     - Alpha: 1
       Class: rviz/RobotModel
@@ -197,6 +102,11 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        april:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         base_footprint:
           Alpha: 1
           Show Axes: false
@@ -224,12 +134,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        imu_link:
+        imu_bottom_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_top_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lidar_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -302,30 +222,68 @@ Visualization Manager:
       Class: rviz/Polygon
       Color: 25; 255; 0
       Enabled: true
-      Name: Polygon
+      Name: Footprint
       Queue Size: 10
       Topic: /local_mapper/costmap/footprint
       Unreliable: false
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
-      Color: 25; 255; 0
+      Color: 0; 255; 0
       Enabled: true
-      Name: Polygon
+      Name: Collision Check
       Queue Size: 10
       Topic: /planner/distance_map/inscribed_circle
       Unreliable: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /plan/path
+      Name: Path
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0.8301814198493958
+        Min Value: 0.03773584961891174
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 0
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.10000000149011612
+      Style: Flat Squares
+      Topic: /lidar_up
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
-      Color: 252; 175; 62
-      Enabled: true
+      Color: 25; 255; 0
+      Enabled: false
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 1.5
+      Line Style: Lines
+      Line Width: 0.029999999329447746
       Name: Path
       Offset:
         X: 0
@@ -339,20 +297,12 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /global_center_path
       Unreliable: false
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /plan/path
-      Name: Marker
-      Namespaces:
-        "": true
-      Queue Size: 100
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -376,7 +326,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 235.21630859375
+      Distance: 63.6307487487793
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -384,29 +334,29 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 22.490957260131836
-        Y: 3.653724431991577
-        Z: 9.677155494689941
+        X: 0.5220997333526611
+        Y: 0.2796105146408081
+        Z: 0.26577550172805786
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 0.8697974681854248
       Target Frame: <Fixed Frame>
-      Yaw: 3.1403982639312744
+      Yaw: 3.1435694694519043
     Saved: ~
 Window Geometry:
   Camera:
     collapsed: false
   Displays:
     collapsed: false
-  Height: 2032
+  Height: 744
   Help:
     collapsed: false
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001f7000006eefc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006e000006ee0000018200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061000000021a000001890000002600fffffffb0000000800480065006c0070000000026b000000af000000d400fffffffb0000000a0049006d00610067006500000002a4000000f90000000000000000fb0000000c00430061006d00650072006100000002d5000000c80000000000000000fb0000000c00430061006d00650072006101000002ae000000f70000000000000000000000010000010f00000366fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003660000013200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e700000005afc0100000002fb0000000800540069006d0065010000000000000e700000057100fffffffb0000000800540069006d0065010000000000000450000000000000000000000c6d000006ee00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001f70000022afc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003f0000022a000000cc00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000001e4000001890000001700fffffffb0000000800480065006c0070000000026b000000af0000006f00fffffffb0000000a0049006d00610067006500000002a4000000f90000000000000000fb0000000c00430061006d00650072006100000002d5000000c80000000000000000fb0000000c00430061006d00650072006101000002ae000000f70000000000000000000000010000010f00000366fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d00000366000000a900fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005a00000005afc0100000002fb0000000800540069006d00650100000000000005a00000027500fffffffb0000000800540069006d00650100000000000004500000000000000000000003a30000022a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -415,6 +365,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 3696
-  X: 144
-  Y: 54
+  Width: 1440
+  X: 2152
+  Y: 199

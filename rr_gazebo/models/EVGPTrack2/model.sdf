@@ -20,6 +20,11 @@
                         <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
+                <surface>
+                    <contact>
+                        <collide_bitmask>0x1</collide_bitmask>
+                    </contact>
+                </surface>
             </collision>
         </link>
 
@@ -44,6 +49,11 @@
                         <scale>1 1 2</scale>
                     </mesh>
                 </geometry>
+                <surface>
+                    <contact>
+                        <collide_bitmask>0x1</collide_bitmask>
+                    </contact>
+                </surface>
             </collision>
         </link>
 
