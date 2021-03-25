@@ -41,7 +41,7 @@
         </rosparam>
     </node>
 
-    <!-- <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" /> -->
+<!--    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />-->
 
     <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
           args="-file $(find rr_description)/urdf/evgp.urdf
