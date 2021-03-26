@@ -266,7 +266,7 @@
         </visual>
     </link>
     <gazebo reference="4_april">
-        <material>Apriltag4</material>
+        <material>tag36_11_00004</material>
     </gazebo>
 
     <link name="5_april">
@@ -278,7 +278,7 @@
         </visual>
     </link>
     <gazebo reference="5_april">
-        <material>Apriltag5</material>
+        <material>tag36_11_00005</material>
     </gazebo>
 
     <link name="6_april">
@@ -290,7 +290,7 @@
         </visual>
     </link>
     <gazebo reference="6_april">
-        <material>Apriltag6</material>
+        <material>tag36_11_00006</material>
     </gazebo>
 
     <link name="7_april">
@@ -302,7 +302,7 @@
         </visual>
     </link>
     <gazebo reference="7_april">
-        <material>Apriltag7</material>
+        <material>tag36_11_00007</material>
     </gazebo>
 
     <link name="0_april">
@@ -314,7 +314,7 @@
         </visual>
     </link>
     <gazebo reference="0_april">
-        <material>Apriltag0</material>
+        <material>tag36_11_00000</material>
     </gazebo>
 
     <link name="1_april">
@@ -326,7 +326,7 @@
         </visual>
     </link>
     <gazebo reference="1_april">
-        <material>Apriltag1</material>
+        <material>tag36_11_00001</material>
     </gazebo>
 
     <link name="2_april">
@@ -338,7 +338,7 @@
         </visual>
     </link>
     <gazebo reference="2_april">
-        <material>Apriltag2</material>
+        <material>tag36_11_00002</material>
     </gazebo>
 
     <link name="3_april">
@@ -350,7 +350,7 @@
         </visual>
     </link>
     <gazebo reference="3_april">
-        <material>Apriltag3</material>
+        <material>tag36_11_00003</material>
     </gazebo>
 
     <!-- ************************** Joints *************************** -->
