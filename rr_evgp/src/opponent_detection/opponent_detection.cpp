@@ -1,4 +1,45 @@
-#include <rr_evgp/opponent_detection.h>
+#include <pcl/ModelCoefficients.h>
+#include <pcl/common/transforms.h>
+#include <pcl/conversions.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/transforms.h>
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+
+// parameters set in launch file
+double cluster_tolerance;
+int min_cluster_size;
+int max_cluster_size;
+
+// publishers
+ros::Publisher marker_pub;
+
+// individual marker
+visualization_msgs::Marker marker;
+
+// final marker array
+visualization_msgs::MarkerArray marker_array;
+
+// publishes clustered clouds
+void publishCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);
+
+// adds markers to array
+void addMarkers(std::vector<geometry_msgs::Point> markers);
+
+// callback of subscriber
+void callback(sensor_msgs::PointCloud2 cloud_msg);
 
 // adds markers to marker array
 void addMarkers(std::vector<geometry_msgs::Point> markers, int id) {
@@ -51,14 +92,7 @@ void callback(sensor_msgs::PointCloud2 cloud_msg) {
     // **GROUND SEGMENTATION**
 
     // initialize another PC of PointXYZ objects to hold the passthrough filter results
-    pcl::PointCloud<pcl::PointXYZ>::Ptr ground_segmented(new pcl::PointCloud<pcl::PointXYZ>);
-
-    // passthrough filter to segment out ground
-    pcl::PassThrough<pcl::PointXYZ> pass;
-    pass.setInputCloud(xyz_cloud);
-    pass.setFilterFieldName("z");
-    pass.setFilterLimits(low_passthru_lim, high_passthru_lim);
-    pass.filter(*ground_segmented);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr ground_segmented = xyz_cloud;
 
     // **CLUSTERING**
 
@@ -110,9 +144,6 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     ros::NodeHandle nhp("~");
-
-    nhp.getParam("low_passthru_lim", low_passthru_lim);
-    nhp.getParam("high_passthru_lim", high_passthru_lim);
 
     nhp.getParam("cluster_tolerance", cluster_tolerance);
     nhp.getParam("min_cluster_size", min_cluster_size);

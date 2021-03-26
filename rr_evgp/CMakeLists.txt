@@ -36,9 +36,7 @@ include_directories(
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
-
 add_definitions(${PCL_DEFINITIONS})
-
 
 ###########
 ## Build ##
