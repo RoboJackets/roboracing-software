@@ -19,7 +19,6 @@
     <build_depend>message_generation</build_depend>
     <build_depend>gencpp</build_depend>
     <build_depend>genpy</build_depend>
-    <build_depend>sensor_msgs</build_depend>
 
     <exec_depend>message_runtime</exec_depend>
 
