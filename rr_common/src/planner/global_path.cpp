@@ -33,14 +33,14 @@ double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan) {
     }
 
     // convert points to world frame
-    std::vector<tf::Point> sample_path = GlobalPath::convertToWorldPoints(plan);
+    std::vector<tf::Point> sample_path = convertToWorldPoints(plan);
 
     // get the global segment
-    std::vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
+    std::vector<tf::Point> global_segment = get_global_segment(sample_path);
 
     // use dtw to comp sample to global
     int window = (int)(dtw_window_factor_ * std::max(global_segment.size(), sample_path.size()));
-    double dtw_val = GlobalPath::dtw_distance(global_segment, sample_path, window);
+    double dtw_val = dtw_distance(global_segment, sample_path, window);
     return dtw_val;
 }
 
@@ -50,7 +50,7 @@ void GlobalPath::visualize_global_segment(const std::vector<PathPoint> &plan) {
     }
 
     std::vector<tf::Point> sample_path = convertToWorldPoints(plan);
-    std::vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
+    std::vector<tf::Point> global_segment = get_global_segment(sample_path);
 
     nav_msgs::Path global_seg_msg;  // convert type
     for (const tf::Point &path_point : global_segment) {
@@ -78,14 +78,14 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     tf::Point sample_origin = sample_path[0];
     std::vector<double> dist_to_origin(global_path_.size());
     std::transform(global_path_.begin(), global_path_.end(), dist_to_origin.begin(), [&](const tf::Point &global_pnt) {
-        return GlobalPath::GetPointDistance(global_pnt, sample_origin);
+        return GetPointDistance(global_pnt, sample_origin);
     });
 
     // get the index of the closest global point to the start of the sample path
     int seg_start_index = std::min_element(dist_to_origin.begin(), dist_to_origin.end()) - dist_to_origin.begin();
 
     // get the length of sample path by summing all the dists btwn the points
-    std::vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
+    std::vector<double> sample_adj_dist = adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
 
     // get the ending point of the global segment using the length of the segment
@@ -163,7 +163,7 @@ void GlobalPath::SetPathMessage(const nav_msgs::Path &global_path_msg) {
                    });
 
     // Get Distances
-    std::vector<double> adj_dist = GlobalPath::adjacent_distances(global_path_);
+    std::vector<double> adj_dist = adjacent_distances(global_path_);
     global_cum_dist_ = std::vector<double>(adj_dist.size());
     std::partial_sum(adj_dist.begin(), adj_dist.end(), global_cum_dist_.begin());
 }
