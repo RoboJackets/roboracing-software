@@ -18,7 +18,7 @@ class GlobalPath {
     void PreProcess();
     double CalculateCost(const std::vector<PathPoint>& plan);
     void visualize_global_segment(const std::vector<PathPoint>& plan);
-    static double GetPointDistance(tf::Point point1, tf::Point point2);
+    static double GetPointDistance(const tf::Point& point1, const tf::Point& point2);
 
   private:
     void SetPathMessage(const nav_msgs::Path& map_msg);

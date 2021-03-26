@@ -145,7 +145,7 @@ void GlobalPath::PreProcess() {
     }
 }
 
-double GlobalPath::GetPointDistance(tf::Point point1, tf::Point point2) {
+double GlobalPath::GetPointDistance(const tf::Point& point1, const tf::Point& point2) {
     return point1.distance(point2);
 }
 
