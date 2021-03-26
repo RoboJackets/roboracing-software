@@ -44,6 +44,7 @@ k_map_cost: 1.0
 k_speed: 0.2
 k_steering: 0
 k_angle: 0.5
+k_global_path_cost: 0
 collision_penalty: 1000
 
 impasse_caution_duration: 0.25

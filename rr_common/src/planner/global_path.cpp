@@ -19,9 +19,9 @@ namespace rr {
 
 GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), listener_(new tf::TransformListener) {
     std::string global_path_topic;
-    assertions::getParam(nh, "global_path_topic", global_path_topic);
-    assertions::getParam(nh, "robot_base_frame", robot_base_frame_);
-    assertions::getParam(nh, "dtw_window_factor", dtw_window_factor_);
+    nh.param<std::string>("global_path_topic", global_path_topic, "/global_center_path");
+    nh.param<std::string>("robot_base_frame", robot_base_frame_, "base_footprint");
+    nh.param<double>("dtw_window_factor", dtw_window_factor_, 0.25);
 
     global_path_sub_ = nh.subscribe(global_path_topic, 1, &GlobalPath::SetPathMessage, this);
     global_path_seg_pub_ = nh.advertise<nav_msgs::Path>("/global_path_seg", 1);
