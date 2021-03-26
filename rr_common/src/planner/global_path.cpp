@@ -27,54 +27,67 @@ GlobalPath::GlobalPath(ros::NodeHandle nh) : has_global_path_(false), listener_(
     global_path_seg_pub_ = nh.advertise<nav_msgs::Path>("/global_path_seg", 1);
 }
 
-double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan, const bool viz) {
+double GlobalPath::CalculateCost(const std::vector<PathPoint> &plan) {
     if (!has_global_path_) {
         return 0.0;
     }
+
     // convert points to world frame
-    std::vector<tf::Point> sample_path(plan.size());
-    std::transform(plan.begin(), plan.end(), sample_path.begin(), [&](const PathPoint &pose) {
-        tf::Pose w_pose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(pose.pose.theta),
-                                                              tf::Vector3(pose.pose.x, pose.pose.y, 0));
-        return tf::Point(w_pose.getOrigin().x(), w_pose.getOrigin().y(), 0);
-    });
+    std::vector<tf::Point> sample_path = GlobalPath::convertToWorldPoints(plan);
+
     // get the global segment
     std::vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
 
     // use dtw to comp sample to global
     int window = (int)(dtw_window_factor_ * std::max(global_segment.size(), sample_path.size()));
     double dtw_val = GlobalPath::dtw_distance(global_segment, sample_path, window);
-
-    // for publishing / debugging
-    if (viz) {
-        nav_msgs::Path global_seg_msg;  // convert type
-        for (const auto path_point : global_segment) {
-            geometry_msgs::PoseStamped ps;
-            ps.pose.position.x = path_point.getX();
-            ps.pose.position.y = path_point.getY();
-            global_seg_msg.poses.push_back(ps);
-        }
-        global_seg_msg.header.frame_id = "map";
-        global_path_seg_pub_.publish(global_seg_msg);
-    }
     return dtw_val;
+}
+
+void GlobalPath::visualize_global_segment(const std::vector<PathPoint> &plan) {
+    if (!has_global_path_) {
+        return;
+    }
+
+    std::vector<tf::Point> sample_path = convertToWorldPoints(plan);
+    std::vector<tf::Point> global_segment = GlobalPath::get_global_segment(sample_path);
+
+    nav_msgs::Path global_seg_msg;  // convert type
+    for (const tf::Point &path_point : global_segment) {
+        geometry_msgs::PoseStamped ps;
+        ps.pose.position.x = path_point.getX();
+        ps.pose.position.y = path_point.getY();
+        global_seg_msg.poses.push_back(ps);
+    }
+    global_seg_msg.header.frame_id = global_path_frame_;
+    global_path_seg_pub_.publish(global_seg_msg);
+}
+
+std::vector<tf::Point> GlobalPath::convertToWorldPoints(const std::vector<PathPoint> &plan) {
+    std::vector<tf::Point> tf_path(plan.size());
+    std::transform(plan.begin(), plan.end(), tf_path.begin(), [&](const PathPoint &pose) {
+        tf::Pose w_pose = robot_to_path_transform_ * tf::Pose(tf::createQuaternionFromYaw(pose.pose.theta),
+                                                              tf::Vector3(pose.pose.x, pose.pose.y, 0));
+        return tf::Point(w_pose.getOrigin().x(), w_pose.getOrigin().y(), 0);
+    });
+    return tf_path;
 }
 
 std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Point> &sample_path) {
     // get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
-    std::vector<double> distances_to_origin(global_path_.size());
-    std::transform(global_path_.begin(), global_path_.end(), distances_to_origin.begin(),
-                   [sample_origin](const tf::Point &global_pnt) {
-                       return GlobalPath::GetPointDistance(global_pnt, sample_origin);
-                   });
+    std::vector<double> dist_to_origin(global_path_.size());
+    std::transform(global_path_.begin(), global_path_.end(), dist_to_origin.begin(), [&](const tf::Point &global_pnt) {
+        return GlobalPath::GetPointDistance(global_pnt, sample_origin);
+    });
+
     // get the index of the closest global point to the start of the sample path
-    int seg_start_index =
-          std::min_element(distances_to_origin.begin(), distances_to_origin.end()) - distances_to_origin.begin();
+    int seg_start_index = std::min_element(dist_to_origin.begin(), dist_to_origin.end()) - dist_to_origin.begin();
 
     // get the length of sample path by summing all the dists btwn the points
     std::vector<double> sample_adj_dist = GlobalPath::adjacent_distances(sample_path);
     double sample_length = std::accumulate(sample_adj_dist.begin(), sample_adj_dist.end(), 0.0);
+
     // get the ending point of the global segment using the length of the segment
     double upper_cum_limit =
           std::fmod((global_cum_dist_[seg_start_index] + sample_length), global_cum_dist_[global_cum_dist_.size() - 1]);
@@ -123,19 +136,12 @@ void GlobalPath::PreProcess() {
     if (!has_global_path_) {
         return;
     }
-    this->LookupPathTransform();
-}
 
-void GlobalPath::LookupPathTransform() {
-    if (has_global_path_) {
-        try {
-            listener_->waitForTransform(global_path_msg_.header.frame_id, robot_base_frame_, ros::Time(0),
-                                        ros::Duration(.05));
-            listener_->lookupTransform(global_path_msg_.header.frame_id, robot_base_frame_, ros::Time(0),
-                                       robot_to_path_transform_);
-        } catch (tf::TransformException &ex) {
-            ROS_ERROR_STREAM(ex.what());
-        }
+    try {
+        listener_->waitForTransform(global_path_frame_, robot_base_frame_, ros::Time(0), ros::Duration(.05));
+        listener_->lookupTransform(global_path_frame_, robot_base_frame_, ros::Time(0), robot_to_path_transform_);
+    } catch (tf::TransformException &ex) {
+        ROS_ERROR_STREAM(ex.what());
     }
 }
 
@@ -145,15 +151,17 @@ double GlobalPath::GetPointDistance(tf::Point point1, tf::Point point2) {
 
 void GlobalPath::SetPathMessage(const nav_msgs::Path &global_path_msg) {
     has_global_path_ = true;
-    global_path_msg_ = nav_msgs::Path(global_path_msg);
-    global_path_ = std::vector<tf::Point>(global_path_msg.poses.size());
+    global_path_frame_ = global_path_msg.header.frame_id;
+
     // Convert Type
+    global_path_ = std::vector<tf::Point>(global_path_msg.poses.size());
     std::transform(global_path_msg.poses.begin(), global_path_msg.poses.end(), global_path_.begin(),
                    [](const auto &poseStamped) {
                        tf::Pose tf_pose;
                        tf::poseMsgToTF(poseStamped.pose, tf_pose);
                        return tf_pose.getOrigin();
                    });
+
     // Get Distances
     std::vector<double> adj_dist = GlobalPath::adjacent_distances(global_path_);
     global_cum_dist_ = std::vector<double>(adj_dist.size());

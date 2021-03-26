@@ -105,11 +105,10 @@ void generatePath() {
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         rr::TrajectoryRollout rollout;
         g_vehicle_model->RollOutPath(controls, rollout);
-        auto& path = rollout.path;
-        // add first point back onto the end so it's fully connected
-        path.push_back(path[0]);
+        const auto& path = rollout.path;
+
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
-        double global_path_costs = g_global_path_cost->CalculateCost(path, false);
+        double global_path_costs = g_global_path_cost->CalculateCost(path);
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
@@ -138,10 +137,12 @@ void generatePath() {
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
     plan.cost = cost_fn(controls);
     g_vehicle_model->RollOutPath(controls, plan.rollout);
+
     std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.rollout.path);
-    g_global_path_cost->CalculateCost(plan.rollout.path, true);
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
+
+    g_global_path_cost->visualize_global_segment(plan.rollout.path);
 
     g_last_controls = controls;
 
@@ -283,10 +284,15 @@ int main(int argc, char** argv) {
         g_speed_model->Update(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
-             auto start = ros::WallTime::now();
-            g_global_path_cost->LookupPathTransform();
+            auto start = ros::WallTime::now();
+
+            g_global_path_cost->PreProcess();
             generatePath();
             g_map_cost_interface->SetMapStale();
+
+            double seconds = (ros::WallTime::now() - start).toSec();
+            total_planning_time += seconds;
+            total_plans++;
             double sec_avg = total_planning_time / total_plans;
             ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
         }

@@ -15,9 +15,9 @@ class GlobalPath {
   public:
     explicit GlobalPath(ros::NodeHandle nh);
 
-    double CalculateCost(const std::vector<PathPoint>& plan, bool viz);
-    void LookupPathTransform();
     void PreProcess();
+    double CalculateCost(const std::vector<PathPoint>& plan);
+    void visualize_global_segment(const std::vector<PathPoint>& plan);
     static double GetPointDistance(tf::Point point1, tf::Point point2);
 
   private:
@@ -25,13 +25,15 @@ class GlobalPath {
     std::vector<double> adjacent_distances(const std::vector<tf::Point>& path);
     std::vector<tf::Point> get_global_segment(const std::vector<tf::Point>& sample_path);
     double dtw_distance(const std::vector<tf::Point>& path1, const std::vector<tf::Point>& path2, int w);
+    std::vector<tf::Point> convertToWorldPoints(const std::vector<PathPoint>& plan);
+
     bool has_global_path_;
     double dtw_window_factor_;
 
     ros::Subscriber global_path_sub_;
     ros::Publisher global_path_seg_pub_;
     std::string robot_base_frame_;
-    nav_msgs::Path global_path_msg_;
+    std::string global_path_frame_;
     std::vector<tf::Point> global_path_;
     std::vector<double> global_cum_dist_;
     std::unique_ptr<tf::TransformListener> listener_;
