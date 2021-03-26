@@ -1,3 +1,4 @@
+#include <geometry_msgs/PoseArray.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/transforms.h>
 #include <pcl/conversions.h>
@@ -17,7 +18,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <geometry_msgs/PoseArray.h>
 
 double cluster_tolerance_;
 int min_cluster_size_, max_cluster_size_;
