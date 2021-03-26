@@ -12,6 +12,10 @@ cmake-build-debug/*
 *.sublime-workspace
 */*.sublime-workspace
 
+# VSCode project files
+*/*.vscode
+*.vscode
+
 # gedit autosave files
 *~
 

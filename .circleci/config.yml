@@ -123,6 +123,6 @@ workflows:
   build_and_test:
     jobs:
       - compile
-      - test:
-          requires:
-            - compile
+      # - test:
+      #     requires:
+      #       - compile

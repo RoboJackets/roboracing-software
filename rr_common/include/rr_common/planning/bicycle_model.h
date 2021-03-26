@@ -30,7 +30,7 @@ class BicycleModel {
      */
     void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
 
-    //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
+    void RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const;
 
   private:
     /**
