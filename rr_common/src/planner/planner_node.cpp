@@ -7,6 +7,7 @@
 #include <rr_common/planning/bicycle_model.h>
 #include <rr_common/planning/distance_map.h>
 #include <rr_common/planning/effector_tracker.h>
+#include <rr_common/planning/global_path.h>
 #include <rr_common/planning/hill_climb_optimizer.h>
 #include <rr_common/planning/inflation_map.h>
 #include <rr_common/planning/map_cost_interface.h>
@@ -23,11 +24,12 @@ std::unique_ptr<rr::PlanningOptimizer<ctrl_dim>> g_planner;
 std::unique_ptr<rr::MapCostInterface> g_map_cost_interface;
 std::unique_ptr<rr::BicycleModel> g_vehicle_model;
 std::unique_ptr<rr::EffectorTracker> g_effector_tracker;
+std::unique_ptr<rr::GlobalPath> g_global_path_cost;
 
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
 
-double k_map_cost_, k_speed_, k_steering_, k_angle_, collision_penalty_;
+double k_map_cost_, k_speed_, k_steering_, k_angle_, k_global_path_cost_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
@@ -106,6 +108,7 @@ void generatePath() {
         const auto& path = rollout.path;
 
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
+        double global_path_costs = g_global_path_cost->CalculateCost(path);
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
@@ -122,6 +125,7 @@ void generatePath() {
                 break;
             }
         }
+        cost += k_global_path_cost_ * global_path_costs;
         return cost / inflator;
     };
 
@@ -132,11 +136,13 @@ void generatePath() {
     rr::TrajectoryPlan plan;
     rr::Controls<ctrl_dim> controls = g_planner->Optimize(cost_fn, g_last_controls, ctrl_limits);
     plan.cost = cost_fn(controls);
-
     g_vehicle_model->RollOutPath(controls, plan.rollout);
+
     std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.rollout.path);
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
+
+    g_global_path_cost->visualize_global_segment(plan.rollout.path);
 
     g_last_controls = controls;
 
@@ -199,6 +205,7 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "k_speed", k_speed_);
     assertions::getParam(nhp, "k_steering", k_steering_);
     assertions::getParam(nhp, "k_angle", k_angle_);
+    assertions::getParam(nhp, "k_global_path_cost", k_global_path_cost_);
     assertions::getParam(nhp, "collision_penalty", collision_penalty_);
 
     std::string map_type;
@@ -243,6 +250,8 @@ int main(int argc, char** argv) {
     reverse_start_time = ros::Time(0);
     reverse_state = OK;
 
+    g_global_path_cost = std::make_unique<rr::GlobalPath>(ros::NodeHandle(nhp, "global_path_cost"));
+
     steering_gain = assertions::param(nhp, "steering_gain", 1.0);
     assertions::getParam(nhp, "viz_path_scale", viz_path_scale);
 
@@ -277,6 +286,7 @@ int main(int argc, char** argv) {
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();
 
+            g_global_path_cost->PreProcess();
             generatePath();
             g_map_cost_interface->SetMapStale();
 

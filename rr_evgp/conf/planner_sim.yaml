@@ -62,7 +62,13 @@ k_map_cost: 20
 k_speed: 2
 k_steering: 0.01
 k_angle: 0
+k_global_path_cost: 5
 collision_penalty: 100000
+
+global_path_cost:
+    global_path_topic: "/global_center_path"
+    robot_base_frame: base_footprint
+    dtw_window_factor: 0.25
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
