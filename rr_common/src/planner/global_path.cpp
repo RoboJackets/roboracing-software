@@ -77,9 +77,8 @@ std::vector<tf::Point> GlobalPath::get_global_segment(const std::vector<tf::Poin
     // get a list of each of the global points distances from the origin of the sample path
     tf::Point sample_origin = sample_path[0];
     std::vector<double> dist_to_origin(global_path_.size());
-    std::transform(global_path_.begin(), global_path_.end(), dist_to_origin.begin(), [&](const tf::Point &global_pnt) {
-        return GetPointDistance(global_pnt, sample_origin);
-    });
+    std::transform(global_path_.begin(), global_path_.end(), dist_to_origin.begin(),
+                   [&](const tf::Point &global_pnt) { return GetPointDistance(global_pnt, sample_origin); });
 
     // get the index of the closest global point to the start of the sample path
     int seg_start_index = std::min_element(dist_to_origin.begin(), dist_to_origin.end()) - dist_to_origin.begin();
@@ -145,7 +144,7 @@ void GlobalPath::PreProcess() {
     }
 }
 
-double GlobalPath::GetPointDistance(const tf::Point& point1, const tf::Point& point2) {
+double GlobalPath::GetPointDistance(const tf::Point &point1, const tf::Point &point2) {
     return point1.distance(point2);
 }
 
