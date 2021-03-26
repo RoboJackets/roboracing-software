@@ -63,6 +63,63 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.apply_speed = speed_model_temp.GetValue();
 }
 
+void BicycleModel::RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const {
+    const size_t path_size = 1 + (segment_size_ * controls.cols());
+    if (rollout.path.size() != path_size) {
+        rollout.path.resize(static_cast<size_t>(path_size));
+    }
+
+    rollout.path[0].pose.x = 0;
+    rollout.path[0].pose.y = 0;
+    rollout.path[0].pose.theta = 0;
+    rollout.path[0].speed = speed_model_->GetValue();
+    rollout.path[0].steer = steering_model_->GetValue();
+    rollout.path[0].time = 0;
+
+    auto steering_controls = controls.row(0);
+    auto speed_controls = controls.row(1);
+
+    rollout.apply_steering = steering_controls(0);
+
+    rr::LinearTrackingFilter steering_model_temp = *steering_model_;  // copy
+    rr::LinearTrackingFilter speed_model_temp = *speed_model_;
+
+    // Forwards Propagate
+    for (int i = 1; i < path_size; i++) {
+        int control_idx = floor((i - 1) / segment_size_);
+        const PathPoint& last_path_point = rollout.path[i - 1];
+        PathPoint& path_point = rollout.path[i];
+
+        steering_model_temp.SetTarget(steering_controls(control_idx));
+        steering_model_temp.UpdateRawDT(dt_);
+
+        double turn_speed_limit = SteeringToSpeed(steering_model_temp.GetValue());
+        speed_model_temp.SetTarget(std::min(speed_controls(control_idx), turn_speed_limit));
+        speed_model_temp.UpdateRawDT(dt_);
+
+        path_point.steer = steering_model_temp.GetValue();
+        path_point.speed = speed_model_temp.GetValue();
+        path_point.time = last_path_point.time + dt_;
+    }
+
+    // Back Propogate
+    speed_model_temp.Reset(rollout.path.back().speed, 0);
+    for (int i = path_size - 1; i >= 1; --i) {
+        speed_model_temp.SetTarget(rollout.path[i].speed);
+        speed_model_temp.UpdateRawDT(-dt_);
+        rollout.path[i - 1].speed = std::min(rollout.path[i - 1].speed, speed_model_temp.GetValue());
+    }
+
+    rollout.apply_speed = speed_model_temp.GetValue();
+
+    // Mark Points
+    for (int i = 1; i < path_size; i++) {
+        const PathPoint& last_path_point = rollout.path[i - 1];
+        PathPoint& path_point = rollout.path[i];
+        StepKinematics(last_path_point, path_point.pose);
+    }
+}
+
 void BicycleModel::StepKinematics(const PathPoint& prev, Pose& next) const {
     double deltaX, deltaY, deltaTheta;
     double distance_increment = prev.speed * dt_;

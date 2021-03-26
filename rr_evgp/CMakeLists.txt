@@ -11,10 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         costmap_2d
         parameter_assertions
-        apriltag_ros
         pcl_ros
-        tf_conversions
-        )
+        pcl_conversions
+        visualization_msgs
+
+)
 
 find_package(OpenCV REQUIRED)
 
@@ -33,13 +34,17 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
 
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 ###########
 ## Build ##
 ###########
 
+add_subdirectory(src/opponent_detection)
 add_subdirectory(src/costmap_plugins)
 add_subdirectory(src/UniformCostSearch)
 add_subdirectory(src/april_tag_detection)

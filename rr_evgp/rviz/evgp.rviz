@@ -80,6 +80,7 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
+        "": true
         Collision Check: true
         Footprint: true
         Global Map: true
@@ -102,7 +103,27 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        april:
+        april_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        april_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        april_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        april_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        april_6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -247,8 +268,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.8301814198493958
-        Min Value: 0.03773584961891174
+        Max Value: 0.8356510400772095
+        Min Value: 0.013022512197494507
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -259,9 +280,7 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0
       Min Color: 0; 0; 0
-      Min Intensity: 0
       Name: PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -298,6 +317,30 @@ Visualization Manager:
       Topic: /global_center_path
       Unreliable: false
       Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.20000000298023224
+      Name: Global Segment
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /global_path_seg
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

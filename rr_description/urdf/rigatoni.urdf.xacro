@@ -177,7 +177,7 @@
             <xacro:null_inertia/>
             <visual>
                 <geometry>
-                    <box size="0.001 0.15 0.15 "/>
+                    <box size="0.001 0.127 0.127 "/>
                 </geometry>
             </visual>
         </link>

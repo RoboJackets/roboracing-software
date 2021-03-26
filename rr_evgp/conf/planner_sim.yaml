@@ -15,10 +15,10 @@ steering_filter:
 
 speed_filter:
     init_val: 0
-    val_max: 13.5
-    val_min: -1.0
-    rate_max: 20.0
-    rate_min: -25.0
+    val_max: 25
+    val_min: -2
+    rate_max: 30.0
+    rate_min: -35.0
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -43,29 +43,42 @@ distance_map:
     publish_distance_map: true
     publish_inscribed_circle: true
     hitbox:
+        origin_x: 0
+        origin_y: 0
+        origin_theta: 0
         min_x: -0.2
         max_x: 1.6
+
         min_y: -0.8
         max_y: 0.8
-    cost_scaling_factor: .2
-    wall_inflation: .2
+    cost_scaling_factor: 5
+    lethal_wall_inflation: .3
+    nonlethal_wall_inflation: .6
 
 steering_gain: 1.4
+viz_path_scale: .5
 
-k_map_cost: .5
-k_speed: 0.05
+k_map_cost: 20
+k_speed: 2
 k_steering: 0.01
 k_angle: 0
-collision_penalty: 10000
+k_global_path_cost: 5
+collision_penalty: 100000
+
+global_path_cost:
+    global_path_topic: "/global_center_path"
+    robot_base_frame: base_footprint
+    dtw_window_factor: 0.25
 
 impasse_caution_duration: 0.25
 impasse_reverse_duration: 4.0
+impasse_reverse_speed: -2.0
 
 planner_type: "hill_climbing"
 hill_climb_optimizer:
     num_workers: 5
     num_restarts: 5
-    neighbor_stddev: [0.015]
+    neighbor_stddev: [0.015, 1]
     local_optimum_tries: 30
 
 effector_tracker:
