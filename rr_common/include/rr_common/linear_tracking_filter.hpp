@@ -95,7 +95,7 @@ class LinearTrackingFilter {
         } else {
             this->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
         }
-        ROS_INFO("Dyn Reconf Updated");
+        ROS_INFO("Dyn Reconf Linear inside of callback Updated");
     }
 
     inline void Update(double t) {

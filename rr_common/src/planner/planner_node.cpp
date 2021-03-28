@@ -192,7 +192,7 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
         collision_penalty_ = config.collision_penalty;
         steering_gain = config.steering_gain;
     }
-    ROS_INFO("Dyn Reconf Updated");
+    ROS_INFO("Dyn Reconf inside regular planner Updated");
 }
 
 
@@ -255,10 +255,10 @@ int main(int argc, char** argv) {
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
     // init dynamic reconfigure
-    // dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
-    // dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
-    // f = boost::bind(&dynamic_callback_planner, _1, _2);
-    // DynReconfigServerPlanner.setCallback(f);
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
+    f = boost::bind(&dynamic_callback_planner, _1, _2);
+    DynReconfigServerPlanner.setCallback(f);
     ROS_INFO("\n\n\ndyn reconf for planner (but empty??)   \n\n\n");
 
 
