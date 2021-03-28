@@ -1,7 +1,7 @@
 #include <dynamic_reconfigure/server.h>
+#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
-#include <geometry_msgs/Pose.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -231,7 +231,6 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
     ROS_INFO("Dyn Reconf inside regular planner Updated");
 }
 
-
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
 
@@ -301,7 +300,6 @@ int main(int argc, char** argv) {
     f = boost::bind(&dynamic_callback_planner, _1, _2);
     DynReconfigServerPlanner.setCallback(f);
     ROS_INFO("\n\n\ndyn reconf for planner (but empty??)   \n\n\n");
-
 
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);

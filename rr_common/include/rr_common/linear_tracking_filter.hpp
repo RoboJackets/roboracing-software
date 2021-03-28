@@ -1,9 +1,9 @@
 #pragma once
 
+#include <dynamic_reconfigure/server.h>
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
 #include <rr_common/LinearTrackingConfig.h>
-#include <dynamic_reconfigure/server.h>
 
 namespace rr {
 
