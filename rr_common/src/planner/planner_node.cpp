@@ -5,7 +5,6 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
-#include <rr_common/LinearTrackingConfig.h>
 #include <rr_common/PathPlannerConfig.h>
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
@@ -196,19 +195,6 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
     ROS_INFO("Dyn Reconf Updated");
 }
 
-void dynamic_callback_linear(rr_common::LinearTrackingConfig& config, uint32_t level) {
-    static bool firstLoop = true;
-    if (firstLoop) {
-        g_speed_model->GetDynParamDefaultsSpeed(config);
-        g_steer_model->GetDynParamDefaultsTurn(config);
-        firstLoop = false;
-
-    } else {
-        g_speed_model->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
-        g_steer_model->SetDynParam(config.stf_val_max, config.stf_val_min, config.stf_rate_max, config.stf_rate_min);
-    }
-    ROS_INFO("Dyn Reconf Updated");
-}
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
@@ -269,15 +255,12 @@ int main(int argc, char** argv) {
     viz_pub = nh.advertise<nav_msgs::Path>("plan/path", 1);
 
     // init dynamic reconfigure
-    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
-    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
-    f = boost::bind(&dynamic_callback_planner, _1, _2);
-    DynReconfigServerPlanner.setCallback(f);
+    // dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
+    // dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
+    // f = boost::bind(&dynamic_callback_planner, _1, _2);
+    // DynReconfigServerPlanner.setCallback(f);
+    ROS_INFO("\n\n\ndyn reconf for planner (but empty??)   \n\n\n");
 
-    dynamic_reconfigure::Server<rr_common::LinearTrackingConfig> DynReconfigServerLinear;
-    dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>::CallbackType g;
-    g = boost::bind(&dynamic_callback_linear, _1, _2);
-    DynReconfigServerLinear.setCallback(g);
 
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);

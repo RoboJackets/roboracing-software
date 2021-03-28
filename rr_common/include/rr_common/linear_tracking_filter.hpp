@@ -3,6 +3,7 @@
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
 #include <rr_common/LinearTrackingConfig.h>
+#include <dynamic_reconfigure/server.h>
 
 namespace rr {
 
@@ -25,6 +26,11 @@ class LinearTrackingFilter {
         assertions::getParam(nh, "rate_min", rate_min_, { assertions::less<double>(0) });
         assertions::getParam(nh, "rate_max", rate_max_, { assertions::greater<double>(0) });
         last_update_ = 0;
+
+        std::unique_ptr<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>> dsrv_;
+        dsrv_ = std::make_unique<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>>(nh);
+        dsrv_->setCallback(boost::bind(&LinearTrackingFilter::dynamic_callback_linear, this, _1, _2));
+        ROS_INFO("\n\n\nCtor called for lin tracking \n\n\n");
     }
 
     LinearTrackingFilter(const LinearTrackingFilter& t) = default;
@@ -78,6 +84,18 @@ class LinearTrackingFilter {
         config.stf_val_min = val_min_;
         config.stf_rate_max = rate_max_;
         config.stf_rate_min = rate_min_;
+    }
+
+    inline void dynamic_callback_linear(rr_common::LinearTrackingConfig& config, uint32_t level) {
+        static bool firstLoop = true;
+        if (firstLoop) {
+            this->GetDynParamDefaultsSpeed(config);
+            firstLoop = false;
+
+        } else {
+            this->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
+        }
+        ROS_INFO("Dyn Reconf Updated");
     }
 
     inline void Update(double t) {
