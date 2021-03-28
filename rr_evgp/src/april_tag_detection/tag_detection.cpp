@@ -6,10 +6,36 @@
 
 #include <utility>
 
+int main(int argc, char **argv) {
+    ros::init(argc, argv, "april_tag_pointcloud");
+    ros::NodeHandle nhp("~");
+    ros::NodeHandle nh;
+    std::string camera_frame, pointcloud, tag_detections_topic, tag_detection_markers, destination_frame, opponents_april;
+    double x_offset, y_offset, px_per_m, width, height;
+    XmlRpc::XmlRpcValue tags;
+    nhp.getParam("camera_frame", camera_frame);
+    nhp.getParam("pointcloud", pointcloud);
+    nhp.getParam("tag_detections_topic", tag_detections_topic);
+    nhp.getParam("tag_detection_markers", tag_detection_markers);
+    nhp.getParam("opponents_april", opponents_april);
+    nhp.getParam("destination_frame", destination_frame);
+    nhp.getParam("x_offset", x_offset);
+    nhp.getParam("y_offset", y_offset);
+    nhp.getParam("px_per_m", px_per_m);
+    nhp.getParam("width", width);
+    nhp.getParam("height", height);
+    nhp.getParam("tags", tags);
+    tag_detection tagDetection(&nh, camera_frame, pointcloud, tag_detections_topic, destination_frame,
+                               tag_detection_markers, x_offset, y_offset, px_per_m, width, height, opponents_april);
+
+    ros::spin();
+    return 0;
+}
+
 tag_detection::tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
                              const std::string &tag_detections_topic, const std::string &destination_frame,
                              const std::string &tag_detection_markers, double x_offset, double y_offset,
-                             double px_per_m, double width, double height) {
+                             double px_per_m, double width, double height, const std::string &opponents_april) {
     this->camera_frame = camera_frame;
     this->destination_frame = destination_frame;
     this->width = width;
@@ -31,11 +57,11 @@ tag_detection::tag_detection(ros::NodeHandle *nh, const std::string &camera_fram
     // Storing as an instance variable keeps subscriber alive
     sub_detections = nh->subscribe(tag_detections_topic, 1, &tag_detection::callback, this);
     pub_pointcloud = nh->advertise<sensor_msgs::PointCloud2>(pointcloud, 1);
-    pub_markers = nh->advertise<visualization_msgs::Marker>(tag_detection_markers, 0);
+    pub_markers = nh->advertise<visualization_msgs::MarkerArray>(tag_detection_markers, 1);
+    pub_opponents = nh->advertise<geometry_msgs::PoseArray>(opponents_april, 1);
 }
 
 void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg) {
-    opponent_cloud.clear();
     auto msgs = msg->detections;
     std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> tag_groups(5);
     for (const auto &message : msgs) {        // Iterate through all discovered April Tags
@@ -43,21 +69,15 @@ void tag_detection::callback(const apriltag_ros::AprilTagDetectionArray::ConstPt
         tag_groups[car_number].push_back(std::pair(message.id[0], message.pose.pose.pose));
     }
     draw_opponents(&tag_groups);
-    publishPointCloud(opponent_cloud);
-}
-
-void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
-    sensor_msgs::PointCloud2 outmsg;
-    pcl::toROSMsg(cloud, outmsg);
-    outmsg.header.frame_id = destination_frame;
-    pub_pointcloud.publish(outmsg);
 }
 
 void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geometry_msgs::Pose>>> *real_tags) {
     // w := our base footprint (world), o := optical camera, a := april image, l := april link,
     // b := their base footprint
     // x_T_y := Transform from y to x
-
+    geometry_msgs::PoseArray opponent_averages;
+    pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
+    visualization_msgs::MarkerArray marker_array;
     tf::StampedTransform w_T_o;
     tf_listener.lookupTransform(this->destination_frame, this->camera_frame, ros::Time(0), w_T_o);
     for (const auto &robot : *real_tags) {
@@ -80,7 +100,7 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                 tf::StampedTransform l_T_b;
 
                 // Use back of the car for a simple transform
-                tf_listener.lookupTransform(april_link, "april_4", ros::Time(0), l_T_b);
+                tf_listener.lookupTransform(april_link, rear_april_tag, ros::Time(0), l_T_b);
 
                 // Update location
                 tf::Pose p_w = w_T_o * o_T_a * a_T_l * l_T_b;
@@ -122,6 +142,9 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
                 index++;
             }
             tf::Pose robot_pose_av = poseAverage(robot_pose_vector);
+            geometry_msgs::Pose pose;
+            tf::poseTFToMsg(robot_pose_av, pose);
+            opponent_averages.poses.push_back(pose);
 
             pcl::PointCloud<pcl::PointXYZ> car_outline;
             Eigen::Affine3d affine3d;
@@ -148,9 +171,19 @@ void tag_detection::draw_opponents(std::vector<std::vector<std::pair<int, geomet
             marker.scale.z = 0.1;
             marker.color.a = 1.0;
             marker.color.b = 1.0;
-            pub_markers.publish(marker);
+            marker_array.markers.push_back(marker);
         }
     }
+    publishPointCloud(opponent_cloud);
+    pub_markers.publish(marker_array);
+    pub_opponents.publish(opponent_averages);
+}
+
+void tag_detection::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud) {
+    sensor_msgs::PointCloud2 outmsg;
+    pcl::toROSMsg(cloud, outmsg);
+    outmsg.header.frame_id = destination_frame;
+    pub_pointcloud.publish(outmsg);
 }
 
 tf::Pose tag_detection::poseAverage(std::vector<tf::Pose> poses) {

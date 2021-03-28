@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
         pcl_conversions
         visualization_msgs
         tf_conversions
+        apriltag_ros
 )
 
 find_package(OpenCV REQUIRED)
@@ -23,8 +24,6 @@ catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES rr_evgp
 #  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs costmap_2d
-  CATKIN_DEPENDS
-    apriltag_ros
   LIBRARIES UniformCostSearch
   DEPENDS OpenCV
 )

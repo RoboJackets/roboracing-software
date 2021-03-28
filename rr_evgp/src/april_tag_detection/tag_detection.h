@@ -13,6 +13,8 @@
 #include <tf/transform_listener.h>
 #include <tf_conversions/tf_eigen.h>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+#include "geometry_msgs/PoseArray.h"
 
 #include <utility>
 
@@ -21,7 +23,7 @@ class tag_detection {
     tag_detection(ros::NodeHandle *nh, const std::string &camera_frame, const std::string &pointcloud,
                   const std::string &tag_detections_topic, const std::string &destination_frame,
                   const std::string &tag_detection_markers, double x_offset, double y_offset, double px_per_m,
-                  double width, double height);
+                  double width, double height, const std::string &opponents_april);
 
   private:
     const std::string rear_april_tag = "april_4";
@@ -32,18 +34,12 @@ class tag_detection {
 
     ros::Publisher pub_pointcloud;
     ros::Publisher pub_markers;
+    ros::Publisher pub_opponents;
     ros::Subscriber sub_detections;  // Used to keep subscriber alive
-    tf::StampedTransform camera_w;
     pcl::PointCloud<pcl::PointXYZ> pcl_outline;
 
     tf::TransformListener tf_listener;
-    std::vector<std::array<int, 3>> colors{ { 255, 0, 0 },
-                                            { 255, 127, 0 },
-                                            { 0, 255, 215 },
-                                            { 126, 0, 255 },
-                                            { 0, 0, 255 } };
 
-    pcl::PointCloud<pcl::PointXYZ> opponent_cloud;
     std::string camera_frame, destination_frame;
     double width;
 
