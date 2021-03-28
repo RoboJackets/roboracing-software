@@ -39,11 +39,14 @@ void updateState() {
             if (stopBarArrived) {
                 state = AT_STOP_BAR;
                 stopBarArrived = false;
+                speed = 0;
+                steering = 0;
             }
             break;
         }
         case AT_STOP_BAR:
         {
+            ros::Duration(5).sleep();
             speed = 0;
             steering = 0;
 

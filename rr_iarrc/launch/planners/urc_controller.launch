@@ -19,12 +19,26 @@
         <arg name="camera_namespace" value="camera_right"/>
     </include>
 
+    <!-- Transform -->
+    <node pkg="rr_common" type="image_transform" name="image_transform" output="screen">
+        <param name="transform_topics" value="/camera_center/lines/detection_img"/>
+        <param name="camera_info_topic" value="/camera_center/camera_info"/>
+        <param name="camera_link_name" value="camera_center"/>
+        <param name="px_per_meter" value="50"/>
+        <param name="map_dist_max" value="4.0"/>
+        <param name="map_dist_min" value="0.0"/>
+        <param name="fallback_fov_horizontal" value="1.6955"/>
+        <param name="fallback_fov_vertical" value="1.3758"/>
+        <param name="fallback_image_width" value="1280"/>
+        <param name="fallback_image_height" value="964"/>
+    </node>
+
     <!-- Controller -->
     <node name="urc_controller" pkg="rr_iarrc" type="urc_controller" output="screen">
         <param name="lane_keeper" type="string" value="/lane_keeper"/>
         <param name="turning_action" type="string" value="/turning_action"/>
         <param name="turn_detected" type="string" value="/turn_detected"/>
-        <param name="stop_bar_arrived" type="string" value="/stop_bar_arrived"/>
+        <param name="stop_bar_arrived" type="string" value="/stopbar_near"/>
         <param name="urc_turn_action" type="string" value="/turn_action"/>
     </node>
 
@@ -35,7 +49,7 @@
         <param name="PID_kI" type="double" value="0.0" />
         <param name="PID_kD" type="double" value="0.0026" />
 
-        <param name="speed" type="double" value="0.5" /> <!-- 3.1-->
+        <param name="speed" type="double" value="0.25" /> <!-- 3.1-->
 
         <param name="useHistogramFinder" type="bool" value="true" />
 
@@ -76,6 +90,27 @@
         <param name="scalars_end" type="double" value="1.2" />
         <param name="scalars_num" type="int" value="5" />
 
+    </node>
+
+    <node name="stopbar_detector" pkg="rr_iarrc" type="stopbar_detector" output="screen" required="true">
+        <!-- Output Topics -->
+        <param name="stopbar_near" type="string" value="/stopbar_near"/>
+        <param name="stopbar_angle" type="string" value="/stopbar_angle"/>
+
+        <!-- Camera Params-->
+        <param name="overhead_image_subscription" type="string" value="/camera_center/lines/detection_img_transformed" />
+        <param name="pixels_per_meter" type="int" value="50" />
+
+        <!-- Stop Bar Detector Params -->
+        <param name="stopBarGoalAngle" type="double" value="0.0" /> <!-- angle in degrees -->
+        <param name="stopBarGoalAngleRange" type="double" value="25.0" /> <!-- we can come at the line from many angles! -->
+        <param name="stopBarTriggerDistance" type="double" value="3.5" /> <!-- distance in meters -->
+        <param name="sleep_adjust" type="double" value=".325"/>
+
+        <!-- Hough Line Params-->
+        <param name="houghThreshold" type="int" value="65" /> <!-- see opencv HoughLinesP for more info -->
+        <param name="houghMinLineLength" type="double" value="50" />
+        <param name="houghMaxLineGap" type="double" value="10" />
     </node>
 
 </launch>
