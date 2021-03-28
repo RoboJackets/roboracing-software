@@ -1,0 +1,2 @@
+add_executable(stopbar_detector stopbar_detector.cpp)
+target_link_libraries(stopbar_detector ${catkin_LIBRARIES})
