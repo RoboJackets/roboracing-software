@@ -71,7 +71,7 @@ void processMap() {
         auto& path = rollout.path;
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
 //        double global_path_costs = g_global_path_cost->CalculateCost(path, false);
-        double path_progress_costs = g_global_path_cost->GetLocalPathProgress(path);
+        double path_progress_costs = g_global_path_cost->GetLocalPathProgress(path, false);
         double cost = 0;
         double inflator = 1;
         double gamma = 1.01;
@@ -102,6 +102,7 @@ void processMap() {
     g_vehicle_model->RollOutPath(controls, plan.rollout);
     std::vector<double> map_costs = g_map_cost_interface->DistanceCost(plan.rollout.path);
 //    g_global_path_cost->CalculateCost(plan.rollout.path, true);
+    g_global_path_cost->GetLocalPathProgress(plan.rollout.path, true);
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
 

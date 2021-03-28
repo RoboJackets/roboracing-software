@@ -16,7 +16,7 @@ class GlobalPath {
     explicit GlobalPath(ros::NodeHandle nh);
 
     double CalculateCost(const std::vector<PathPoint>& plan, bool viz);
-    double GetLocalPathProgress(const std::vector<PathPoint>& plan);
+    double GetLocalPathProgress(const std::vector<PathPoint>& plan, bool viz);
     void LookupPathTransform();
     void PreProcess();
     static double GetPointDistance(tf::Point point1, tf::Point point2);
@@ -33,6 +33,7 @@ class GlobalPath {
 
     ros::Subscriber global_path_sub_;
     ros::Publisher global_path_seg_pub_;
+    ros::Publisher progress_seg_pub_;
     std::string robot_base_frame_;
     nav_msgs::Path global_path_msg_;
     std::vector<tf::Point> global_path_;
