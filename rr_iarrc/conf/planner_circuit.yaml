@@ -50,7 +50,7 @@ impasse_reverse_duration: 0.1
 
 planner_type: "annealing"
 annealing_optimizer:
-    stddevs_start: [0.2]
+    stddevs_start: [0.2, 1.0]
     temperature_end: 0.1
     annealing_steps: 1000
     acceptance_scale: 0.02

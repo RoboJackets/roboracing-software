@@ -1,0 +1,12 @@
+<robot name="evgp_opponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="evgp_body.urdf.xacro"/>
+
+    <xacro:evgp_body collision_bitmask="0x8" color="Green"
+    april2="tag36_11_00012"
+    april3="tag36_11_00013"
+    april4="tag36_11_00014"
+    april5="tag36_11_00015"
+    april6="tag36_11_00016"/>
+
+</robot>

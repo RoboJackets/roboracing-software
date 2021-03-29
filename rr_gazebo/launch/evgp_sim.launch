@@ -3,6 +3,7 @@
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="heading" default="0"/>
+    <arg name="model_type" default="rigatoni"/>
 
     <param name="/use_sim_time" value="true" />
 
@@ -18,11 +19,9 @@
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
-    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch"/>
-
-    <node pkg="rr_platform" type="scanToPointCloud" name="scanToPointCloud" output="screen">
-        <param name="min_point_dist" type="double" value="0.1"/>
-    </node>
+    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch">
+        <arg name="model_type" value="$(arg model_type)"/>
+    </include>
 
     <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
@@ -41,12 +40,10 @@
         </rosparam>
     </node>
 
-<!--    <node name="imu_axes" pkg="rr_gazebo" type="imu_axes" respawn="false" output="screen" />-->
-
     <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find rr_description)/urdf/evgp.urdf
+          args="-file $(find rr_description)/urdf/$(arg model_type).urdf
             -gazebo_namespace /gazebo
-            -urdf -model evgp
+            -urdf -model $(arg model_type)
             -x $(arg x) -y $(arg y) -z 0.1
             -R 0 -P 0 -Y $(arg heading)"/>
 

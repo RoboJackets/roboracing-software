@@ -21,6 +21,11 @@ add_message_files(
         urc_sign.msg
 )
 
+add_service_files(
+        FILES
+        turning.srv
+)
+
 generate_messages(
         DEPENDENCIES
         std_msgs
