@@ -2,6 +2,7 @@
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
+#include <angles/angles.h>
 #include <rr_msgs/speed.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Bool.h>
@@ -44,17 +45,7 @@ cv::Mat kernel(int x, int y) {
  * stop bar An angle close to 0 is horizontal.
  *
  * @param frame The input overhead image to search inside
- * @param output debug image
- * @param stopBarGoalAngle The angle of line relative to horizontal that makes a
- * stop bar
- * @param stopBarGoalAngleRange Allowable error around stopBarGoalAngle
- * @param triggerDistance Distance to the line that we will send out the message
- * to take action
- * @param threshold HoughLinesP threshold that determines # of votes that make a
- * line
- * @param minLineLength HoughLinesP minimum length of a line segment
- * @param maxLineGap HoughLinesP maxmimum distance between points in the same
- * line
+ * @param debug The debug image
  */
 bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) {
     cv::Mat edges;
@@ -74,12 +65,13 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
         cv::line(debug, p1, p2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 
         // calc angle and decide if it is a stop bar
-        double distanceX = 0;
+        double distanceX = p2.x - p1.x;
         double distanceY = p2.y - p1.y;
-        double currAngle = fabs(atan(distanceY / distanceX)) * 180 / CV_PI;  // in degrees/
+        double currAngle = fabs(atan(distanceY / distanceX));  // in radians
         cv::Point midpoint = (p1 + p2) * 0.5;
-
-        if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
+        double goalAngleRad = stopBarGoalAngle * CV_PI/180;
+        double angleDiff = fabs(angles::shortest_angular_distance(stopBarGoalAngle, currAngle) * 180/CV_PI); //in degrees
+        if (angleDiff <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
             float dist = static_cast<float>(edges.rows - midpoint.y) / pixels_per_meter;
 
@@ -87,7 +79,7 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
                 // places circle in the center of the line and displays angle of line in debug image
                 cv::circle(debug, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
-                streamAngle << std::fixed << std::setprecision(2) << currAngle;  // show angle with a couple decimals
+                streamAngle << std::fixed << std::setprecision(2) << (currAngle * 180/CV_PI);  // show angle with a couple decimals
                 cv::putText(debug, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 // draw line to stopbar in debug image and displays the distance in meters to it
