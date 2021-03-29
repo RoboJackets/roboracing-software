@@ -16,6 +16,7 @@ class LinearTrackingFilter {
     double rate_min_;
     double rate_max_;
     double last_update_;
+    std::shared_ptr<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>> dsrv_;
 
   public:
     explicit LinearTrackingFilter(const ros::NodeHandle& nh) {
@@ -27,10 +28,8 @@ class LinearTrackingFilter {
         assertions::getParam(nh, "rate_max", rate_max_, { assertions::greater<double>(0) });
         last_update_ = 0;
 
-        std::unique_ptr<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>> dsrv_;
-        dsrv_ = std::make_unique<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>>(nh);
+        dsrv_ = std::make_shared<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>>(nh);
         dsrv_->setCallback(boost::bind(&LinearTrackingFilter::dynamic_callback_linear, this, _1, _2));
-        ROS_INFO("\n\n\nCtor called for lin tracking \n\n\n");
     }
 
     LinearTrackingFilter(const LinearTrackingFilter& t) = default;
@@ -58,13 +57,6 @@ class LinearTrackingFilter {
         target_ = x;
     }
 
-    /**
-     * Setter for the dynamic reconfigure variables in the linear tracking filter.
-     * @param val_max input max val
-     * @param val_min input min val
-     * @param rate_max input max rate
-     * @param rate_min input min rate
-     */
     inline void SetDynParam(double val_max, double val_min, double rate_max, double rate_min) {
         val_max_ = val_max;
         val_min_ = val_min;
@@ -72,30 +64,23 @@ class LinearTrackingFilter {
         rate_min_ = rate_min;
     }
 
-    inline void GetDynParamDefaultsSpeed(rr_common::LinearTrackingConfig& config) {
-        config.spf_val_max = val_max_;
-        config.spf_val_min = val_min_;
-        config.spf_rate_max = rate_max_;
-        config.spf_rate_min = rate_min_;
-    }
-
-    inline void GetDynParamDefaultsTurn(rr_common::LinearTrackingConfig& config) {
-        config.stf_val_max = val_max_;
-        config.stf_val_min = val_min_;
-        config.stf_rate_max = rate_max_;
-        config.stf_rate_min = rate_min_;
+    inline void GetDynParamDefaults(rr_common::LinearTrackingConfig& config) {
+        config.val_max = val_max_;
+        config.val_min = val_min_;
+        config.rate_max = rate_max_;
+        config.rate_min = rate_min_;
     }
 
     inline void dynamic_callback_linear(rr_common::LinearTrackingConfig& config, uint32_t level) {
         static bool firstLoop = true;
         if (firstLoop) {
-            this->GetDynParamDefaultsSpeed(config);
+            this->GetDynParamDefaults(config);
             firstLoop = false;
 
         } else {
-            this->SetDynParam(config.spf_val_max, config.spf_val_min, config.spf_rate_max, config.spf_rate_min);
+            this->SetDynParam(config.val_max, config.val_min, config.rate_max, config.rate_min);
         }
-        ROS_INFO("Dyn Reconf Linear inside of callback Updated");
+        ROS_INFO("Dyn Reconf Linear Updated");
     }
 
     inline void Update(double t) {

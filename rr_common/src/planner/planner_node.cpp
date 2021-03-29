@@ -208,11 +208,13 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
 
         config.n_segments = n_control_points_;
         config.k_map_cost = k_map_cost_;
+        config.k_global_path_cost = k_global_path_cost_;
         config.k_speed = k_speed_;
         config.k_steering = k_steering_;
         config.k_angle = k_angle_;
         config.collision_penalty = collision_penalty_;
         config.steering_gain = steering_gain;
+
         firstLoop = false;
 
     } else {
@@ -222,13 +224,13 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
         g_last_controls.setZero();
 
         k_map_cost_ = config.k_map_cost;
+        k_global_path_cost_ = config.k_global_path_cost;
         k_speed_ = config.k_speed;
         k_steering_ = config.k_steering;
         k_angle_ = config.k_angle;
         collision_penalty_ = config.collision_penalty;
         steering_gain = config.steering_gain;
     }
-    ROS_INFO("Dyn Reconf inside regular planner Updated");
 }
 
 int main(int argc, char** argv) {
@@ -294,12 +296,10 @@ int main(int argc, char** argv) {
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
     viz_pub = nh.advertise<visualization_msgs::Marker>("plan/path", 1);
 
-    // init dynamic reconfigure
     dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
     dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
     f = boost::bind(&dynamic_callback_planner, _1, _2);
     DynReconfigServerPlanner.setCallback(f);
-    ROS_INFO("\n\n\ndyn reconf for planner (but empty??)   \n\n\n");
 
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);
