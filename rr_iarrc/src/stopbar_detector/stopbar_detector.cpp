@@ -30,6 +30,9 @@ double houghMaxLineGap;
 int pixels_per_meter;
 double sleepConstant;
 
+const double rho = 1;                // distance resolution
+const double theta = CV_PI / 180;    // angular resolution (in radians) pi/180 is one degree res
+
 double speed;
 
 cv::Mat kernel(int x, int y) {
@@ -53,53 +56,45 @@ cv::Mat kernel(int x, int y) {
  * @param maxLineGap HoughLinesP maxmimum distance between points in the same
  * line
  */
-bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle, double stopBarGoalAngle,
-                          double stopBarGoalAngleRange, double triggerDistance, int threshold, double minLineLength,
-                          double maxLineGap) {
+bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) {
     cv::Mat edges;
     int ddepth = CV_8UC1;
     cv::Laplacian(frame, edges, ddepth);  // use edge to get better Hough results
-    convertScaleAbs(edges, edges);
-    edges = frame;
-    cv::dilate(edges, edges, kernel(4, 4));           // clearer debug image and slightly better detection
-    cv::cvtColor(edges, output, cv::COLOR_GRAY2BGR);  // for debugging
+    cv::dilate(frame, frame, kernel(4, 4));           // clearer debug image and slightly better detection
+    cv::cvtColor(frame, debug, cv::COLOR_GRAY2BGR);  // for debugging
 
     // Standard Hough Line Transform
     std::vector<cv::Vec4i> lines;  // will hold the results of the detection
-    double rho = 1;                // distance resolution
-    double theta = CV_PI / 180;    // angular resolution (in radians) pi/180 is one degree res
 
-    cv::HoughLinesP(edges, lines, rho, theta, threshold, minLineLength,
-                    maxLineGap);  // Like hough but for line segments
+    cv::HoughLinesP(frame, lines, rho, theta, houghThreshold, houghMinLineLength, houghMaxLineGap);  // Like hough but for line segments
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point p1(l[0], l[1]);
         cv::Point p2(l[2], l[3]);
-        cv::line(output, p1, p2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
+        cv::line(debug, p1, p2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 
         // calc angle and decide if it is a stop bar
-        double distanceX = p2.x - p1.x;
+        double distanceX = 0;
         double distanceY = p2.y - p1.y;
-        double currAngle = atan(fabs(distanceY / distanceX)) * 180 / CV_PI;  // in degrees
-
+        double currAngle = fabs(atan(distanceY / distanceX)) * 180 / CV_PI;  // in degrees/
         cv::Point midpoint = (p1 + p2) * 0.5;
 
         if (fabs(stopBarGoalAngle - currAngle) <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
             float dist = static_cast<float>(edges.rows - midpoint.y) / pixels_per_meter;
 
-            if (dist <= triggerDistance) {
+            if (dist <= stopBarTriggerDistance) {
                 // places circle in the center of the line and displays angle of line in debug image
-                cv::circle(output, midpoint, 3, cv::Scalar(255, 0, 0), -1);
+                cv::circle(debug, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
                 streamAngle << std::fixed << std::setprecision(2) << currAngle;  // show angle with a couple decimals
-                cv::putText(output, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
+                cv::putText(debug, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 // draw line to stopbar in debug image and displays the distance in meters to it
-                cv::line(output, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
+                cv::line(debug, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
                 std::stringstream streamDist;
                 streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
-                cv::putText(output, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2),
+                cv::putText(debug, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2),
                             cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 stopBarAngle = currAngle;
@@ -111,7 +106,6 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& output, double& stopBarAngle,
             }
         }
     }
-
     return false;  // not close enough or no stop bar here
 }
 
@@ -120,9 +114,7 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::Mat frame = cv_ptrLine->image;
     cv::Mat debug;
     double stopBarAngle;
-    bool stopBarDetected =
-          findStopBarFromHough(frame, debug, stopBarAngle, stopBarGoalAngle, stopBarGoalAngleRange,
-                               stopBarTriggerDistance, houghThreshold, houghMinLineLength, houghMaxLineGap);
+    bool stopBarDetected = findStopBarFromHough(frame, debug, stopBarAngle);
 
     // debugging draw a line where we trigger
     cv::Point leftPoint(0, debug.rows - 1 - stopBarTriggerDistance * pixels_per_meter);
@@ -130,10 +122,11 @@ void stopBar_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::line(debug, leftPoint, rightPoint, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
 
     stop_bar_near.data = stopBarDetected;
-    if (stopBarDetected)
+    if (stopBarDetected) {
         stop_bar_angle.data = stopBarAngle;
+        pub_angle.publish(stop_bar_angle);
+    }
     pub_near_stopbar.publish(stop_bar_near);
-    pub_angle.publish(stop_bar_angle);
     if (pub_line.getNumSubscribers() > 0) {
         sensor_msgs::Image outmsg;
         cv_ptrLine->image = debug;
