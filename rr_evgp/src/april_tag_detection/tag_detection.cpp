@@ -10,7 +10,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "april_tag_pointcloud");
     ros::NodeHandle nhp("~");
     ros::NodeHandle nh;
-    std::string camera_frame, pointcloud, tag_detections_topic, tag_detection_markers, destination_frame, opponents_april;
+    std::string camera_frame, pointcloud, tag_detections_topic, tag_detection_markers, destination_frame,
+          opponents_april;
     double x_offset, y_offset, px_per_m, width, height;
     XmlRpc::XmlRpcValue tags;
     nhp.getParam("camera_frame", camera_frame);

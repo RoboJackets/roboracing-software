@@ -14,9 +14,10 @@
 #include <tf_conversions/tf_eigen.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include "geometry_msgs/PoseArray.h"
 
 #include <utility>
+
+#include "geometry_msgs/PoseArray.h"
 
 class tag_detection {
   public:
