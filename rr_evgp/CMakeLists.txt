@@ -42,6 +42,7 @@ add_definitions(${PCL_DEFINITIONS})
 ## Build ##
 ###########
 
+add_subdirectory(src/cone_detection)
 add_subdirectory(src/opponent_detection)
 add_subdirectory(src/costmap_plugins)
 add_subdirectory(src/UniformCostSearch)
