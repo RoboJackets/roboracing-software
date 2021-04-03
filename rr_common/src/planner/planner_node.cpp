@@ -1,8 +1,12 @@
+#include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ros/ros.h>
+#include <rr_common/PathPlannerConfig.h>
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/bicycle_model.h>
 #include <rr_common/planning/distance_map.h>
@@ -53,6 +57,8 @@ double viz_path_scale;
 
 double total_planning_time;
 size_t total_plans;
+
+int n_control_points_;
 
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
@@ -195,6 +201,37 @@ void generatePath() {
     }
 }
 
+void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t level) {
+    static bool firstLoop = true;
+    if (firstLoop) {
+        g_vehicle_model->GetDynParamDefaults(config);
+
+        config.n_segments = n_control_points_;
+        config.k_map_cost = k_map_cost_;
+        config.k_global_path_cost = k_global_path_cost_;
+        config.k_speed = k_speed_;
+        config.k_steering = k_steering_;
+        config.k_angle = k_angle_;
+        config.collision_penalty = collision_penalty_;
+        config.steering_gain = steering_gain;
+
+        firstLoop = false;
+    } else {
+        g_vehicle_model->SetDynParam(config.max_lateral_accel, config.segment_size, config.dt);
+
+        g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, config.n_segments);
+        g_last_controls.setZero();
+
+        k_map_cost_ = config.k_map_cost;
+        k_global_path_cost_ = config.k_global_path_cost;
+        k_speed_ = config.k_speed;
+        k_steering_ = config.k_steering;
+        k_angle_ = config.k_angle;
+        collision_penalty_ = config.collision_penalty;
+        steering_gain = config.steering_gain;
+    }
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "planner");
 
@@ -238,9 +275,8 @@ int main(int argc, char** argv) {
         ros::shutdown();
     }
 
-    int n_control_points = 0;
-    assertions::getParam(nhp, "n_segments", n_control_points);
-    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_control_points);
+    assertions::getParam(nhp, "n_segments", n_control_points_);
+    g_last_controls = rr::Controls<ctrl_dim>(ctrl_dim, n_control_points_);
     g_last_controls.setZero();
 
     caution_duration = ros::Duration(assertions::param(nhp, "impasse_caution_duration", 0.0));
@@ -258,6 +294,11 @@ int main(int argc, char** argv) {
     speed_pub = nh.advertise<rr_msgs::speed>("plan/speed", 1);
     steer_pub = nh.advertise<rr_msgs::steering>("plan/steering", 1);
     viz_pub = nh.advertise<visualization_msgs::Marker>("plan/path", 1);
+
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig> DynReconfigServerPlanner;
+    dynamic_reconfigure::Server<rr_common::PathPlannerConfig>::CallbackType f;
+    f = boost::bind(&dynamic_callback_planner, _1, _2);
+    DynReconfigServerPlanner.setCallback(f);
 
     speed_message.reset(new rr_msgs::speed);
     steer_message.reset(new rr_msgs::steering);

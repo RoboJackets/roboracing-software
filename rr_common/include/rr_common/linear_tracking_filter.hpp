@@ -1,7 +1,9 @@
 #pragma once
 
+#include <dynamic_reconfigure/server.h>
 #include <parameter_assertions/assertions.h>
 #include <ros/ros.h>
+#include <rr_common/LinearTrackingConfig.h>
 
 namespace rr {
 
@@ -14,6 +16,7 @@ class LinearTrackingFilter {
     double rate_min_;
     double rate_max_;
     double last_update_;
+    std::shared_ptr<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>> dsrv_;
 
   public:
     explicit LinearTrackingFilter(const ros::NodeHandle& nh) {
@@ -24,6 +27,9 @@ class LinearTrackingFilter {
         assertions::getParam(nh, "rate_min", rate_min_, { assertions::less<double>(0) });
         assertions::getParam(nh, "rate_max", rate_max_, { assertions::greater<double>(0) });
         last_update_ = 0;
+
+        dsrv_ = std::make_shared<dynamic_reconfigure::Server<rr_common::LinearTrackingConfig>>(nh);
+        dsrv_->setCallback(boost::bind(&LinearTrackingFilter::dynamic_callback_linear, this, _1, _2));
     }
 
     LinearTrackingFilter(const LinearTrackingFilter& t) = default;
@@ -49,6 +55,30 @@ class LinearTrackingFilter {
 
     inline void SetTarget(double x) {
         target_ = x;
+    }
+
+    inline void SetDynParam(double val_max, double val_min, double rate_max, double rate_min) {
+        val_max_ = val_max;
+        val_min_ = val_min;
+        rate_max_ = rate_max;
+        rate_min_ = rate_min;
+    }
+
+    inline void GetDynParamDefaults(rr_common::LinearTrackingConfig& config) {
+        config.val_max = val_max_;
+        config.val_min = val_min_;
+        config.rate_max = rate_max_;
+        config.rate_min = rate_min_;
+    }
+
+    inline void dynamic_callback_linear(rr_common::LinearTrackingConfig& config, uint32_t level) {
+        static bool firstLoop = true;
+        if (firstLoop) {
+            this->GetDynParamDefaults(config);
+            firstLoop = false;
+        } else {
+            this->SetDynParam(config.val_max, config.val_min, config.rate_max, config.rate_min);
+        }
     }
 
     inline void Update(double t) {

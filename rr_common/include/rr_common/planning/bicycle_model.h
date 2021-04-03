@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rr_common/PathPlannerConfig.h>
+
 #include <rr_common/linear_tracking_filter.hpp>
 #include <tuple>
 
@@ -31,6 +33,15 @@ class BicycleModel {
     void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
 
     void RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const;
+
+    /**
+     * Setter for the dynamic reconfigure variables in the bicycle model.
+     * @param max_lateral_accel input lateral acceleration
+     * @param segment_size input segment size
+     * @param dt input dt
+     */
+    void SetDynParam(double max_lateral_accel, int segment_size, double dt);
+    void GetDynParamDefaults(rr_common::PathPlannerConfig& config);
 
   private:
     /**
