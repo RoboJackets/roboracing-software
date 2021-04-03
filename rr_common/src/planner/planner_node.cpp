@@ -58,7 +58,7 @@ double viz_path_scale;
 double total_planning_time;
 size_t total_plans;
 
-int n_control_points_ = 0;
+int n_control_points_;
 
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
@@ -216,7 +216,6 @@ void dynamic_callback_planner(rr_common::PathPlannerConfig& config, uint32_t lev
         config.steering_gain = steering_gain;
 
         firstLoop = false;
-
     } else {
         g_vehicle_model->SetDynParam(config.max_lateral_accel, config.segment_size, config.dt);
 

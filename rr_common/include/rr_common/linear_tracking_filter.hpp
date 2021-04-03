@@ -76,11 +76,9 @@ class LinearTrackingFilter {
         if (firstLoop) {
             this->GetDynParamDefaults(config);
             firstLoop = false;
-
         } else {
             this->SetDynParam(config.val_max, config.val_min, config.rate_max, config.rate_min);
         }
-        ROS_INFO("Dyn Reconf Linear Updated");
     }
 
     inline void Update(double t) {
