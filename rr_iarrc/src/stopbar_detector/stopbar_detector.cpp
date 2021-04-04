@@ -48,9 +48,7 @@ cv::Mat kernel(int x, int y) {
  * @param debug The debug image
  */
 bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) {
-    cv::Mat edges;
     int ddepth = CV_8UC1;
-    cv::Laplacian(frame, edges, ddepth);             // use edge to get better Hough results
     cv::dilate(frame, frame, kernel(4, 4));          // clearer debug image and slightly better detection
     cv::cvtColor(frame, debug, cv::COLOR_GRAY2BGR);  // for debugging
 
@@ -70,12 +68,10 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
         double distanceY = p2.y - p1.y;
         double currAngle = fabs(atan(distanceY / distanceX));  // in radians
         cv::Point midpoint = (p1 + p2) * 0.5;
-        double goalAngleRad = stopBarGoalAngle * CV_PI / 180;
-        double angleDiff =
-              fabs(angles::shortest_angular_distance(stopBarGoalAngle, currAngle) * 180 / CV_PI);  // in degrees
+        double angleDiff = fabs(angles::shortest_angular_distance(stopBarAngle, currAngle));
         if (angleDiff <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
-            float dist = static_cast<float>(edges.rows - midpoint.y) / pixels_per_meter;
+            float dist = static_cast<float>(frame.rows - midpoint.y) / pixels_per_meter;
 
             if (dist <= stopBarTriggerDistance) {
                 // places circle in the center of the line and displays angle of line in debug image
@@ -86,10 +82,10 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
                 cv::putText(debug, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 // draw line to stopbar in debug image and displays the distance in meters to it
-                cv::line(debug, midpoint, cv::Point(midpoint.x, edges.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
+                cv::line(debug, midpoint, cv::Point(midpoint.x, frame.rows), cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
                 std::stringstream streamDist;
                 streamDist << std::fixed << std::setprecision(2) << dist;  // show distance with a couple decimals
-                cv::putText(debug, streamDist.str(), cv::Point(midpoint.x, edges.rows - dist / 2),
+                cv::putText(debug, streamDist.str(), cv::Point(midpoint.x, frame.rows - dist / 2),
                             cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 stopBarAngle = currAngle;
@@ -156,6 +152,8 @@ int main(int argc, char** argv) {
 
     nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);              // angle in degrees
     nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange, 15.0);   // angle in degrees
+    stopBarGoalAngle *= CV_PI / 180;                                   // convert to radians
+    stopBarGoalAngleRange *= CV_PI / 180;                              // convert to radians
     nhp.param("stopBarTriggerDistance", stopBarTriggerDistance, 0.5);  // distance in meters
     nhp.param("pixels_per_meter", pixels_per_meter, 100);
     nhp.param("houghThreshold", houghThreshold, 50);
