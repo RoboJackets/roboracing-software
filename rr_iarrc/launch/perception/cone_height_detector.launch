@@ -1,9 +1,9 @@
 <launch>
     <node name="cone_height_detector" pkg="rr_iarrc" type="cone_height_detector" output="screen">
-        <param name="orange_low_H" type="int" value="5" />
-        <param name="orange_high_H" type="int" value="20" />
-        <param name="orange_low_S" type="int" value="140" />
-        <param name="orange_low_V" type="int" value="140" />
+        <param name="orange_low_H" type="int" value="0" />
+        <param name="orange_high_H" type="int" value="200" />
+        <param name="orange_low_S" type="int" value="40" />
+        <param name="orange_low_V" type="int" value="40" />
 
         <!--canny max threshold is set default to 3 * min-->
         <param name="canny_min_threshold" type="int" value="60" />
@@ -18,10 +18,10 @@
         <param name="real_cone_radius" type="double" value=".07" />
 
         <!--The larger the height the lower it will be on the screen-->
-        <param name="blockSky_height" type="int" value="500" />
-        <param name="blockWheels_height" type="int" value="990" />
-        <param name="blockBumper_height" type="int" value="800" />
+        <param name="blockSky_height" type="int" value="0" />
+        <param name="blockWheels_height" type="int" value="100000" />
+        <param name="blockBumper_height" type="int" value="100000" />
 
-        <param name="subscription_node" type="string" value="/camera_center/image_color_rect"/>
+        <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
     </node>
 </launch>

@@ -1,5 +1,5 @@
 //
-// Created by charlie on 3/29/21.
+// Created by Charlie on 3/29/21.
 //
 
 #include "lidar_cone_parsing.h"
@@ -18,6 +18,4 @@ lidar_cone_parsing::lidar_cone_parsing(ros::NodeHandle *nh) {
     camera_subscriber = nh->subscribe("/camera/image_color_rect", 5, &lidar_cone_parsing::camera_callback, this);
 }
 
-void lidar_cone_parsing::camera_callback(const sensor_msgs::Image::ConstPtr &msg) {
-
-}
+void lidar_cone_parsing::camera_callback(const sensor_msgs::Image::ConstPtr &msg) {}
