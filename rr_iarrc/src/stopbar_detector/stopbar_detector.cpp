@@ -1,8 +1,8 @@
+#include <angles/angles.h>
 #include <cv_bridge/cv_bridge.h>
 #include <ros/package.h>
 #include <ros/publisher.h>
 #include <ros/ros.h>
-#include <angles/angles.h>
 #include <rr_msgs/speed.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Bool.h>
@@ -31,8 +31,8 @@ double houghMaxLineGap;
 int pixels_per_meter;
 double sleepConstant;
 
-const double rho = 1;                // distance resolution
-const double theta = CV_PI / 180;    // angular resolution (in radians) pi/180 is one degree res
+const double rho = 1;              // distance resolution
+const double theta = CV_PI / 180;  // angular resolution (in radians) pi/180 is one degree res
 
 double speed;
 
@@ -50,14 +50,15 @@ cv::Mat kernel(int x, int y) {
 bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) {
     cv::Mat edges;
     int ddepth = CV_8UC1;
-    cv::Laplacian(frame, edges, ddepth);  // use edge to get better Hough results
-    cv::dilate(frame, frame, kernel(4, 4));           // clearer debug image and slightly better detection
+    cv::Laplacian(frame, edges, ddepth);             // use edge to get better Hough results
+    cv::dilate(frame, frame, kernel(4, 4));          // clearer debug image and slightly better detection
     cv::cvtColor(frame, debug, cv::COLOR_GRAY2BGR);  // for debugging
 
     // Standard Hough Line Transform
     std::vector<cv::Vec4i> lines;  // will hold the results of the detection
 
-    cv::HoughLinesP(frame, lines, rho, theta, houghThreshold, houghMinLineLength, houghMaxLineGap);  // Like hough but for line segments
+    cv::HoughLinesP(frame, lines, rho, theta, houghThreshold, houghMinLineLength,
+                    houghMaxLineGap);  // Like hough but for line segments
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point p1(l[0], l[1]);
@@ -69,8 +70,9 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
         double distanceY = p2.y - p1.y;
         double currAngle = fabs(atan(distanceY / distanceX));  // in radians
         cv::Point midpoint = (p1 + p2) * 0.5;
-        double goalAngleRad = stopBarGoalAngle * CV_PI/180;
-        double angleDiff = fabs(angles::shortest_angular_distance(stopBarGoalAngle, currAngle) * 180/CV_PI); //in degrees
+        double goalAngleRad = stopBarGoalAngle * CV_PI / 180;
+        double angleDiff =
+              fabs(angles::shortest_angular_distance(stopBarGoalAngle, currAngle) * 180 / CV_PI);  // in degrees
         if (angleDiff <= stopBarGoalAngleRange) {  // allows some amount of angle error
             // get distance to the line
             float dist = static_cast<float>(edges.rows - midpoint.y) / pixels_per_meter;
@@ -79,7 +81,8 @@ bool findStopBarFromHough(cv::Mat& frame, cv::Mat& debug, double& stopBarAngle) 
                 // places circle in the center of the line and displays angle of line in debug image
                 cv::circle(debug, midpoint, 3, cv::Scalar(255, 0, 0), -1);
                 std::stringstream streamAngle;
-                streamAngle << std::fixed << std::setprecision(2) << (currAngle * 180/CV_PI);  // show angle with a couple decimals
+                streamAngle << std::fixed << std::setprecision(2)
+                            << (currAngle * 180 / CV_PI);  // show angle with a couple decimals
                 cv::putText(debug, streamAngle.str(), midpoint, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
 
                 // draw line to stopbar in debug image and displays the distance in meters to it
@@ -143,13 +146,13 @@ int main(int argc, char** argv) {
     std::string stopbar_angle_topic;
     std::string speed_topic;
 
-    nhp.param("stopbar_near", stopbar_near_topic, std::string("/stopbar_near"));
-    nhp.param("stopbar_angle", stopbar_angle_topic, std::string("/stopbar_angle"));
+    nh.param("stopbar_near", stopbar_near_topic, std::string("/stopbar_near"));
+    nh.param("stopbar_angle", stopbar_angle_topic, std::string("/stopbar_angle"));
     nhp.param("sleep_adjust", sleepConstant, 1.0);
 
     nhp.param("overhead_image_subscription", overhead_image_sub, std::string("/lines/detection_img_transformed"));
 
-    nhp.param("speed_subscription", speed_topic, std::string("/speed"));
+    nh.param("speed_subscription", speed_topic, std::string("/speed"));
 
     nhp.param("stopBarGoalAngle", stopBarGoalAngle, 0.0);              // angle in degrees
     nhp.param("stopBarGoalAngleRange", stopBarGoalAngleRange, 15.0);   // angle in degrees
@@ -161,9 +164,9 @@ int main(int argc, char** argv) {
 
     pub_line = nh.advertise<sensor_msgs::Image>("/stopbar_detector/stop_bar",
                                                 1);  // debug publish of image
-    pub_near_stopbar = nhp.advertise<std_msgs::Bool>(stopbar_near_topic, 1);
-    pub_angle = nhp.advertise<std_msgs::Float64>(stopbar_angle_topic, 1);
-    auto speed_sub = nhp.subscribe(speed_topic, 1, speed_callback);
+    pub_near_stopbar = nh.advertise<std_msgs::Bool>(stopbar_near_topic, 1);
+    pub_angle = nh.advertise<std_msgs::Float64>(stopbar_angle_topic, 1);
+    auto speed_sub = nh.subscribe(speed_topic, 1, speed_callback);
     auto stopBar = nh.subscribe(overhead_image_sub, 1, stopBar_callback);
 
     ros::spin();
