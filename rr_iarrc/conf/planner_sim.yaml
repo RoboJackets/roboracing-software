@@ -38,11 +38,13 @@ obstacle_points_map:
 
 
 steering_gain: 1.1
+viz_path_scale: .1
 
 k_map_cost: 1.0
 k_speed: 0.2
 k_steering: 0
 k_angle: 0.5
+k_global_path_cost: 0
 collision_penalty: 1000
 
 impasse_caution_duration: 0.25
@@ -50,7 +52,7 @@ impasse_reverse_duration: 4.0
 
 planner_type: "annealing"
 annealing_optimizer:
-    stddevs_start: [0.2]
+    stddevs_start: [0.2, 1]
     temperature_end: 0.1
     annealing_steps: 1000
     acceptance_scale: 0.02

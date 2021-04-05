@@ -1,0 +1,17 @@
+costmap:
+    update_frequency: 30.0
+    publish_frequency: 30.0
+    always_send_full_costmap: true
+
+    rolling_window: true
+    width: 100
+    height: 100
+
+    plugins:
+        - {name: "global", type: "costmap_2d::StaticLayer"}
+
+    global:
+        map_topic: "/static_map"
+        subscribe_to_updates: true
+        trinary_costmap: true
+        track_unknown_space: false

@@ -1,216 +1,148 @@
 #include <cv_bridge/cv_bridge.h>
+#include <math.h>
+#include <ros/publisher.h>
 #include <ros/ros.h>
-#include <ros/subscriber.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Bool.h>
-#include <stdio.h>
 
-#include <deque>
-#include <iostream>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-/*
- * @author Brian Cochran github @btdubs
- * Made June 2019 for IARRC 2019
- *
- * Determines a start light change from red to green
- *
- */
+// Determines when the start light changes from red to green
 
-ros::Publisher img_pub;
+ros::Publisher debug_img_pub;
 ros::Publisher bool_pub;
 sensor_msgs::Image outmsg;
-std_msgs::Bool start_detected;
 
-std::deque<cv::Mat> history;
-int history_frame_count;
+std_msgs::Bool prev_start_msg;
+ros::Time last_red_time;
 
-int xTolerance;
-int yTolerance;
-double radiusTolerance;
-int thresholdGreen;
-int thresholdRed;
+std::vector<cv::Point> lastRedCenters;
+
 double circularityThreshold;
+int minArea;
 
-cv::Mat getRedImage(cv::Mat frame) {
-    std::vector<cv::Mat> bgr;
-    cv::split(frame, bgr);
+int minGreenHue, maxGreenHue, minRedHue, maxRedHue;
+double redToGreenTime;
 
-    //@note: if you have trouble seeing red, change this formula.
-    cv::Mat redLightCheck = bgr[2] - bgr[0] - bgr[1];  // red - blue - green
+bool keepPublishing;
 
-    cv::threshold(redLightCheck, redLightCheck, thresholdRed, 255, cv::THRESH_BINARY);
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    cv::morphologyEx(redLightCheck, redLightCheck, cv::MORPH_CLOSE, kernel);
-    cv::morphologyEx(redLightCheck, redLightCheck, cv::MORPH_OPEN, kernel);
-
-    return redLightCheck;
+int tolerance;
+cv::Mat kernel(int x, int y) {
+    return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
 }
 
-cv::Mat getGreenImage(cv::Mat frame) {
-    std::vector<cv::Mat> bgr;
-    cv::split(frame, bgr);
-
-    //@note: if you have trouble seeing green, change to (bgr[0].mul(bgr[1] -
-    // bgr[2]) / 255);
-    cv::Mat greenLightCheck = (bgr[0].mul(bgr[1] - bgr[2]) / 255) - bgr[2];  // elementwiseMult(blue, green - red) - red
-
-    cv::threshold(greenLightCheck, greenLightCheck, thresholdGreen, 255, cv::THRESH_BINARY);
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    cv::morphologyEx(greenLightCheck, greenLightCheck, cv::MORPH_CLOSE, kernel);
-    cv::morphologyEx(greenLightCheck, greenLightCheck, cv::MORPH_OPEN, kernel);
-
-    return greenLightCheck;
-}
-
-//@note circles returned is a vector of vectors containing <x, y, radius>
-std::vector<cv::Vec3f> findCirclesFromContours(cv::Mat &binary) {
-    // Find contours
+std::vector<cv::Point> findCenters(const cv::Mat &color_img) {
     std::vector<std::vector<cv::Point>> contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+    std::vector<cv::Point> centers;
+    findContours(color_img, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+    for (const auto &contour : contours) {
+        double perimeter = cv::arcLength(contour, true);
+        double area = cv::contourArea(contour, false);
+        double circularity = 4 * M_PI * (area / (perimeter * perimeter));
 
-    // Find circles
-    std::vector<cv::Vec3f> foundCircles;
-
-    for (int i = 0; i < contours.size(); i++) {
-        double area = cv::contourArea(contours[i]);
-        double arclength = cv::arcLength(contours[i], true);
-        double circularity = 4 * CV_PI * area / (arclength * arclength);
-        if (circularity >= circularityThreshold) {
-            cv::Point2f center;
-            float radius;
-            cv::minEnclosingCircle(contours[i], center, radius);
-            cv::Vec3f circle{ center.x, center.y, radius };
-            foundCircles.push_back(circle);
+        if (circularityThreshold < circularity && area > minArea) {
+            cv::Moments moments = cv::moments(contour);
+            int centerX = moments.m10 / moments.m00;
+            int centerY = moments.m01 / moments.m00;
+            centers.push_back(cv::Point(centerX, centerY));
         }
     }
-    return foundCircles;
+    return centers;
 }
 
-//@note circles returned is a vector of vectors containing <x, y, radius>
-std::vector<cv::Vec3f> findCirclesFromHough(cv::Mat &binary) {
-    /// Apply the Hough Transform to find the circles
-    std::vector<cv::Vec3f> circles;
-    double dp = 1;
-    double minDist = binary.rows / 8;
-    double cannyThreshold = 100;
-    double accumThreshold = 12;
-    int minRadius = 0;
-    int maxRadius = binary.rows / 3;
-    cv::HoughCircles(binary, circles, CV_HOUGH_GRADIENT, dp, minDist, cannyThreshold, accumThreshold, minRadius,
-                     maxRadius);
-    return circles;
-}
-
-// For debugging purposes
-void drawCircles(cv::Mat &debug, std::vector<cv::Vec3f> circles) {
-    // Draw the circles detected
-    for (size_t i = 0; i < circles.size(); i++) {
-        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radius = cvRound(circles[i][2]);
-        radius += 0.8 * radius;  // add an offset for easier viewing
-        // circle outline
-        cv::circle(debug, center, radius, cv::Scalar(0, 255, 255), 3, 8, 0);
-    }
-}
-
-/*
- * Image callback
- * The idea: keep checking for green circles, when we find one,
- * go back [x] frames and see if there was a red one above and nearby.
- *
- */
-void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
-    if (start_detected.data) {
-        bool_pub.publish(start_detected);
-        return;  // do not to all this computing if the signal has already been seen
-                 // and go broadcast
-    }
-
-    // Convert msg to Mat image
-    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
-    cv::Mat frame = cv_ptr->image;
-
-    history.push_front(frame);
-    if (history.size() > history_frame_count) {
-        history.pop_back();
-    }
-
-    cv::Mat greenImage = getGreenImage(frame);
-    std::vector<cv::Vec3f> greenCircles = findCirclesFromContours(greenImage);
-
-    if (greenCircles.size() > 0) {
-        //@note only checks farthest history. May want to check more frames if you
-        // have a slower camera
-        cv::Mat redImage = getRedImage(history.back());
-        std::vector<cv::Vec3f> redCircles = findCirclesFromContours(redImage);
-        for (int i = 0; i < greenCircles.size(); i++) {
-            cv::Point greenCenter(static_cast<int>(greenCircles[i][0]), static_cast<int>(greenCircles[i][1]));
-            double greenRadius = greenCircles[i][2];
-
-            for (int j = 0; j < redCircles.size(); j++) {
-                cv::Point redCenter(static_cast<int>(redCircles[j][0]), static_cast<int>(redCircles[j][1]));
-                double redRadius = redCircles[j][2];
-                if (greenCenter.y > redCenter.y &&  // green below red
-                    std::fabs(greenRadius - redRadius) <= radiusTolerance &&
-                    std::abs(greenCenter.x - redCenter.x) <= xTolerance &&
-                    std::abs(greenCenter.y - redCenter.y) <= yTolerance) {
-                    start_detected.data = true;  // red light found
-                    break;
-                }
+bool isClose(const std::vector<cv::Point> &greenCenters, const std::vector<cv::Point> &lastRedCenters) {
+    for (const auto &greenCenter : greenCenters) {
+        for (const auto &redCenter : lastRedCenters) {
+            double distance = cv::norm(redCenter - greenCenter);
+            if (distance < tolerance) {
+                return true;
             }
         }
     }
+    return false;
+}
 
-    bool_pub.publish(start_detected);
-
-    if (img_pub.getNumSubscribers() > 0) {
-        // do some debug visualizations
-        cv::Mat debug;
-        std::vector<cv::Mat> debugChannels(3);
-        debugChannels[0] = cv::Mat::zeros(greenImage.rows, greenImage.cols, greenImage.type());
-        debugChannels[1] = greenImage;
-        debugChannels[2] = getRedImage(history.back());  //@note: this means what you see is HIST_FRAMES behind
-        cv::merge(debugChannels, debug);
-        drawCircles(debug, greenCircles);
-        drawCircles(debug, findCirclesFromContours(debugChannels[2]));
-
-        cv_ptr->image = debug;
-        cv_ptr->encoding = "bgr8";
-        cv_ptr->toImageMsg(outmsg);
-        img_pub.publish(outmsg);
+void img_callback(const sensor_msgs::Image::ConstPtr &msg) {
+    // keeps publishing true if green was previously seen
+    if (prev_start_msg.data && !keepPublishing) {
+        bool_pub.publish(prev_start_msg);
+        return;
     }
+
+    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+    cv::Mat frame = cv_ptr->image;
+
+    cv::Mat hsv_frame, red_found, green_found, debugImage;
+    cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv_frame, cv::Scalar(minRedHue, 100, 140), cv::Scalar(maxRedHue, 255, 255), red_found);
+    cv::inRange(hsv_frame, cv::Scalar(minGreenHue, 120, 120), cv::Scalar(maxGreenHue, 255, 255), green_found);
+
+    cv::GaussianBlur(frame, frame, cv::Size(3, 3), 0, 0);
+
+    cv::morphologyEx(green_found, green_found, cv::MORPH_OPEN, kernel(3, 3));
+    cv::morphologyEx(red_found, red_found, cv::MORPH_OPEN, kernel(3, 3));
+
+    cv::dilate(green_found, green_found, kernel(3, 3));
+    cv::dilate(red_found, red_found, kernel(3, 3));
+
+    std::vector<cv::Point> redCenters = findCenters(red_found);
+    std::vector<cv::Point> greenCenters = findCenters(green_found);
+
+    if (redCenters.size() != 0) {
+        last_red_time = msg->header.stamp;
+        lastRedCenters = redCenters;
+    }
+
+    prev_start_msg.data =
+          (msg->header.stamp - last_red_time).toSec() < redToGreenTime && isClose(greenCenters, lastRedCenters);
+
+    bool_pub.publish(prev_start_msg);
+
+    sensor_msgs::Image outmsg;
+
+    // sets the found pixels in the image to either red or green
+    cv::cvtColor(red_found, red_found, cv::COLOR_GRAY2RGB);
+    red_found.setTo(cv::Scalar(255, 0, 0), red_found);
+    cv::cvtColor(green_found, green_found, cv::COLOR_GRAY2RGB);
+    green_found.setTo(cv::Scalar(0, 255, 0), green_found);
+
+    debugImage = red_found + green_found;
+
+    cv_ptr->image = debugImage;
+    cv_ptr->encoding = "rgb8";
+    cv_ptr->toImageMsg(outmsg);
+    debug_img_pub.publish(outmsg);
 }
 
 int main(int argc, char *argv[]) {
-    ros::init(argc, argv, "stoplight_watcher_v2");
-    ros::NodeHandle nh;
+    ros::init(argc, argv, "startlight_watcher");
     ros::NodeHandle nhp("~");
 
     std::string img_topic;
-    std::string stoplight_topic;
+    std::string startlight_topic;
     nhp.param("img_topic", img_topic, std::string("/camera/image_color_rect"));
-    nhp.param("stoplight_watcher_topic", stoplight_topic, std::string("/start_detected"));
-
-    nhp.param("circle_x_tolerance", xTolerance, 20);
-    nhp.param("circle_y_tolerance", yTolerance, 100);
-    nhp.param("circle_radius_tolerance", radiusTolerance, 10.0);
+    nhp.param("startlight_watcher_topic", startlight_topic, std::string("/start_detected"));
 
     nhp.param("circularity_threshold", circularityThreshold, 0.7);
 
-    nhp.param("history_frame_count", history_frame_count, 5);
+    nhp.param("min_green_hue", minGreenHue, 20);
+    nhp.param("max_green_hue", maxGreenHue, 100);
+    nhp.param("min_red_hue", minRedHue, 0);
+    nhp.param("max_red_hue", maxRedHue, 20);
 
-    nhp.param("threshold_red", thresholdRed, 1);
-    nhp.param("threshold_green", thresholdGreen, 1);
+    nhp.param("min_area", minArea, 100);
+
+    nhp.param("red_to_green_time", redToGreenTime, 1.0);
+
+    nhp.param("keep_publishing", keepPublishing, false);
+
+    nhp.param("tolerance", tolerance, 20);
 
     // Subscribe to ROS topic with callback
-    start_detected.data = false;
-    ros::Subscriber img_saver_sub = nh.subscribe(img_topic, 1, img_callback);
-    img_pub = nh.advertise<sensor_msgs::Image>("/startlight_debug", 1);
-    bool_pub = nh.advertise<std_msgs::Bool>(stoplight_topic, 1);
+    prev_start_msg.data = false;
+    ros::Subscriber img_sub = nhp.subscribe(img_topic, 1, img_callback);
+    debug_img_pub = nhp.advertise<sensor_msgs::Image>("/startlight_debug", 1);
+    bool_pub = nhp.advertise<std_msgs::Bool>(startlight_topic, 1);
 
     ros::spin();
     return 0;

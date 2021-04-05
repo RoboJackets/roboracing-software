@@ -10,6 +10,8 @@
 <!--        <arg name="map_origin_y" value="$(eval -global_map_size/2)"/>-->
 <!--    </include>-->
 
+    <include file="$(dirname)/lidar_z_threshold.launch"/>
+
     <node pkg="costmap_2d" type="costmap_2d_node" name="global_mapper" output="screen">
         <rosparam command="load" file="$(find rr_evgp)/conf/mapping_common.yaml" subst_value="True"/>
         <rosparam command="load" file="$(find rr_evgp)/conf/mapping_global.yaml" subst_value="True"/>

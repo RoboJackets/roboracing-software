@@ -1,0 +1,14 @@
+<launch>
+  <include file="$(dirname)/lidar_z_threshold.launch"/>
+
+  <node name="opponent_detection" pkg="rr_evgp" type="opponent_detection">
+
+    <param name="input_cloud" value="/lidar_up"/>
+    <param name="output_markers" value="/opponent_clusters"/>
+    <param name="output_centroids" value="/opponent_centroids"/>
+
+    <param name="cluster_tolerance" value="0.5"/>
+    <param name="min_cluster_size" value="10"/>
+    <param name="max_cluster_size" value="1000000"/>
+  </node>
+</launch>

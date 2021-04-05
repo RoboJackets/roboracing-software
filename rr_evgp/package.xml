@@ -19,13 +19,17 @@
   <depend>rospy</depend>
   <depend>rr_msgs</depend>
   <depend>costmap_2d</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
 
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
   <build_depend>parameter_assertions</build_depend>
 
   <exec_depend>robot_localization</exec_depend>
   <exec_depend>hector_gazebo_plugins</exec_depend>
+  <exec_depend>map_server</exec_depend>
 
   <export>
     <costmap_2d plugin="${prefix}/plugins.xml"/>

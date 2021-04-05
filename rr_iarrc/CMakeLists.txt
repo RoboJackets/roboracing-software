@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rr_iarrc)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -38,6 +38,6 @@ add_subdirectory(src/laplacian_line_detection)
 add_subdirectory(src/drag_centerline_planner)
 add_subdirectory(src/cone_detection)
 add_subdirectory(src/urc_controller)
-add_subdirectory(src/turning_test)
 add_subdirectory(src/sign_detector)
 add_subdirectory(src/urc_image_merger)
+add_subdirectory(src/urc_turn_action)

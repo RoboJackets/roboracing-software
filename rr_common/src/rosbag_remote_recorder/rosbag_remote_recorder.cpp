@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <rosbag/recorder.h>
 #include <rr_msgs/chassis_state.h>
+
 #include <boost/algorithm/string.hpp>
 
 /*
@@ -17,7 +18,7 @@ bool startRecording = false;
 bool begunRecording = false;
 
 // lambda for removing empty strings from the split()
-auto pred = [&](const std::string &key) -> bool { return key.empty(); };
+auto pred = [](const std::string &key) -> bool { return key.empty(); };
 
 void chassisStateCallback(const rr_msgs::chassis_state::ConstPtr &chassis_msg) {
     startRecording = chassis_msg->record_bag;

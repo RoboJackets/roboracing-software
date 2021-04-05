@@ -22,7 +22,7 @@
         <param name="use_odometry_yaw" value="false"/>
         <param name="wait_for_datum" value="false"/>
 
-        <remap from="/imu/data" to="/imu"/>
+        <remap from="/imu/data" to="/imu_bottom"/>
         <remap from="/gps/fix" to="/gps/fix"/>
         <remap from="/odometry/filtered" to="/odometry/filtered"/>
     </node>

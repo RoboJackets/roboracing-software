@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rr_platform)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,12 +12,10 @@ find_package(catkin
         sensor_msgs
         cv_bridge
         pcl_ros
-        sick_tim
         laser_geometry
         image_transport
         geometry_msgs
         rr_msgs
-        serial
         parameter_assertions
         )
 
@@ -59,4 +57,4 @@ add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
 add_subdirectory(src/EthernetSocket)
 add_subdirectory(src/rigatoni_ethernet_motor_relay_node)
-add_subdirectory(src/yost_imu)
+# add_subdirectory(src/yost_imu)

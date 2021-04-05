@@ -6,6 +6,7 @@
 #include <tf/tf.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
+
 #include <opencv2/opencv.hpp>
 
 #include "map_cost_interface.h"
@@ -31,7 +32,7 @@ class DistanceMap : public MapCostInterface {
     cv::Mat distance_cost_map;
     Rectangle hit_box;
     double cost_scaling_factor;
-    double wall_inflation;
+    double nonlethal_wall_inflation, lethal_wall_inflation;
     double inscribed_circle_radius;
     double inscribed_circle_origin;
     bool publish_distance_map;

@@ -1,7 +1,6 @@
+#include <parameter_assertions/assertions.h>
 #include <rr_common/planning/annealing_optimizer.h>
 #include <rr_common/planning/planning_utils.h>
-
-#include <parameter_assertions/assertions.h>
 
 namespace rr {
 

@@ -1,24 +1,28 @@
 <launch>
-    <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen">
-
+    <node name="startlight_watcher" pkg="rr_iarrc" type="startlight_watcher" output="screen" required="true">
         <!--Input and output topics-->
         <param name="img_topic" type="string" value="/camera_center/image_color_rect"/>
-        <param name="stoplight_watcher_topic" type="string" value="/start_detected"/>
+        <param name="startlight_watcher_topic" type="string" value="/start_detected"/>
 
-        <!--Control amount of image counted as green and red light candidates-->
-        <param name="threshold_red" type="int" value="1"/>
-        <param name="threshold_green" type="int" value="1"/>
+        <!--Publishes debug image after the start has been detected-->
+        <param name="keep_publishing" type="bool" value="false"/>
 
-        <!--Allowable difference between red and green circles' size and position (in pixels)-->
-        <param name="circle_x_tolerance" type="int" value="20"/>
-        <param name="circle_y_tolerance" type="int" value="100"/>
-        <param name="circle_radius_tolerance" type="double" value="10.0"/>
+        <!--Controls the sensitivity for detecting red and green lights-->
+        <param name="min_green_hue" type="int" value="20"/>
+        <param name="max_green_hue" type="int" value="100"/>
+        <param name="min_red_hue" type="int" value="0"/>
+        <param name="max_red_hue" type="int" value="10"/>
+
+        <!--Controls the maximum time between red and green light-->
+        <param name="red_to_green_time" type="double" value="1"/>
 
         <!--Controls the sensitivity of circle detection (lower = more circles detected)-->
         <param name="circularity_threshold" type="double" value="0.7"/>
 
-        <!--Number of frames to go back to look for red light after seeing green-->
-        <param name="history_frame_count" type="int" value="5"/>
+        <!--Controls the minimum area needed to detect a light-->
+        <param name="min_area" type="int" value="100"/>
 
+        <!--Determines if the green light is detected in the right proximity to the red light-->
+        <param name="tolerance" type="int" value="100"/>
     </node>
 </launch>

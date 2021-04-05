@@ -1,8 +1,8 @@
 #pragma once
 
+#include <rr_common/linear_tracking_filter.hpp>
 #include <tuple>
 
-#include <rr_common/linear_tracking_filter.hpp>
 #include "planner_types.hpp"
 
 namespace rr {
@@ -30,7 +30,7 @@ class BicycleModel {
      */
     void RollOutPath(const Controls<1>& controls, TrajectoryRollout& rollout) const;
 
-    //    void RollOutPath(const Controls<2>& controls, std::vector<PathPoint>& path_points) const;
+    void RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const;
 
   private:
     /**

@@ -18,8 +18,9 @@ DistanceMap::DistanceMap(ros::NodeHandle nh)
     assertions::getParam(nh, "publish_distance_map", publish_distance_map);
     assertions::getParam(nh, "publish_inscribed_circle", publish_inscribed_circle);
 
-    assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor, { assertions::greater_eq(0.0) });
-    assertions::getParam(nh, "wall_inflation", wall_inflation, { assertions::greater_eq(0.0) });
+    assertions::getParam(nh, "cost_scaling_factor", cost_scaling_factor);
+    assertions::getParam(nh, "lethal_wall_inflation", lethal_wall_inflation, { assertions::greater_eq(0.0) });
+    assertions::getParam(nh, "nonlethal_wall_inflation", nonlethal_wall_inflation, { assertions::greater_eq(0.0) });
 
     map_sub = nh.subscribe(map_topic, 1, &DistanceMap::SetMapMessage, this);
     distance_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("distance_map", 1);
@@ -48,10 +49,6 @@ std::pair<unsigned int, unsigned int> DistanceMap::PoseToGridPosition(const rr::
 }
 
 void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
-    if (!accepting_updates_) {
-        return;
-    }
-
     try {
         listener->waitForTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), ros::Duration(.05));
         listener->lookupTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), transform);
@@ -64,15 +61,25 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     // Turn occupancy grid to distance map in meters
     cv::Mat distance_map(mapMetaData.width, mapMetaData.height, CV_8UC1);
     memcpy(distance_map.data, map_msg->data.data(), map_msg->data.size() * sizeof(uint8_t));
-    cv::threshold(distance_map, distance_map, 99, 1, CV_THRESH_BINARY_INV);
+    cv::inRange(distance_map, 99, 254, distance_map);  // costmap2d::NO_INFORMATION is counted as FREE
+    cv::bitwise_not(distance_map, distance_map);
 
-    cv::distanceTransform(distance_map, distance_map, CV_DIST_L2, 3, CV_32F);
+    cv::distanceTransform(distance_map, distance_map, cv::DIST_L2, 3, CV_32F);
     distance_map *= mapMetaData.resolution;
 
-    // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)
-    cv::exp(-(distance_map - (wall_inflation + inscribed_circle_radius)) * cost_scaling_factor, distance_cost_map);
+    // Layers are: Obstacle, Lethal (lethal inflaction + inscribed circle), nonlethal, and e^-x function
+    double lethal_boundary = lethal_wall_inflation + inscribed_circle_radius;
+    if (cost_scaling_factor >= 0) {
+        // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)
+        cv::exp(-(distance_map - (lethal_boundary + nonlethal_wall_inflation)) * cost_scaling_factor,
+                distance_cost_map);
+    } else {
+        // Just set it to 0
+        distance_cost_map = cv::Mat::zeros(distance_map.size(), CV_32F);
+    }
+    distance_cost_map.setTo(1.0, distance_map <= lethal_boundary + nonlethal_wall_inflation);
     distance_cost_map *= 100;
-    distance_cost_map.setTo(-1.0, distance_map <= wall_inflation + inscribed_circle_radius);
+    distance_cost_map.setTo(-1.0, distance_map <= lethal_boundary);
 
     updated_ = true;
 
@@ -83,8 +90,9 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
 
         cv::Mat distance_cost_map_int8;
         distance_cost_map.convertTo(distance_cost_map_int8, CV_8SC1);
-        distance_cost_map_int8.setTo(-10, distance_map < wall_inflation + inscribed_circle_radius);
-        distance_cost_map_int8.setTo(-80, distance_map < wall_inflation);
+        distance_cost_map_int8.setTo(-50, distance_map < lethal_boundary + nonlethal_wall_inflation);
+        distance_cost_map_int8.setTo(-90, distance_map < lethal_boundary);
+        distance_cost_map_int8.setTo(-123, distance_map < lethal_wall_inflation);
 
         occupancyGrid.data.assign(distance_cost_map_int8.data,
                                   distance_cost_map_int8.data + distance_cost_map_int8.total());

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <optional>
-
 #include <ros/node_handle.h>
+
+#include <optional>
 
 #include "planning_optimizer.h"
 

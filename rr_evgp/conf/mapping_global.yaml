@@ -9,19 +9,43 @@ costmap:
 
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
+        - {name: "center_line", type: "rr::GlobalCenterPathLayer"}
 
     obstacles:
-        observation_sources: laserscan
         combination_method: 0
+        observation_sources: laser_down laser_up
         track_unknown_space: true
-        laserscan:
-            data_type: LaserScan
-            topic: /scan
+        laser_up:
+            data_type: PointCloud2
+            topic: /lidar_up
             frame_name: lidar
-            expected_update_rate: 15.0
+            expected_update_rate: 10.0
             observation_persistence: 0.0
             marking: true
             clearing: true
-            inf_is_valid: true  # inf's are set to scan msg max range
-            obstacle_range: 50.0  # must be smaller than scan msg max range
-            raytrace_range: 49.0  # clear and explore this distance
+            obstacle_range: 50.0
+            raytrace_range: 49.0
+            max_obstacle_height: 100
+            min_obstacle_height: -100
+        laser_down:
+            data_type: PointCloud2
+            topic: /lidar_down
+            frame_name: lidar
+            expected_update_rate: 10.0
+            observation_persistence: 0.0
+            marking: false
+            clearing: true
+            obstacle_range: 50.0
+            raytrace_range: 49.0
+            max_obstacle_height: 100
+            min_obstacle_height: -100
+
+    center_line:
+        output_topic: /global_center_path
+        forward_initial_offset: 10 #forward offset to ensure real start position is scanned before search.
+        wall_length: 15 #wall blocks backwards path. Should be greater than width of track
+        wall_distance_behind_start: 2.5
+        wall_thickness: 0.5
+        scaling_factor: 4 #factor to downsize map to speed search
+        distance_from_start: 17.5 #how close to count lap finished. Should be at least width of track. Must be greater than forward_initial_offset
+        goal_distance_behind_start: 7.5

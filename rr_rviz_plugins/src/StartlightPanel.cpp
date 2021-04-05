@@ -4,6 +4,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <rr_rviz_plugins/StartlightPanel.h>
 #include <std_msgs/Bool.h>
+
 #include <QVBoxLayout>
 #include <QtGui/QPaintEvent>
 #include <QtGui/QPainter>
