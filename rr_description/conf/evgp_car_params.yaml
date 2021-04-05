@@ -1,5 +1,5 @@
-wheelbase: 0.97
-track: 1.04
+wheelbase: 1.03
+track: 1.20
 
 max_steering: 0.3
 steering_speed: 2.0
@@ -11,5 +11,5 @@ body_com: [0.4, 0, 0.1]  # x y z from footprint base
 wheel_mass: 1
 wheel_radius_front: 0.125
 wheel_radius_back: 0.125
-wheel_width_front: 0.14
-wheel_width_back: 0.14
+wheel_width_front: 0.10
+wheel_width_back: 0.22
