@@ -27,7 +27,8 @@ class GlobalPath {
     std::vector<double> adjacentDistances(const std::vector<tf::Point>& path);
     std::vector<tf::Point> getGlobalSegment(const std::vector<tf::Point>& sample_path);
     double dtwDistance(const std::vector<tf::Point>& path1, const std::vector<tf::Point>& path2, int w);
-    int closestPt(const std::vector<tf::Point>& path, const tf::Point& pt);
+    int closestPt(const std::vector<tf::Point> &path, const tf::Point &pt, double distance_limit = std::numeric_limits<double>::infinity());
+//    int closestPt(const std::vector<tf::Point> &path, const tf::Point &pt);
     int ptAfterDist(const std::vector<double>& cum_dist, int start, double len);
     std::vector<tf::Point> getPathSegment(const std::vector<tf::Point>& path, int start, int end);
     std::vector<tf::Point> convertToWorldPoints(const std::vector<PathPoint>& plan);
