@@ -103,21 +103,13 @@ std::vector<tf::Point> GlobalPath::convertToWorldPoints(const std::vector<PathPo
     return tf_path;
 }
 
-//int GlobalPath::closestPt(const std::vector<tf::Point> &path, const tf::Point &pt) {
-//    std::vector<double> distances_to_pt(path.size());
-//    std::transform(path.begin(), path.end(), distances_to_pt.begin(),
-//                   [pt](const tf::Point &path_pt) {
-//                       return GlobalPath::GetPointDistance(path_pt, pt);});
-//    return std::min_element(distances_to_pt.begin(), distances_to_pt.end()) - distances_to_pt.begin();
-//}
-
 int GlobalPath::closestPt(const std::vector<tf::Point> &path, const tf::Point &pt, double distance_limit) {
     std::vector<double> distances_to_pt(path.size());
-    std::transform(path.begin(), path.end(), distances_to_pt.begin(),
-                   [pt, distance_limit](const tf::Point &path_pt) {
+    std::transform(path.begin(), path.end(), distances_to_pt.begin(), [pt, distance_limit](const tf::Point &path_pt) {
         double distance = GlobalPath::GetPointDistance(path_pt, pt);
-        //limit by the distance if we have to
-        return distance > distance_limit ? distance_limit : distance;});
+        // limit by the distance if we have to
+        return distance > distance_limit ? distance_limit : distance;
+    });
 
     int min_el = std::min_element(distances_to_pt.begin(), distances_to_pt.end()) - distances_to_pt.begin();
     return min_el;
@@ -154,9 +146,8 @@ double GlobalPath::GetLocalPathProgress(const std::vector<PathPoint> &plan, cons
     std::vector<double> path_adj_dist = adjacentDistances(sample_path);
     double path_len = std::accumulate(path_adj_dist.begin(), path_adj_dist.end(), 0.0);
     path_len *= progress_seg_factor_;  // add some buffer for the global seg len
-//    int seg_end_index = ptAfterDist(global_cum_dist_, seg_start_index, path_len);
     int seg_end_index = closestPt(global_path_, sample_path.back(), path_len);
-    if (seg_start_index == seg_end_index) { //path too short for adj dist
+    if (seg_start_index == seg_end_index) {  // path too short for adj dist
         return 1.0;
     }
     // Get the length of the global path segment this creates.
