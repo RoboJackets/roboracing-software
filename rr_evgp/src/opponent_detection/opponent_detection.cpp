@@ -22,6 +22,10 @@
 double cluster_tolerance_;
 int min_cluster_size_, max_cluster_size_;
 
+double maxMovement;
+std::vector<geometry_msgs::Pose> prevCentroids;
+visualization_msgs::MarkerArray prevMarkers;
+
 ros::Publisher marker_pub, centroid_pub;
 
 // adds markers to marker array
@@ -37,7 +41,6 @@ visualization_msgs::Marker makeMarkers(const std::vector<geometry_msgs::Point>& 
     marker.points = points;
 
     marker.pose.orientation.w = 1.0;
-
     marker.color.r = rand() / double(RAND_MAX);
     marker.color.g = rand() / double(RAND_MAX);
     marker.color.b = rand() / double(RAND_MAX);
@@ -48,6 +51,32 @@ visualization_msgs::Marker makeMarkers(const std::vector<geometry_msgs::Point>& 
     marker.scale.z = 0.05;
 
     return marker;
+}
+double euclidDistance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
+    double x2 = (p1.x - p2.x) * (p1.x - p2.x);
+    double y2 = (p1.y - p2.y) * (p1.y - p2.y);
+    double z2 = (p1.z - p2.z) * (p1.z - p2.z);
+    return sqrt(x2 + y2 + z2);
+}
+void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualization_msgs::MarkerArray& marker_array) {
+    int indexOfPrev = 0;
+    for (geometry_msgs::Pose prevCentroid : prevCentroids) {
+        double shortestDistance = euclidDistance(prevCentroid.position, centroids[0].position);
+        int indexOfClosest = 0;
+        for (int i = 1; i < centroids.size(); i++) {
+            double distance = euclidDistance(prevCentroid.position, centroids[i].position);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                indexOfClosest = i;
+            }
+        }
+        if (shortestDistance < maxMovement) {
+            marker_array.markers[indexOfClosest].color.r = prevMarkers.markers[indexOfPrev].color.r;
+            marker_array.markers[indexOfClosest].color.g = prevMarkers.markers[indexOfPrev].color.g;
+            marker_array.markers[indexOfClosest].color.b = prevMarkers.markers[indexOfPrev].color.b;
+        }
+        indexOfPrev++;
+    }
 }
 
 // main callback function
@@ -109,12 +138,14 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         centroid.orientation.w = 1;
         centroids.push_back(centroid);
     }
-
+    trackMovement(centroids, marker_array);
     marker_pub.publish(marker_array);
 
     geometry_msgs::PoseArray poses;
     poses.header = cloud_msg->header;
     poses.poses = centroids;
+    prevCentroids = centroids;
+    prevMarkers = marker_array;
     centroid_pub.publish(poses);
 }
 
@@ -127,6 +158,7 @@ int main(int argc, char** argv) {
     nhp.getParam("cluster_tolerance", cluster_tolerance_);
     nhp.getParam("min_cluster_size", min_cluster_size_);
     nhp.getParam("max_cluster_size", max_cluster_size_);
+    nhp.getParam("max_distance", maxMovement);
 
     std::string input_cloud, output_markers, output_centroids;
     nhp.getParam("input_cloud", input_cloud);
