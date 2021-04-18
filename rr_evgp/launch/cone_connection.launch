@@ -1,0 +1,8 @@
+<launch>
+    <node name="cone_connection" pkg="rr_evgp" type="cone_connection">
+
+        <param name="output_centroids" value="/opponent_centroids"/>
+
+        <param name="cone_distance" value="5"/>
+    </node>
+</launch>
