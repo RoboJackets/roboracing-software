@@ -59,23 +59,54 @@ double euclidDistance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
     return sqrt(x2 + y2 + z2);
 }
 void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualization_msgs::MarkerArray& marker_array) {
-    int indexOfPrev = 0;
-    for (geometry_msgs::Pose prevCentroid : prevCentroids) {
-        double shortestDistance = euclidDistance(prevCentroid.position, centroids[0].position);
-        int indexOfClosest = 0;
-        for (int i = 1; i < centroids.size(); i++) {
-            double distance = euclidDistance(prevCentroid.position, centroids[i].position);
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                indexOfClosest = i;
+    std::vector<std::vector<double>> distances;
+    int largest_id = 0;
+    for (int i = 0; i < prevCentroids.size(); i++) {
+        std::vector<double> row;
+        if (prevMarkers.markers[i].id > largest_id) {
+            largest_id = prevMarkers.markers[i].id;
+        }
+        for (geometry_msgs::Pose centroid : centroids) {
+            double distance = euclidDistance(prevCentroids[i].position, centroid.position);
+            row.push_back(distance);
+        }
+        distances.push_back(row);
+    }
+    int a = distances.size();
+    while (a > 0) {
+        int minR = 0;
+        int minC = 0;
+        int smallestDistance = distances[0][0];
+        for (int r = 0; r < distances.size(); r++) {
+            for (int c = 0; c < distances[r].size(); c++) {
+                if (distances[r][c] < smallestDistance) {
+                    minR = r;
+                    minC = c;
+                    smallestDistance = distances[r][c];
+                }
             }
         }
-        if (shortestDistance < maxMovement) {
-            marker_array.markers[indexOfClosest].color.r = prevMarkers.markers[indexOfPrev].color.r;
-            marker_array.markers[indexOfClosest].color.g = prevMarkers.markers[indexOfPrev].color.g;
-            marker_array.markers[indexOfClosest].color.b = prevMarkers.markers[indexOfPrev].color.b;
+
+        a--;
+        if (smallestDistance < maxMovement) {
+            marker_array.markers[minC].color = prevMarkers.markers[minR].color;
+            marker_array.markers[minC].id = prevMarkers.markers[minR].id;
+        } else {
+            for (int c = 0; c < distances[0].size(); c++) {
+                if (distances[0][c] != INFINITY) {
+                    marker_array.markers[c].id = largest_id + 1;
+                    largest_id++;
+                }
+            }
+            return;
         }
-        indexOfPrev++;
+        for (int r = 0; r < distances.size(); r++) {
+            distances[r][minC] = INFINITY;
+        }
+        for (int c = 0; c < distances[0].size(); c++) {
+            distances[minR][c] = maxMovement + 1;
+        }
+
     }
 }
 
