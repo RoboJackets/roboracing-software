@@ -1,14 +1,23 @@
-#include <ros/ros.h>
 #include <geometry_msgs/PoseWithCovariance.h>
 #include <geometry_msgs/TwistWithCovariance.h>
 #include <nav_msgs/Odometry.h>
+#include <ros/ros.h>
 #include <rr_msgs/chassis_state.h>
 #include <rr_msgs/speed.h>
 #include <rr_msgs/steering.h>
+#include <rr_platform/EthernetSocket.h>
+
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include <rr_platform/EthernetSocket.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace boost::asio;
+using ip::tcp;
+using std::cout;
+using std::endl;
+using std::string;
 
 /*@NOTE THIS CODE USES BOOST 1.58 as it is the version currently installed with
   ROS. If that changes, this code will need to be updated as such! So don't fear
@@ -28,10 +37,12 @@ struct PIDConst accelDrivePID, steeringPID;
 
 ros::Publisher chassisStatePublisher, odometryPublisher;
 
-double cmd_speed;
-double cmd_steering;
+double cmd_speed = 5;
+double cmd_steering = 3;
 
 std::unique_ptr<rr::EthernetSocket> driveBoardSocket, steeringBoardSocket, manualBoardSocket, estopBoardSocket;
+
+
 
 void speedCallback(const rr_msgs::speed::ConstPtr& msg) {
     cmd_speed = msg->speed;
@@ -42,7 +53,7 @@ void steerCallback(const rr_msgs::steering::ConstPtr& msg) {
 }
 
 string messageToString(boost::array<char, 128> buf) {
-    return string(buf.begin() + 1, buf.end() - 1); // return useable string, removing start and end markers
+    return string(buf.begin()+1, buf.end()-1);  // return useable string, removing start and end markers
 }
 
 double extractSpeed(string s) {
@@ -61,7 +72,7 @@ double extractSteering(string a) {
 
 string formatManualMsg(double speed, double steering) {
     // v=$float,a=$float
-    return "v=" + to_string(speed) + ",a=" + to_string(steering);
+    return "$v=" + to_string(speed) + ",a=" + to_string(steering) + ";";
 }
 
 string formatEstopMsg(int command) {
@@ -104,48 +115,80 @@ int main(int argc, char** argv) {
     string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.0.5"));
     string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.0.6"));
 
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP + " port: " + std::to_string(tcpPort));
-    driveBoardSocket = std::make_unique<rr::EthernetSocket>(driveBoardIP, tcpPort);
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP + " port: " + std::to_string(tcpPort));
+    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP +
+                    " port: " + std::to_string(tcpPort));
+    // driveBoardSocket = std::make_unique<rr::EthernetSocket>(driveBoardIP, tcpPort);
+    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP +
+                    " port: " + std::to_string(tcpPort));
     steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP + " port: " + std::to_string(tcpPort));
-    manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP E-Stop Board at " + estopBoardIP + " port: " + std::to_string(tcpPort));
-    estopBoardSocket = std::make_unique<rr::EthernetSocket>(estopBoardIP, tcpPort);
+    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP +
+                    " port: " + std::to_string(tcpPort));
+    // manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
+    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP E-Stop Board at " + estopBoardIP +
+                    " port: " + std::to_string(tcpPort));
+    // estopBoardSocket = std::make_unique<rr::EthernetSocket>(estopBoardIP, tcpPort);
 
     ROS_INFO_STREAM("[Motor Relay] Connected to TCP host devices");
 
     ros::Rate rate(10);
-    boost::array<char, 128> driveBuffer, steeringBuffer, manualBuffer, estopBuffer;  // buffer to read response into
 
     while (ros::ok()) {
         ros::spinOnce();
+
         // RR Ethernet standard v1.0
         // https://docs.google.com/document/d/10klaJG9QIRAsYD0eMPjk0ImYSaIPZpM_lFxHCxdVRNs/edit#
 
-        // Get Current Speed
-        driveBoardSocket->sendMessage("S?");
-        // n is the response from socket: 0 means connection closed, otherwise n = num bytes read
-        size_t nDrive = driveBoardSocket->readMessage(driveBuffer);  // Check nDrive == 0?
-        double currentSpeed = extractSpeed(messageToString(driveBuffer));
+        // // Get Current Speed
+        // driveBoardSocket->send("$S?;");
+        // string drive_response = driveBoardSocket->read();  // Clear response "R" from buffet
+        // ROS_INFO_STREAM("Receiving: " << drive_response);
 
-        // Get Current Steering
-        steeringBoardSocket->sendMessage("A?");
-        size_t nSteering = steeringBoardSocket->readMessage(steeringBuffer);  // TODO: Blocking? Maybe should be on difference threads
-        double currentSteering = extractSteering(messageToString(steeringBuffer));
+        // // Get Current Steering
+        steeringBoardSocket->send("$A?;");
+                ROS_INFO_STREAM("SENT");
+        // auto steering_func = [&]() {
+        
+        string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
+        ROS_INFO_STREAM("Receiving: " << steering_response);
+        // }; // size_t nSteering = steeringBoardSocket->readMessage(steeringBuffer);  // TODO: Blocking? Maybe should be on
+        // difference threads double currentSteering = extractSteering(messageToString(steeringBuffer));
 
         // Send command speed and Steering
-        manualBoardSocket->sendMessage(formatManualMsg(cmd_speed, cmd_steering));
-        size_t nManual = manualBoardSocket->readMessage(manualBuffer);  // Clear response "R" from buffet
+        // auto maunal_func = [&]() {
+        //         string x = "$S?;";
+        //         // string x = formatManualMsg(3, 2);
+        //         ROS_INFO_STREAM("Sending: " << x);
+        //         manualBoardSocket->send(x);
+        //         string manual_response = manualBoardSocket->read();  // Clear response "R" from
+        //         ROS_INFO_STREAM("Receiving: " << manual_response); 
+        //     };
+
+        // if(run_with_timeout(maunal_func, 1s)) {
+        //     ROS_INFO_STREAM("[Motor Relay] Trying to RE-connect to TCP Manual Board at ");
+        //     manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
+        // }
+
 
         // Send state to estop
-        estopBoardSocket->sendMessage("G");            // RCS_command
-        size_t nEstop = estopBoardSocket->readMessage(estopBuffer);  // Clear response "R" from buffet
-
-        // if (nDrive == 0) { //|| nSteering == 0) {
-        //     ROS_ERROR_STREAM("[Motor Relay] Connection closed by server");
-        //     ros::shutdown();
+        // auto estop_func = [&]() {
+        //                     // RCS_command
+        //         string estop_response = estopBoardSocket->read();  // Clear response "R" from buffet
+        //         ROS_INFO_STREAM("Receiving: " << estop_response);
+        //     };
+        // string estop_response = estopBoardSocket->read_with_timeout();
+        // if(estop_response == "TIME_OUT"/*run_with_timeout(steering_func, 1s)*/) {
+        //     while (true) {
+        //         try {
+        //             ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP + " port: " + std::to_string(tcpPort));
+        //             steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
+        //             break;
+        //         } catch(boost::wrapexcept<boost::system::system_error> err) {
+        //             ROS_INFO_STREAM("Connection failed...");
+        //         }
+        //     }
         // }
+        // ROS_INFO_STREAM("Receiving: " << estop_response);
+
 
         // rr_msgs::chassis_state chassisStateMsg;
         // chassisStateMsg.header.stamp = ros::Time::now();
@@ -168,13 +211,6 @@ int main(int argc, char** argv) {
         // #TODO: if need be, use steering for extra data
         // #see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
         // odometryPublisher.publish(odometryMsg);
-
-
-        //reset buffers
-        boost::asio::buffer(driveBuffer, nDrive);
-        boost::asio::buffer(steeringBuffer, nSteering);
-        boost::asio::buffer(manualBuffer, nManual);
-        boost::asio::buffer(estopBuffer, nEstop);
 
         rate.sleep();
     }

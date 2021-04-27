@@ -1,7 +1,10 @@
 #include <rr_platform/EthernetSocket.h>
 #include <iostream>
+#include <chrono>
 
 using boost::asio::ip::tcp;
+
+
 
 rr::EthernetSocket::EthernetSocket(std::string ip_addr, int port)
 {
@@ -22,48 +25,43 @@ rr::EthernetSocket::~EthernetSocket()
   this->sock_->shutdown(boost::asio::ip::tcp::socket::shutdown_send);
 }
 
-void rr::EthernetSocket::sendMessage(char* message, size_t len)
+void rr::EthernetSocket::send(const std::string& msg)
 {
   boost::system::error_code error;
-  // Create boost buffer from string and send to TCP endpoint
-  boost::asio::write(*sock_, boost::asio::buffer(message, len), error);
+  boost::asio::write(*sock_, boost::asio::buffer(msg), error);
 }
 
-void rr::EthernetSocket::sendMessage(std::string message)
+// https://stackoverflow.com/questions/40550730/how-to-implement-timeout-for-function-in-c
+// Kinda hacky... But wanted timeout for read if disconnected 
+template <typename TF, typename TDuration, class... TArgs>
+std::string run_with_timeout(TF&& f, TDuration timeout, TArgs&&... args)
 {
-  boost::system::error_code error;
-  // Create boost buffer from string and send to TCP endpoint
-  boost::asio::write(*sock_, boost::asio::buffer(message), error);
+    using R = std::result_of_t<TF&&(TArgs&&...)>;
+    std::packaged_task<R(TArgs...)> task(f);
+    auto future = task.get_future();
+    std::thread thr(std::move(task), std::forward<TArgs>(args)...);
+    if (future.wait_for(timeout) != std::future_status::timeout)
+    {
+       thr.join();
+       return future.get(); 
+    }
+    else
+    {
+       thr.detach(); 
+       return "TIME_OUT";
+    }
 }
 
-size_t rr::EthernetSocket::readMessage(unsigned char (&buffer)[256])
-{
-  // read data from TCP connection
-  boost::system::error_code error;
-
-  size_t len = sock_->read_some(boost::asio::buffer(buffer, sizeof(buffer) - 1), error);
-
-  if (error == boost::asio::error::eof)  // connection closed by server
-    len = 0;
-  else if (error)
-    throw boost::system::system_error(error);
-
-  return len;
+std::string rr::EthernetSocket::read() {
+       boost::asio::streambuf buf;
+       boost::system::error_code error;
+       boost::asio::read_until(*sock_, buf, ";", error);
+       std::string data = boost::asio::buffer_cast<const char*>(buf.data());
+       return data;
 }
 
-size_t rr::EthernetSocket::readMessage(boost::array<char, 128> buf)
-{
-  // read data from TCP connection
-  boost::system::error_code error;
-
-  size_t len = sock_->read_some(boost::asio::buffer(buf), error);
-
-  if (error == boost::asio::error::eof)  // connection closed by server
-    len = 0;
-  else if (error)
-    throw boost::system::system_error(error);
-
-  return len;
+std::string rr::EthernetSocket::read_with_timeout() {
+  return run_with_timeout(std::bind(&rr::EthernetSocket::read, this), (std::chrono::seconds)1);
 }
 
 std::string rr::EthernetSocket::getIP()
@@ -85,3 +83,4 @@ std::string rr::EthernetSocket::getBoostVersion()
 
   return version.str();
 }
+

@@ -14,6 +14,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 /**
  * The <code>EthernetSocket</code> class provides a wrapper for the
@@ -42,25 +43,14 @@ public:
   Transmit a std::string to the endpoint
   @param[in] msg the string to transmit
   */
-  void sendMessage(char* message, size_t len);
-
-  /**
-  Transmit a std::string to the endpoint
-  @param[in] msg the string to transmit
-  */
-  void sendMessage(std::string message);
+  void send(const std::string& msg);
 
   /**
   read a message from the TCP connections
   @return a char array of the characters read
   */
-  size_t readMessage(unsigned char (&buffer)[256]);
-
-  /**
-  read a message from the TCP connections
-  @return a char array of the characters read
-  */
-  size_t readMessage(boost::array<char, 128> buf);
+  std::string read();
+  std::string read_with_timeout();
 
   /**
   Getter for IP address

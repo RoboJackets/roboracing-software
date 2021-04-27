@@ -1,7 +1,5 @@
 <launch>
     <node pkg="rr_platform" type="rigatoni_ethernet_drive_relay" name="rigatoni_drive_relay" output="screen" respawn="false">
-        <param name="drive_ip_address" type="string" value="192.168.2.5"/>
-        <param name="drive_tcp_port" type="int" value="20202"/>
         <param name="accel_pid_p" type="double" value="0.0"/>
         <param name="accel_pid_i" type="double" value="0.0"/>
         <param name="accel_pid_d" type="double" value="0.0"/>
