@@ -117,16 +117,16 @@ int main(int argc, char** argv) {
 
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP +
                     " port: " + std::to_string(tcpPort));
-    // driveBoardSocket = std::make_unique<rr::EthernetSocket>(driveBoardIP, tcpPort);
+    driveBoardSocket = std::make_unique<rr::EthernetSocket>(driveBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP +
                     " port: " + std::to_string(tcpPort));
     steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP +
                     " port: " + std::to_string(tcpPort));
-    // manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
+    manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP E-Stop Board at " + estopBoardIP +
                     " port: " + std::to_string(tcpPort));
-    // estopBoardSocket = std::make_unique<rr::EthernetSocket>(estopBoardIP, tcpPort);
+    estopBoardSocket = std::make_unique<rr::EthernetSocket>(estopBoardIP, tcpPort);
 
     ROS_INFO_STREAM("[Motor Relay] Connected to TCP host devices");
 
@@ -138,20 +138,21 @@ int main(int argc, char** argv) {
         // RR Ethernet standard v1.0
         // https://docs.google.com/document/d/10klaJG9QIRAsYD0eMPjk0ImYSaIPZpM_lFxHCxdVRNs/edit#
 
-        // // Get Current Speed
-        // driveBoardSocket->send("$S?;");
-        // string drive_response = driveBoardSocket->read();  // Clear response "R" from buffet
-        // ROS_INFO_STREAM("Receiving: " << drive_response);
+        // Get Current Speed
+        driveBoardSocket->send("$S?;");
+        string drive_response = driveBoardSocket->read_with_timeout();  // Clear response "R" from buffet
+        ROS_INFO_STREAM("Drive Receiving: " << drive_response);
 
         // // Get Current Steering
         steeringBoardSocket->send("$A?;");
-                ROS_INFO_STREAM("SENT");
-        // auto steering_func = [&]() {
+                // ROS_INFO_STREAM("SENT");
         
         string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
-        ROS_INFO_STREAM("Receiving: " << steering_response);
+        ROS_INFO_STREAM("Steering Receiving: " << steering_response);
+        // auto steering_func = [&]() {
         // }; // size_t nSteering = steeringBoardSocket->readMessage(steeringBuffer);  // TODO: Blocking? Maybe should be on
-        // difference threads double currentSteering = extractSteering(messageToString(steeringBuffer));
+        // difference threads 
+        // double currentSteering = extractSteering(messageToString(steeringBuffer));
 
         // Send command speed and Steering
         // auto maunal_func = [&]() {
@@ -162,7 +163,12 @@ int main(int argc, char** argv) {
         //         string manual_response = manualBoardSocket->read();  // Clear response "R" from
         //         ROS_INFO_STREAM("Receiving: " << manual_response); 
         //     };
-
+        // non manual test
+        string x = formatManualMsg(3,2);
+        // string x = formatManualMsg(cmd_speed, cmd_steering);
+        manualBoardSocket->send(x);
+        string manual_response = manualBoardSocket->read_with_timeout();
+        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
         // if(run_with_timeout(maunal_func, 1s)) {
         //     ROS_INFO_STREAM("[Motor Relay] Trying to RE-connect to TCP Manual Board at ");
         //     manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
@@ -175,7 +181,9 @@ int main(int argc, char** argv) {
         //         string estop_response = estopBoardSocket->read();  // Clear response "R" from buffet
         //         ROS_INFO_STREAM("Receiving: " << estop_response);
         //     };
-        // string estop_response = estopBoardSocket->read_with_timeout();
+        // estopBoardSocket->send("$S?;");
+        estopBoardSocket->send("$G;");
+        string estop_response = estopBoardSocket->read_with_timeout();
         // if(estop_response == "TIME_OUT"/*run_with_timeout(steering_func, 1s)*/) {
         //     while (true) {
         //         try {
@@ -187,7 +195,8 @@ int main(int argc, char** argv) {
         //         }
         //     }
         // }
-        // ROS_INFO_STREAM("Receiving: " << estop_response);
+        // estopBoardSocket->send("$G;");
+        ROS_INFO_STREAM("Estop Receiving: " << estop_response);
 
 
         // rr_msgs::chassis_state chassisStateMsg;
