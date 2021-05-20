@@ -14,7 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
         pcl_ros
         pcl_conversions
         visualization_msgs
-
+        tf_conversions
+        apriltag_ros
 )
 
 find_package(OpenCV REQUIRED)
@@ -45,3 +46,4 @@ add_definitions(${PCL_DEFINITIONS})
 add_subdirectory(src/opponent_detection)
 add_subdirectory(src/costmap_plugins)
 add_subdirectory(src/UniformCostSearch)
+add_subdirectory(src/april_tag_detection)
