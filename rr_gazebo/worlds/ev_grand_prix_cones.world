@@ -100,7 +100,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -199,7 +199,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -298,7 +298,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -397,7 +397,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -496,7 +496,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -595,7 +595,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -694,7 +694,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -793,7 +793,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -892,7 +892,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -991,7 +991,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1090,7 +1090,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1189,7 +1189,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1288,7 +1288,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1387,7 +1387,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1486,7 +1486,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1585,7 +1585,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1684,7 +1684,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1783,7 +1783,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1882,7 +1882,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -1981,7 +1981,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -2080,7 +2080,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -2179,7 +2179,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -2278,7 +2278,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7316,7 +7316,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7415,7 +7415,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7514,7 +7514,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7613,7 +7613,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7712,7 +7712,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7811,7 +7811,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -7910,7 +7910,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8009,7 +8009,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8108,7 +8108,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8207,7 +8207,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8306,7 +8306,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8405,7 +8405,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8504,7 +8504,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8603,7 +8603,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8702,7 +8702,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8801,7 +8801,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8900,7 +8900,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -8999,7 +8999,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9098,7 +9098,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9197,7 +9197,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9296,7 +9296,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9395,7 +9395,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9494,7 +9494,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9593,7 +9593,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9692,7 +9692,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9791,7 +9791,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9890,7 +9890,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -9989,7 +9989,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10088,7 +10088,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10187,7 +10187,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10286,7 +10286,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10385,7 +10385,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10491,7 +10491,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10590,7 +10590,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10689,7 +10689,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10788,7 +10788,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10887,7 +10887,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -10986,7 +10986,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11085,7 +11085,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11184,7 +11184,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11283,7 +11283,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11382,7 +11382,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11481,7 +11481,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11580,7 +11580,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11679,7 +11679,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11778,7 +11778,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11877,7 +11877,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -11976,7 +11976,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12075,7 +12075,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12174,7 +12174,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12273,7 +12273,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12372,7 +12372,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12471,7 +12471,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12570,7 +12570,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12669,7 +12669,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12768,7 +12768,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12867,7 +12867,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -12966,7 +12966,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13065,7 +13065,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13164,7 +13164,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13263,7 +13263,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13362,7 +13362,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13461,7 +13461,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13560,7 +13560,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13659,7 +13659,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13758,7 +13758,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13857,7 +13857,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -13956,7 +13956,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14055,7 +14055,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14154,7 +14154,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14253,7 +14253,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14352,7 +14352,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14451,7 +14451,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14550,7 +14550,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14649,7 +14649,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14748,7 +14748,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14847,7 +14847,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -14946,7 +14946,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15045,7 +15045,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15144,7 +15144,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15243,7 +15243,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15342,7 +15342,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15441,7 +15441,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15540,7 +15540,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15639,7 +15639,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15738,7 +15738,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15837,7 +15837,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -15936,7 +15936,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16035,7 +16035,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16134,7 +16134,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16233,7 +16233,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16332,7 +16332,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16431,7 +16431,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16530,7 +16530,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16629,7 +16629,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16728,7 +16728,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16827,7 +16827,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -16926,7 +16926,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17025,7 +17025,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17124,7 +17124,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17223,7 +17223,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17322,7 +17322,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17421,7 +17421,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17520,7 +17520,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17619,7 +17619,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17718,7 +17718,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17817,7 +17817,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -17916,7 +17916,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18015,7 +18015,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18114,7 +18114,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18213,7 +18213,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18312,7 +18312,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18411,7 +18411,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18510,7 +18510,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18609,7 +18609,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18708,7 +18708,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18807,7 +18807,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -18906,7 +18906,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19005,7 +19005,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19104,7 +19104,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19203,7 +19203,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19302,7 +19302,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19401,7 +19401,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19500,7 +19500,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19599,7 +19599,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19698,7 +19698,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19797,7 +19797,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19896,7 +19896,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -19995,7 +19995,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20094,7 +20094,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20193,7 +20193,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20292,7 +20292,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20391,7 +20391,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20490,7 +20490,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20589,7 +20589,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20688,7 +20688,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20787,7 +20787,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20886,7 +20886,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -20985,7 +20985,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21084,7 +21084,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21183,7 +21183,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21282,7 +21282,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21381,7 +21381,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21480,7 +21480,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21579,7 +21579,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21678,7 +21678,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21777,7 +21777,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21876,7 +21876,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -21975,7 +21975,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22074,7 +22074,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22173,7 +22173,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22272,7 +22272,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22371,7 +22371,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22470,7 +22470,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22569,7 +22569,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22668,7 +22668,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22767,7 +22767,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22866,7 +22866,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -22965,7 +22965,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23064,7 +23064,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23163,7 +23163,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23262,7 +23262,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23361,7 +23361,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23460,7 +23460,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23559,7 +23559,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23658,7 +23658,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23757,7 +23757,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23856,7 +23856,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -23955,7 +23955,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24054,7 +24054,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24153,7 +24153,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24252,7 +24252,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24351,7 +24351,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24450,7 +24450,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24549,7 +24549,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24648,7 +24648,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24747,7 +24747,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24846,7 +24846,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -24945,7 +24945,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25044,7 +25044,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25143,7 +25143,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25242,7 +25242,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25341,7 +25341,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25440,7 +25440,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25539,7 +25539,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25638,7 +25638,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25737,7 +25737,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25836,7 +25836,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -25935,7 +25935,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26034,7 +26034,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26133,7 +26133,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26232,7 +26232,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26331,7 +26331,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26430,7 +26430,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26529,7 +26529,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26628,7 +26628,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26727,7 +26727,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26826,7 +26826,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -26925,7 +26925,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27024,7 +27024,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27123,7 +27123,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27222,7 +27222,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27321,7 +27321,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27420,7 +27420,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27519,7 +27519,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27618,7 +27618,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27717,7 +27717,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27816,7 +27816,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -27915,7 +27915,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28014,7 +28014,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28113,7 +28113,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28212,7 +28212,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28311,7 +28311,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28410,7 +28410,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28509,7 +28509,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28608,7 +28608,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28707,7 +28707,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28806,7 +28806,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -28905,7 +28905,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29004,7 +29004,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29103,7 +29103,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29202,7 +29202,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29301,7 +29301,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29400,7 +29400,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29499,7 +29499,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29598,7 +29598,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29697,7 +29697,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29796,7 +29796,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29895,7 +29895,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -29994,7 +29994,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30093,7 +30093,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30192,7 +30192,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30291,7 +30291,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30390,7 +30390,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30489,7 +30489,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30588,7 +30588,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30687,7 +30687,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30786,7 +30786,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30885,7 +30885,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -30984,7 +30984,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31083,7 +31083,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31182,7 +31182,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31281,7 +31281,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31380,7 +31380,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31479,7 +31479,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31578,7 +31578,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31677,7 +31677,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31776,7 +31776,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31875,7 +31875,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -31974,7 +31974,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32073,7 +32073,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32172,7 +32172,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32271,7 +32271,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32370,7 +32370,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32469,7 +32469,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32568,7 +32568,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32667,7 +32667,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32766,7 +32766,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32865,7 +32865,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -32964,7 +32964,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33063,7 +33063,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33162,7 +33162,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33261,7 +33261,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33360,7 +33360,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33459,7 +33459,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33558,7 +33558,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33657,7 +33657,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33756,7 +33756,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33855,7 +33855,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -33954,7 +33954,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34053,7 +34053,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34152,7 +34152,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34251,7 +34251,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34350,7 +34350,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34449,7 +34449,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34548,7 +34548,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34647,7 +34647,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34746,7 +34746,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34845,7 +34845,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -34944,7 +34944,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35043,7 +35043,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35142,7 +35142,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35241,7 +35241,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35340,7 +35340,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35439,7 +35439,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35538,7 +35538,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35637,7 +35637,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35736,7 +35736,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35835,7 +35835,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -35934,7 +35934,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36033,7 +36033,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36132,7 +36132,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36231,7 +36231,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36330,7 +36330,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36429,7 +36429,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36528,7 +36528,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36627,7 +36627,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36726,7 +36726,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36825,7 +36825,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -36924,7 +36924,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37023,7 +37023,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37122,7 +37122,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37221,7 +37221,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37320,7 +37320,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37419,7 +37419,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37518,7 +37518,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37617,7 +37617,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37716,7 +37716,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37815,7 +37815,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -37914,7 +37914,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38013,7 +38013,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38112,7 +38112,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38211,7 +38211,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38310,7 +38310,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38409,7 +38409,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38508,7 +38508,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38607,7 +38607,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38706,7 +38706,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38805,7 +38805,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -38904,7 +38904,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39003,7 +39003,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39102,7 +39102,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39201,7 +39201,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39300,7 +39300,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39399,7 +39399,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39498,7 +39498,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39597,7 +39597,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39696,7 +39696,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39795,7 +39795,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39894,7 +39894,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -39993,7 +39993,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40092,7 +40092,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40191,7 +40191,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40290,7 +40290,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40389,7 +40389,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40488,7 +40488,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40587,7 +40587,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40686,7 +40686,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40785,7 +40785,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40884,7 +40884,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -40983,7 +40983,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41082,7 +41082,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41181,7 +41181,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41280,7 +41280,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41379,7 +41379,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41478,7 +41478,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41577,7 +41577,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41676,7 +41676,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41775,7 +41775,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41874,7 +41874,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -41973,7 +41973,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42072,7 +42072,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42171,7 +42171,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42270,7 +42270,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42369,7 +42369,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42468,7 +42468,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42567,7 +42567,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42666,7 +42666,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42765,7 +42765,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42864,7 +42864,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -42963,7 +42963,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43062,7 +43062,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43161,7 +43161,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43260,7 +43260,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43359,7 +43359,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43458,7 +43458,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43557,7 +43557,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43656,7 +43656,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43755,7 +43755,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43854,7 +43854,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -43953,7 +43953,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44052,7 +44052,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44151,7 +44151,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44250,7 +44250,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44349,7 +44349,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44448,7 +44448,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44547,7 +44547,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44646,7 +44646,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44745,7 +44745,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44844,7 +44844,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -44943,7 +44943,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45042,7 +45042,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45141,7 +45141,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45240,7 +45240,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45339,7 +45339,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45438,7 +45438,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45537,7 +45537,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45636,7 +45636,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45735,7 +45735,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45834,7 +45834,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -45933,7 +45933,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46032,7 +46032,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46131,7 +46131,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46230,7 +46230,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46329,7 +46329,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46428,7 +46428,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46527,7 +46527,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46626,7 +46626,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46725,7 +46725,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46824,7 +46824,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -46923,7 +46923,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47022,7 +47022,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47121,7 +47121,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47220,7 +47220,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47319,7 +47319,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47418,7 +47418,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47517,7 +47517,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47616,7 +47616,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47715,7 +47715,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47814,7 +47814,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -47913,7 +47913,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48012,7 +48012,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48111,7 +48111,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48210,7 +48210,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48309,7 +48309,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48408,7 +48408,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48507,7 +48507,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48606,7 +48606,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48705,7 +48705,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48804,7 +48804,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -48903,7 +48903,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49002,7 +49002,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49101,7 +49101,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49200,7 +49200,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49299,7 +49299,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49398,7 +49398,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49497,7 +49497,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49596,7 +49596,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49695,7 +49695,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49794,7 +49794,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49893,7 +49893,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -49992,7 +49992,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50091,7 +50091,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50190,7 +50190,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50289,7 +50289,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50388,7 +50388,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50487,7 +50487,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50586,7 +50586,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50685,7 +50685,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50784,7 +50784,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50883,7 +50883,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -50982,7 +50982,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51081,7 +51081,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51180,7 +51180,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51279,7 +51279,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51378,7 +51378,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51477,7 +51477,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51576,7 +51576,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51675,7 +51675,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51774,7 +51774,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51873,7 +51873,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -51972,7 +51972,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52071,7 +52071,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52170,7 +52170,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52269,7 +52269,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52368,7 +52368,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52467,7 +52467,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52566,7 +52566,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52665,7 +52665,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52764,7 +52764,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52863,7 +52863,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -52962,7 +52962,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53061,7 +53061,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53160,7 +53160,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53259,7 +53259,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53358,7 +53358,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53457,7 +53457,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53556,7 +53556,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>
@@ -53655,7 +53655,7 @@
           <geometry>
             <mesh>
               <uri>model://TallerCone/taller_cone.dae</uri>
-              <scale>2 2 3</scale>
+              <scale>1 1 2</scale>
             </mesh>
           </geometry>
           <material>

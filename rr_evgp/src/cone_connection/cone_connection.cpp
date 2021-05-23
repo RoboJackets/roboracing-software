@@ -13,13 +13,13 @@ static std::vector<geometry_msgs::Pose> wall2;
 static geometry_msgs::Pose car_pose;
 static float close_distance = 0.25;
 
-static double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
+static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
     return pow((p2.x - p1.x), 2) +
            pow((p2.y - p1.y), 2) +
            pow((p2.z - p1.z), 2);
 }
 
-static bool close(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
+static inline bool close(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
     return distance(p1, p2) < close_distance;
 }
 
