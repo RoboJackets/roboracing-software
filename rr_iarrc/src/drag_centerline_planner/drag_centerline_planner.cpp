@@ -117,13 +117,15 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         cv::minMaxLoc(hist(cv::Range(0, hist.rows / 2 - 1), cv::Range::all()), &min, &max, &leftMinLoc, &leftMaxLoc);
         leftMaxLoc.x = leftMaxLoc.y;  // gotta flip x and y
         leftMaxLoc.y = frame.rows - 1;
-        cv::minMaxLoc(hist(cv::Range(hist.rows / 2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc,
-                      &rightMaxLoc);
+        cv::minMaxLoc(hist(cv::Range(hist.rows / 2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc, &rightMaxLoc);
         rightMaxLoc.x = rightMaxLoc.y + hist.rows / 2;
         rightMaxLoc.y = frame.rows - 1;
 
         if (rightMaxLoc.x == frame.cols / 2) {
-            rightMaxLoc.x = frame.cols - 1;  // handle line not found
+            rightMaxLoc.x = prevRightMaxLoc.x;  // line not found
+        }
+        else {
+            prevRightMaxLoc.x = rightMaxLoc.x; // line found, save rightMaxLoc.x for next search
         }
     } else {
         // manually locate beginnings of lines by centering from search window
@@ -135,13 +137,13 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
         bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
         if (rightFound) {
-            prevRightMaxLoc.x = rightMaxLoc.x; // if found, memorize rightMaxLoc.x for next search
+            prevRightMaxLoc.x = rightMaxLoc.x; // if found, save rightMaxLoc.x for next search
         }
         else {
             rightMaxLoc.x = prevRightMaxLoc.x; // otherwise, set current rightMaxLoc.x to the last found value
         }
         if (leftFound) {
-            prevLeftMaxLoc.x = leftMaxLoc.x; // if found, memorize leftMaxLoc.x for next search
+            prevLeftMaxLoc.x = leftMaxLoc.x; // if found, save leftMaxLoc.x for next search
         }
         else {
             leftMaxLoc.x = prevLeftMaxLoc.x; // otherwise, set current leftMaxLoc.x to the last found value
