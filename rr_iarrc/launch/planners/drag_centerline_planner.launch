@@ -11,7 +11,7 @@
 
         <param name="maxTurnLimitRadians" type="double" value="0.16" />
 
-        <param name="lookAheadDistance" type="double" value="0.5" />
+        <param name="lookAheadDistance" type="double" value="0.1" />
 
         <param name="subscription_node" type="string" value="/camera_center/lines/detection_img_transformed"/>
     </node>

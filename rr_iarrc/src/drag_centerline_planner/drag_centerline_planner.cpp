@@ -33,7 +33,13 @@ PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
 double speedGoal;
 bool useHistogramFinder;
-double lookAheadDistance;
+double lookAheadDistance; // look ahead distance from which to calculate error term for PID
+
+double leftLineStartLocY;
+double rightLineStartLocY;
+
+cv::Point prevRightMaxLoc; // needed in case locations of left and right lines aren't found
+cv::Point prevLeftMaxLoc;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
@@ -120,19 +126,25 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
             rightMaxLoc.x = frame.cols - 1;  // handle line not found
         }
     } else {
-        // locate beginnings of lines by centering from search window
+        // manually locate beginnings of lines by centering from search window
         leftMaxLoc.x = frame.cols / 4;
         rightMaxLoc.x = frame.cols / 2 + frame.cols / 4;
-        rightMaxLoc.y = 80;  // 120
-        leftMaxLoc.y = 80;
+        rightMaxLoc.y = rightLineStartLocY;
+        leftMaxLoc.y = leftLineStartLocY;
         int w = (frame.cols) / 2;
         bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
         bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
-        if (!rightFound) {
-            rightMaxLoc.x = frame.cols / 2 + 40;
+        if (rightFound) {
+            prevRightMaxLoc.x = rightMaxLoc.x; // if found, memorize rightMaxLoc.x for next search
         }
-        if (!leftFound) {
-            leftMaxLoc.x = frame.cols / 2 - 40;
+        else {
+            rightMaxLoc.x = prevRightMaxLoc.x; // otherwise, set current rightMaxLoc.x to the last found value
+        }
+        if (leftFound) {
+            prevLeftMaxLoc.x = leftMaxLoc.x; // if found, memorize leftMaxLoc.x for next search
+        }
+        else {
+            leftMaxLoc.x = prevLeftMaxLoc.x; // otherwise, set current leftMaxLoc.x to the last found value
         }
     }
 
@@ -228,7 +240,10 @@ int main(int argc, char** argv) {
     double maxTurnLimit;
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
 
-    nhp.param("lookAheadDistance", lookAheadDistance);
+    nhp.param("lookAheadDistance", lookAheadDistance, 0.5);
+
+    nhp.param("leftLineStartLocY", leftLineStartLocY);
+    nhp.param("rightLineStartLocY", rightLineStartLocY);
 
     // setup PID controllers
     myPID.SetTunings(kP, kI, kD);
