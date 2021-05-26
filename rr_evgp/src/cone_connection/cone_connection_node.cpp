@@ -12,6 +12,7 @@ static std::vector<geometry_msgs::Pose> wall1;
 static std::vector<geometry_msgs::Pose> wall2;
 static geometry_msgs::Pose car_pose;
 static float close_distance = 0.25;
+static ros::Publisher wall1_pub, wall2_pub;
 
 static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
     return pow((p2.x - p1.x), 2) +
@@ -94,16 +95,24 @@ void callback(const geometry_msgs::PoseArray &cone_array) {
         // Update wall2 with cones from local wall 1
         update_cones(wall2, local_wall1);
     }
+    geometry_msgs::PoseArray poseArray_wall1;
+    geometry_msgs::PoseArray poseArray_wall2;
+    poseArray_wall1.poses = wall1;
+    poseArray_wall2.poses = wall2;
+    wall1_pub.publish(poseArray_wall1);
+    wall2_pub.publish(poseArray_wall2);
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "cone_connection");
+    ros::init(argc, argv, "cone_connection_node");
     ros::NodeHandle nh;
     ros::NodeHandle nhp("~");
 
     std::string output_centroids;
     nhp.getParam("output_centroids", output_centroids);
     nhp.getParam("cone_distance", cone_distance);
+    wall1_pub = nh.advertise<geometry_msgs::PoseArray>("wall1", 1);
+    wall2_pub = nh.advertise<geometry_msgs::PoseArray>("wall2", 1);
 
     // Square cone distance so we don't have to square root the discovered distance
     cone_distance *= cone_distance;

@@ -1,5 +1,5 @@
 <launch>
-    <node name="cone_connection_node" pkg="rr_evgp" type="cone_connection_node">
+    <node name="lidar_cone_parsing" pkg="rr_evgp" type="lidar_cone_parsing">
         <param name="output_centroids" value="/opponent_centroids"/>
         <param name="cone_distance" value="5"/>
     </node>

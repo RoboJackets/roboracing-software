@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command="load" file="$(find rr_evgp)/conf/test_points.yaml" ns="test_cone_connection"/>
+    <node name="test_cone_connection" pkg="rr_evgp" type="test_cone_connection" output="screen">
+        <param name="output_centroids" value="/opponent_centroids"/>
+    </node>
+</launch>
