@@ -2,15 +2,17 @@
 // Created by charlie on 5/23/21.
 //
 
-#include <thread>
-#include "ros/ros.h"
-#include "geometry_msgs/PoseArray.h"
 #include "test_cone_connection.h"
+
+#include <thread>
+
+#include "geometry_msgs/PoseArray.h"
+#include "ros/ros.h"
 
 geometry_msgs::PoseArray test_cone_connection::parse_points(XmlRpc::XmlRpcValue &test_points) {
     std::vector<geometry_msgs::Pose> poses;
 
-    //Iterate through test points
+    // Iterate through test points
     for (int32_t i = 0; i < test_points.size(); i++) {
         geometry_msgs::Pose pose;
         pose.position.x = test_points[i][0];
@@ -28,8 +30,7 @@ void test_cone_connection::start(const std::function<void(void)> &func) {
     std::thread([=]() {
         while (_execute) {
             func();
-            std::this_thread::sleep_for(
-                    std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }).detach();
 }
@@ -40,9 +41,7 @@ test_cone_connection::test_cone_connection(ros::NodeHandle nh, const std::string
     geometry_msgs::PoseArray pose_array = parse_points(test_points);
     _execute = true;
 
-    start([=]() -> void {
-        points.publish(pose_array);
-    });
+    start([=]() -> void { points.publish(pose_array); });
 }
 
 int main(int argc, char **argv) {

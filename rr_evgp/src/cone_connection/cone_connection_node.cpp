@@ -15,9 +15,7 @@ static float close_distance = 0.25;
 static ros::Publisher wall1_pub, wall2_pub;
 
 static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
-    return pow((p2.x - p1.x), 2) +
-           pow((p2.y - p1.y), 2) +
-           pow((p2.z - p1.z), 2);
+    return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
 static inline bool close(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
@@ -40,22 +38,21 @@ static void update_cones(std::vector<geometry_msgs::Pose> &wall_vector,
     auto start_wall_it = wall_vector.rbegin();
     for (auto it = wall_vector.rbegin(); it != wall_vector.rend(); --it) {
         if (close(it->position, output_wall_vector[0].position)) {
-            start_wall_it = it; // get current index
+            start_wall_it = it;  // get current index
             break;
         }
     }
 
     // Now iterate forwards and update overlapping cone points
     for (auto it = output_wall_vector.begin();
-        it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end();
-        it++, start_wall_it++) {
+         it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end(); it++, start_wall_it++) {
         double dist;
         if (close(it->position, start_wall_it->position)) {
             average_pose(*start_wall_it.base(), *it.base());
         } else if (distance(car_pose.position, start_wall_it->position) <
                    (dist = distance(car_pose.position, it->position))) {
             if (dist < distance(car_pose.position, (start_wall_it + 1)->position)) {
-                wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &) it.base());
+                wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &)it.base());
             }
         }
     }

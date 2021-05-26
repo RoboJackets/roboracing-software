@@ -6,15 +6,15 @@
 #define RR_EVGP_TEST_CONE_CONNECTION_H
 
 class test_cone_connection {
-private:
+  private:
     ros::Publisher points;
     bool _execute;
 
     static geometry_msgs::PoseArray parse_points(XmlRpc::XmlRpcValue &);
     void start(const std::function<void(void)> &func);
 
-public:
-    test_cone_connection(ros::NodeHandle, const std::string&, XmlRpc::XmlRpcValue);
+  public:
+    test_cone_connection(ros::NodeHandle, const std::string &, XmlRpc::XmlRpcValue);
 };
 
-#endif //RR_EVGP_TEST_CONE_CONNECTION_H
+#endif  // RR_EVGP_TEST_CONE_CONNECTION_H
