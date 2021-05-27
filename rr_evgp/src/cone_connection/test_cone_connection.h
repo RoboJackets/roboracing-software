@@ -5,6 +5,10 @@
 #ifndef RR_EVGP_TEST_CONE_CONNECTION_H
 #define RR_EVGP_TEST_CONE_CONNECTION_H
 
+#include <XmlRpcValue.h>
+#include <geometry_msgs/PoseArray.h>
+#include <ros/publisher.h>
+
 class test_cone_connection {
   private:
     ros::Publisher points;
