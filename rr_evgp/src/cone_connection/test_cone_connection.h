@@ -12,15 +12,15 @@
 class test_cone_connection {
   private:
     ros::Publisher points;
-    typedef std::function<geometry_msgs::PoseArray(geometry_msgs::PoseArray)> shape_func;
+    float distance;
 
     static geometry_msgs::PoseArray parse_points(XmlRpc::XmlRpcValue &);
-    void publish_intermittently(geometry_msgs::PoseArray (&get_next_points)(geometry_msgs::PoseArray));
+    void publish_intermittently(void (&get_next_points)(geometry_msgs::PoseArray &, float));
 
   public:
-    test_cone_connection(ros::NodeHandle, const std::string &, XmlRpc::XmlRpcValue);
+    test_cone_connection(ros::NodeHandle, const std::string &, XmlRpc::XmlRpcValue, float);
 
-    static geometry_msgs::PoseArray line(geometry_msgs::PoseArray previous);
+    static void line(geometry_msgs::PoseArray &previous, float distance);
 };
 
 #endif  // RR_EVGP_TEST_CONE_CONNECTION_H

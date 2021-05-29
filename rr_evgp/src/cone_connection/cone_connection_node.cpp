@@ -64,15 +64,15 @@ void callback(const geometry_msgs::PoseArray &cone_array) {
     std::vector<geometry_msgs::Pose> local_wall1;
     std::vector<geometry_msgs::Pose> local_wall2;
 
-    wall1.push_back(cone_array.poses[0]);
-    for (geometry_msgs::Pose cone : cone_array.poses) {
-        if (distance(cone.position, wall1[0].position) < cone_distance) {
-            wall1.push_back(cone);
+    local_wall1.push_back(cone_array.poses[0]);
+    for (auto iter = cone_array.poses.begin() + 1; iter < cone_array.poses.end(); iter++) {
+        if (distance(iter->position, local_wall1[local_wall1.size() - 1].position) < cone_distance) {
+            local_wall1.push_back(*iter.base());
         } else {
-            wall2.push_back(cone);
+            local_wall2.push_back(*iter.base());
         }
     }
-
+    //TODO:Check for empty wall list!!!
     if (distance(local_wall1[local_wall1.size() - 1].position, wall1[final_index1].position) <
         distance(local_wall1[local_wall1.size() - 1].position, wall2[final_index2].position)) {
         // local_wall 1 is closer to global wall1
@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
     wall2_pub = nh.advertise<geometry_msgs::PoseArray>("wall2", 1);
 
     // Square cone distance so we don't have to square root the discovered distance
+    cone_distance *= 1.5;
     cone_distance *= cone_distance;
     ros::Subscriber sub = nh.subscribe(output_centroids, 1, &callback);
 
