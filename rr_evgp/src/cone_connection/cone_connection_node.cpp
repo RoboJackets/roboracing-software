@@ -33,26 +33,30 @@ static inline void average_pose(geometry_msgs::Pose &p1, const geometry_msgs::Po
 
 static void update_cones(std::vector<geometry_msgs::Pose> &wall_vector,
                          std::vector<geometry_msgs::Pose> &output_wall_vector) {
-    // Iterate backwards through global wall1 starting at final_index1
-    // until reach value that is close to 0th item in local wall1
-    auto start_wall_it = wall_vector.rbegin();
-    for (auto it = wall_vector.rbegin(); it != wall_vector.rend(); --it) {
-        if (close(it->position, output_wall_vector[0].position)) {
-            start_wall_it = it;  // get current index
-            break;
+    if (wall_vector.empty()) {
+        wall_vector = output_wall_vector;
+    } else {
+        // Iterate backwards through global wall1 starting at final_index1
+        // until reach value that is close to 0th item in local wall1
+        auto start_wall_it = wall_vector.rbegin();
+        for (auto it = wall_vector.rbegin(); it != wall_vector.rend(); --it) {
+            if (close(it->position, output_wall_vector[0].position)) {
+                start_wall_it = it;  // get current index
+                break;
+            }
         }
-    }
 
-    // Now iterate forwards and update overlapping cone points
-    for (auto it = output_wall_vector.begin();
-         it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end(); it++, start_wall_it++) {
-        double dist;
-        if (close(it->position, start_wall_it->position)) {
-            average_pose(*start_wall_it.base(), *it.base());
-        } else if (distance(car_pose.position, start_wall_it->position) <
-                   (dist = distance(car_pose.position, it->position))) {
-            if (dist < distance(car_pose.position, (start_wall_it + 1)->position)) {
-                wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &)it.base());
+        // Now iterate forwards and update overlapping cone points
+        for (auto it = output_wall_vector.begin();
+             it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end(); it++, start_wall_it++) {
+            double dist;
+            if (close(it->position, start_wall_it->position)) {
+                average_pose(*start_wall_it.base(), *it.base());
+            } else if (distance(car_pose.position, start_wall_it->position) <
+                       (dist = distance(car_pose.position, it->position))) {
+                if (dist < distance(car_pose.position, (start_wall_it + 1)->position)) {
+                    wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &) it.base());
+                }
             }
         }
     }
@@ -66,14 +70,16 @@ void callback(const geometry_msgs::PoseArray &cone_array) {
 
     local_wall1.push_back(cone_array.poses[0]);
     for (auto iter = cone_array.poses.begin() + 1; iter < cone_array.poses.end(); iter++) {
-        if (distance(iter->position, local_wall1[local_wall1.size() - 1].position) < cone_distance) {
+        if (!local_wall2.empty() && distance(iter->position, local_wall1[local_wall1.size() - 1].position) <
+                                    distance(iter->position, local_wall2[local_wall2.size() - 1].position)) {
             local_wall1.push_back(*iter.base());
         } else {
             local_wall2.push_back(*iter.base());
         }
     }
-    //TODO:Check for empty wall list!!!
-    if (distance(local_wall1[local_wall1.size() - 1].position, wall1[final_index1].position) <
+
+    if (wall1.empty() || wall2.empty() ||
+        distance(local_wall1[local_wall1.size() - 1].position, wall1[final_index1].position) <
         distance(local_wall1[local_wall1.size() - 1].position, wall2[final_index2].position)) {
         // local_wall 1 is closer to global wall1
 
