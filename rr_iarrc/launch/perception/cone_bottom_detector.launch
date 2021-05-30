@@ -1,5 +1,5 @@
 <launch>
-    <arg name="camera_namespace" default="camera_center"/>
+    <arg name="camera_namespace" default="camera"/>
 
     <node name="cone_bottom_detector" pkg="rr_iarrc" type="cone_bottom_detector"
           output="screen" ns="$(arg camera_namespace)" required="true">
@@ -11,8 +11,8 @@
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <param name="blockSky_height" type="int" value="0" />
-        <param name="blockWheels_height" type="int" value="750" />
-        <param name="blockBumper_height" type="int" value="720" />
+        <param name="blockWheels_height" type="int" value="7500" />
+        <param name="blockBumper_height" type="int" value="7500" />
 
         <param name="subscription_node" type="string" value="image_color_rect"/>
     </node>
