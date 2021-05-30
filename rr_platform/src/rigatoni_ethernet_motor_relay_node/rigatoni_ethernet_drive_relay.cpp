@@ -70,6 +70,14 @@ double extractSteering(string a) {
     return angle;
 }
 
+bool extractEstop(string s) {
+    if (s == "$G;") { // this could be just G idk
+        return false; //estop not on
+    } else {
+        return true;
+    }
+}
+
 string formatManualMsg(double speed, double steering) {
     // v=$float,a=$float
     return "$v=" + to_string(speed) + ",a=" + to_string(steering) + ";";
@@ -99,11 +107,11 @@ int main(int argc, char** argv) {
 
     // Setup speed info
     string speedTopic = nhp.param(string("speed_topic"), string("/speed"));
-    auto speedSub = nh.subscribe(speedTopic, 1, speedCallback);
+    ros::Subscriber speedSub = nh.subscribe(speedTopic, 1, speedCallback);
 
     // Setup steering info
     string steerTopic = nhp.param(string("steering_topic"), string("/steering"));
-    auto steerSub = nh.subscribe(steerTopic, 1, steerCallback);
+    ros::Subscriber steerSub = nh.subscribe(steerTopic, 1, steerCallback);
 
     chassisStatePublisher = nh.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
     odometryPublisher = nh.advertise<nav_msgs::Odometry>("/odometry/encoder", 1);
@@ -142,84 +150,50 @@ int main(int argc, char** argv) {
         driveBoardSocket->send("$S?;");
         string drive_response = driveBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Drive Receiving: " << drive_response);
+        double current_speed = extractSpeed(drive_response);
 
-        // // Get Current Steering
+        // Get Current Steering
         steeringBoardSocket->send("$A?;");
-                // ROS_INFO_STREAM("SENT");
-        
         string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Steering Receiving: " << steering_response);
-        // auto steering_func = [&]() {
-        // }; // size_t nSteering = steeringBoardSocket->readMessage(steeringBuffer);  // TODO: Blocking? Maybe should be on
-        // difference threads 
-        // double currentSteering = extractSteering(messageToString(steeringBuffer));
+        double current_steer = extractSteering(steering_response);
 
         // Send command speed and Steering
-        // auto maunal_func = [&]() {
-        //         string x = "$S?;";
-        //         // string x = formatManualMsg(3, 2);
-        //         ROS_INFO_STREAM("Sending: " << x);
-        //         manualBoardSocket->send(x);
-        //         string manual_response = manualBoardSocket->read();  // Clear response "R" from
-        //         ROS_INFO_STREAM("Receiving: " << manual_response); 
-        //     };
-        // non manual test
-        string x = formatManualMsg(3,2);
-        // string x = formatManualMsg(cmd_speed, cmd_steering);
+//        string x = formatManualMsg(3,2);
+        string x = formatManualMsg(cmd_speed, cmd_steering);
         manualBoardSocket->send(x);
         string manual_response = manualBoardSocket->read_with_timeout();
         ROS_INFO_STREAM("Manual Receiving: " << manual_response);
-        // if(run_with_timeout(maunal_func, 1s)) {
-        //     ROS_INFO_STREAM("[Motor Relay] Trying to RE-connect to TCP Manual Board at ");
-        //     manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
-        // }
-
 
         // Send state to estop
-        // auto estop_func = [&]() {
-        //                     // RCS_command
-        //         string estop_response = estopBoardSocket->read();  // Clear response "R" from buffet
-        //         ROS_INFO_STREAM("Receiving: " << estop_response);
-        //     };
-        // estopBoardSocket->send("$S?;");
-        estopBoardSocket->send("$G;");
+        estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
         string estop_response = estopBoardSocket->read_with_timeout();
-        // if(estop_response == "TIME_OUT"/*run_with_timeout(steering_func, 1s)*/) {
-        //     while (true) {
-        //         try {
-        //             ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP + " port: " + std::to_string(tcpPort));
-        //             steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
-        //             break;
-        //         } catch(boost::wrapexcept<boost::system::system_error> err) {
-        //             ROS_INFO_STREAM("Connection failed...");
-        //         }
-        //     }
-        // }
-        // estopBoardSocket->send("$G;");
         ROS_INFO_STREAM("Estop Receiving: " << estop_response);
+        bool current_estop = extractEstop(estop_response);
 
 
-        // rr_msgs::chassis_state chassisStateMsg;
-        // chassisStateMsg.header.stamp = ros::Time::now();
-        // chassisStateMsg.speed_mps = currentSpeed;
-        // chassisStateMsg.mux_autonomous = true; //#TODO
-        // chassisStateMsg.estop_on = false; //#TODO
-        // chassisStatePublisher.publish(chassisStateMsg);
+         rr_msgs::chassis_state chassisStateMsg;
+         chassisStateMsg.header.stamp = ros::Time::now();
+         chassisStateMsg.speed_mps = (float) current_speed;
+         chassisStateMsg.steer_rad = (float) current_steer;
+         chassisStateMsg.mux_autonomous = true; //#TODO
+         chassisStateMsg.estop_on = current_estop;
+         chassisStatePublisher.publish(chassisStateMsg);
 
-        // // Pose and Twist Odometry Information for EKF localization
-        // geometry_msgs::PoseWithCovariance poseMsg;
-        // geometry_msgs::TwistWithCovariance twistMsg;
+         // Pose and Twist Odometry Information for EKF localization
+         geometry_msgs::PoseWithCovariance poseMsg;
+         geometry_msgs::TwistWithCovariance twistMsg;
 
-        // nav_msgs::Odometry odometryMsg;
-        // odometryMsg.header.stamp = ros::Time::now();
-        // odometryMsg.header.frame_id = "odom";
-        // odometryMsg.child_frame_id = "base_footprint";
-        // odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
-        // odometryMsg.twist.twist.linear.y = 0.0;  // can't move sideways instantaneously
+         nav_msgs::Odometry odometryMsg;
+         odometryMsg.header.stamp = ros::Time::now();
+         odometryMsg.header.frame_id = "odom";
+         odometryMsg.child_frame_id = "base_footprint";
+         odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
+         odometryMsg.twist.twist.linear.y = 0.0;  // can't move sideways instantaneously
         // #TODO: set twist covariance?
         // #TODO: if need be, use steering for extra data
         // #see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
-        // odometryPublisher.publish(odometryMsg);
+         odometryPublisher.publish(odometryMsg);
 
         rate.sleep();
     }
