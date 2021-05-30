@@ -29,7 +29,7 @@ std::unique_ptr<rr::GlobalPath> g_global_path_cost;
 std::shared_ptr<rr::LinearTrackingFilter> g_speed_model;
 std::shared_ptr<rr::LinearTrackingFilter> g_steer_model;
 
-double k_map_cost_, k_speed_, k_steering_, k_angle_, k_global_path_cost_, collision_penalty_;
+double k_map_cost_, k_speed_, k_steering_, k_angle_, k_global_path_cost_, k_path_progress_cost_, collision_penalty_;
 rr::Controls<ctrl_dim> g_last_controls;
 
 ros::Publisher speed_pub;
@@ -105,9 +105,9 @@ void generatePath() {
     rr::CostFunction<ctrl_dim> cost_fn = [&](const rr::Controls<ctrl_dim>& controls) -> double {
         rr::TrajectoryRollout rollout;
         g_vehicle_model->RollOutPath(controls, rollout);
-        const auto& path = rollout.path;
-
+        auto& path = rollout.path;
         std::vector<double> map_costs = g_map_cost_interface->DistanceCost(path);
+        double path_progress_costs = g_global_path_cost->GetLocalPathProgress(path, false);
         double global_path_costs = g_global_path_cost->CalculateCost(path);
         double cost = 0;
         double inflator = 1;
@@ -125,6 +125,7 @@ void generatePath() {
                 break;
             }
         }
+        cost += k_path_progress_cost_ * path_progress_costs;
         cost += k_global_path_cost_ * global_path_costs;
         return cost / inflator;
     };
@@ -142,7 +143,8 @@ void generatePath() {
     auto negative_it = std::find_if(map_costs.begin(), map_costs.end(), [](double x) { return x < 0; });
     plan.has_collision = (negative_it != map_costs.end());
 
-    g_global_path_cost->visualize_global_segment(plan.rollout.path);
+    g_global_path_cost->vizDTWSegment(plan.rollout.path);
+    g_global_path_cost->vizProgressSegment(plan.rollout.path);
 
     g_last_controls = controls;
 
@@ -206,6 +208,7 @@ int main(int argc, char** argv) {
     assertions::getParam(nhp, "k_steering", k_steering_);
     assertions::getParam(nhp, "k_angle", k_angle_);
     assertions::getParam(nhp, "k_global_path_cost", k_global_path_cost_);
+    assertions::getParam(nhp, "k_path_progress_cost", k_path_progress_cost_);
     assertions::getParam(nhp, "collision_penalty", collision_penalty_);
 
     std::string map_type;
