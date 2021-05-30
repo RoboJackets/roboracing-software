@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
     auto leftSteeringPublisher = handle.advertise<std_msgs::Float64>("/left_steer_position_controller/command", 1);
     auto rightSteeringPublisher = handle.advertise<std_msgs::Float64>("/right_steer_position_controller/command", 1);
     auto chassisStatePublisher = handle.advertise<rr_msgs::chassis_state>("/chassis_state", 1);
-    auto odometryPublisher = handle.advertise<nav_msgs::Odometry>("/odometry_encoder", 1);
+    auto odometryPublisher = handle.advertise<nav_msgs::Odometry>("/odometry/encoder", 1);
 
     auto speedSub = handle.subscribe("/speed", 1, speedCallback);
     auto steerSub = handle.subscribe("/steering", 1, steeringCallback);
