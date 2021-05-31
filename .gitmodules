@@ -10,3 +10,6 @@
 [submodule "third_party/velodyne_simulator"]
 	path = third_party/velodyne_simulator
 	url = https://bitbucket.org/DataspeedInc/velodyne_simulator.git
+[submodule "third_party/dynamic_reconfigure"]
+	path = third_party/dynamic_reconfigure
+	url = git@github.com:ros/dynamic_reconfigure.git
