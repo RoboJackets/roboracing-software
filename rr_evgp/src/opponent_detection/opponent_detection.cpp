@@ -76,17 +76,25 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
     while (a > 0) {
         int minR = 0;
         int minC = 0;
-        int smallestDistance = distances[0][0];
+        double smallestDistance = distances[0][0];
+        std::string label = "Array" + std::to_string(a) + "\n";
+        std::cout << label;
         for (int r = 0; r < distances.size(); r++) {
             for (int c = 0; c < distances[r].size(); c++) {
+                std::string out = std::to_string(distances[r][c]) + "\t";
+                std::cout << out;
                 if (distances[r][c] < smallestDistance) {
                     minR = r;
                     minC = c;
                     smallestDistance = distances[r][c];
                 }
             }
+            std::cout << "\n";
         }
+        std::cout << "\n";
 
+        std::string small = "Smallest Distance" + std::to_string(smallestDistance) + "\n";
+        std::cout << small;
         a--;
         if (smallestDistance < maxMovement) {
             marker_array.markers[minC].color = prevMarkers.markers[minR].color;
@@ -104,7 +112,7 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
             distances[r][minC] = INFINITY;
         }
         for (int c = 0; c < distances[0].size(); c++) {
-            distances[minR][c] = maxMovement + 1;
+            distances[minR][c] = INFINITY;
         }
 
     }
