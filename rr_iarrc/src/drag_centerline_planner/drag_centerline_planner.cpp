@@ -6,6 +6,7 @@
 #include <sensor_msgs/Image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -32,6 +33,13 @@ PID myPID(&input, &outputSteering, &setpoint, 0.0, 0.0, 0.0, P_ON_E, REVERSE);
 
 double speedGoal;
 bool useHistogramFinder;
+double lookAheadDistance; // look ahead distance from which to calculate error term for PID
+
+double leftLineStartLocY;
+double rightLineStartLocY;
+
+cv::Point prevRightMaxLoc; // needed in case locations of left and right lines aren't found
+cv::Point prevLeftMaxLoc;
 
 cv::Mat kernel(int x, int y) {
     return cv::getStructuringElement(cv::MORPH_RECT, cv::Size(x, y));
@@ -47,7 +55,7 @@ cv::Mat getColHist(cv::Mat img) {
 }
 
 // re-center around the average x coordinate of the line segment
-// returns true if he currCenter changed.
+// returns true if the currCenter changed.
 bool centerOnLineSegment(cv::Mat imGray, cv::Point& currCenter, cv::Point offset, int width, int height) {
     cv::Point topLeft = currCenter - offset;
     int sumX = 0;
@@ -109,28 +117,36 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
         cv::minMaxLoc(hist(cv::Range(0, hist.rows / 2 - 1), cv::Range::all()), &min, &max, &leftMinLoc, &leftMaxLoc);
         leftMaxLoc.x = leftMaxLoc.y;  // gotta flip x and y
         leftMaxLoc.y = frame.rows - 1;
-        cv::minMaxLoc(hist(cv::Range(hist.rows / 2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc,
-                      &rightMaxLoc);
+        cv::minMaxLoc(hist(cv::Range(hist.rows / 2, hist.rows - 1), cv::Range::all()), &min, &max, &rightMinLoc, &rightMaxLoc);
         rightMaxLoc.x = rightMaxLoc.y + hist.rows / 2;
         rightMaxLoc.y = frame.rows - 1;
 
         if (rightMaxLoc.x == frame.cols / 2) {
-            rightMaxLoc.x = frame.cols - 1;  // handle line not found
+            rightMaxLoc.x = prevRightMaxLoc.x;  // line not found
+        }
+        else {
+            prevRightMaxLoc.x = rightMaxLoc.x; // line found, save rightMaxLoc.x for next search
         }
     } else {
-        // locate beginnings of lines by centering from search window
+        // manually locate beginnings of lines by centering from search window
         leftMaxLoc.x = frame.cols / 4;
         rightMaxLoc.x = frame.cols / 2 + frame.cols / 4;
-        rightMaxLoc.y = 80;  // 120
-        leftMaxLoc.y = 80;
+        rightMaxLoc.y = rightLineStartLocY;
+        leftMaxLoc.y = leftLineStartLocY;
         int w = (frame.cols) / 2;
         bool rightFound = centerOnLineSegment(frame, rightMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
         bool leftFound = centerOnLineSegment(frame, leftMaxLoc, cv::Point(w / 2, 32), w - 1, 16);
-        if (!rightFound) {
-            rightMaxLoc.x = frame.cols / 2 + 40;
+        if (rightFound) {
+            prevRightMaxLoc.x = rightMaxLoc.x; // if found, save rightMaxLoc.x for next search
         }
-        if (!leftFound) {
-            leftMaxLoc.x = frame.cols / 2 - 40;
+        else {
+            rightMaxLoc.x = prevRightMaxLoc.x; // otherwise, set current rightMaxLoc.x to the last found value
+        }
+        if (leftFound) {
+            prevLeftMaxLoc.x = leftMaxLoc.x; // if found, save leftMaxLoc.x for next search
+        }
+        else {
+            leftMaxLoc.x = prevLeftMaxLoc.x; // otherwise, set current leftMaxLoc.x to the last found value
         }
     }
 
@@ -177,7 +193,7 @@ void img_callback(const sensor_msgs::ImageConstPtr& msg) {
     cv::polylines(output, centerLane, false, cv::Scalar(255, 0, 0), 2);
 
     // find error, P term. Maybe add curvature and stuff
-    cv::Point goal = centerLane[centerLane.size() / 2];
+    cv::Point goal = centerLane[round((centerLane.size() - 1) * lookAheadDistance)];
     int error = (frame.cols / 2) - goal.x;
 
     // double steering = error * 0.01; //kP
@@ -225,6 +241,11 @@ int main(int argc, char** argv) {
 
     double maxTurnLimit;
     nhp.param("maxTurnLimitRadians", maxTurnLimit, 0.44);
+
+    nhp.param("lookAheadDistance", lookAheadDistance, 0.5);
+
+    nhp.param("leftLineStartLocY", leftLineStartLocY);
+    nhp.param("rightLineStartLocY", rightLineStartLocY);
 
     // setup PID controllers
     myPID.SetTunings(kP, kI, kD);

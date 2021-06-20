@@ -11,6 +11,8 @@
 
         <param name="maxTurnLimitRadians" type="double" value="0.16" />
 
+        <param name="lookAheadDistance" type="double" value="0.5" />
+
         <param name="subscription_node" type="string" value="/urc_side_lanes"/>
     </node>
 </launch>
