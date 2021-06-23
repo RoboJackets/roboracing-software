@@ -15,24 +15,24 @@ find_package(catkin REQUIRED COMPONENTS
         pcl_conversions
         visualization_msgs
 
-)
+        )
 
 find_package(OpenCV REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES rr_evgp
-#  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs costmap_2d
-  LIBRARIES UniformCostSearch
-  DEPENDS OpenCV
+        INCLUDE_DIRS include
+        #  LIBRARIES rr_evgp
+        #  CATKIN_DEPENDS geometry_msgs roscpp rospy rr_common rr_description rr_gazebo rr_platform sensor_msgs costmap_2d
+        LIBRARIES UniformCostSearch
+        DEPENDS OpenCV
 )
 
 
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-  ${PCL_INCLUDE_DIRS}
+        include
+        ${catkin_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}
+        ${PCL_INCLUDE_DIRS}
 )
 
 link_directories(${PCL_LIBRARY_DIRS})

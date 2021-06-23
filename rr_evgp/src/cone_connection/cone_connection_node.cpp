@@ -11,7 +11,6 @@ static int final_index2 = 0;
 static std::vector<geometry_msgs::Pose> wall1;
 static std::vector<geometry_msgs::Pose> wall2;
 static geometry_msgs::Pose car_pose;
-static float close_distance = 0.25;
 static ros::Publisher wall1_pub, wall2_pub;
 
 static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
@@ -19,7 +18,7 @@ static inline double distance(const geometry_msgs::Point &p1, const geometry_msg
 }
 
 static inline bool close(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
-    return distance(p1, p2) < close_distance;
+    return distance(p1, p2) < (cone_distance / 2);
 }
 
 /*
@@ -33,36 +32,39 @@ static inline void average_pose(geometry_msgs::Pose &p1, const geometry_msgs::Po
 
 static void update_cones(std::vector<geometry_msgs::Pose> &wall_vector,
                          std::vector<geometry_msgs::Pose> &output_wall_vector) {
-    if (wall_vector.empty()) {
-        wall_vector = output_wall_vector;
-    } else {
-        // Iterate backwards through global wall1 starting at final_index1
-        // until reach value that is close to 0th item in local wall1
-        auto start_wall_it = wall_vector.rbegin();
-        for (auto it = wall_vector.rbegin(); it != wall_vector.rend(); --it) {
-            if (close(it->position, output_wall_vector[0].position)) {
-                start_wall_it = it;  // get current index
-                break;
-            }
-        }
-
-        // Now iterate forwards and update overlapping cone points
-        for (auto it = output_wall_vector.begin();
-             it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end(); it++, start_wall_it++) {
-            double dist;
-            if (close(it->position, start_wall_it->position)) {
-                average_pose(*start_wall_it.base(), *it.base());
-            } else if (distance(car_pose.position, start_wall_it->position) <
-                       (dist = distance(car_pose.position, it->position))) {
-                if (dist < distance(car_pose.position, (start_wall_it + 1)->position)) {
-                    wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &) it.base());
-                }
-            }
-        }
+//    if (wall_vector.empty()) {
+//        wall_vector = output_wall_vector;
+//    } else {
+//        // Iterate backwards through global wall1 starting at final_index1
+//        // until reach value that is close to 0th item in local wall1
+//        auto start_wall_it = wall_vector.rbegin();
+//        for (auto it = wall_vector.rbegin(); it != wall_vector.rend(); --it) {
+//            if (close(it->position, output_wall_vector[0].position)) {
+//                start_wall_it = it;  // get current index
+//                break;
+//            }
+//        }
+//
+//        // Now iterate forwards and update overlapping cone points
+//        for (auto it = output_wall_vector.begin();
+//             it < output_wall_vector.end() && start_wall_it.base() < wall_vector.end(); it++, start_wall_it++) {
+//            double dist;
+//            if (close(it->position, start_wall_it->position)) {
+//                average_pose(*start_wall_it.base(), *it.base());
+//            } else if (distance(car_pose.position, start_wall_it->position) <
+//                       (dist = distance(car_pose.position, it->position))) {
+//                if (dist < distance(car_pose.position, (start_wall_it + 1)->position)) {
+//                    wall_vector.insert(start_wall_it.base(), (const geometry_msgs::Pose &) it.base());
+//                }
+//            }
+//        }
+//    }
+    for(geometry_msgs::Pose pose : output_wall_vector) {
+        wall_vector.push_back(pose);
     }
 }
 
-// Relies on the elements that are closes to the car being at the front of the array
+// Relies on the elements that are closest to the car being at the front of the array
 // Must be sorted by distance to car
 void callback(const geometry_msgs::PoseArray &cone_array) {
     std::vector<geometry_msgs::Pose> local_wall1;

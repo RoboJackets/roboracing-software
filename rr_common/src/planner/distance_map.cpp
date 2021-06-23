@@ -1,6 +1,6 @@
 /**
  * Used to determine the cost for a list of poses based on the distance from obstacles
- * within the robot's local map. It takes in occupany grid and creates a distance map which assigns
+ * within the robot's local map. It takes in occupancy grid and creates a distance map which assigns
  * cost to positions in the map.
  *
  * @author Daniel Martin
@@ -67,7 +67,7 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
     cv::distanceTransform(distance_map, distance_map, cv::DIST_L2, 3, CV_32F);
     distance_map *= mapMetaData.resolution;
 
-    // Layers are: Obstacle, Lethal (lethal inflaction + inscribed circle), nonlethal, and e^-x function
+    // Layers are: Obstacle, Lethal (lethal inflation + inscribed circle), nonlethal, and e^-x function
     double lethal_boundary = lethal_wall_inflation + inscribed_circle_radius;
     if (cost_scaling_factor >= 0) {
         // Convert distance map to cost map based on: 100 * e^(-distance * cost_scaling_factor)

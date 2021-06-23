@@ -13,3 +13,4 @@
 [submodule "third_party/dynamic_reconfigure"]
 	path = third_party/dynamic_reconfigure
 	url = git@github.com:ros/dynamic_reconfigure.git
+	branch = add-yaml-load-loader
