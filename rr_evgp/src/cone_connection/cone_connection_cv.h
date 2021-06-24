@@ -23,6 +23,10 @@ class ConeConnectionCv : public costmap_2d::Layer {
     double curr_robot_x;
     double curr_robot_y;
     double mark_x_, mark_y_;
+
+    std::vector<tf::Pose> points;
+    std::vector<std::vector<geometry_msgs::Pose>> walls;
+
     ros::Publisher pub_walls;
     int distance_between_walls;
     int distance_between_cones;
@@ -42,12 +46,11 @@ class ConeConnectionCv : public costmap_2d::Layer {
         enabled_ = config.enabled;
     }
 
-    void update_map(const geometry_msgs::PoseArray &cone_positions);
+    void updateMap(const geometry_msgs::PoseArray &cone_positions);
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
 
   public:
-    explicit ConeConnectionCv(ros::NodeHandle handle);
     void onInitialize() override;
     void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
                       double* max_y) override;

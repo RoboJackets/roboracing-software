@@ -88,19 +88,45 @@ void ConeConnectionCv::onInitialize() {
 
     std::string cones_topic;
     assertions::param(private_nh, "cones_topic", cones_topic, std::string("/cones_topic"));
-    cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnectionCv::update_map, this);
+    cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnectionCv::updateMap, this);
 }
 
-void ConeConnectionCv::update_map(const geometry_msgs::PoseArray &cone_positions) {
+static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
+    return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
+}
 
+void ConeConnectionCv::updateMap(const geometry_msgs::PoseArray &cone_positions) {
+    std::vector<geometry_msgs::Pose> cones = cone_positions.poses;
+    while (!cones.empty()) {
+        std::vector<geometry_msgs::Pose> localCones;
+        geometry_msgs::Pose curr = cones.back();
+        cones.pop_back();
+
+        localCones.push_back(curr);
+
+        for (auto cone = cones.begin(); cone < cones.end(); cone++) {
+            if (distance(cone->position, curr.position) <= distance_between_cones) {
+                localCones.push_back(*cone);
+                cone = cones.erase(cone);
+            }
+        }
+
+        walls.emplace_back(localCones);
+    }
 }
 
 void ConeConnectionCv::updateBounds(double robot_x, double robot_y, double robot_yaw, double *min_x, double *min_y,
                                     double *max_x, double *max_y) {
+    if (!enabled_) {
+        return;
+    }
     Layer::updateBounds(robot_x, robot_y, robot_yaw, min_x, min_y, max_x, max_y);
 }
 
 void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) {
+    if (!enabled_) {
+        return;
+    }
     Layer::updateCosts(master_grid, min_i, min_j, max_i, max_j);
 }
 
