@@ -12,62 +12,10 @@
  * Helpful guide to understand this file: http://wiki.ros.org/costmap_2d/Tutorials/Creating%20a%20New%20Layer
  */
 
-//int main(int argc, char** argv) {
-//    ros::init(argc, argv, "cone_connection_cv");
-//    ros::NodeHandle nh;
-//    ros::NodeHandle nhp("~");
-//
-//    //    nh.advertise<cv::Image>(output_centroids, 1);
-//
-//    ConeConnectionCv connection(nh);
-//
-//    ros::spin();
-//    return 0;
-//}
-//
-//double ConeConnectionCv::DistanceCost(const rr::Pose& pose) {
-//    auto [mx, my] = this->PoseToGridPosition(pose);
-//
-//    if (my < 0 || mapMetaData.height <= my || mx < 0 || mapMetaData.width <= mx)
-//        return 0.0;
-//
-//    return distance_cost_map.at<float>(my, mx);
-//}
-//C
-//void ConeConnectionCv::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
-//    try {
-//        listener->waitForTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), ros::Duration(.05));
-//        listener->lookupTransform(map_msg->header.frame_id, robot_base_frame, ros::Time(0), transform);
-//    } catch (tf::TransformException& ex) {
-//        ROS_ERROR_STREAM(ex.what());
-//    }
-//}
-//
-//std::pair<unsigned int, unsigned int> ConeConnectionCv::PoseToGridPosition(const rr::Pose& pose) {
-//    tf::Pose w_pose = transform * tf::Pose(tf::createQuaternionFromYaw(0), tf::Vector3(pose.x, pose.y, 0));
-//
-//    unsigned int mx = std::floor((w_pose.getOrigin().x() - mapMetaData.origin.position.x) / mapMetaData.resolution);
-//    unsigned int my = std::floor((w_pose.getOrigin().y() - mapMetaData.origin.position.y) / mapMetaData.resolution);
-//
-//    return std::make_pair(mx, my);
-//}
-//
-//void ConeConnectionCv::create_image() {}
-//
-//ConeConnectionCv::ConeConnectionCv(ros::NodeHandle nh) : listener(new tf::TransformListener) {
-//    std::string map_topic;
-//    assertions::getParam(nh, "map_topic", map_topic);
-//    map_sub = nh.subscribe(map_topic, 1, &ConeConnectionCv::SetMapMessage, this);
-//
-//    distance_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("distance_map", 1);
-//}
-
 void ConeConnectionCv::onInitialize() {
     // Setup dynamic reconfigure
     dsrv_ = std::make_unique<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>>();
-    dsrv_->setCallback([this](auto genericPluginConfig, auto level) {
-        reconfigureCB(genericPluginConfig);
-    });
+    dsrv_->setCallback([this](auto genericPluginConfig, auto level) { reconfigureCB(genericPluginConfig); });
 
     // Initial variables
     init_robot_x = 0.0;
@@ -96,23 +44,70 @@ static inline double distance(const geometry_msgs::Point &p1, const geometry_msg
 }
 
 void ConeConnectionCv::updateMap(const geometry_msgs::PoseArray &cone_positions) {
-    std::vector<geometry_msgs::Pose> cones = cone_positions.poses;
-    while (!cones.empty()) {
-        std::vector<geometry_msgs::Pose> localCones;
-        geometry_msgs::Pose curr = cones.back();
-        cones.pop_back();
+    std::vector<std::vector<geometry_msgs::Pose>> walls = linkWalls(cone_positions);
+}
 
-        localCones.push_back(curr);
+int ConeConnectionCv::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second) {
+    return std::floor((second.position.x - first.position.x) + (second.position.y - first.position.y) +
+                      (second.position.z - first.position.z));
+}
 
-        for (auto cone = cones.begin(); cone < cones.end(); cone++) {
-            if (distance(cone->position, curr.position) <= distance_between_cones) {
-                localCones.push_back(*cone);
-                cone = cones.erase(cone);
+std::vector<std::vector<geometry_msgs::Pose>>
+ConeConnectionCv::linkWalls(const geometry_msgs::PoseArray &cone_positions) const {
+    std::vector<LinkedList> localWalls;
+    std::queue<Node *> cone_queue;
+
+    std::vector<geometry_msgs::Pose> cone_poses = cone_positions.poses;
+    while (!cone_poses.empty()) {
+        if (!cone_queue.empty()) {
+            Node *curr = cone_queue.front();
+            cone_queue.pop();
+
+            for (auto cone = cone_poses.begin(); cone < cone_poses.end(); cone++) {
+                if (distance(cone->position, curr->value.position) <= distance_between_cones) {
+                    Node *cone_to_add = nullptr;
+
+                    // Add new Node. Must maintain the head ptr when added before
+                    if (comparePoses(curr->value, *cone)) {
+                        cone_to_add = new Node{ *cone, curr, curr->prev };
+                        curr->prev = cone_to_add;
+                        localWalls.back().head = cone_to_add;
+                    } else {
+                        cone_to_add = new Node{ *cone, curr->next, curr };
+                        curr->next = cone_to_add;
+                    }
+                    localWalls.back().size++;
+                    cone_queue.push(cone_to_add);
+                    cone_poses.erase(cone--);
+                }
+            }
+        } else {  // Create new wall, there are no more points close to points in previous wall
+            Node *new_cone = new Node{ cone_poses.back(), nullptr, nullptr };
+            cone_queue.push(new_cone);
+            localWalls.push_back(LinkedList{ new_cone, 1 });
+            cone_poses.pop_back();
+        }
+    }
+
+    // Convert linked list to vector, delete Node classes
+    std::vector<std::vector<geometry_msgs::Pose>> walls;
+    for (LinkedList wall : localWalls) {
+        geometry_msgs::Pose wall_array_to_return[wall.size];
+
+        Node *curr = wall.head;
+        for (int i = 0; i < wall.size; i++) {
+            wall_array_to_return[i] = curr->value;
+            curr = curr->next;
+            if (curr && curr->prev) {
+                delete curr->prev;
             }
         }
 
-        walls.emplace_back(localCones);
+        std::vector<geometry_msgs::Pose> wall_to_return;
+        wall_to_return.insert(wall_to_return.cend(), &(wall_array_to_return[0]), &(wall_array_to_return[wall.size]));
+        walls.push_back(wall_to_return);
     }
+    return walls;
 }
 
 void ConeConnectionCv::updateBounds(double robot_x, double robot_y, double robot_yaw, double *min_x, double *min_y,

@@ -17,6 +17,19 @@
 
 class ConeConnectionCv : public costmap_2d::Layer {
   private:
+    class Node {
+      public:
+        geometry_msgs::Pose value;
+        Node* next;
+        Node* prev;
+    };
+
+    class LinkedList {
+      public:
+        Node* head;
+        int size;
+    };
+
     double init_robot_x;
     double init_robot_y;
     double init_robot_yaw;
@@ -25,7 +38,6 @@ class ConeConnectionCv : public costmap_2d::Layer {
     double mark_x_, mark_y_;
 
     std::vector<tf::Pose> points;
-    std::vector<std::vector<geometry_msgs::Pose>> walls;
 
     ros::Publisher pub_walls;
     int distance_between_walls;
@@ -46,7 +58,9 @@ class ConeConnectionCv : public costmap_2d::Layer {
         enabled_ = config.enabled;
     }
 
-    void updateMap(const geometry_msgs::PoseArray &cone_positions);
+    void updateMap(const geometry_msgs::PoseArray& cone_positions);
+    std::vector<std::vector<geometry_msgs::Pose>> linkWalls(const geometry_msgs::PoseArray& cone_positions) const;
+    static int comparePoses(geometry_msgs::Pose& first, geometry_msgs::Pose& second);
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
 
