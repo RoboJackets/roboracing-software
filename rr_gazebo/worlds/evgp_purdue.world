@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="IARRC Urban">
+        <gui>
+            <camera name="gzclient_camera">
+                <pose>-2.510217 -18.282948 1.477428 0 0.284000 1.527999</pose>
+            </camera>
+        </gui>
+        <scene>
+            <ambient>1.0 1.0 1.0 1.0</ambient>
+            <background>0.7 0.7 0.7 1.0</background>
+            <shadows>true</shadows>
+            <grid>false</grid>
+            <origin_visual>false</origin_visual>
+        </scene>
+
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <!--
+        <include>
+            <uri>model://sun</uri>
+            <pose> -0.927440 -13.45 16.19 1 0 0 0 </pose>
+        </include>
+        -->
+        <include>
+            <uri>model://EVGPTrack3</uri>
+            <pose>0 31 0 0 0 0</pose>
+        </include>
+
+
+    </world>
+</sdf>

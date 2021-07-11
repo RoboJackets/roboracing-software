@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(dirname)/evgp_sim.launch">
+        <arg name="world" value="$(find rr_gazebo)/worlds/evgp_purdue.world"/>
+        <arg name="x" value="0"/>
+        <arg name="y" value="0"/>
+        <arg name="heading" value="0"/>
+    </include>
+</launch>
