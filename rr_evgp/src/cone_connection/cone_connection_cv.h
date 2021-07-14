@@ -35,7 +35,9 @@ class ConeConnectionCv : public costmap_2d::Layer {
     double init_robot_yaw;
     double curr_robot_x;
     double curr_robot_y;
-    double mark_x_, mark_y_;
+    double max_x_, min_x_;
+    double max_y_, min_y_;
+    std::vector<LinkedList> walls_;
 
     std::vector<tf::Pose> points;
 
@@ -51,15 +53,12 @@ class ConeConnectionCv : public costmap_2d::Layer {
 
     void create_image();
 
-    //    std::pair<unsigned int, unsigned int> PoseToGridPosition(const rr::Pose&);
-    //    void SetMapMessage(const boost::shared_ptr<const nav_msgs::OccupancyGrid>& map_msg);
-
     inline void reconfigureCB(costmap_2d::GenericPluginConfig& config) {
         enabled_ = config.enabled;
     }
 
     void updateMap(const geometry_msgs::PoseArray& cone_positions);
-    std::vector<std::vector<geometry_msgs::Pose>> linkWalls(const geometry_msgs::PoseArray& cone_positions) const;
+    std::vector<LinkedList> linkWalls(const geometry_msgs::PoseArray& cone_positions);
     static int comparePoses(geometry_msgs::Pose& first, geometry_msgs::Pose& second);
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
