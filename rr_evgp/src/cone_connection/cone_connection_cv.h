@@ -47,11 +47,9 @@ class ConeConnectionCv : public costmap_2d::Layer {
     ros::Publisher image;
     nav_msgs::MapMetaData mapMetaData;
     ros::Subscriber map_sub;
-    [[maybe_unused]] ros::Subscriber cones_subscriber;
+    ros::Subscriber cones_subscriber;
     std::unique_ptr<tf::TransformListener> listener;
     ros::Publisher distance_map_pub;
-
-    void create_image();
 
     inline void reconfigureCB(costmap_2d::GenericPluginConfig& config) {
         enabled_ = config.enabled;
@@ -68,6 +66,7 @@ class ConeConnectionCv : public costmap_2d::Layer {
     void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
                       double* max_y) override;
     void updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, int min_j, int max_i, int max_j) override;
+    ~ConeConnectionCv() override;
 };
 
 #endif  // RR_EVGP_CONE_CONNECTION_CV_H

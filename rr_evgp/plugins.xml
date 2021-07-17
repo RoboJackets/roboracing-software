@@ -8,4 +8,7 @@
     <class type="rr::GlobalCenterPathLayer" base_class_type="costmap_2d::Layer">
         <description>Finds the center path through the track</description>
     </class>
+    <class type="rr::ConeConnectionCv" base_class_type="costmap_2d::Layer">
+        <description>Finds cone wall</description>
+    </class>
 </library>

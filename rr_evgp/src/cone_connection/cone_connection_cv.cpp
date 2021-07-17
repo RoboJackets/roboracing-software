@@ -176,7 +176,19 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
                     y = y + 1;
                     p = p + 2 * (dy - dx);
                 }
-                master_grid.setCost(x,y, costmap_2d::LETHAL_OBSTACLE);
+                master_grid.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
+            }
+        }
+    }
+}
+
+ConeConnectionCv::~ConeConnectionCv() {
+    for (LinkedList wall : walls_) {
+        Node *curr = wall.head;
+        for (int i = 0; i < wall.size; i++) {
+            curr = curr->next;
+            if (curr && curr->prev) {
+                delete curr->prev;
             }
         }
     }
