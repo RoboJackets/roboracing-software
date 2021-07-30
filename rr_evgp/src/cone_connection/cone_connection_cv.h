@@ -13,6 +13,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <ros/publisher.h>
 #include <ros/subscriber.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <tf/transform_listener.h>
 
 class ConeConnectionCv : public costmap_2d::Layer {
@@ -51,12 +52,15 @@ class ConeConnectionCv : public costmap_2d::Layer {
     std::unique_ptr<tf::TransformListener> listener;
     ros::Publisher distance_map_pub;
 
+    double cluster_tolerance_;
+    int min_cluster_size_, max_cluster_size_;
+
     inline void reconfigureCB(costmap_2d::GenericPluginConfig& config) {
         enabled_ = config.enabled;
     }
 
-    void updateMap(const geometry_msgs::PoseArray& cone_positions);
-    std::vector<LinkedList> linkWalls(const geometry_msgs::PoseArray& cone_positions);
+    void updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_msg);
+    std::vector<LinkedList> linkWalls(std::vector<geometry_msgs::Pose>& cone_positions);
     static int comparePoses(geometry_msgs::Pose& first, geometry_msgs::Pose& second);
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;

@@ -2,7 +2,16 @@
 
 #include <nav_msgs/OccupancyGrid.h>
 #include <parameter_assertions/assertions.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/common/centroid.h>
+#include <pcl/point_cloud.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <pluginlib/class_list_macros.h>
+#include <sensor_msgs/PointCloud2.h>
+
+#include <pcl/impl/point_types.hpp>
 
 #include "opencv2/core.hpp"
 #include "ros/ros.h"
@@ -34,6 +43,10 @@ void ConeConnectionCv::onInitialize() {
     assertions::param(private_nh, "distance_between_walls", distance_between_walls, 18);
     assertions::param(private_nh, "distance_between_cones", distance_between_cones, distance_between_walls / 3);
 
+    assertions::param(private_nh, "cluster_tolerance", cluster_tolerance_, 0.5);
+    assertions::param(private_nh, "min_cluster_size", min_cluster_size_, 3);
+    assertions::param(private_nh, "max_cluster_size", max_cluster_size_, 10);
+
     std::string cones_topic;
     assertions::param(private_nh, "cones_topic", cones_topic, std::string("/cones_topic"));
     cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnectionCv::updateMap, this);
@@ -43,8 +56,64 @@ static inline double distance(const geometry_msgs::Point &p1, const geometry_msg
     return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
-void ConeConnectionCv::updateMap(const geometry_msgs::PoseArray &cone_positions) {
-    walls_ = linkWalls(cone_positions);
+// main callback function
+void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
+    // Convert from sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2 -> pcl::PointCloud<PointXYZ>
+    pcl::PCLPointCloud2::Ptr pcl_pc2(new pcl::PCLPointCloud2);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl_conversions::toPCL(*cloud_msg, *pcl_pc2);
+    pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
+
+    // **CLUSTERING**
+    // Link: https://pcl.readthedocs.io/en/latest/cluster_extraction.html
+
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+    tree->setInputCloud(cloud);
+
+    std::vector<pcl::PointIndices> cluster_indices;
+    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+    ec.setClusterTolerance(cluster_tolerance_);
+    ec.setMinClusterSize(min_cluster_size_);
+    ec.setMaxClusterSize(max_cluster_size_);
+    ec.setSearchMethod(tree);
+    ec.setInputCloud(cloud);
+    ec.extract(cluster_indices);
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>> cloud_clusters;
+    for (const pcl::PointIndices& point_idx : cluster_indices) {
+        pcl::PointCloud<pcl::PointXYZ> cloud_cluster;
+        for (const int& idx : point_idx.indices) {
+            cloud_cluster.push_back((*cloud)[idx]);
+        }
+        cloud_clusters.push_back(cloud_cluster);
+    }
+
+    // **PUBLISHING**
+    std::vector<geometry_msgs::Pose> centroids;
+
+    for (auto &cloud_cluster : cloud_clusters) {
+        // Marker Cluster
+        std::vector<geometry_msgs::Point> marker_cluster;
+        for (const pcl::PointXYZ& point : cloud_cluster) {
+            geometry_msgs::Point marker_point;
+            marker_point.x = point.x;
+            marker_point.y = point.y;
+            marker_point.z = point.z;
+            marker_cluster.push_back(marker_point);
+        }
+
+        // Centroid
+        Eigen::Vector4f centroid_eigen;
+        pcl::compute3DCentroid(cloud_cluster, centroid_eigen);
+
+        geometry_msgs::Pose centroid;
+        centroid.position.x = centroid_eigen[0];
+        centroid.position.y = centroid_eigen[1];
+        centroid.position.z = centroid_eigen[2];
+        centroid.orientation.w = 1;
+        centroids.push_back(centroid);
+    }
+    linkWalls(centroids);
 }
 
 int ConeConnectionCv::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second) {
@@ -60,11 +129,9 @@ int ConeConnectionCv::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Po
  * @return a vector of all of the lines. A line is represented by a vector
  * of geometry_msgs::Pose
  */
-std::vector<ConeConnectionCv::LinkedList> ConeConnectionCv::linkWalls(const geometry_msgs::PoseArray &cone_positions) {
+std::vector<ConeConnectionCv::LinkedList> ConeConnectionCv::linkWalls(std::vector<geometry_msgs::Pose> &cone_poses) {
     std::vector<LinkedList> localWalls;
     std::queue<Node *> cone_queue;
-
-    std::vector<geometry_msgs::Pose> cone_poses = cone_positions.poses;
 
     bool max_x_init, min_x_init;
     bool max_y_init, min_y_init;

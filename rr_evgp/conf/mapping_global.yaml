@@ -10,6 +10,7 @@ costmap:
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
         - {name: "center_line", type: "rr::GlobalCenterPathLayer"}
+        - {name: "cone_connection", type: "ConeConnectionCv"}
 
     obstacles:
         combination_method: 0
@@ -49,3 +50,11 @@ costmap:
         scaling_factor: 4 #factor to downsize map to speed search
         distance_from_start: 17.5 #how close to count lap finished. Should be at least width of track. Must be greater than forward_initial_offset
         goal_distance_behind_start: 7.5
+
+    cone_connection:
+        distance_between_walls: 18
+        distance_between_cones: 6
+        cluster_tolerance: 0.5
+        min_cluster_size: 3
+        max_cluster_size: 10
+        cones_topic: /lidar_up
