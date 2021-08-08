@@ -92,7 +92,7 @@ private:
                                                                  // average mode, which changes the running average
                                                                  // factor based upon the confidence factor
   static constexpr auto SET_RUNNING_AVERAGE_PERCENT =
-      ":117,0.45,0.45,0.40,0.45\n";  // sets what percentage of running average to use on a
+      ":117,0.25,0.25,0.20,0.25\n";  // sets what percentage of running average to use on a
                                      // component sensor
 
   static constexpr auto SET_OVERSAMPLE_RATE = "106:100,100,25\n";  // sets the number of times to sample each
@@ -152,6 +152,7 @@ private:
   static constexpr auto SET_STREAMING_SLOTS_QUATERNION_CORRECTED_GYRO_ACCELERATION_LINEAR = ":80,0,38,39,255,255,255,"
                                                                                             "255,255\n";
   static constexpr auto GET_STREAMING_SLOTS = ":81\n";
+  // static constexpr auto SET_STREAMING_TIMING_1_MS = ":82,1000,0,0\n";
   static constexpr auto SET_STREAMING_TIMING_5_MS = ":82,5000,0,0\n";
   static constexpr auto SET_STREAMING_TIMING_10_MS = ":82,10000,0,0\n";
   static constexpr auto SET_STREAMING_TIMING_100_MS = ":82,100000,0,0\n";

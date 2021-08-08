@@ -7,7 +7,7 @@ YostLabDriver::YostLabDriver(ros::NodeHandle& nh_, ros::NodeHandle& priv_nh_)
   assertions::getParam(this->yostlab_priv_nh_, "topic_name", this->topic_name_);
   this->SerialConnect();
   // use identity matrix as default orientation correction
-  this->imu_pub_ = this->yostlab_nh_.advertise<sensor_msgs::Imu>(this->topic_name_, 10); 
+  this->imu_pub_ = this->yostlab_nh_.advertise<sensor_msgs::Imu>(this->topic_name_, 10);
 
   assertions::param(this->yostlab_priv_nh_, "imu_orientation_correction", this->imu_orientation_correction_,
                     std::vector<double>{ 1, 0, 0, 0, 1, 0, 0, 0, 1 });
@@ -153,7 +153,7 @@ void YostLabDriver::run()
   this->SerialWriteString(SET_STREAMING_TIMING_5_MS);
   this->SerialWriteString(START_STREAMING);
 
-  ros::Rate loop_rate(20);  // 20Hz
+  ros::Rate loop_rate(200);  // 20Hz
 
   int line_num_ = 0;
   sensor_msgs::Imu imu_msg_;

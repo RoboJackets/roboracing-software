@@ -17,6 +17,7 @@ find_package(catkin
         geometry_msgs
         rr_msgs
         parameter_assertions
+        serial
         )
 
 find_package(OpenCV REQUIRED)
@@ -57,4 +58,4 @@ add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
 add_subdirectory(src/EthernetSocket)
 add_subdirectory(src/rigatoni_ethernet_motor_relay_node)
-# add_subdirectory(src/yost_imu)
+add_subdirectory(src/yost_imu)
