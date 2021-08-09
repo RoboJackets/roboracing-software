@@ -8,7 +8,7 @@
     <rosparam>
       filter_field_name: z
       filter_limit_min: -2
-      filter_limit_max: -0.2
+      filter_limit_max: 0
       filter_limit_negative: True
     </rosparam>
   </node>
@@ -19,7 +19,7 @@
     <rosparam>
       filter_field_name: z
       filter_limit_min: -2
-      filter_limit_max: -0.2
+      filter_limit_max: 0
       filter_limit_negative: False
     </rosparam>
   </node>

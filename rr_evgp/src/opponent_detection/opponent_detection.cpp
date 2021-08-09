@@ -18,12 +18,13 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+
 #include <unordered_set>
 
 double cluster_tolerance_;
 int min_cluster_size_, max_cluster_size_;
 
-double maxMovement;
+double maxMovement, marker_duration;
 std::vector<geometry_msgs::Pose> prevCentroids;
 visualization_msgs::MarkerArray prevMarkers;
 
@@ -51,6 +52,7 @@ visualization_msgs::Marker makeMarkers(const std::vector<geometry_msgs::Point>& 
     marker.scale.y = 0.05;
     marker.scale.z = 0.05;
 
+    marker.lifetime = ros::Duration(marker_duration);
     return marker;
 }
 double euclidDistance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
@@ -60,7 +62,6 @@ double euclidDistance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
     return sqrt(x2 + y2 + z2);
 }
 void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualization_msgs::MarkerArray& marker_array) {
-    std::cout << "\n\nStarting new id assignment\n\n";
     std::vector<std::vector<double>> distances;
     int largest_id = 0;
     std::unordered_set<int> ids;
@@ -68,9 +69,6 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
         std::vector<double> row;
         if (ids.find(prevMarkers.markers[i].id) == ids.end()) {
             ids.insert(prevMarkers.markers[i].id);
-        } else {
-            std::string dups = "Duplicate ids, " + std::to_string(prevMarkers.markers[i].id) + "added twice \n\n";
-            std::cout << dups;
         }
         if (prevMarkers.markers[i].id > largest_id) {
             largest_id = prevMarkers.markers[i].id;
@@ -88,15 +86,6 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
 
     std::unordered_set<int> used_cols;
     while (a > 0) {
-        std::cout << "prev : ";
-        for (auto marker : prevMarkers.markers) {
-            std::cout << marker.id << " ";
-        }
-        std::cout << "\n";
-        for (auto marker : marker_array.markers) {
-            std::cout << marker.id << " ";
-        }
-        std::cout << "\n";
         int minR = 0;
         int minC = 0;
         double smallestDistance = distances[0][0];
@@ -110,39 +99,18 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
             }
         }
         a--;
-        std::string rowCol = "Row: " + std::to_string(minR) + "Col: " + std::to_string(minC) + "\n";
-        std::cout << rowCol;
         if (smallestDistance < maxMovement) {
             marker_array.markers[minC].color = prevMarkers.markers[minR].color;
             marker_array.markers[minC].id = prevMarkers.markers[minR].id;
         } else {
-            std::cout << "printing set: ";
-            for (auto const &i: used_cols) {
-                std::cout << i << " ";
-            }
-            std::cout << "\n";
             for (int c = 0; c < distances[0].size(); c++) {
                 if (used_cols.find(c) == used_cols.end()) {
                     largest_id++;
-                    std::cout << largest_id << " being assigned to " << marker_array.markers[c].id << "\n";
                     marker_array.markers[c].id = largest_id;
                     used_cols.insert(c);
                 }
             }
-//            std::cout << "looping through list\n";
-//            if (used_cols.size() < distances[0].size()) {
-//                std::cout << "\nNot all distances were properly assigned but distances looped through" << distances[0].size();
-//            }
-//            for (int i = 0; i < distances[0].size(); i++) {
-//                if (used_cols.find(i) == used_cols.end()) {
-//                    std::string output = "\n"+std::to_string(i) + " was not properly assigned\n";
-//                    std::cout << output;
-//                }
-//            }
-            for (auto marker : marker_array.markers) {
-                std::cout << marker.id << " ";
-            }
-            std::cout << "\n";
+
             return;
         }
 
@@ -154,19 +122,7 @@ void trackMovement(const std::vector<geometry_msgs::Pose>& centroids, visualizat
         for (int c = 0; c < distances[0].size(); c++) {
             distances[minR][c] = INFINITY;
         }
-        if (a + used_cols.size() != distances[0].size()) {
-            std::cout << "A number was not assigned but still running through loop";
-        }
     }
-    if (distances.size() > 0) {
-        if (used_cols.size() < distances[0].size()) {
-            std::cout << "Not all distances were properly assigned";
-        }
-    }
-    for (auto marker : marker_array.markers) {
-        std::cout << marker.id << " ";
-    }
-    std::cout << "\n";
 }
 
 // main callback function
@@ -249,7 +205,7 @@ int main(int argc, char** argv) {
     nhp.getParam("min_cluster_size", min_cluster_size_);
     nhp.getParam("max_cluster_size", max_cluster_size_);
     nhp.getParam("max_distance", maxMovement);
-
+    nhp.getParam("marker_duration", marker_duration);
     std::string input_cloud, output_markers, output_centroids;
     nhp.getParam("input_cloud", input_cloud);
     nhp.getParam("output_markers", output_markers);
