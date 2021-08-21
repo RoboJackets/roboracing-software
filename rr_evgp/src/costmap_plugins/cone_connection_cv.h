@@ -44,6 +44,7 @@ class ConeConnectionCv : public costmap_2d::Layer {
     std::vector<tf::Pose> points;
 
     ros::Publisher pub_walls;
+    ros::Publisher cone_connection_status;
     int distance_between_walls;
     int distance_between_cones;
     ros::Publisher image;

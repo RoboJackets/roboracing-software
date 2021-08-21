@@ -10,6 +10,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pluginlib/class_list_macros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <std_msgs/String.h>
 
 #include <pcl/impl/point_types.hpp>
 
@@ -41,15 +42,21 @@ void ConeConnectionCv::onInitialize() {
     assertions::param(private_nh, "walls_topic", walls_topic, std::string("/global_walls_topic"));
     pub_walls = nh.advertise<nav_msgs::OccupancyGrid>(walls_topic, 1);
 
+    std::string cone_connection_status_topic;
+    assertions::param(private_nh, "cone_connection_status", cone_connection_status_topic,
+                      std::string("/cone_connection_status"));
+    cone_connection_status = nh.advertise<std_msgs::String>(cone_connection_status_topic, 1);
+
     assertions::param(private_nh, "distance_between_walls", distance_between_walls, 18);
     assertions::param(private_nh, "distance_between_cones", distance_between_cones, distance_between_walls / 3);
 
     assertions::param(private_nh, "cluster_tolerance", cluster_tolerance_, 0.5);
-    assertions::param(private_nh, "min_cluster_size", min_cluster_size_, 3);
+    assertions::param(private_nh, "min_cluster_size", min_cluster_size_, 1);
     assertions::param(private_nh, "max_cluster_size", max_cluster_size_, 10);
 
     std::string cones_topic;
     assertions::param(private_nh, "cones_topic", cones_topic, std::string("/cones_topic"));
+    ROS_INFO_STREAM(cones_topic);
     cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnectionCv::updateMap, this);
 }
 
@@ -59,6 +66,10 @@ static inline double distance(const geometry_msgs::Point &p1, const geometry_msg
 
 // main callback function
 void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
+    std_msgs::String msg;
+    msg.data = "Updating map";
+    cone_connection_status.publish(msg);
+
     // Convert from sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2 -> pcl::PointCloud<PointXYZ>
     pcl::PCLPointCloud2::Ptr pcl_pc2(new pcl::PCLPointCloud2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -114,7 +125,7 @@ void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_m
         centroid.orientation.w = 1;
         centroids.push_back(centroid);
     }
-    linkWalls(centroids);
+    walls_ = linkWalls(centroids);
 }
 
 int ConeConnectionCv::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second) {
@@ -131,6 +142,14 @@ int ConeConnectionCv::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Po
  * of geometry_msgs::Pose
  */
 std::vector<ConeConnectionCv::LinkedList> ConeConnectionCv::linkWalls(std::vector<geometry_msgs::Pose> &cone_poses) {
+    std_msgs::String msg;
+    msg.data = "Linking Walls: size -> " + std::to_string(cone_poses.size());
+    for (geometry_msgs::Pose pose : cone_poses) {
+        msg.data += ". x -> " + std::to_string(pose.position.x) + ", y -> " + std::to_string(pose.position.y) +
+                    ", z -> " + std::to_string(pose.position.z) + ", ";
+    }
+    cone_connection_status.publish(msg);
+
     std::vector<LinkedList> localWalls;
     std::queue<Node *> cone_queue;
 
@@ -202,6 +221,20 @@ std::vector<ConeConnectionCv::LinkedList> ConeConnectionCv::linkWalls(std::vecto
     //        wall_to_return.insert(wall_to_return.cend(), &(wall_array_to_return[0]),
     //        &(wall_array_to_return[wall.size])); walls.push_back(wall_to_return);
     //    }
+
+    std_msgs::String linked;
+    msg.data = "Linked Walls: ";
+    for (LinkedList linkedList : localWalls) {
+        msg.data += "size: " + std::to_string(linkedList.size) + ", items: [";
+        Node *curr = linkedList.head;
+        while (curr != nullptr) {
+            msg.data += "x -> " + std::to_string(curr->value.position.x) + ", y -> " + std::to_string(curr->value.position.y) +
+                  ", z -> " + std::to_string(curr->value.position.z) + "], ";
+            curr = curr->next;
+        }
+    }
+    cone_connection_status.publish(msg);
+
     return localWalls;
 }
 
@@ -210,6 +243,10 @@ void ConeConnectionCv::updateBounds(double robot_x, double robot_y, double robot
     if (!enabled_) {
         return;
     }
+    std_msgs::String msg;
+    msg.data = "Updating bounds";
+
+    cone_connection_status.publish(msg);
     *min_x = std::min(*min_x, min_x_);
     *min_y = std::min(*min_y, min_y_);
     *max_x = std::max(*max_x, max_x_);
@@ -220,10 +257,18 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
     if (!enabled_) {
         return;
     }
+
+    std_msgs::String msg;
+    msg.data = "Updating costs";
+    cone_connection_status.publish(msg);
+
     for (ConeConnectionCv::LinkedList wall : walls_) {
-        ROS_INFO_STREAM(wall.size);
+        std_msgs::String usingWalls;
+        usingWalls.data = "Using walls";
+        cone_connection_status.publish(usingWalls);
+
         Node *curr = wall.head;
-        while (curr->next) {
+        while (curr != nullptr) {
             int x, y, x2, y2;
 
             x = static_cast<int>(curr->value.position.x);
@@ -247,6 +292,7 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
                 }
                 master_grid.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
             }
+            curr = curr->next;
         }
     }
 }
