@@ -16,18 +16,19 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <tf/transform_listener.h>
 
+namespace rr {
 class ConeConnectionCv : public costmap_2d::Layer {
   private:
     class Node {
       public:
         geometry_msgs::Pose value;
-        Node* next;
-        Node* prev;
+        Node *next;
+        Node *prev;
     };
 
     class LinkedList {
       public:
-        Node* head;
+        Node *head;
         int size;
     };
 
@@ -55,22 +56,27 @@ class ConeConnectionCv : public costmap_2d::Layer {
     double cluster_tolerance_;
     int min_cluster_size_, max_cluster_size_;
 
-    inline void reconfigureCB(costmap_2d::GenericPluginConfig& config) {
+    inline void reconfigureCB(costmap_2d::GenericPluginConfig &config) {
         enabled_ = config.enabled;
     }
 
-    void updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_msg);
-    std::vector<LinkedList> linkWalls(std::vector<geometry_msgs::Pose>& cone_positions);
-    static int comparePoses(geometry_msgs::Pose& first, geometry_msgs::Pose& second);
+    void updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
+
+    std::vector<LinkedList> linkWalls(std::vector<geometry_msgs::Pose> &cone_positions);
+
+    static int comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second);
 
     std::unique_ptr<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>> dsrv_;
 
   public:
     void onInitialize() override;
-    void updateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y, double* max_x,
-                      double* max_y) override;
-    void updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, int min_j, int max_i, int max_j) override;
+
+    void updateBounds(double robot_x, double robot_y, double robot_yaw, double *min_x, double *min_y, double *max_x,
+                      double *max_y) override;
+
+    void updateCosts(costmap_2d::Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) override;
+
     ~ConeConnectionCv() override;
 };
-
+}  // namespace rr
 #endif  // RR_EVGP_CONE_CONNECTION_CV_H

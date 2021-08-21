@@ -21,6 +21,7 @@
  * Helpful guide to understand this file: http://wiki.ros.org/costmap_2d/Tutorials/Creating%20a%20New%20Layer
  */
 
+namespace rr {
 void ConeConnectionCv::onInitialize() {
     // Setup dynamic reconfigure
     dsrv_ = std::make_unique<dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig>>();
@@ -57,7 +58,7 @@ static inline double distance(const geometry_msgs::Point &p1, const geometry_msg
 }
 
 // main callback function
-void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
+void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
     // Convert from sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2 -> pcl::PointCloud<PointXYZ>
     pcl::PCLPointCloud2::Ptr pcl_pc2(new pcl::PCLPointCloud2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -80,9 +81,9 @@ void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_m
     ec.extract(cluster_indices);
 
     std::vector<pcl::PointCloud<pcl::PointXYZ>> cloud_clusters;
-    for (const pcl::PointIndices& point_idx : cluster_indices) {
+    for (const pcl::PointIndices &point_idx : cluster_indices) {
         pcl::PointCloud<pcl::PointXYZ> cloud_cluster;
-        for (const int& idx : point_idx.indices) {
+        for (const int &idx : point_idx.indices) {
             cloud_cluster.push_back((*cloud)[idx]);
         }
         cloud_clusters.push_back(cloud_cluster);
@@ -94,7 +95,7 @@ void ConeConnectionCv::updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_m
     for (auto &cloud_cluster : cloud_clusters) {
         // Marker Cluster
         std::vector<geometry_msgs::Point> marker_cluster;
-        for (const pcl::PointXYZ& point : cloud_cluster) {
+        for (const pcl::PointXYZ &point : cloud_cluster) {
             geometry_msgs::Point marker_point;
             marker_point.x = point.x;
             marker_point.y = point.y;
@@ -220,6 +221,7 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
         return;
     }
     for (ConeConnectionCv::LinkedList wall : walls_) {
+        ROS_INFO_STREAM(wall.size);
         Node *curr = wall.head;
         while (curr->next) {
             int x, y, x2, y2;
@@ -260,6 +262,7 @@ ConeConnectionCv::~ConeConnectionCv() {
         }
     }
 }
+}  // namespace rr
 
 // Expose this layer to the costmap2d configuration
-PLUGINLIB_EXPORT_CLASS(ConeConnectionCv, costmap_2d::Layer);
+PLUGINLIB_EXPORT_CLASS(rr::ConeConnectionCv, costmap_2d::Layer);
