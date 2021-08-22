@@ -263,12 +263,8 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
     cone_connection_status.publish(msg);
 
     for (ConeConnectionCv::LinkedList wall : walls_) {
-        std_msgs::String usingWalls;
-        usingWalls.data = "Using walls";
-        cone_connection_status.publish(usingWalls);
-
         Node *curr = wall.head;
-        while (curr != nullptr) {
+        while (curr != nullptr && curr->next != nullptr) {
             int x, y, x2, y2;
 
             x = static_cast<int>(curr->value.position.x);
@@ -290,6 +286,9 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
                     y = y + 1;
                     p = p + 2 * (dy - dx);
                 }
+                std_msgs::String usingWalls;
+                usingWalls.data = "Using walls: x -> " + std::to_string(x) + ", y -> " + std::to_string(y);
+                cone_connection_status.publish(usingWalls);
                 master_grid.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
             }
             curr = curr->next;
