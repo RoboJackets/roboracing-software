@@ -11,7 +11,7 @@
     <param name="min_cluster_size" value="10"/>
     <param name="max_cluster_size" value="1000000"/>
 
-    <param name="max_distance" value=".5"/>
-    <param name="marker_duration" value=".5"/>
+    <param name="max_distance" value="1.5"/>
+    <param name="marker_duration" value=".2"/>
   </node>
 </launch>
