@@ -178,6 +178,8 @@ std::vector<ConeConnectionCv::LinkedList> ConeConnectionCv::linkWalls(std::vecto
                     cone_queue.push(cone_to_add);
                     cone_poses.erase(cone--);
                 }
+
+                // Set the min/max values found on the costmap
                 if (max_x_init || (cone->position.x > max_x_)) {
                     max_x_init = true;
                     max_x_ = cone->position.x;
@@ -247,6 +249,8 @@ void ConeConnectionCv::updateBounds(double robot_x, double robot_y, double robot
     msg.data = "Updating bounds";
 
     cone_connection_status.publish(msg);
+
+    // Use the min/max values discovered in the linked walls to update the bounds
     *min_x = std::min(*min_x, min_x_);
     *min_y = std::min(*min_y, min_y_);
     *max_x = std::max(*max_x, max_x_);
@@ -262,6 +266,8 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
     msg.data = "Updating costs";
     cone_connection_status.publish(msg);
 
+    // Iterate through all the walls points and draw
+    // straight lines connecting all the points on the wall
     for (ConeConnectionCv::LinkedList wall : walls_) {
         Node *curr = wall.head;
         while (curr != nullptr && curr->next != nullptr) {
@@ -289,7 +295,7 @@ void ConeConnectionCv::updateCosts(costmap_2d::Costmap2D &master_grid, int min_i
                 std_msgs::String usingWalls;
                 usingWalls.data = "Using walls: x -> " + std::to_string(x) + ", y -> " + std::to_string(y);
                 cone_connection_status.publish(usingWalls);
-                master_grid.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
+//                master_grid.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
             }
             curr = curr->next;
         }
