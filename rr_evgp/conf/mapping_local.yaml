@@ -6,6 +6,7 @@ costmap:
     rolling_window: true
     width: 350
     height: 350
+#    y = 350/2 * resolution
 
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}

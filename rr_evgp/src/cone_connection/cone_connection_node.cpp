@@ -69,33 +69,51 @@ ConeConnection::ConeConnection() {
 //
 // }
 
-static inline double distance(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2) {
+static inline double distance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2) {
     return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
-std::vector<pcl::PointCloud<pcl::PointXYZ>> ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) {
+std::vector<pcl::PointCloud<pcl::PointXYZ>> ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) const {
     // **CLUSTERING**
     // Link: https://pcl.readthedocs.io/en/latest/cluster_extraction.html
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
     tree->setInputCloud(cloud);
+    // visited set
 
-    std::vector<pcl::PointIndices> cluster_indices;
-    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(cluster_tolerance_); // track_width / 3
-    ec.setMinClusterSize(1);
-    ec.setMaxClusterSize(100000);
-    ec.setSearchMethod(tree);
-    ec.setInputCloud(cloud);
-    ec.extract(cluster_indices);
+    std::vector<std::vector<int>> cloudList;
+    nav_msgs::OccupancyGrid occupancyGrid;
+    occupancyGrid.info.height = 350;
+    occupancyGrid.info.width = 350;
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>> clusters;
-    for (const pcl::PointIndices &point_idx : cluster_indices) {
-        pcl::PointCloud<pcl::PointXYZ> cluster;
-        for (const int &idx : point_idx.indices) {
-            cluster.push_back((*cloud)[idx]);
+//  col = int((pnt.y - pnt_origin) / resolution)
+    int K = 4;
+    std::vector<int> nearbyPoints(K);
+    std::vector<float> nearbyPointsSquaredDistance(K);
+
+    for(auto iter = cloud->begin(); iter < cloud->end(); iter++) {
+        int close = tree->nearestKSearch(*iter.base(), K, nearbyPoints, nearbyPointsSquaredDistance);
+        if (close > 0) {
+
         }
-        clusters.push_back(cluster);
     }
+
+//    std::vector<pcl::PointIndices> cluster_indices;
+//    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+//    ec.setClusterTolerance(cluster_tolerance_); // track_width / 3
+//    ec.setMinClusterSize(1);
+//    ec.setMaxClusterSize(100000);
+//    ec.setSearchMethod(tree);
+//    ec.setInputCloud(cloud);
+//    ec.extract(cluster_indices);
+//
+//    std::vector<pcl::PointCloud<pcl::PointXYZ>> clusters;
+//    for (const pcl::PointIndices &point_idx : cluster_indices) {
+//        pcl::PointCloud<pcl::PointXYZ> cluster;
+//        for (const int &idx : point_idx.indices) {
+//            cluster.push_back((*cloud)[idx]);
+//        }
+//        clusters.push_back(cluster);
+//    }
     return clusters;
 }
 
@@ -113,8 +131,8 @@ void ConeConnection::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg
     pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
 
     std::vector<geometry_msgs::Pose> centroids;
-    clustering(centroids, cloud);
     walls_ = linkWalls(centroids);
+    //    clustering(centroids, cloud);
 
     //    get points, cluster, find closest, bfs and connected closest, graph to map,
     // opencv img MxM, convert poses to indices based on resolution and map origin,
@@ -160,6 +178,31 @@ void ConeConnection::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg
     }
 }
 
+std::vector<std::vector<int>> ConeConnection::linkWallGraph(const pcl::PointCloud<pcl::PointXYZ>::Ptr& poses) const {
+    std::queue<int> queue;
+    std::unordered_set<int> visited;
+    pcl::PointXYZ curr = poses->front();
+    poses->erase(poses->begin());
+
+    while(!poses->empty()) {
+        std::vector<std::vector<int>> adj_list(poses->size());
+        while(!queue.empty()) {
+            int curr_i = queue.front();
+            queue.pop();
+            curr = poses->at(0, curr_i);
+
+            for (int i = 0; i < poses->size(); i++) {
+                if (visited.count(i) == 0 && distance(curr, poses->at(0, i)) <= distance_between_cones) {
+                    queue.push(i);
+                    visited.insert(i);
+                    adj_list[curr_i].push_back(i);
+                }
+            }
+        }
+    }
+    return adj_list;
+}
+
 void ConeConnection::updateMapGraph(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
     nav_msgs::OccupancyGrid occupancyGrid;
 
@@ -169,39 +212,19 @@ void ConeConnection::updateMapGraph(const sensor_msgs::PointCloud2ConstPtr &clou
     pcl_conversions::toPCL(*cloud_msg, *pcl_pc2);
     pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
 
-    std::vector<geometry_msgs::Pose> clusters;
-    auto cluster = clustering(cloud);
-    for (const auto& cluster : clusters) {
-        auto walls = linkWallGraph(cluster);
-    }
+
+
+//    std::vector<geometry_msgs::Pose> clusters;
+//    auto cluster = clustering(cloud);
+    auto walls = linkWallGraph(cloud);
+//    for (const auto& cluster : clusters) {
+//    }
 
 }
 
 int ConeConnection::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second) {
     return std::floor((second.position.x - first.position.x) + (second.position.y - first.position.y) +
                       (second.position.z - first.position.z));
-}
-
-std::vector<std::vector<int>> ConeConnection::linkWallGraph(std::vector<geometry_msgs::Pose> &poses) {
-    std::queue<int> queue;
-    std::unordered_set<int> visited;
-    std::vector<std::vector<int>> adj_list(poses.size());
-    geometry_msgs::Pose curr = poses[0];
-
-    while(!queue.empty()) {
-        int curr_i = queue.front();
-        queue.pop();
-        curr = poses[curr_i];
-
-        for (int i = 0; i < poses.size(); i++) {
-            if (visited.count(i) == 0 && distance(curr.position, poses[i].position) <= distance_between_cones) {
-                queue.push(i);
-                visited.insert(i);
-                adj_list[curr_i].push_back(i);
-            }
-        }
-    }
-    return adj_list;
 }
 
 /**
@@ -233,7 +256,8 @@ std::vector<ConeConnection::LinkedList> ConeConnection::linkWalls(std::vector<ge
             cone_queue.pop();
 
             for (auto cone = cone_poses.begin(); cone < cone_poses.end(); cone++) {
-                if (distance(cone->position, curr->value.position) <= distance_between_cones) {
+                //distance(cone->position, curr->value.position) <= distance_between_cones
+                if (true) {
                     Node *cone_to_add;
 
                     // Add new Node. Must maintain the head ptr when added before

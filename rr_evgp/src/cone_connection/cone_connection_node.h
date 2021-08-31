@@ -71,11 +71,10 @@ class ConeConnection {
     void updateMapGraph(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
     std::vector<LinkedList> linkWalls(std::vector<geometry_msgs::Pose> &cone_positions);
     static int comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second);
-    std::vector<std::vector<int>> linkWallGraph(std::vector<geometry_msgs::Pose> &cone_poses);
-    std::vector<pcl::PointCloud<pcl::PointXYZ>> ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) ;
+    std::vector<std::vector<int>> linkWallGraph(const pcl::PointCloud<pcl::PointXYZ>::Ptr &poses) const;
+    std::vector<pcl::PointCloud<pcl::PointXYZ>> clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) const;
 
-          ConeConnection();
-    int createMap;
+    ConeConnection();
 
   public:
     ~ConeConnection();
