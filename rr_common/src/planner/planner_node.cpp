@@ -16,8 +16,8 @@
 #include <rr_msgs/steering.h>
 #include <visualization_msgs/Marker.h>
 
-#include <rr_common/linear_tracking_filter.hpp>
 #include <numeric>
+#include <rr_common/linear_tracking_filter.hpp>
 
 constexpr int ctrl_dim = 2;
 
@@ -300,8 +300,7 @@ int main(int argc, char** argv) {
                 window_size.erase(window_size.begin());
             }
             double sec_mvg_avg = std::accumulate(window_size.begin(), window_size.end(), 0.0) / window_size.size();
-         
-           
+
             ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_mvg_avg * 1000);
         }
     }
