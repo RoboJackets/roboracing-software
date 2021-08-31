@@ -53,7 +53,7 @@ double steering_gain;
 double viz_path_scale;
 
 std::vector<double> time_window;
-const int window_size;
+const int time_window_size = 50;
 
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
@@ -266,11 +266,6 @@ int main(int argc, char** argv) {
     g_effector_tracker =
           std::make_unique<rr::EffectorTracker>(ros::NodeHandle(nhp, "effector_tracker"), speed_message, steer_message);
 
-    total_planning_time = 0;
-    total_plans = 0;
-    window_size = 30;
-    sec_mvg_avg = 0.0;
-
     g_steer_model->Reset(0, ros::Time::now().toSec());
     g_speed_model->Reset(0, ros::Time::now().toSec());
 
@@ -295,11 +290,11 @@ int main(int argc, char** argv) {
 
             double seconds = (ros::WallTime::now() - start).toSec();
 
-            window_size.push_back(seconds);
-            if (window_size.size() >= window_size) {
-                window_size.erase(window_size.begin());
+            time_window.push_back(seconds);
+            if (time_window.size() >= time_window_size) {
+                time_window.erase(time_window.begin());
             }
-            double sec_mvg_avg = std::accumulate(window_size.begin(), window_size.end(), 0.0) / window_size.size();
+            double sec_mvg_avg = std::accumulate(time_window.begin(), time_window.end(), 0.0) / time_window.size();
 
             ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_mvg_avg * 1000);
         }
