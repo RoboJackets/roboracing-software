@@ -17,6 +17,7 @@
 #include <visualization_msgs/Marker.h>
 
 #include <rr_common/linear_tracking_filter.hpp>
+#include <numeric>
 
 constexpr int ctrl_dim = 2;
 
@@ -51,8 +52,8 @@ reverse_state_t reverse_state;
 double steering_gain;
 double viz_path_scale;
 
-double total_planning_time;
-size_t total_plans;
+std::vector<double> time_window;
+const int window_size;
 
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
@@ -267,6 +268,8 @@ int main(int argc, char** argv) {
 
     total_planning_time = 0;
     total_plans = 0;
+    window_size = 30;
+    sec_mvg_avg = 0.0;
 
     g_steer_model->Reset(0, ros::Time::now().toSec());
     g_speed_model->Reset(0, ros::Time::now().toSec());
@@ -291,10 +294,15 @@ int main(int argc, char** argv) {
             g_map_cost_interface->SetMapStale();
 
             double seconds = (ros::WallTime::now() - start).toSec();
-            total_planning_time += seconds;
-            total_plans++;
-            double sec_avg = total_planning_time / total_plans;
-            ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_avg * 1000);
+
+            window_size.push_back(seconds);
+            if (window_size.size() >= window_size) {
+                window_size.erase(window_size.begin());
+            }
+            double sec_mvg_avg = std::accumulate(window_size.begin(), window_size.end(), 0.0) / window_size.size();
+         
+           
+            ROS_INFO("PlanningOptimizer took %0.1fms, average %0.2fms", seconds * 1000, sec_mvg_avg * 1000);
         }
     }
 
