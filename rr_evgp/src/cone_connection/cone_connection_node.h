@@ -19,6 +19,23 @@
 
 #include <pcl/impl/point_types.hpp>
 
+namespace std {
+template <>
+struct hash<pcl::PointXYZ> {
+    std::size_t operator()(const pcl::PointXYZ &pointXyz) const {
+        std::hash<float> hash_i;
+        return (std::size_t)(31 * hash_i(pointXyz.x) + 31 * hash_i(pointXyz.y) + 31 * hash_i(pointXyz.z));
+    };
+};  // namespace
+
+template <>
+struct equal_to<pcl::PointXYZ> {
+    constexpr bool operator()(const pcl::PointXYZ &lhs, const pcl::PointXYZ &rhs) const {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+};
+}  // namespace std
+
 class ConeConnection {
   private:
     class Node {
@@ -44,6 +61,11 @@ class ConeConnection {
         int size;
     };
 
+    struct GridPosition {
+        int row;
+        int col;
+    };
+
     std::vector<tf::Pose> points;
 
     double max_x_;
@@ -67,12 +89,10 @@ class ConeConnection {
     double cluster_tolerance_;
     int min_cluster_size_, max_cluster_size_;
 
-    void updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
-    void updateMapGraph(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
-    std::vector<LinkedList> linkWalls(std::vector<geometry_msgs::Pose> &cone_positions);
-    static int comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second);
-    std::vector<std::vector<int>> linkWallGraph(const pcl::PointCloud<pcl::PointXYZ>::Ptr &poses) const;
-    std::vector<pcl::PointCloud<pcl::PointXYZ>> clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) const;
+    static void updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
+    static void clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, nav_msgs::OccupancyGrid &occupancyGrid);
+
+    static void bsline(GridPosition start, GridPosition end, nav_msgs::OccupancyGrid &grid);
 
     ConeConnection();
 

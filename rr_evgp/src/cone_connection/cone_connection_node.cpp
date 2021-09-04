@@ -55,295 +55,109 @@ ConeConnection::ConeConnection() {
     assertions::param(private_nh, "min_cluster_size", min_cluster_size_, 1);
     assertions::param(private_nh, "max_cluster_size", max_cluster_size_, 10);
 
-    //    std::string map_topic;
-    //    assertions::getParam(nh, "map_topic", map_topic);
-    //    map_sub = nh.subscribe(map_topic, 1, &ConeConnection::SetMapMessage, this);
-
     std::string cones_topic;
     assertions::param(private_nh, "cones_topic", cones_topic, std::string("/cones_topic"));
-    ROS_INFO_STREAM(cones_topic);
     cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnection::updateMap, this);
 }
-
-// void ConeConnection::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid const>& map_msg) {
-//
-// }
 
 static inline double distance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2) {
     return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
-std::vector<pcl::PointCloud<pcl::PointXYZ>> ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) const {
+// http://mytechnotrick.blogspot.com/2015/07/c-program-to-implement-bresenhams-line.html
+/**
+ * Use breshnam's line algorithm to draw points onto the occupancy grid
+ * @param start Start GridPosition for line
+ * @param end End GridPosition for line
+ * @param grid OccupancyGrid to place points
+ */
+void ConeConnection::bsline(GridPosition start, GridPosition end, nav_msgs::OccupancyGrid &grid) {
+    int column_diff, row_diff, p;
+    column_diff = end.col - start.col;
+    row_diff = end.row - start.row;
+    p = 2 * (row_diff) - (column_diff);
+    while (start.col <= end.col) {
+        if (p < 0) {
+            start.col = start.col + 1;
+            start.row = start.row;
+            p = p + 2 * (row_diff);
+        } else {
+            start.col = start.col + 1;
+            start.row = start.row + 1;
+            p = p + 2 * (row_diff - column_diff);
+        }
+
+        // Set deadly object at provided row/column
+        grid.data[start.row * grid.info.width + start.col] = 100;
+    }
+}
+
+void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
+                                nav_msgs::OccupancyGrid &occupancyGrid) {
     // **CLUSTERING**
     // Link: https://pcl.readthedocs.io/en/latest/cluster_extraction.html
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+    // Add all points to the tree
     tree->setInputCloud(cloud);
     // visited set
 
-    std::vector<std::vector<int>> cloudList;
-    nav_msgs::OccupancyGrid occupancyGrid;
-    occupancyGrid.info.height = 350;
-    occupancyGrid.info.width = 350;
+    const double pnt_origin_x = .5 * (occupancyGrid.info.height);
+    const double pnt_origin_y = .5 * (occupancyGrid.info.width);
+    //  col = int((pnt.y - pnt_origin) / resolution)
+    const int K = 4;
 
-//  col = int((pnt.y - pnt_origin) / resolution)
-    int K = 4;
-    std::vector<int> nearbyPoints(K);
-    std::vector<float> nearbyPointsSquaredDistance(K);
+    std::unordered_set<pcl::PointXYZ *> visited;
+    std::queue<pcl::PointXYZ *> queue;
+    queue.push(&cloud->at(0));
+    visited.insert(&cloud->at(0));
 
-    for(auto iter = cloud->begin(); iter < cloud->end(); iter++) {
-        int close = tree->nearestKSearch(*iter.base(), K, nearbyPoints, nearbyPointsSquaredDistance);
+    auto occupancyPosition = [&](const pcl::PointXYZ &point) {
+        GridPosition ret{ .row = int((point.x - pnt_origin_x) / occupancyGrid.info.resolution),
+                          .col = int((point.y - pnt_origin_y) / occupancyGrid.info.resolution) };
+        return ret;
+    };
+
+    while (!queue.empty()) {
+        pcl::PointXYZ *curr = queue.front();                   // Grab value from queue
+        GridPosition currPosition = occupancyPosition(*curr);  // Get position of curr on graph
+        queue.pop();                                           // Remove value from queue
+
+        std::vector<int> nearbyPoints(K);
+        std::vector<float> nearbyPointsSquaredDistance(K);
+        int close = tree->nearestKSearch(*curr, K, nearbyPoints, nearbyPointsSquaredDistance);
+
+        // Is a cone that should be added
         if (close > 0) {
-
+            for (auto nearby = nearbyPoints.begin(); nearby < nearbyPoints.end(); nearby++) {
+                pcl::PointXYZ *c = &cloud->at(*nearby.base());
+                if (visited.find(c) != visited.end()) {
+                    // Draw line on occupancy grid to each neighbor
+                    bsline(occupancyPosition(*c), currPosition, occupancyGrid);
+                    // Add neighbors to visited and queue
+                    visited.insert(c);
+                    queue.push(c);
+                }
+            }
         }
     }
-
-//    std::vector<pcl::PointIndices> cluster_indices;
-//    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-//    ec.setClusterTolerance(cluster_tolerance_); // track_width / 3
-//    ec.setMinClusterSize(1);
-//    ec.setMaxClusterSize(100000);
-//    ec.setSearchMethod(tree);
-//    ec.setInputCloud(cloud);
-//    ec.extract(cluster_indices);
-//
-//    std::vector<pcl::PointCloud<pcl::PointXYZ>> clusters;
-//    for (const pcl::PointIndices &point_idx : cluster_indices) {
-//        pcl::PointCloud<pcl::PointXYZ> cluster;
-//        for (const int &idx : point_idx.indices) {
-//            cluster.push_back((*cloud)[idx]);
-//        }
-//        clusters.push_back(cluster);
-//    }
-    return clusters;
 }
 
 // main callback function
-void ConeConnection::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
-    std_msgs::String msg;
-    msg.data = "Updating map";
-    cone_connection_status.publish(msg);
-    nav_msgs::OccupancyGrid occupancyGrid;
-
+void ConeConnection::updateMap(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Convert from sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2 -> pcl::PointCloud<PointXYZ>
     pcl::PCLPointCloud2::Ptr pcl_pc2(new pcl::PCLPointCloud2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl_conversions::toPCL(*cloud_msg, *pcl_pc2);
     pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
 
-    std::vector<geometry_msgs::Pose> centroids;
-    walls_ = linkWalls(centroids);
-    //    clustering(centroids, cloud);
+//    std::vector<geometry_msgs::Pose> centroids;
+//    walls_ = linkWalls(centroids);
 
-    //    get points, cluster, find closest, bfs and connected closest, graph to map,
-    // opencv img MxM, convert poses to indices based on resolution and map origin,
-    //
-
-    std_msgs::String updateCosts;
-    msg.data = "Updating costs";
-    cone_connection_status.publish(updateCosts);
-
-    // Iterate through all the walls points and draw
-    // straight lines connecting all the points on the wall
-    for (ConeConnection::LinkedList wall : walls_) {
-        Node *curr = wall.head;
-        while (curr != nullptr && curr->next != nullptr) {
-            int x, y, x2, y2;
-
-            x = static_cast<int>(curr->value.position.x);
-            y = static_cast<int>(curr->value.position.y);
-            x2 = static_cast<int>(curr->next->value.position.x);
-            y2 = static_cast<int>(curr->next->value.position.y);
-
-            int dx, dy, p;
-            dx = x2 - x;
-            dy = y2 - y;
-            p = 2 * (dy) - (dx);
-            while (x <= x2) {
-                if (p < 0) {
-                    x = x + 1;
-                    y = y;
-                    p = p + 2 * (dy);
-                } else {
-                    x = x + 1;
-                    y = y + 1;
-                    p = p + 2 * (dy - dx);
-                }
-                std_msgs::String usingWalls;
-                usingWalls.data = "Using walls: x -> " + std::to_string(x) + ", y -> " + std::to_string(y);
-                cone_connection_status.publish(usingWalls);
-//              global_costmap_.setCost(x, y, costmap_2d::LETHAL_OBSTACLE);
-            }
-            curr = curr->next;
-        }
-    }
-}
-
-std::vector<std::vector<int>> ConeConnection::linkWallGraph(const pcl::PointCloud<pcl::PointXYZ>::Ptr& poses) const {
-    std::queue<int> queue;
-    std::unordered_set<int> visited;
-    pcl::PointXYZ curr = poses->front();
-    poses->erase(poses->begin());
-
-    while(!poses->empty()) {
-        std::vector<std::vector<int>> adj_list(poses->size());
-        while(!queue.empty()) {
-            int curr_i = queue.front();
-            queue.pop();
-            curr = poses->at(0, curr_i);
-
-            for (int i = 0; i < poses->size(); i++) {
-                if (visited.count(i) == 0 && distance(curr, poses->at(0, i)) <= distance_between_cones) {
-                    queue.push(i);
-                    visited.insert(i);
-                    adj_list[curr_i].push_back(i);
-                }
-            }
-        }
-    }
-    return adj_list;
-}
-
-void ConeConnection::updateMapGraph(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
+    // Initialize occupancy grid
     nav_msgs::OccupancyGrid occupancyGrid;
-
-    // Convert from sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2 -> pcl::PointCloud<PointXYZ>
-    pcl::PCLPointCloud2::Ptr pcl_pc2(new pcl::PCLPointCloud2);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl_conversions::toPCL(*cloud_msg, *pcl_pc2);
-    pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
+    occupancyGrid.info.height = 350;
+    occupancyGrid.info.width = 350;
+    clustering(cloud, occupancyGrid);
 
 
-
-//    std::vector<geometry_msgs::Pose> clusters;
-//    auto cluster = clustering(cloud);
-    auto walls = linkWallGraph(cloud);
-//    for (const auto& cluster : clusters) {
-//    }
-
-}
-
-int ConeConnection::comparePoses(geometry_msgs::Pose &first, geometry_msgs::Pose &second) {
-    return std::floor((second.position.x - first.position.x) + (second.position.y - first.position.y) +
-                      (second.position.z - first.position.z));
-}
-
-/**
- * Group all of the points into lines. There is no limit to the number of lines
- * that can be created. A line will be extended as long as there are points close
- * to it.
- * @param cone_positions
- * @return a vector of all of the lines. A line is represented by a vector
- * of geometry_msgs::Pose
- */
-std::vector<ConeConnection::LinkedList> ConeConnection::linkWalls(std::vector<geometry_msgs::Pose> &cone_poses) {
-    std_msgs::String msg;
-    msg.data = "Linking Walls: size -> " + std::to_string(cone_poses.size());
-    for (geometry_msgs::Pose pose : cone_poses) {
-        msg.data += ". x -> " + std::to_string(pose.position.x) + ", y -> " + std::to_string(pose.position.y) +
-                    ", z -> " + std::to_string(pose.position.z) + ", ";
-    }
-    cone_connection_status.publish(msg);
-
-    std::vector<LinkedList> localWalls;
-    std::queue<Node *> cone_queue;
-
-    bool max_x_init, min_x_init;
-    bool max_y_init, min_y_init;
-
-    while (!cone_poses.empty()) {
-        if (!cone_queue.empty()) {
-            Node *curr = cone_queue.front();
-            cone_queue.pop();
-
-            for (auto cone = cone_poses.begin(); cone < cone_poses.end(); cone++) {
-                //distance(cone->position, curr->value.position) <= distance_between_cones
-                if (true) {
-                    Node *cone_to_add;
-
-                    // Add new Node. Must maintain the head ptr when added before
-                    if (comparePoses(curr->value, *cone)) {
-                        cone_to_add = new Node{ *cone, curr, curr->prev };
-                        curr->prev = cone_to_add;
-                        localWalls.back().head = cone_to_add;
-                    } else {
-                        cone_to_add = new Node{ *cone, curr->next, curr };
-                        curr->next = cone_to_add;
-                    }
-                    localWalls.back().size++;
-                    cone_queue.push(cone_to_add);
-                    cone_poses.erase(cone--);
-                }
-
-                // Set the min/max values found on the costmap
-                if (max_x_init || (cone->position.x > max_x_)) {
-                    max_x_init = true;
-                    max_x_ = cone->position.x;
-                }
-                if (min_x_init || (cone->position.x < min_x_)) {
-                    min_x_init = true;
-                    min_x_ = cone->position.x;
-                }
-                if (min_y_init || (cone->position.y < min_y_)) {
-                    min_y_init = true;
-                    min_y_ = cone->position.y;
-                }
-                if (max_y_init || (cone->position.y < min_y_)) {
-                    max_y_init = true;
-                    max_y_ = cone->position.y;
-                }
-            }
-        } else {  // Create new wall because there are no more points close to points in the previous wall
-            Node *new_cone = new Node{ cone_poses.back(), nullptr, nullptr };
-            cone_queue.push(new_cone);
-            localWalls.push_back(LinkedList{ new_cone, 1 });
-            cone_poses.pop_back();
-        }
-    }
-
-    // Convert linked list to vector, delete Node classes
-    //    std::vector<std::vector<geometry_msgs::Pose>> walls;
-    //    for (LinkedList wall : localWalls) {
-    //        geometry_msgs::Pose wall_array_to_return[wall.size];
-    //
-    //        Node *curr = wall.head;
-    //        for (int i = 0; i < wall.size; i++) {
-    //            wall_array_to_return[i] = curr->value;
-    //            curr = curr->next;
-    //            if (curr && curr->prev) {
-    //                delete curr->prev;
-    //            }
-    //        }
-    //
-    //        std::vector<geometry_msgs::Pose> wall_to_return;
-    //        wall_to_return.insert(wall_to_return.cend(), &(wall_array_to_return[0]),
-    //        &(wall_array_to_return[wall.size])); walls.push_back(wall_to_return);
-    //    }
-
-    std_msgs::String linked;
-    msg.data = "Linked Walls: ";
-    for (LinkedList linkedList : localWalls) {
-        msg.data += "size: " + std::to_string(linkedList.size) + ", items: [";
-        Node *curr = linkedList.head;
-        while (curr != nullptr) {
-            msg.data += "x -> " + std::to_string(curr->value.position.x) + ", y -> " +
-                        std::to_string(curr->value.position.y) + ", z -> " + std::to_string(curr->value.position.z) +
-                        "], ";
-            curr = curr->next;
-        }
-    }
-    cone_connection_status.publish(msg);
-
-    return localWalls;
-}
-
-ConeConnection::~ConeConnection() {
-    for (LinkedList wall : walls_) {
-        Node *curr = wall.head;
-        for (int i = 0; i < wall.size; i++) {
-            curr = curr->next;
-            if (curr && curr->prev) {
-                delete curr->prev;
-            }
-        }
-    }
 }
