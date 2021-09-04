@@ -3,12 +3,10 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <parameter_assertions/assertions.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/common/centroid.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pluginlib/class_list_macros.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/String.h>
 
@@ -57,7 +55,7 @@ ConeConnection::ConeConnection() {
 
     std::string cones_topic;
     assertions::param(private_nh, "cones_topic", cones_topic, std::string("/cones_topic"));
-    cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnection::updateMap, this);
+    cones_subscriber = nh.subscribe(cones_topic, 1, &ConeConnection::updateMap);
 }
 
 static inline double distance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2) {
