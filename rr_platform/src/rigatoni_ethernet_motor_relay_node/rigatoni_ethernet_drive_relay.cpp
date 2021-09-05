@@ -147,29 +147,30 @@ int main(int argc, char** argv) {
         // https://docs.google.com/document/d/10klaJG9QIRAsYD0eMPjk0ImYSaIPZpM_lFxHCxdVRNs/edit#
 
         // Get Current Speed
-        driveBoardSocket->send("$S?;");
+        driveBoardSocket->send("$v=" + std::to_string(cmd_speed) + ";"); //
         string drive_response = driveBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Drive Receiving: " << drive_response);
         double current_speed = extractSpeed(drive_response);
 
         // Get Current Steering
-        steeringBoardSocket->send("$A?;");
+        steeringBoardSocket->send("$S=" + std::to_string(cmd_steer) + ";");
         string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Steering Receiving: " << steering_response);
         double current_steer = extractSteering(steering_response);
 
         // Send command speed and Steering
 //        string x = formatManualMsg(3,2);
-        string x = formatManualMsg(cmd_speed, cmd_steering);
-        manualBoardSocket->send(x);
-        string manual_response = manualBoardSocket->read_with_timeout();
-        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
+//        string x = formatManualMsg(cmd_speed, cmd_steering);
+//        manualBoardSocket->send(x);
+//
+//        string manual_response = manualBoardSocket->read_with_timeout();
+//        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
 
         // Send state to estop
-        estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
-        string estop_response = estopBoardSocket->read_with_timeout();
-        ROS_INFO_STREAM("Estop Receiving: " << estop_response);
-        bool current_estop = extractEstop(estop_response);
+//        estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
+//        string estop_response = estopBoardSocket->read_with_timeout();
+//        ROS_INFO_STREAM("Estop Receiving: " << estop_response);
+//        bool current_estop = extractEstop(estop_response);
 
 
          rr_msgs::chassis_state chassisStateMsg;
