@@ -8,5 +8,6 @@
         <rosparam param="imu_orientation_correction">[1,  0, 0,
                                                       0, -1, 0,
                                                       0,  0, -1]</rosparam>
+        <param name="orientation_rotation" type="double" value="0"/>	
     </node>
 </launch>

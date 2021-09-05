@@ -21,8 +21,8 @@ KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idProduct}=="ea60", ATTRS{idVendor}
 
 KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="0002" , ATTRS{idVendor}=="1d6b",  SYMLINK+="razor_imu"
 
-SUBSYSTEM=="tty", ATTRS{devpath}=="4", SYMLINK+="yost_imu_top"
-SUBSYSTEM=="tty", ATTRS{devpath}=="3", SYMLINK+="yost_imu_bottom"
+KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="1010", ATTRS{idVendor}=="2476", KERNELS=="1-1.3", SYMLINK+="yost_imu_top"
+KERNEL=="ttyACM[0-9]*", ACTION=="add", ATTRS{idProduct}=="1010", ATTRS{idVendor}=="2476", KERNELS=="1-1.4", SYMLINK+="yost_imu_bottom"
 
 # evgp gps
 ATTRS{idProduct}=="6014", ATTRS{idVendor}=="0403", MODE="666", GROUP="dialout"
