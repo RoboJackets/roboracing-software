@@ -60,7 +60,7 @@ void ConeConnection::bsline(GridPosition start, GridPosition end, nav_msgs::Occu
             start.row = start.row + 1;
             p = p + 2 * (row_diff - column_diff);
         }
-
+        ROS_INFO_STREAM("Close points: (" + std::to_string(start.col) + ", "+ std::to_string(start.row) + "), (" + std::to_string(end.col) + ", "+ std::to_string(end.row) + ")");
         // Set deadly object at provided row/column
         grid.data[start.row * grid.info.width + start.col] = 100;
     }
@@ -92,8 +92,6 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
     };
 
     while (!queue.empty()) {
-        std::string queueSize = "Queue Size: " + std::to_string(queue.size());
-        ROS_INFO_STREAM(queueSize);
         pcl::PointXYZ curr = queue.front();                   // Grab value from queue
         GridPosition currPosition = occupancyPosition(curr);  // Get position of curr on graph
         queue.pop();                                          // Remove value from queue
@@ -102,9 +100,9 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
         std::vector<float> nearbyPointsSquaredDistance;
         int close = tree->radiusSearch(curr, radius, nearbyPoints, nearbyPointsSquaredDistance, 10);
 
-        ROS_INFO_STREAM(std::to_string(id) + " Close points: " + std::to_string(close));
         // Is a cone that should be added
         if (close > 0) {
+            ROS_INFO_STREAM("CURRENT POINT: (" + curr.x + ", " + currPosition.col);
             int addedToQueue = 0;
             for (auto nearby : nearbyPoints) {
                 pcl::PointXYZ c = cloud->at(nearby);
@@ -114,16 +112,15 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
                     // Add neighbors to visited and queue
                     visited.insert(c);
                     queue.push(c);
-                    ROS_INFO_STREAM(std::to_string(id) + " Pushing onto queue: " + std::to_string(++addedToQueue) + " Visited Size: " + std::to_string(visited.size()));
+//                    ROS_INFO_STREAM(std::to_string(id) + " Pushing onto queue: " + std::to_string(++addedToQueue) + " Visited Size: " + std::to_string(visited.size()));
                 }
-                ROS_INFO_STREAM(std::to_string(id) + " Point: " + std::to_string(c.x) + ", " + std::to_string(c.y) +
-                                ", " + std::to_string(c.z));
+//                ROS_INFO_STREAM(std::to_string(id) + " Point: " + std::to_string(c.x) + ", " + std::to_string(c.y) +
+//                                ", " + std::to_string(c.z));
             }
-            ROS_INFO_STREAM(std::to_string(id) + " Finished for loop");
-            ROS_INFO_STREAM(std::to_string(id) + " Queue Size: " + std::to_string(queue.size()));
+//            ROS_INFO_STREAM(std::to_string(id) + " Finished for loop");
+//            ROS_INFO_STREAM(std::to_string(i ) + " Queue Size: " + std::to_string(queue.size()));
         }
     }
-    ROS_INFO_STREAM(std::to_string(id) + " exited");
 }
 
 // main callback function
