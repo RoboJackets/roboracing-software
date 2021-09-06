@@ -254,7 +254,7 @@
 
     <xacro:set_base_footprint_to_link link_name="gps_link" xyz="0.55 0.39 1.22" rpy="0 0 0"/>
 
-    <xacro:set_base_footprint_to_link link_name="camera" xyz="0.61 0.39 1.03" rpy="0 0 0"/>
+    <xacro:set_base_footprint_to_link link_name="camera" xyz="0.22 0.065 .59" rpy="0 0 0"/>
 
     <xacro:set_base_footprint_to_link link_name="imu_bottom_link" xyz=".22 .065 0.97" rpy="0 0 0"/>
     <xacro:set_base_footprint_to_link link_name="imu_top_link" xyz="-0.53 -0.2 0.2375" rpy="0 0 0"/>
