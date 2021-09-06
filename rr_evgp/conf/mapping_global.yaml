@@ -6,11 +6,11 @@ costmap:
     rolling_window: false
     width: $(arg global_map_size)
     height: $(arg global_map_size)
-origin
+
     plugins:
         - {name: "obstacles", type: "costmap_2d::ObstacleLayer"}
         - {name: "center_line", type: "rr::GlobalCenterPathLayer"}
-origin
+
     obstacles:
         combination_method: 0
         observation_sources: laser_down laser_up
