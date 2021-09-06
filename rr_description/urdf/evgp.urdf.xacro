@@ -163,7 +163,7 @@
     <joint name="base_footprint_to_lidar" type="fixed">
         <parent link="base_footprint"/>
         <child link="lidar"/>
-        <origin xyz="1.2 0 0.18" rpy="0 0 0"/>
+        <origin xyz=".825 -.19 0.27875" rpy="0 0 0"/>
     </joint>
 
     <joint name="base_footprint_to_gps" type="fixed">
@@ -194,7 +194,7 @@
     <joint name="base_footprint_to_imu" type="fixed">
         <parent link="base_footprint"/>
         <child link="imu_link"/>
-        <origin xyz="0.75 0.5 0.1" rpy="0 0 0"/>
+        <origin xyz="0.065 0.22 0.97" rpy="0 0 0"/>
     </joint>
 
 
