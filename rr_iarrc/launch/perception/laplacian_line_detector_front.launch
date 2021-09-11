@@ -1,5 +1,5 @@
 <launch>
-    <arg name="camera_namespace" default="camera_center"/>
+    <arg name="camera_namespace" default="camera"/>
 
     <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector"
           output="screen" ns="$(arg camera_namespace)">
@@ -14,12 +14,12 @@
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <!--Camera_center 570, 800, 760-->
-        <param name="blockSky_height" type="int" value="560" />
-        <param name="blockWheels_height" type="int" value="750" />
-        <param name="blockBumper_height" type="int" value="720" />
+        <param name="blockSky_height" type="int" value="500" />
+        <param name="blockWheels_height" type="int" value="770" />
+        <param name="blockBumper_height" type="int" value="770" />
 
-        <param name="ignore_color_low_H" type="int" value="130" />
-        <param name="ignore_color_high_H" type="int" value="190" />
+        <param name="ignore_color_low_H" type="int" value="0" />
+        <param name="ignore_color_high_H" type="int" value="0" />
         <param name="ignore_color_low_S" type="int" value="100" />
         <param name="ignore_color_high_S" type="int" value="255" />
         <param name="ignore_color_low_V" type="int" value="70" />

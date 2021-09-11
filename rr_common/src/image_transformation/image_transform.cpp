@@ -142,7 +142,6 @@ int main(int argc, char** argv) {
     cam_mount_angle = std::get<1>(cam_geom.GetCameraOrientationRPY());
     cam_mount_height = cam_geom.GetCameraLocation().z;
     cam_mount_x = cam_geom.GetCameraLocation().x;
-
     setTransformFromGeometry();
     ROS_INFO("Calculated perspective transform. Used height %f and angle %f", cam_mount_height, cam_mount_angle);
 
