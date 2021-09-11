@@ -1,6 +1,7 @@
 #include <rr_platform/EthernetSocket.h>
 #include <iostream>
 #include <chrono>
+#include <ros/ros.h>
 
 using boost::asio::ip::tcp;
 

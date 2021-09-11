@@ -4,20 +4,20 @@ dictitems:
   frame_rate: 15
   format7_color_coding: raw8
 
-  auto_exposure: false
+  auto_exposure: true
   exposure: -3.415
 
-  auto_gain: false
+  auto_gain: true
   gain: 0
   brightness: 0
 
-  auto_saturation: false
+  auto_saturation: true
   saturation: 100.0
 
   auto_sharpness: false
   sharpness: 0.0
 
-  auto_shutter: false
+  auto_shutter: true
   shutter_speed: 0.00035
 
   auto_white_balance: false

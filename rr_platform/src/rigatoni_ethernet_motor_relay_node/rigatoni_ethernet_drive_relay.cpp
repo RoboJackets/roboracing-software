@@ -37,8 +37,8 @@ struct PIDConst accelDrivePID, steeringPID;
 
 ros::Publisher chassisStatePublisher, odometryPublisher;
 
-double cmd_speed = 5;
-double cmd_steering = 3;
+double cmd_speed = 0;
+double cmd_steering = 0;
 
 std::unique_ptr<rr::EthernetSocket> driveBoardSocket, steeringBoardSocket, manualBoardSocket, estopBoardSocket;
 
@@ -58,15 +58,21 @@ string messageToString(boost::array<char, 128> buf) {
 
 double extractSpeed(string s) {
     // v=$float,I=$float
+    double speed = 0.0;
     std::string speed_str(s.begin() + s.find('=') + 1, s.begin() + s.find(','));
-    double speed = stod(s);
+    if (!speed_str.empty()) {
+        speed = stod(speed_str);
+    }
     return speed;
 }
 
 double extractSteering(string a) {
     // A=$float
+    double angle = 0.0;
     std::string angle_str(a.begin() + a.find('=') + 1, a.end());
-    double angle = stod(angle_str);
+    if (!angle_str.empty()) {
+        angle = stod(angle_str);
+    }
     return angle;
 }
 
@@ -118,10 +124,10 @@ int main(int argc, char** argv) {
 
     // IP address and port
     int tcpPort = nhp.param(string("tcp_port"), 7);
-    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.0.3"));
-    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.0.4"));
-    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.0.5"));
-    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.0.6"));
+    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.20.3"));
+    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.20.4"));
+    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.20.5"));
+    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.20.6"));
 
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP +
                     " port: " + std::to_string(tcpPort));
@@ -131,7 +137,7 @@ int main(int argc, char** argv) {
     steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP +
                     " port: " + std::to_string(tcpPort));
-    manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
+    // manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP E-Stop Board at " + estopBoardIP +
                     " port: " + std::to_string(tcpPort));
     estopBoardSocket = std::make_unique<rr::EthernetSocket>(estopBoardIP, tcpPort);
@@ -147,38 +153,46 @@ int main(int argc, char** argv) {
         // https://docs.google.com/document/d/10klaJG9QIRAsYD0eMPjk0ImYSaIPZpM_lFxHCxdVRNs/edit#
 
         // Get Current Speed
-        driveBoardSocket->send("$S?;");
+        // std::string speed_str = "$v=5.0;";
+        // driveBoardSocket->send(speed_str);
+        driveBoardSocket->send("$v=" + std::to_string(cmd_speed) + ";"); //
         string drive_response = driveBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Drive Receiving: " << drive_response);
         double current_speed = extractSpeed(drive_response);
 
         // Get Current Steering
-        steeringBoardSocket->send("$A?;");
+        steeringBoardSocket->send("$S=" + std::to_string(cmd_steering) + ";");
         string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Steering Receiving: " << steering_response);
-        double current_steer = extractSteering(steering_response);
+        double current_steer;
+        if (steering_response != "TIME_OUT") {
+            current_steer = extractSteering(steering_response);
+        } else {
+            ROS_ERROR("Steering Time Out");
+        }
 
         // Send command speed and Steering
 //        string x = formatManualMsg(3,2);
-        string x = formatManualMsg(cmd_speed, cmd_steering);
-        manualBoardSocket->send(x);
-        string manual_response = manualBoardSocket->read_with_timeout();
-        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
+//        string x = formatManualMsg(cmd_speed, cmd_steering);
+//        manualBoardSocket->send(x);
+//
+//        string manual_response = manualBoardSocket->read_with_timeout();
+//        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
 
-        // Send state to estop
+    //     Send state to estop
         estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
         string estop_response = estopBoardSocket->read_with_timeout();
         ROS_INFO_STREAM("Estop Receiving: " << estop_response);
         bool current_estop = extractEstop(estop_response);
 
 
-         rr_msgs::chassis_state chassisStateMsg;
-         chassisStateMsg.header.stamp = ros::Time::now();
-         chassisStateMsg.speed_mps = (float) current_speed;
-         chassisStateMsg.steer_rad = (float) current_steer;
-         chassisStateMsg.mux_autonomous = true; //#TODO
-         chassisStateMsg.estop_on = current_estop;
-         chassisStatePublisher.publish(chassisStateMsg);
+        rr_msgs::chassis_state chassisStateMsg;
+        chassisStateMsg.header.stamp = ros::Time::now();
+        chassisStateMsg.speed_mps = (float) current_speed;
+        chassisStateMsg.steer_rad = (float) current_steer;
+        chassisStateMsg.mux_autonomous = true; //#TODO
+        chassisStateMsg.estop_on = current_estop;
+        chassisStatePublisher.publish(chassisStateMsg);
 
          // Pose and Twist Odometry Information for EKF localization
          geometry_msgs::PoseWithCovariance poseMsg;
@@ -190,10 +204,11 @@ int main(int argc, char** argv) {
          odometryMsg.child_frame_id = "base_footprint";
          odometryMsg.twist.twist.linear.x = chassisStateMsg.speed_mps;
          odometryMsg.twist.twist.linear.y = 0.0;  // can't move sideways instantaneously
-        // #TODO: set twist covariance?
-        // #TODO: if need be, use steering for extra data
-        // #see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
+        // // #TODO: set twist covariance?
+        // // #TODO: if need be, use steering for extra data
+        // // #see https://answers.ros.org/question/296112/odometry-message-for-ackerman-car/
          odometryPublisher.publish(odometryMsg);
+
 
         rate.sleep();
     }
