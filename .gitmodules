@@ -16,3 +16,6 @@
 [submodule "third_party/velodyne_simulator"]
 	path = third_party/velodyne_simulator
 	url = https://bitbucket.org/DataspeedInc/velodyne_simulator.git
+[submodule "serial"]
+	path = serial
+	url = git@github.com:wjwwood/serial.git
