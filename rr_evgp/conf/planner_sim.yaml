@@ -8,17 +8,17 @@ bicycle_model:
 
 steering_filter:
     init_val: 0
-    val_max: 0.25
-    val_min: -0.25
-    rate_max: 2.0
-    rate_min: -2.0
+    val_max: 0.9
+    val_min: -0.9
+    rate_max: 0.2
+    rate_min: -0.2
 
 speed_filter:
     init_val: 0
-    val_max: 25
-    val_min: -2
-    rate_max: 30.0
-    rate_min: -35.0
+    val_max: 2
+    val_min: 0
+    rate_max: 0.5
+    rate_min: -0.5
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -83,13 +83,13 @@ hill_climb_optimizer:
 
 effector_tracker:
     speed:
-        message_topic: /odometry/filtered
-        message_type: odometry
-        guessing_between_updates: true
+        message_topic: /chassis_state
+        message_type: chassis
+        guessing_between_updates: false
     steering:
-        message_topic: /steering
-        message_type: steering
-        guessing_between_updates: true
+        message_topic: /chassis_state
+        message_type: chassis
+        guessing_between_updates: false
 
 #planner_type: "annealing"
 #annealing_optimizer:

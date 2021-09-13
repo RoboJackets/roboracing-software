@@ -1,0 +1,3 @@
+add_executable(rigatoni_ethernet_drive_relay rigatoni_ethernet_drive_relay.cpp)
+target_link_libraries(rigatoni_ethernet_drive_relay EthernetSocket ${catkin_LIBRARIES})
+add_dependencies(rigatoni_ethernet_drive_relay ${catkin_EXPORTED_TARGETS})

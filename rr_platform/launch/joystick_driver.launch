@@ -2,7 +2,7 @@
 
 	<!-- Joystick node -->
 	<node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="false">
-		<param name="dev" type="str" value="/dev/input/js0"/>
+		<param name="dev" type="str" value="/dev/input/js2"/>
 	</node>
 
     <!-- rr_platform joystick node -->
@@ -10,8 +10,8 @@
 		<param name="joystick_topic" type="str" value="/joy"/>
 		<param name="speed_topic" type="str" value="/speed"/>
 		<param name="steering_topic" type="str" value="/steering"/>
-		<param name="angle_max" type="double" value="0.3"/>
-		<param name="speed_max" type="double" value="1.0"/>
+		<param name="angle_max" type="double" value="0.9"/>
+		<param name="speed_max" type="double" value="2.0"/>
 	</node>
 
 </launch>

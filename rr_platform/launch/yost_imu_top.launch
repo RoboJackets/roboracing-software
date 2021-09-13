@@ -1,0 +1,13 @@
+<launch>
+    <!-- Top IMU -->
+    <node pkg="rr_platform" name="imu_top" type="yost_imu" output="screen" >
+        <param name="SERIAL_PORT" type="string" value="/dev/yost_imu" />
+        <param name="frame_id" type="string" value="imu_top"/>
+        <param name="topic_name" type="string" value="/imu_top"/>	
+        <!-- π/2 rad. rotation about the x axis -->
+        <rosparam param="imu_orientation_correction">[1,  0, 0,
+                                                      0, -1, 0,
+                                                      0,  0, -1]</rosparam>
+        <param name="orientation_rotation" type="double" value="0"/>	
+    </node>
+</launch>

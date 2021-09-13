@@ -16,6 +16,8 @@ find_package(catkin
         image_transport
         geometry_msgs
         rr_msgs
+        parameter_assertions
+        serial
         )
 
 find_package(OpenCV REQUIRED)
@@ -24,7 +26,8 @@ find_package(PCL REQUIRED)
 
 catkin_package(
         INCLUDE_DIRS include
-        CATKIN_DEPENDS roscpp rospy rr_msgs sensor_msgs geometry_msgs
+        LIBRARIES EthernetSocket=[]
+        CATKIN_DEPENDS roscpp rospy rr_msgs sensor_msgs geometry_msgs serial
 )
 
 if (CATKIN_ENABLE_TESTING)
@@ -53,3 +56,6 @@ add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/razor_imu)
 add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
+add_subdirectory(src/EthernetSocket)
+add_subdirectory(src/rigatoni_ethernet_motor_relay_node)
+add_subdirectory(src/yost_imu)
