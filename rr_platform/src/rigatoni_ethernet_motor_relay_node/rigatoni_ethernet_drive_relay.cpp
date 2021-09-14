@@ -124,10 +124,10 @@ int main(int argc, char** argv) {
 
     // IP address and port
     int tcpPort = nhp.param(string("tcp_port"), 7);
-    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.20.3"));
-    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.20.4"));
-    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.20.5"));
-    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.20.6"));
+    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.00.3"));
+    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.00.4"));
+    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.00.5"));
+    // string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.00.6"));
 
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP +
                     " port: " + std::to_string(tcpPort));
@@ -135,8 +135,8 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Steering Board at " + steeringBoardIP +
                     " port: " + std::to_string(tcpPort));
     steeringBoardSocket = std::make_unique<rr::EthernetSocket>(steeringBoardIP, tcpPort);
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP +
-                    " port: " + std::to_string(tcpPort));
+    // ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Manual Board at " + manualBoardIP +
+    //                 " port: " + std::to_string(tcpPort));
     // manualBoardSocket = std::make_unique<rr::EthernetSocket>(manualBoardIP, tcpPort);
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP E-Stop Board at " + estopBoardIP +
                     " port: " + std::to_string(tcpPort));

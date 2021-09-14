@@ -15,10 +15,10 @@ steering_filter:
 
 speed_filter:
     init_val: 0
-    val_max: 2
+    val_max: 30
     val_min: 0
-    rate_max: 0.5
-    rate_min: -0.5
+    rate_max: 20
+    rate_min: -20
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -38,7 +38,8 @@ speed_filter:
 
 map_type: "distance_map"
 distance_map:
-    map_topic: "/local_mapper/costmap/costmap"
+    # map_topic: "/local_mapper/costmap/costmap"
+    map_topic: "/global_walls"
     robot_base_frame: base_footprint
     publish_distance_map: true
     publish_inscribed_circle: true
@@ -51,9 +52,9 @@ distance_map:
 
         min_y: -0.8
         max_y: 0.8
-    cost_scaling_factor: 5
-    lethal_wall_inflation: .3
-    nonlethal_wall_inflation: .6
+    cost_scaling_factor: 0
+    lethal_wall_inflation: 0
+    nonlethal_wall_inflation: 0
 
 steering_gain: 1.4
 viz_path_scale: .5

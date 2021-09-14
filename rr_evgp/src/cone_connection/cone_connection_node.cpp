@@ -59,9 +59,9 @@ void DDA(int X0, int Y0, int X1, int Y1, nav_msgs::OccupancyGrid &occupancyGrid)
     float X = X0;
     float Y = Y0;
     for (int i = 0; i <= steps; i++) {
-        occupancyGrid.data[floor(X) * occupancyGrid.info.width + floor(Y)] = 126;  // put pixel at (X,Y)
-        X += Xinc;                                                                 // increment in x at each step
-        Y += Yinc;                                                                 // increment in y at each step
+        occupancyGrid.data[round(X) * occupancyGrid.info.width + round(Y)] = 126;  // put pixel at (X,Y)
+        X += Xinc;  // increment in x at each step
+        Y += Yinc;  // increment in y at each step
     }
 }
 
@@ -73,10 +73,10 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
     // Add all points to the tree
     tree->setInputCloud(cloud);
 
-    int car_r = (int) (.5 * (occupancyGrid.info.height));
-    int car_c = (int) (.5 * (occupancyGrid.info.width));
-    double car_x = (double) car_r * occupancyGrid.info.resolution;  // m / cell
-    double car_y = (double) car_c * occupancyGrid.info.resolution;
+    int car_r = occupancyGrid.info.height / 2;
+    int car_c = occupancyGrid.info.width / 2;
+    double car_x = car_r * occupancyGrid.info.resolution;  // m / cell
+    double car_y = car_c * occupancyGrid.info.resolution;
 
     std::unordered_set<pcl::PointXYZ> unvisited;
     std::queue<pcl::PointXYZ> queue;
@@ -89,10 +89,8 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
     //    at 5,5, lidar at -1,1 from car
     //    so lidar 4,6
     auto occupancyPosition = [&](const pcl::PointXYZ &point) {
-        int r = (int)std::clamp((car_y + point.y) / occupancyGrid.info.resolution, 0.0,
-                                (double)occupancyGrid.info.height);
-        int c =
-              (int)std::clamp((car_x + point.x) / occupancyGrid.info.resolution, 0.0, (double)occupancyGrid.info.width);
+        int r = std::clamp((car_y + point.y) / occupancyGrid.info.resolution, 0.0, (double) occupancyGrid.info.height);
+        int c = std::clamp((car_x + point.x) / occupancyGrid.info.resolution, 0.0, (double) occupancyGrid.info.width);
         GridPosition ret{ .row = r, .col = c };
         return ret;
     };
@@ -110,21 +108,26 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
             int close = tree->radiusSearch(curr, radius, nearbyPoints, nearbyPointsSquaredDistance, 100);
 
             // Is a cone that should be added
+            double car_width = 1;
+            double car_heigth = 1;
+            int car_width_cell = car_width / occupancyGrid.info.resolution;
+            int car_height_cell = car_heigth / occupancyGrid.info.resolution;
+
             if (close > 0) {
                 int addedToQueue = 0;
-                for (auto nearby : nearbyPoints) {
-                    pcl::PointXYZ c = cloud->at(nearby);
-                    if (unvisited.find(c) != unvisited.end()) {
-                        GridPosition start = occupancyPosition(c);
-                        if ((start.col > car_c + 1 || start.col < car_c - 1) &&
-                            (start.row > car_r + 1 || start.row < car_r - 1)) {
+                for (auto neighbor_idx : nearbyPoints) {
+                    pcl::PointXYZ neighbor_pnt = cloud->at(neighbor_idx);
+                    if (unvisited.find(neighbor_pnt) != unvisited.end()) {
+                        GridPosition neighbor_cell = occupancyPosition(neighbor_pnt);
+                        if (!(car_c - car_width_cell / 2 < neighbor_cell.col && neighbor_cell.col < car_c + car_width_cell / 2
+                            && car_r - car_height_cell /2  < neighbor_cell.row && neighbor_cell.row < car_r + car_height_cell / 2)) {
                             // Draw line on occupancy grid to each neighbor
-                            DDA(start.row, start.col, currPosition.row, currPosition.col, occupancyGrid);
+                            DDA(neighbor_cell.row, neighbor_cell.col, currPosition.row, currPosition.col, occupancyGrid);
                             // Add neighbors to visited and queue (only if outside of car footprint)
-                            queue.push(c);
+                            queue.push(neighbor_pnt);
                         }
-                        unvisited.erase(c);
-                    }
+                        unvisited.erase(neighbor_pnt);
+                   }
                 }
             }
         }
@@ -153,7 +156,7 @@ void ConeConnection::updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg
     origin.position.y = car_y;
 
     occupancyGrid.info.origin = origin;
-    occupancyGrid.header.frame_id = "base_footprint";
+    occupancyGrid.header.frame_id = "velodyne";
 
     std::vector<signed char> grid(occupancyGrid.info.height * occupancyGrid.info.width);
     occupancyGrid.data = grid;

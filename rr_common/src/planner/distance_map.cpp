@@ -85,6 +85,7 @@ void DistanceMap::SetMapMessage(const boost::shared_ptr<nav_msgs::OccupancyGrid 
 
     if (publish_distance_map && distance_map_pub.getNumSubscribers() > 0) {
         nav_msgs::OccupancyGrid occupancyGrid;
+        occupancyGrid.header = map_msg->header;
         occupancyGrid.info = mapMetaData;
         occupancyGrid.data = std::vector<int8_t>(mapMetaData.height * mapMetaData.width, 0);
 
