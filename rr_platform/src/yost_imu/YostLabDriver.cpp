@@ -264,6 +264,17 @@ void YostLabDriver::createAndPublishIMUMessage(std::vector<double> &parsed_val)
   quaternion_length_ = tf::length(quat);
   quat = rot * quat;
 
+  // the tf::Quaternion has a method to access roll pitch and yaw
+  double roll, pitch, yaw;
+  tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+
+  // the found angles are written in a geometry_msgs::Vector3
+  geometry_msgs::Vector3 rpy;
+  rpy.x = roll;
+  rpy.y = pitch;
+  rpy.z = yaw;
+
+
   // Filtered orientation estimate
   tf::quaternionTFToMsg(quat, imu_msg.orientation);
   imu_msg.orientation_covariance = { .1, 0, 0, 0, .1, 0, 0, 0, .1 };
