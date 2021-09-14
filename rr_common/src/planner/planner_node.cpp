@@ -280,8 +280,8 @@ int main(int argc, char** argv) {
         rate.sleep();
         ros::spinOnce();
 
-        g_steer_model->Update(g_effector_tracker->getAngle(), ros::Time::now().toSec());
-        g_speed_model->Update(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
+        g_steer_model->Reset(g_effector_tracker->getAngle(), ros::Time::now().toSec());
+        g_speed_model->Reset(g_effector_tracker->getSpeed(), ros::Time::now().toSec());
 
         if (g_map_cost_interface->IsMapUpdated()) {
             auto start = ros::WallTime::now();

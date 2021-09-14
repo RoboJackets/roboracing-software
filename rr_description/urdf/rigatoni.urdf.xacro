@@ -126,6 +126,9 @@
     <link name="steering_link_right">
         <xacro:null_inertia/>
     </link>
+    <link name="velodyne">
+        <xacro:null_inertia/>
+    </link>
 
     <link name="gps_link">
         <xacro:null_inertia/>
@@ -272,6 +275,9 @@
     <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
         <origin xyz="1.175 0 0.175" rpy="0 0 0" />
     </xacro:VLP-16>
+
+
+    <xacro:set_base_footprint_to_link link_name="velodyne" xyz="0 0 0" rpy="0 0 0"/>
 
     <!-- FLIR Blackfly + wide-angle lens -->
     <gazebo reference="camera">

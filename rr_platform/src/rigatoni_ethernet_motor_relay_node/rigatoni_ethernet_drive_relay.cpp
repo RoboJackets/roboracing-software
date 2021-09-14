@@ -124,10 +124,10 @@ int main(int argc, char** argv) {
 
     // IP address and port
     int tcpPort = nhp.param(string("tcp_port"), 7);
-    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.20.3"));
-    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.20.4"));
-    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.20.5"));
-    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.20.6"));
+    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.0.3"));
+    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.0.4"));
+    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.0.5"));
+    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.0.6"));
 
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to TCP Motor Board at " + driveBoardIP +
                     " port: " + std::to_string(tcpPort));

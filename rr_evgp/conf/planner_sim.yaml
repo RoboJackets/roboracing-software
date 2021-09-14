@@ -17,8 +17,8 @@ speed_filter:
     init_val: 0
     val_max: 2
     val_min: 0
-    rate_max: 0.5
-    rate_min: -0.5
+    rate_max: 2
+    rate_min: -2
 
 #map_type: "obstacle_points"
 #obstacle_points_map:
@@ -83,9 +83,9 @@ hill_climb_optimizer:
 
 effector_tracker:
     speed:
-        message_topic: /chassis_state
-        message_type: chassis
-        guessing_between_updates: false
+        message_topic: /speed
+        message_type: speed
+        guessing_between_updates: true
     steering:
         message_topic: /chassis_state
         message_type: chassis
