@@ -20,3 +20,6 @@
 	path = third_party/dynamic_reconfigure
 	url = https://github.com/ros/dynamic_reconfigure.git
 	branch = add-yaml-load-loader
+[submodule "third_party/serial"]
+	path = third_party/serial
+	url = https://github.com/wjwwood/serial.git
