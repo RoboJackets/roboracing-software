@@ -266,6 +266,15 @@
     <xacro:set_base_footprint_to_link link_name="april_6" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
 
+    <link name="velodyne">
+        <xacro:null_inertia/>
+    </link>
+    <joint name="AHHHH" type="fixed">
+        <parent link="lidar"/>
+        <child link="velodyne"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
     <!-- ******************* Sensors *********************** -->
 
     <!-- Velodyne Puck VLP-16 -->
