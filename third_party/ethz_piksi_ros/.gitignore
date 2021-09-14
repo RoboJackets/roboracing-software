@@ -1,0 +1,31 @@
+*/.idea/*
+.idea/*
+*/.vscode/*
+.vscode/*
+utils/bags/*
+src/*.pyc
+*/cmake-build-debug
+geodetic_survey_bags/*.bag
+
+*.pyc
+
+#QT files
+*.files
+*.includes
+*.creator
+*.user
+*.config
+
+# Logs geodetic surveys
+/piksi_multi_rtk_ros/log_surveys/
+
+# KML files.
+/kml/*
+
+# Kernel modules
+*.ko*
+*.mod*
+*.o*
+*.symvers
+*.order
+
