@@ -18,5 +18,8 @@
 	url = https://bitbucket.org/DataspeedInc/velodyne_simulator.git
 [submodule "third_party/dynamic_reconfigure"]
 	path = third_party/dynamic_reconfigure
-	url = git@github.com:ros/dynamic_reconfigure.git
+	url = https://github.com/ros/dynamic_reconfigure.git
 	branch = add-yaml-load-loader
+[submodule "serial"]
+	path = serial
+	url = https://github.com/wjwwood/serial.git
