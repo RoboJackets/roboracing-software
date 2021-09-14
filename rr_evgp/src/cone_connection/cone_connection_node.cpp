@@ -38,48 +38,6 @@ static inline double distance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2) 
     return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
-// http://mytechnotrick.blogspot.com/2015/07/c-program-to-implement-bresenhams-line.html
-/**
- * Use breshnam's line algorithm to draw points onto the occupancy grid
- * @param start Start GridPosition for line
- * @param end End GridPosition for line
- * @param grid OccupancyGrid to place points
- */
-void ConeConnection::bsline(GridPosition start, GridPosition end, nav_msgs::OccupancyGrid &grid) {
-    //    ROS_INFO_STREAM("BSline: (" + std::to_string(start.col) + ", "+ std::to_string(start.row) + "), (" +
-    //    std::to_string(end.col) + ", "+ std::to_string(end.row) + ")");
-    grid.data[start.row * grid.info.width + start.col] = -start.row % 90 - 10;
-    grid.data[end.row * grid.info.width + end.col] = -start.row % 90 - 10;
-
-    //    int column_diff, row_diff, p;
-    //    column_diff = end.col - start.col;
-    //    row_diff = end.row - start.row;
-    //    p = 2 * (row_diff) - (column_diff);
-    //    while (start.col <= end.col) {
-    //        if (p < 0) {
-    //            start.col = start.col + 1;
-    //            start.row = start.row;
-    //            p = p + 2 * (row_diff);
-    //        } else {
-    //            start.col = start.col + 1;
-    //            start.row = start.row + 1;
-    //            p = p + 2 * (row_diff - column_diff);
-    //        }
-    ////        ROS_INFO_STREAM("Close points: (" + std::to_string(start.col) + ", "+ std::to_string(start.row) + "), ("
-    ///+ std::to_string(end.col) + ", "+ std::to_string(end.row) + ")");
-    //        // Set deadly object at provided row/column
-    //    }
-
-    //    grid.data[((int) ((start.row + end.row) / 2)) * grid.info.width + ((int) ((end.col + end.col) / 2))] = 126;
-    int row = end.row;
-    int col = end.col;
-    for (int i = 0; i < 10; i++) {
-        row = ((int)((start.row + row) / 2));
-        col = ((int)((start.col + col) / 2));
-        grid.data[row * grid.info.width + row] = 126;
-    }
-}
-
 int abs(int n) {
     return ((n > 0) ? n : (n * (-1)));
 }
@@ -101,9 +59,9 @@ void DDA(int X0, int Y0, int X1, int Y1, nav_msgs::OccupancyGrid &occupancyGrid)
     float X = X0;
     float Y = Y0;
     for (int i = 0; i <= steps; i++) {
-        occupancyGrid.data[floor(X) * occupancyGrid.info.width + floor(Y) - 1] = 126;  // put pixel at (X,Y)
-        X += Xinc;  // increment in x at each step
-        Y += Yinc;  // increment in y at each step
+        occupancyGrid.data[floor(X) * occupancyGrid.info.width + floor(Y)] = 126;  // put pixel at (X,Y)
+        X += Xinc;                                                                 // increment in x at each step
+        Y += Yinc;                                                                 // increment in y at each step
     }
 }
 
@@ -115,10 +73,10 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
     // Add all points to the tree
     tree->setInputCloud(cloud);
 
-    int car_r = .5 * (occupancyGrid.info.height);
-    int car_c = .5 * (occupancyGrid.info.width);
-    double car_x = car_r * occupancyGrid.info.resolution;  // m / cell
-    double car_y = car_c * occupancyGrid.info.resolution;
+    int car_r = (int) (.5 * (occupancyGrid.info.height));
+    int car_c = (int) (.5 * (occupancyGrid.info.width));
+    double car_x = (double) car_r * occupancyGrid.info.resolution;  // m / cell
+    double car_y = (double) car_c * occupancyGrid.info.resolution;
 
     std::unordered_set<pcl::PointXYZ> unvisited;
     std::queue<pcl::PointXYZ> queue;
@@ -131,8 +89,10 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
     //    at 5,5, lidar at -1,1 from car
     //    so lidar 4,6
     auto occupancyPosition = [&](const pcl::PointXYZ &point) {
-        int r = std::clamp((car_y + point.y) / occupancyGrid.info.resolution, 0.0, (double)occupancyGrid.info.height);
-        int c = std::clamp((car_x + point.x) / occupancyGrid.info.resolution, 0.0, (double)occupancyGrid.info.width);
+        int r = (int)std::clamp((car_y + point.y) / occupancyGrid.info.resolution, 0.0,
+                                (double)occupancyGrid.info.height);
+        int c =
+              (int)std::clamp((car_x + point.x) / occupancyGrid.info.resolution, 0.0, (double)occupancyGrid.info.width);
         GridPosition ret{ .row = r, .col = c };
         return ret;
     };
@@ -156,14 +116,15 @@ void ConeConnection::clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud
                     pcl::PointXYZ c = cloud->at(nearby);
                     if (unvisited.find(c) != unvisited.end()) {
                         GridPosition start = occupancyPosition(c);
-                        if ((start.col > car_c + 1 || start.col < car_c - 1) && (start.row > car_r + 1 || start.row < car_r - 1)) {
+                        if ((start.col > car_c + 1 || start.col < car_c - 1) &&
+                            (start.row > car_r + 1 || start.row < car_r - 1)) {
                             // Draw line on occupancy grid to each neighbor
                             DDA(start.row, start.col, currPosition.row, currPosition.col, occupancyGrid);
                             // Add neighbors to visited and queue (only if outside of car footprint)
                             queue.push(c);
                         }
                         unvisited.erase(c);
-                   }
+                    }
                 }
             }
         }
