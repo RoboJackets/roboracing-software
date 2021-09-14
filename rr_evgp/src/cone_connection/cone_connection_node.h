@@ -53,10 +53,8 @@ class ConeConnection {
     std::unique_ptr<tf::TransformListener> listener;
 
     void updateMap(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
-    void clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, nav_msgs::OccupancyGrid &occupancyGrid,
+    static void clustering(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, nav_msgs::OccupancyGrid &occupancyGrid,
                            int radius);
-
-    static void bsline(GridPosition start, GridPosition end, nav_msgs::OccupancyGrid &grid);
 
   public:
     ConeConnection(ros::NodeHandle &nh, ros::NodeHandle &pnh);

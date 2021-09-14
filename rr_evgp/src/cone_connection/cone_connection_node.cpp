@@ -38,48 +38,6 @@ static inline double distance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2) 
     return pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2);
 }
 
-// http://mytechnotrick.blogspot.com/2015/07/c-program-to-implement-bresenhams-line.html
-/**
- * Use breshnam's line algorithm to draw points onto the occupancy grid
- * @param start Start GridPosition for line
- * @param end End GridPosition for line
- * @param grid OccupancyGrid to place points
- */
-void ConeConnection::bsline(GridPosition start, GridPosition end, nav_msgs::OccupancyGrid &grid) {
-    //    ROS_INFO_STREAM("BSline: (" + std::to_string(start.col) + ", "+ std::to_string(start.row) + "), (" +
-    //    std::to_string(end.col) + ", "+ std::to_string(end.row) + ")");
-    grid.data[start.row * grid.info.width + start.col] = -start.row % 90 - 10;
-    grid.data[end.row * grid.info.width + end.col] = -start.row % 90 - 10;
-
-    //    int column_diff, row_diff, p;
-    //    column_diff = end.col - start.col;
-    //    row_diff = end.row - start.row;
-    //    p = 2 * (row_diff) - (column_diff);
-    //    while (start.col <= end.col) {
-    //        if (p < 0) {
-    //            start.col = start.col + 1;
-    //            start.row = start.row;
-    //            p = p + 2 * (row_diff);
-    //        } else {
-    //            start.col = start.col + 1;
-    //            start.row = start.row + 1;
-    //            p = p + 2 * (row_diff - column_diff);
-    //        }
-    ////        ROS_INFO_STREAM("Close points: (" + std::to_string(start.col) + ", "+ std::to_string(start.row) + "), ("
-    ///+ std::to_string(end.col) + ", "+ std::to_string(end.row) + ")");
-    //        // Set deadly object at provided row/column
-    //    }
-
-    //    grid.data[((int) ((start.row + end.row) / 2)) * grid.info.width + ((int) ((end.col + end.col) / 2))] = 126;
-    int row = end.row;
-    int col = end.col;
-    for (int i = 0; i < 10; i++) {
-        row = ((int)((start.row + row) / 2));
-        col = ((int)((start.col + col) / 2));
-        grid.data[row * grid.info.width + row] = 126;
-    }
-}
-
 int abs(int n) {
     return ((n > 0) ? n : (n * (-1)));
 }
