@@ -13,13 +13,17 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <pcl/common/distances.h>
 #include <pcl_ros/transforms.h>
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <algorithm>
+#include <pcl/filters/crop_box.h>
 
-double cluster_tolerance_;
+
+double cluster_tolerance_, max_length_, map_size;
 int min_cluster_size_, max_cluster_size_;
 
 ros::Publisher marker_pub, centroid_pub;
@@ -58,6 +62,21 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     pcl_conversions::toPCL(*cloud_msg, *pcl_pc2);
     pcl::fromPCLPointCloud2(*pcl_pc2, *cloud);
 
+    // Remove Car
+    pcl::CropBox<pcl::PointXYZ> boxFilter;
+    boxFilter.setMin(Eigen::Vector4f(-1, -1, -10, 1.0));
+    boxFilter.setMax(Eigen::Vector4f(1, 1, 10, 1.0));
+    boxFilter.setNegative(true);
+    boxFilter.setInputCloud(cloud);
+    boxFilter.filter(*cloud);
+
+    // Remove Outside
+    pcl::CropBox<pcl::PointXYZ> boxFilter1;
+    boxFilter1.setMin(Eigen::Vector4f(-map_size, -map_size, -10, 1.0));
+    boxFilter1.setMax(Eigen::Vector4f(map_size, map_size, 10, 1.0));
+    boxFilter1.setInputCloud(cloud);
+    boxFilter1.filter(*cloud);
+
     // **CLUSTERING**
     // Link: https://pcl.readthedocs.io/en/latest/cluster_extraction.html
 
@@ -79,26 +98,38 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         for (const int& idx : point_idx.indices) {
             cloud_cluster.push_back((*cloud)[idx]);
         }
-        cloud_clusters.push_back(cloud_cluster);
+
+        Eigen::Vector4f min, max;
+        pcl::getMinMax3D(cloud_cluster, min, max);
+        double dist = pow(min[0] - max[0], 2) + pow((min[1] - max[1]), 2);
+
+        if (dist < max_length_) {
+            cloud_clusters.push_back(cloud_cluster);
+        }
     }
 
     // **PUBLISHING**
-    visualization_msgs::MarkerArray marker_array;
-    std::vector<geometry_msgs::Pose> centroids;
 
-    for (int cluster_idx = 0; cluster_idx < cloud_clusters.size(); cluster_idx++) {
-        // Marker Cluster
-        std::vector<geometry_msgs::Point> marker_cluster;
-        for (const pcl::PointXYZ& point : cloud_clusters[cluster_idx]) {
-            geometry_msgs::Point marker_point;
-            marker_point.x = point.x;
-            marker_point.y = point.y;
-            marker_point.z = point.z;
-            marker_cluster.push_back(marker_point);
+    // Marker Cluster
+    if (marker_pub.getNumSubscribers() > 0) {
+        visualization_msgs::MarkerArray marker_array;
+        for (int cluster_idx = 0; cluster_idx < cloud_clusters.size(); cluster_idx++) {
+            std::vector<geometry_msgs::Point> marker_cluster;
+            for (const pcl::PointXYZ& point : cloud_clusters[cluster_idx]) {
+                geometry_msgs::Point marker_point;
+                marker_point.x = point.x;
+                marker_point.y = point.y;
+                marker_point.z = point.z;
+                marker_cluster.push_back(marker_point);
+            }
+            marker_array.markers.push_back(makeMarkers(marker_cluster, cluster_idx, cloud_msg->header));
         }
-        marker_array.markers.push_back(makeMarkers(marker_cluster, cluster_idx, cloud_msg->header));
+        marker_pub.publish(marker_array);
+    }
 
-        // Centroid
+    // Centroids
+    std::vector<geometry_msgs::Pose> centroids;
+    for (int cluster_idx = 0; cluster_idx < cloud_clusters.size(); cluster_idx++) {
         Eigen::Vector4f centroid_eigen;
         pcl::compute3DCentroid(cloud_clusters[cluster_idx], centroid_eigen);
 
@@ -109,8 +140,6 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         centroid.orientation.w = 1;
         centroids.push_back(centroid);
     }
-
-    marker_pub.publish(marker_array);
 
     geometry_msgs::PoseArray poses;
     poses.header = cloud_msg->header;
@@ -127,6 +156,10 @@ int main(int argc, char** argv) {
     nhp.getParam("cluster_tolerance", cluster_tolerance_);
     nhp.getParam("min_cluster_size", min_cluster_size_);
     nhp.getParam("max_cluster_size", max_cluster_size_);
+    nhp.getParam("max_length", max_length_);
+
+    // nhp.getParam("max_length", max_length_);
+    nhp.getParam("map_size", map_size);
 
     std::string input_cloud, output_markers, output_centroids;
     nhp.getParam("input_cloud", input_cloud);

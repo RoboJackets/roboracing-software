@@ -2,7 +2,13 @@
     <remap from="/plan/speed" to="/speed"/>
     <remap from="/plan/steering" to="/steering"/>
 
-    <!-- <include file="$(find rr_evgp)/launch/cone_connection.launch"/> -->
+
+    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch">
+        <arg name="model_type" value="rigatoni"/>
+    </include>
+    <include file="$(find rr_evgp)/launch/opponent_detection.launch"/>
+    <include file="$(find rr_evgp)/launch/cone_connection.launch"/>
+
 
     <!-- <include file="$(dirname)/mapping_sim.launch"/> -->
 
@@ -10,6 +16,6 @@
         <rosparam command="load" file="$(find rr_evgp)/conf/planner_sim.yaml" subst_value="true"/>
     </node>
 
-    <!-- <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false"
-          args="-d $(find rr_evgp)/rviz/evgp.rviz"/> -->
+    <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false"
+          args="-d $(find rr_evgp)/rviz/evgp.rviz"/>
 </launch>

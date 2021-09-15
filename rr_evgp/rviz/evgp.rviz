@@ -84,6 +84,7 @@ Visualization Manager:
         Collision Check: true
         Footprint: true
         Global Map: true
+        Global Segment: true
         Grid: true
         Local Map: true
         Map: true
@@ -183,6 +184,10 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         wheel_BL:
           Alpha: 1
           Show Axes: false
@@ -262,14 +267,14 @@ Visualization Manager:
       Marker Topic: /plan/path
       Name: Path
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.8356510400772095
-        Min Value: 0.013022512197494507
+        Max Value: 1.314553141593933
+        Min Value: 0.32842233777046204
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -341,6 +346,16 @@ Visualization Manager:
       Topic: /global_path_seg
       Unreliable: false
       Value: true
+    - Alpha: 0.10000000149011612
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /walls
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -369,7 +384,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 63.6307487487793
+      Distance: 47.99951171875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -409,5 +424,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1440
-  X: 2152
-  Y: 199
+  X: 480
+  Y: 162

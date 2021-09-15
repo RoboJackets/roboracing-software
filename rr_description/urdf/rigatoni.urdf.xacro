@@ -266,6 +266,15 @@
     <xacro:set_base_footprint_to_link link_name="april_6" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
 
 
+
+    <!-- ******************* Sensors *********************** -->
+
+    <!-- Velodyne Puck VLP-16 -->
+    <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
+        <origin xyz=".825 -0.19 0.27875" rpy="0 0 0" />
+    </xacro:VLP-16>
+
+
     <link name="velodyne">
         <xacro:null_inertia/>
     </link>
@@ -274,13 +283,6 @@
         <child link="velodyne"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
-
-    <!-- ******************* Sensors *********************** -->
-
-    <!-- Velodyne Puck VLP-16 -->
-    <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
-        <origin xyz=".825 -0.19 0.27875" rpy="0 0 0" />
-    </xacro:VLP-16>
 
     <!-- FLIR Blackfly + wide-angle lens -->
     <gazebo reference="camera">
