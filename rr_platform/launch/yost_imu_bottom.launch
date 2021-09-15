@@ -1,12 +1,14 @@
 <launch>
     <!-- Bottom IMU -->
     <node pkg="rr_platform" name="imu_bottom" type="yost_imu" output="screen" >
-        <param name="SERIAL_PORT" type="string" value="/dev/yost_imu_bottom" />
-        <param name="frame_id" type="string" value="imu_bottom"/>
-        <param name="topic_name" type="string" value="/imu_bottom"/>	
+        <param name="SERIAL_PORT" type="string" value="/dev/ttyACM0" />
+        <param name="frame_id" type="string" value="base_footprint"/>
+        <param name="topic_name" type="string" value="/imu"/>
         <!-- π/2 rad. rotation about the x axis -->
-        <rosparam param="imu_orientation_correction">[1,  0, 0,
-                                                      0, -1, 0,
-                                                      0,  0, -1]</rosparam>
+        <rosparam param="imu_orientation_correction">
+            [ [ -0.6056999,  0.5626401,  0.5626401],
+            [-0.5626401,  0.1971501, -0.8028499],
+            [-0.5626401, -0.8028499,  0.1971501] ]
+        </rosparam>
     </node>
 </launch>

@@ -1,12 +1,13 @@
 <launch>
 
-    <include file="$(find rr_evgp)/launch/lidar_z_threshold.launch"/>
+    <!-- <include file="$(find rr_evgp)/launch/lidar_z_threshold.launch"/> -->
 
-    <node name="cone_connection_node" pkg="rr_evgp" type="cone_connection_node" output="screen">
-        <param name="cones_topic" value="/lidar_up"/>
-        <param name="walls_topic" value="/global_walls"/>
-        <param name="distance_between_walls" value="18"/>
-        <param name="distance_between_cones" value="3"/>
-        <param name="cone_connection_status" value="/cone_connection_status"/>
+    <node name="cone_connect" pkg="rr_evgp" type="cone_connect" output="screen">
+        <param name="cones_topic" value="/opponent_centroids"/>
+        <param name="walls_topic" value="/walls"/>
+        <param name="cone_distance" value="10"/>
+
+        <param name="map_size" value="300"/>
+        <param name="map_resolution" value="0.2"/>
     </node>
 </launch>

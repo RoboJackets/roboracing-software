@@ -7,9 +7,9 @@
     <remap from="~output" to="/lidar_up"/>
     <rosparam>
       filter_field_name: z
-      filter_limit_min: -2
-      filter_limit_max: -0.2
-      filter_limit_negative: True
+      filter_limit_min: 0.01
+      filter_limit_max: 1.0
+      filter_limit_negative: false
     </rosparam>
   </node>
 
@@ -18,8 +18,8 @@
     <remap from="~output" to="/lidar_down"/>
     <rosparam>
       filter_field_name: z
-      filter_limit_min: -2
-      filter_limit_max: -0.2
+      filter_limit_min: -0.01
+      filter_limit_max: -1
       filter_limit_negative: False
     </rosparam>
   </node>
