@@ -24,15 +24,15 @@ odom0_differential: false
 odom0_relative: false
 
 #GPS gives us (non-continuous) x and y coordinates
-odom1: /odometry/gps
-odom1_config: [true, true, false,
+pose0: /piksi/enu_pose_best_fix
+pose0_config: [true, true, false,
                false, false, false,
-               true, true, false,
+               false, false, false,
                false, false, false,
                false, false, false]
-odom1_queue_size: 100
-odom1_differential: false
-odom1_relative: false
+pose0_queue_size: 100
+pose0_differential: false
+pose0_relative: true
 
 #TODO: possibly add data from pole IMU as well.
 #IMU give absolute heading, rotational velocity, and linear velocity.
