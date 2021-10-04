@@ -1,0 +1,43 @@
+![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.jpeg "Photo by Brian Cochran")
+
+Welcome to the ROS2 version of the [RoboJackets](http://robojackets.org) RoboRacing software repository! This document will give you a brief outline of the repository's layout and some simple instructions for setting up the project. For more detailed information, please visit the [wiki](https://wiki.robojackets.org/RoboRacing).
+
+[![Software Lead](https://img.shields.io/badge/Software%20Lead-Nico%20Bartholomai-blue.svg)](https://github.com/NicoBartholomai)
+
+![Project Manager](https://img.shields.io/badge/Project%20Manager-Sam%20Walters-blue.svg)
+
+[![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
+
+## Organization
+
+This repository is comprised of multiple ROS packages and one sandbox folder for miscellaneous resources.
+
+**rr_iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
+
+**rr_common**: This package contains general-purpose or mission-agnostic intelligence code.
+
+**rr_description**: This package contains URDFs and meshes that describe the platform's layout.
+
+**rr_gazebo**: This package contains resources for running the car in the [Gazebo](http://gazebosim.org) simulator.
+
+**rr_platform**: This package contains code for interfacing with the various cars built and maintained by the team.
+
+**rr_ml**: This package contains our machine learning models and tools for working with datasets.
+
+**sandbox**: This package contains utilities and non-ROS code. This includes tools for working with log files and the Arduino code for the car.
+
+The following files and folders enable our continuous integration system.
+
+* .circleci
+* Dockerfile
+
+## Installation
+
+This repository should be cloned into the src directory of a colcon workspace. Use ```colcon build``` in the workspace directory to build the code. (NOTE: Be sure to ```source devel/setup.sh``` before referencing roboracing packages.)
+
+For a guide on installing our code please go to [our guide](https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions_ROS2).
+
+
+## Simulation
+
+TO BE IMPLEMENTED
