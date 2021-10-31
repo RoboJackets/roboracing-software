@@ -1,0 +1,2 @@
+add_executable(local_mapper local_mapper.cpp)
+target_link_libraries(local_mapper ${catkin_LIBRARIES} relative_pose_history_client)
