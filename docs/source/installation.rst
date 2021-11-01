@@ -104,7 +104,15 @@ Download the one that has no suffix, meaning NOT -javadoc or -sources.
 
 Download the file into ``~/java`` and rename the file to plantuml.jar.
 
-To ensure that it is installed correctly, run ``java -jar plantuml.jar -testdot`` and it should output something similar to:
+To enable plantuml from anywhere in your file structure add the following line to your bashrc. :doc:`linux_info/bashrc`
+
+.. code-block::
+
+    echo alias plantuml="'java -jar /home/<username>/java/plantuml.jar'" >> ~/.bashrc
+
+Where you replace ``<username>`` with your username. For example I would write ``/home/charlie/java/plantuml.jar``.
+
+To ensure that it is installed correctly, run ``plantuml -testdot`` and it should output something similar to:
 
 .. code-block::
 
