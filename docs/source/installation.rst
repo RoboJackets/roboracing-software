@@ -102,7 +102,9 @@ Step 3 - Install PlantUML
 Download most recent version of plantuml from: https://github.com/plantuml/plantuml/releases/latest.
 Download the one that has no suffix, meaning NOT -javadoc or -sources.
 
-Download the file into ``~/java`` and rename the file to plantuml.jar.
+Download the file into ``~/java/`` and rename the file to plantuml.jar. The download path must be: ``~/java/plantuml.jar``
+
+Optional:
 
 To enable plantuml from anywhere in your file structure add the following line to your bashrc. :doc:`linux_info/bashrc`
 

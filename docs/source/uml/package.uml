@@ -1,0 +1,6 @@
+@startuml
+folder rr_messages
+folder rr_evgp
+folder rr_common
+folder rr_iarrc
+@enduml
