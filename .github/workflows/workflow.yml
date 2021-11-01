@@ -9,6 +9,5 @@ jobs:
       # Pass the file to the action
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
-          package-name: rr_msgs rr_util
           target-ros2-distro: galactic
     if: always()
