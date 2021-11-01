@@ -1,6 +1,11 @@
 @startuml
-folder rr_messages
-folder rr_evgp
 folder rr_common
+folder rr_description
+folder rr_evgp
+folder rr_gazebo
 folder rr_iarrc
+folder rr_msgs
+folder rr_rviz_plugins
+folder third_party
+folder util
 @enduml

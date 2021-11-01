@@ -16,12 +16,12 @@ Samsung published an article detailing some of the differences here_.
 .. _here: https://research.samsung.com/blog/Newest-ROS2-Distribution-Galactic-Geochelone-Released.
 
 
-Install ROS2 Galactic
+Prerequisites
 ---------------------
 This guide will assume that you are running Ubuntu 20.04. If you do not have Ubuntu 20.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.
 
 Step 1 - ROS2 Galactic Installation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 This guide will follow https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html.
 

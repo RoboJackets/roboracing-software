@@ -7,22 +7,10 @@ Welcome to Robojackets Roboracing's documentation!
 ==================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    source/installation
    source/overview/packages.rst
    source/linux_info/bashrc.rst
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-Docs
-====
 
