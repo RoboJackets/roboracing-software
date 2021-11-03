@@ -1,11 +1,31 @@
 @startuml
-folder rr_common
-folder rr_description
-folder rr_evgp
-folder rr_gazebo
-folder rr_iarrc
-folder rr_msgs
-folder rr_rviz_plugins
-folder third_party
-folder util
+package rr_common {
+    [image_classification]
+    [planning/navigation]
+}
+package rr_description {
+    [urdfs/resources]
+}
+package rr_evgp {
+    [costmap_plugins]
+    [opponent_detection]
+    [uniform_cost_search]
+}
+package rr_gazebo {
+    [world]
+}
+package rr_iarrc {
+    [color_detector]
+    [cone_detection]
+    [drag_centerline_planner]
+    [finish_line_watcher]
+    [hsv_tuner]
+
+}
+package rr_msgs
+package rr_rviz_plugins
+package third_party
+package util
+
+
 @enduml

@@ -62,3 +62,9 @@ Install the powerline theme (if you want):
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
 Open up a file name ``~/.zshrc`` by typing ``gedit ~/.zshrc`` and find the line starting with ``ZSH_THEME`` and replace it with ``ZSH_THEME="powerlevel10k/powerlevel10k"``
+
+To start the installation process run:
+
+.. code-block::
+
+    source ~/.zshrc
