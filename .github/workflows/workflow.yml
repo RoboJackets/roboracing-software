@@ -20,3 +20,5 @@ jobs:
       with:
         inplace: True
     - uses: EndBug/add-and-commit@v4
+      with:
+        message: 'fix format'
