@@ -11,3 +11,10 @@ jobs:
         with:
           target-ros2-distro: galactic
     if: always()
+  
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.13
+    - uses: EndBug/add-and-commit@v4
