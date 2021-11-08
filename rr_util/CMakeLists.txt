@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(rr_msgs)
+project(rr_util)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -13,60 +13,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(cv_bridge REQUIRED)
-find_package(pcl_ros REQUIRE)
+find_package(pcl_ros REQUIRED)
 find_package(image_transport REQUIRED)
-# uncomment once rr_msgs is merged
-## find_package(rr_msgs REQUIRED)
+find_package(rr_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 
-## Find catkin macros and libraries
-# find_package(catkin REQUIRED COMPONENTS
-#         roscpp
-#         rospy
-#         cv_bridge
-#         pcl_ros
-#         image_transport
-#         rr_msgs
-#         costmap_2d
-#         tf
-#         tf2_geometry_msgs
-#         parameter_assertions
-#         )
-
-# find_package(OpenCV REQUIRED)
-
-ament_target_dependencies(${PROJECT_NAME}_components
-"rclcpp"
-"rclcpp_components"
-"cv_bridge"
-"pcl_ros"
-"image_transport"
-# uncomment once rr_msgs is merged
-## "rr_msgs"
-"nav2_msgs"
-"tf2_ros"
-)
-
-###########
-## Build ##
-###########
-
-install(TARGETS ${PROJECT_NAME}_components
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
-
-## Specify additional locations of header files
-include_directories(
-        include
-        ${catkin_INCLUDE_DIRS}
-)
-
-add_library(rr_util src/image_flipper/image_flipper.cpp)
-target_link_libraries(rr_util $)
+add_library(${PROJECT_NAME}_components src/image_flipper/image_flipper.cpp)
 
 add_subdirectory(src/planner)
 add_subdirectory(src/image_pcl_converter)
@@ -80,9 +34,23 @@ add_subdirectory(src/camera_geometry)
 add_subdirectory(src/image_transformation)
 add_subdirectory(src/color_filter)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
+ament_target_dependencies(${PROJECT_NAME}_components
+"rclcpp"
+"rclcpp_components"
+"cv_bridge"
+"pcl_ros"
+"image_transport"
+"rr_msgs"
+"nav2_msgs"
+"tf2_ros"
+)
 
-ament_package()
+###########
+## Build ##
+###########
+
+install(TARGETS ${PROJECT_NAME}_components
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
