@@ -1,4 +1,6 @@
 @startuml
+left to right direction
+
 package rr_common {
     [image_classification]
     [planning/navigation]

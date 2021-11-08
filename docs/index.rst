@@ -11,6 +11,5 @@ Welcome to Robojackets Roboracing's documentation!
    :caption: Contents:
 
    source/installation
-   source/overview/packages.rst
-   source/linux_info/bashrc.rst
-
+   source/overview/packages
+   source/linux_info/linux_info
