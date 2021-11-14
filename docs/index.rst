@@ -13,3 +13,4 @@ Welcome to Robojackets Roboracing's documentation!
    source/installation
    source/overview/packages
    source/linux_info/linux_info
+   source/resources/resources

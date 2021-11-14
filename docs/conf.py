@@ -26,6 +26,9 @@ release = '1.0'
 
 
 # -- General configuration ---------------------------------------------------
+# The name for this set of Sphinx documents.  If None, it defaults to
+# "<project> v<release> documentation".
+html_title = project
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
