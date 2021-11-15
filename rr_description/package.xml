@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
+<?xml version="2.0"?>
 <package format="2">
   <name>rr_description</name>
-  <version>0.0.0</version>
+  <version>2.0.0</version>
   <description>Platform description for RoboRacing</description>
 
   <maintainer email="dmartin1@gatech.edu">Daniel Martin</maintainer>
