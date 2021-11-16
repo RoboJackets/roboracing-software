@@ -10,7 +10,7 @@ This page provides a high-level overview of the purposes of each package, and ho
 
    ../code_pages/rr_demo.rst
 
-:doc:`../code_pages/rr_demo`
-----------------------------
+:doc:`rr_demo <../code_pages/rr_demo>`
+-----------------------------------------
 
 Demonstration repository to show how documenting code with Doxygen and Sphinx works.
