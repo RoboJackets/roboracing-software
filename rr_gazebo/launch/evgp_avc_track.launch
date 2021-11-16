@@ -1,6 +1,0 @@
-<launch>
-    <include file="$(dirname)/evgp_sim.launch">
-        <arg name="world" value="$(find rr_gazebo)/worlds/avc.world"/>
-        <arg name="heading" value="-0.65"/>
-    </include>
-</launch>
