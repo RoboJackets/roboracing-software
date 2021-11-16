@@ -1,3 +1,0 @@
-add_executable(navigation_controller navigation_controller.cpp)
-target_link_libraries(navigation_controller ${catkin_LIBRARIES})
-add_dependencies(navigation_controller ${catkin_EXPORTED_TARGETS})

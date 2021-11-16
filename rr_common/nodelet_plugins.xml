@@ -1,7 +1,0 @@
-<library path="lib/librr_common">
-    <class name="rr_common/image_flipper" type="rr_common::image_flipper" base_class_type="nodelet::Nodelet">
-        <description>
-            Flips images.
-        </description>
-    </class>
-</library>
