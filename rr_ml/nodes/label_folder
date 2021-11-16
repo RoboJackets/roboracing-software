@@ -1,6 +1,0 @@
-#!/usr/bin/env python
-
-from image_label_tools import label_folder
-
-if __name__ == '__main__':
-    label_folder.main()
