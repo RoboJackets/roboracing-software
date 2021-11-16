@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="rosbag" type="record" name="record" output="screen"
-        args="-a -x '(.*)theora(.*)|(.*)compressed(.*)|(.*)raw(.*)|(.*)mono(.*)' -o /home/$(env USER)/bags/Sedani --split --size=3000" />
-</launch>

@@ -1,3 +1,0 @@
-add_executable(bigoli_ethernet_drive_relay bigoli_ethernet_drive_relay.cpp)
-target_link_libraries(bigoli_ethernet_drive_relay ${catkin_LIBRARIES})
-add_dependencies(bigoli_ethernet_drive_relay ${catkin_EXPORTED_TARGETS})

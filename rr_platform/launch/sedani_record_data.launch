@@ -1,4 +1,0 @@
-<launch>
-	<node pkg="rosbag" type="record" name="record" output="screen"
-        args="--regex '/camera_right/image_color_rect|/camera_left/image_color_rect|/camera_center/image_color_rect|/chassis_state' -o /home/$(env USER)/bags/Sedani --split --size=3000" />
-</launch>
