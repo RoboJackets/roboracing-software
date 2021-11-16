@@ -1,7 +1,0 @@
-<library path="lib/librr_iarrc">
-    <class name="rr_iarrc/color_detector" type="rr_iarrc::color_detector" base_class_type="nodelet::Nodelet">
-        <description>
-            Detects Colors^TM
-        </description>
-    </class>
-</library>                         

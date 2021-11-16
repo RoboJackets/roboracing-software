@@ -1,2 +1,0 @@
-add_executable(startlight_watcher startlight_watcher.cpp)
-target_link_libraries(startlight_watcher ${catkin_LIBRARIES})

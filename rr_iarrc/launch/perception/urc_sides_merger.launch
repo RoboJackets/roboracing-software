@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<launch>
-    <node name="urc_image_merger" pkg="rr_iarrc" type="urc_image_merger" output="screen">
-        <param name="camera_left_subscription" type="string" value="/camera_left/lines/detection_img/"/>
-        <param name="camera_right_subscription" type="string" value="/camera_right/lines/detection_img"/>
-        <param name="merged_img_publisher" type="string" value="/urc_side_lanes"/>
-    </node>
-</launch>
