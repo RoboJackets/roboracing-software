@@ -31,7 +31,6 @@ jobs:
     - uses: mattnotmitt/doxygen-action@v1
       with:
           working-directory: 'docs/'
-          doxyfile-path: 'docs/Doxyfile'
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
