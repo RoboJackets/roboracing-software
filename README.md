@@ -2,6 +2,12 @@
 
 ![alt text](https://raw.githubusercontent.com/wiki/RoboJackets/roboracing-software/images/sedanii.jpeg "Photo by Brian Cochran")
 
+## Deprecation notice
+
+Exciting changes are coming! We are in the process of migrating this repository to ROS2. Please head over to [ROS2 Repository](https://github.com/RoboJackets/roboracing-software/tree/ros2/main) to see the changes.
+
+-------------
+
 Welcome to the [RoboJackets](http://robojackets.org) RoboRacing software repository! This document will give you a brief outline of the repository's layout and some simple instructions for setting up the project. For more detailed information, please visit the [wiki](https://wiki.robojackets.org/RoboRacing).
 
 [![Software Lead](https://img.shields.io/badge/Software%20Lead-Daniel%20Martin-blue.svg)](https://github.com/daniel-martin576)
