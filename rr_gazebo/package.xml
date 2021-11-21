@@ -3,9 +3,14 @@
 <package format="3">
   <name>rr_gazebo</name>
   <version>2.0.0</version>
-  <description>RoboRacing Gazebo emulation world</description>
+  <description>Gazebo simulation files for RoboRacing</description>
   <maintainer email="nbartholomai3@gatech.edu">nico</maintainer>
   <license>MIT</license>
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://robojackets.org</url>
+
 
   <depend>rclpy</depend>
 
