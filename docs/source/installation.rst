@@ -100,6 +100,7 @@ Step 2 - Install PlantUML
 
     sudo apt install default-jre
     sudo apt install graphviz
+    pip install sphinxcontrib-plantuml
 
 Download most recent version of plantuml from: https://github.com/plantuml/plantuml/releases/latest.
 Download the one that has no suffix, meaning NOT -javadoc or -sources.
