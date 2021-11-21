@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+<<<<<<< HEAD
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -21,5 +22,19 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+=======
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Axes.msg"
+  "msg/ChassisState.msg"
+  "msg/RaceReset.msg"
+  "msg/Steering.msg"
+  "msg/HsvTuned.msg"
+  "msg/Speed.msg"
+  "msg/UrcSign.msg"
+  "srv/Turning.srv"
+)
+>>>>>>> origin/ros2/main
 
 ament_package()
