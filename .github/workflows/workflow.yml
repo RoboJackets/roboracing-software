@@ -23,3 +23,15 @@ jobs:
     - uses: EndBug/add-and-commit@v4
       with:
         message: 'fix format'
+
+  build_documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mattnotmitt/doxygen-action@v1
+      with:
+          working-directory: 'docs/'
+          doxyfile-path: 'docs/'
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
