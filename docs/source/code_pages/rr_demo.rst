@@ -12,14 +12,36 @@ display documentation. The main page for the package can have some important fil
 throughout all nodes inside the package.
 
 For example, imagine **Driver.cpp** is used in all nodes in the rr_demo package. We could
-include it by writing this code:
+include it by writing this code inside of ``code_pages.rst``:
 
 .. code-block::
 
     .. doxygenfile:: driver.cpp
         :project: rr_demo
 
+With driver.cpp being:
+
+.. code-block::
+
+    /** \file driver.cpp
+    * A brief file description.
+    */
+
+    /**
+    * @brief Main function description.
+    */
+    int main(int argc, char const *argv[]) {
+        return 0;
+    }
+
+
 Which would appear as:
+
+-----
 
 .. doxygenfile:: driver.cpp
     :project: rr_demo
+
+-----
+
+Note how the comments in the cpp file are mapped to the text in the figure above. 

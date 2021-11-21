@@ -93,7 +93,7 @@ Step 1 - Install Sphinx
     sudo apt install python3-sphinx
     pip install furo
 
-Step 3 - Install PlantUML
+Step 2 - Install PlantUML
 -------------------------
 
 .. code-block::
@@ -123,16 +123,24 @@ To ensure that it is installed correctly, run ``plantuml -testdot`` and it shoul
     Dot version: dot - graphviz version 2.43.0 (0)
     Installation seems OK. File generation OK
 
+Step 3 - Install Doxygen and Breathe
+------------------------------------
 
-Step 2 - Build Documentation
+.. code-block::
+    
+    sudo apt-get install doxygen
+    pip install breathe
+
+Step 4 - Build Documentation
 ----------------------------
 
 .. code-block::
 
     cd docs
+    doxygen
     make html
 
-Step 3 - View Documentation
+Step 5 - View Documentation
 ----------------------------
 
 You can now open up index.html at ``docs/_build/html/index.html``
