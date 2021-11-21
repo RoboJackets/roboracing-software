@@ -27,6 +27,8 @@ jobs:
   build_documentation:
     runs-on: ubuntu-latest
     steps:
+    - name: Download plantuml
+      run : curl https://github.com/plantuml/plantuml/releases/download/v1.2021.14/plantuml-1.2021.14.jar --output $HOME/java/plantuml.jar
     - uses: actions/checkout@v2
     - uses: mattnotmitt/doxygen-action@v1
       with:
