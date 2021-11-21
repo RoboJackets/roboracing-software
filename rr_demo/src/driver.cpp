@@ -5,6 +5,4 @@
 /**
  * @brief driver function description.
  */
-void driver() {
-
-}
+void driver() {}
