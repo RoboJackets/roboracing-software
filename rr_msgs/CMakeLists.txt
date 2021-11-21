@@ -14,7 +14,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ChassisState.msg"
   "msg/RaceReset.msg"
   "msg/Steering.msg"
-  "msg/CameraPose.msg"
   "msg/HsvTuned.msg"
   "msg/Speed.msg"
   "msg/UrcSign.msg"
