@@ -4,7 +4,6 @@ on:
   push:
     branches:    
       - ros2/main
-      - ros2/create_documentation
   pull_request:
     branches:
       - ros2/main
