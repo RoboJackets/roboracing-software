@@ -2,9 +2,9 @@
 <package format="2">
     <name>rr_util</name>
     <version>0.0.0</version>
-    <description>The RoboRacing package</description>
+    <description>RoboRacing package with files that support competition code<description>
 
-    <maintainer email="nfbartholomai@gmail.com">nico</maintainer>
+    <maintainer email="nfbartholomai@gmail.com">Nico Bartholomai</maintainer>
 
     <license>MIT</license>
 
