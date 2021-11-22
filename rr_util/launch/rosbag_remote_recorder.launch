@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <launch>
-    <node pkg="rr_common" type="rosbag_remote_recorder" name="rosbag_remote_recorder" output="screen" respawn="true">
+    <node pkg="rr_util" type="rosbag_remote_recorder" name="rosbag_remote_recorder" output="screen" respawn="true">
     	<param name="topics_to_record" type="string" value= "/chassis_state /camera/image_color_rect"/> <!--Seperate multiple topics with a space -->
 		<param name="bag_name_prefix" type="string" value="test"/>
 		<param name="folder_path" type="string" value="$(env HOME)/rosbag_recorder_files/"/> <!-- where to save bag files -->

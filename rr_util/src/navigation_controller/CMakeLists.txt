@@ -1,1 +1,0 @@
-add_executable(navigation_controller navigation_controller.cpp)

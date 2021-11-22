@@ -3,7 +3,7 @@
     <arg name="topic_from_controller" value="/follower/control_effort"/>
     <arg name="topic_from_plant" value="/follower/state"/>
     <arg name="setpoint_topic" value="/follower/setpoint"/>
-    <node name="follower" pkg="rr_common" type="follower" output="screen">
+    <node name="follower" pkg="rr_util" type="follower" output="screen">
         <param name="MIN_FRONT_VISION" value="0.37"/>
         <param name="MAX_FRONT_VISION" value="3"/>
         <param name="GOAL_DIST" value="1.3"/>

@@ -1,3 +1,0 @@
-add_library(relative_pose_history_client RelativePoseHistoryClient.cpp)
-
-add_executable(pose_tracker_server pose_tracker_server.cpp)

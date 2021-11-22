@@ -6,8 +6,8 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pluginlib/class_list_macros.h>
-#include <ros/ros.h>
-#include <rr_common/CameraGeometry.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rr_util/CameraGeometry.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 

@@ -7,18 +7,18 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl_ros/transforms.h>
-#include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <tf/transform_listener.h>
+#include <pcl_ros/transforms.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <tf2_ros/transform_listener.h>
 
 using cloud_t = pcl::PointCloud<pcl::PointXYZ>;
 using cloud_ptr_t = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
-std::map<std::string, sensor_msgs::PointCloud2ConstPtr> cache;
+std::map<std::string, sensor_msgs::msg::PointCloud2> cache;
 bool has_new_info;
 
-void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg, std::string topic) {
+void cloudCallback(const sensor_msgs::msg::PointCloud2& msg, std::string topic) {
     cache[topic] = msg;
     has_new_info = true;
 }
@@ -37,10 +37,7 @@ std::vector<std::string> split(const std::string& s, char delim) {
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "pointcloud_combiner");
-
-    ros::NodeHandle nh;
-    ros::NodeHandle nh_private("~");
+    rclcpp::init(argc, argv);
 
     cloud_ptr_t combo_cloud(new cloud_t);
     cloud_ptr_t transformed(new cloud_t);

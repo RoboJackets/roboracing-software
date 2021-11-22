@@ -1,16 +1,16 @@
 #ifndef RR_COMMON_FOLLOWER_H
 #define RR_COMMON_FOLLOWER_H
 
-#include <geometry_msgs/Point32.h>
-#include <geometry_msgs/PolygonStamped.h>
+#include <geometry_msgs/msg/point32.hpp>
+#include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <ros/ros.h>
-#include <rr_msgs/speed.h>
-#include <rr_msgs/steering.h>
-#include <std_msgs/Float64.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rr_msgs/msg/speed.hpp>
+#include <rr_msgs/msg/steering.hpp>
+#include <std_msgs/msg/float64.hpp>
 
 #include <string>
 
@@ -25,8 +25,10 @@ float FOLLOWER_SPEED;
 
 std::string topic_from_plant;
 std::string setpoint_topic;
-std::string topic_from_controller;
 
-ros::Publisher speed_pub, steer_pub, pid_speed_pub, pid_setpoint_pub, visonBox_pub;
+rclcpp::Publisher<rr_msgs::msg::Speed> speed_pub;
+rclcpp::Publisher<rr_msgs::msg::Steering> steer_pub; 
+pid_speed_pub, pid_setpoint_pub, visonBox_pub;
+std::string topic_from_controller;
 
 #endif  // RR_COMMON_FOLLOWER_H

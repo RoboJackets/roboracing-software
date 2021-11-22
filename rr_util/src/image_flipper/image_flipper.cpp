@@ -1,7 +1,7 @@
 #include "image_flipper.h"
 
-namespace rr_common {
-void image_flipper::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
+namespace rr_util {
+void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg) {
     cv_bridge::CvImageConstPtr cv_ptr;
 
     try {
@@ -18,7 +18,7 @@ void image_flipper::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     img_pub.publish(output.toImageMsg());
 }
 
-void image_flipper::onInit() {
+image_flipper {
     auto nh = getNodeHandle();
     auto nhp = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh);
@@ -32,5 +32,5 @@ void image_flipper::onInit() {
     img_sub = it.subscribe("image", 1, &image_flipper::imageCallback, this);
     img_pub = it.advertise("image_flipped", 1);
 }
-}  // namespace rr_common
-PLUGINLIB_EXPORT_CLASS(rr_common::image_flipper, nodelet::Nodelet)
+}  // namespace rr_util
+PLUGINLIB_EXPORT_CLASS(rr_util::image_flipper, nodelet::Nodelet)

@@ -14,7 +14,7 @@ This repository is comprised of multiple ROS packages and one sandbox folder for
 
 **rr_iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
 
-**rr_common**: This package contains general-purpose or mission-agnostic intelligence code.
+**rr_util**: This package contains general-purpose or mission-agnostic intelligence code.
 
 **rr_description**: This package contains URDFs and meshes that describe the platform's layout.
 

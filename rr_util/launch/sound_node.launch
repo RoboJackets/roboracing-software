@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<launch>
-    <node pkg="rr_common" type="_node" name="_node" output="screen"/>
-    <node pkg="_play" type="play_node.py" name="_client" output="screen"/>
-</launch>

@@ -1,8 +1,8 @@
 #include "follower.h"
 using namespace std;
 // Gets new speed from the pid and published it
-void pidCallback(std_msgs::Float64 pidSpeed) {
-    rr_msgs::speed outputSpeed;
+void pidCallback(std_msgs::msg::Float64 pidSpeed) {
+    rr_msgs::msg::speed outputSpeed;
     double newSpeed = (double)pidSpeed.data;
     outputSpeed.speed = newSpeed;
     speed_pub.publish(outputSpeed);
@@ -12,8 +12,8 @@ void mapCallback(const sensor_msgs::PointCloud2ConstPtr& map) {
     pcl_conversions::toPCL(*map, pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
-    rr_msgs::speedPtr speedMSG(new rr_msgs::speed);
-    rr_msgs::steeringPtr steerMSG(new rr_msgs::steering);
+    rr_msgs::msg::Speed speedMSG(new rr_msgs::speed);
+    rr_msgs::msg::Steering steerMSG(new rr_msgs::steering);
     if (cloud->empty()) {
         ROS_WARN("environment map pointcloud is empty");
         speedMSG->speed = 0;

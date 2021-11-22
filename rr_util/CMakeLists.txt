@@ -16,8 +16,11 @@ find_package(cv_bridge REQUIRED)
 find_package(pcl_ros REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(rr_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 
 add_library(${PROJECT_NAME}_components src/image_flipper/image_flipper.cpp)
@@ -41,8 +44,11 @@ ament_target_dependencies(${PROJECT_NAME}_components
 "pcl_ros"
 "image_transport"
 "rr_msgs"
+"nav_msgs"
 "nav2_msgs"
 "tf2_ros"
+"tf2_geometry_msgs"
+"sensor_msgs"
 )
 
 ###########
