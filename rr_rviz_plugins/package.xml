@@ -3,9 +3,10 @@
 <package format="3">
   <name>rr_rviz_plugins</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="thecharlesjenkins@gmail.com">charlie</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Rviz visualization plugins</description>
+
+  <maintainer email="nbartholomai3@gatech.edu">Nico Bartholomai</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

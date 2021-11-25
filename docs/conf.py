@@ -40,6 +40,9 @@ breathe_default_project = 'rr_description'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+html_favicon = '_static/favicon.png'
+html_logo = '_static/robobuzz.png'
+
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
