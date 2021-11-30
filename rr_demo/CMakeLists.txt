@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(rr_demo)
 
-add_library (${PROJECT_NAME} BUILD_SHARED
+add_library (${PROJECT_NAME} SHARED
     src/driver.cpp
 )
 
