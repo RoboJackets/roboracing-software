@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Packages" href="overview/packages.html" /><link rel="prev" title="Welcome to Robojackets Roboracing’s documentation!" href="../index.html" />
 
-    <meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../_static/favicon.png"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
         <title>Installation - Robojackets Roboracing</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -142,8 +142,11 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/robobuzz.png" alt="Logo"/>
+  </div>
   
   <span class="sidebar-brand-text">Robojackets Roboracing</span>
   
@@ -279,10 +282,25 @@ Samsung published an article detailing some of the differences <a class="referen
 </div>
 <p>Download most recent version of plantuml from: <a class="reference external" href="https://github.com/plantuml/plantuml/releases/latest">https://github.com/plantuml/plantuml/releases/latest</a>.
 Download the one that has no suffix, meaning NOT -javadoc or -sources.</p>
-<p>Download the file into <code class="docutils literal notranslate"><span class="pre">~/java/</span></code> and rename the file to plantuml.jar. The download path must be: <code class="docutils literal notranslate"><span class="pre">~/java/plantuml.jar</span></code></p>
+<p>Download the file into <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/</span></code> and rename the file to plantuml.jar. The download path must be: <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/plantuml.jar</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/</span></code> has a nice alias on Linux which is <code class="docutils literal notranslate"><span class="pre">~</span></code>. So instead of writing <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java</span></code>
+you can write <code class="docutils literal notranslate"><span class="pre">~/java</span></code>. This is referred to as your user home directory. The /home/ directory is configured
+to support multiple users on a single machine. If you type <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">/home</span></code> it will list everything inside of the
+<code class="docutils literal notranslate"><span class="pre">/home</span></code> directory, and you will have one entry for each user on your Linux machine. The <code class="docutils literal notranslate"><span class="pre">~</span></code> symbol knows
+the location of your home directory using the <code class="docutils literal notranslate"><span class="pre">HOME</span></code> environment variable. You can run <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$HOME</span></code> to see
+the value of the <code class="docutils literal notranslate"><span class="pre">HOME</span></code> environment variable.</p>
+<p>For some fun with this you can run <code class="docutils literal notranslate"><span class="pre">HOME=/opt</span></code> and then you can run <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">~</span></code> and it will take you to the <code class="docutils literal notranslate"><span class="pre">/opt</span></code>
+directory! To verify run <code class="docutils literal notranslate"><span class="pre">pwd</span></code> and it will show you your current path. This will be reset to <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;</span></code>
+when you launch a new shell instance (eg when you open a new terminal). To learn more about what a shell is,
+read this other article: <a class="reference internal" href="linux_info/bashrc.html"><span class="doc">What is Bashrc?</span></a>.</p>
+<p>You can also play with this feature on MacOS and on Powershell. Environment variables are different on Powershell so
+if you are interested in that you can check out the <a class="reference external" href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2">Powershell Environment Variables Docs</a>.</p>
+</div>
 <p>Optional:</p>
 <p>To enable plantuml from anywhere in your file structure add the following line to your bashrc. <a class="reference internal" href="linux_info/bashrc.html"><span class="doc">What is Bashrc?</span></a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">alias</span> <span class="n">plantuml</span><span class="o">=</span><span class="s2">"'java -jar /home/&lt;username&gt;/java/plantuml.jar'"</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">alias</span> <span class="n">plantuml</span><span class="o">=</span><span class="s2">"'java -jar /home/&lt;username&gt;/java/plantuml.jar'"</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">username</span><span class="o">&gt;/.</span><span class="n">bashrc</span>
 </pre></div>
 </div>
 <p>Where you replace <code class="docutils literal notranslate"><span class="pre">&lt;username&gt;</span></code> with your username. For example I would write <code class="docutils literal notranslate"><span class="pre">/home/charlie/java/plantuml.jar</span></code>.</p>
@@ -301,7 +319,7 @@ Download the one that has no suffix, meaning NOT -javadoc or -sources.</p>
 </div>
 <div class="section" id="step-4-build-documentation">
 <h3>Step 4 - Build Documentation<a class="headerlink" href="#step-4-build-documentation" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">docs</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span>
 <span class="n">doxygen</span>
 <span class="n">make</span> <span class="n">html</span>
 </pre></div>
@@ -309,7 +327,12 @@ Download the one that has no suffix, meaning NOT -javadoc or -sources.</p>
 </div>
 <div class="section" id="step-5-view-documentation">
 <h3>Step 5 - View Documentation<a class="headerlink" href="#step-5-view-documentation" title="Permalink to this headline">¶</a></h3>
-<p>You can now open up index.html at <code class="docutils literal notranslate"><span class="pre">docs/_build/html/index.html</span></code></p>
+<p>You can now open up index.html at <code class="docutils literal notranslate"><span class="pre">~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html</span></code>
+and view the documentation by running <code class="docutils literal notranslate"><span class="pre">gio</span> <span class="pre">open</span> <span class="pre">~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html</span></code>!
+<code class="docutils literal notranslate"><span class="pre">gio</span> <span class="pre">open</span></code> is a general purpose tool to launch a file in the registered application, eg an <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be opened
+in you firefox, a <code class="docutils literal notranslate"><span class="pre">txt</span></code> file will open in <code class="docutils literal notranslate"><span class="pre">gedit</span></code> the default Ubuntu text editor, and so on. To view all or change all
+of the defaults you can run <code class="docutils literal notranslate"><span class="pre">gedit</span> <span class="pre">/usr/share/applications/defaults.list</span></code>. At least was where mine was located, I had to
+hunt for it so if it is not here then you can look at <a href="#id1"><span class="problematic" id="id2">`this post.&lt;https://askubuntu.com/questions/957608/where-i-find-mimeapps-list&gt;`_</span></a></p>
 </div>
 </div>
 </div>

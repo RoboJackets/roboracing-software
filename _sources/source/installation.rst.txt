@@ -105,7 +105,24 @@ Step 2 - Install PlantUML
 Download most recent version of plantuml from: https://github.com/plantuml/plantuml/releases/latest.
 Download the one that has no suffix, meaning NOT -javadoc or -sources.
 
-Download the file into ``~/java/`` and rename the file to plantuml.jar. The download path must be: ``~/java/plantuml.jar``
+Download the file into ``/home/<username>/java/`` and rename the file to plantuml.jar. The download path must be: ``/home/<username>/java/plantuml.jar``
+
+.. note::
+    ``/home/<username>/`` has a nice alias on Linux which is ``~``. So instead of writing ``/home/<username>/java``
+    you can write ``~/java``. This is referred to as your user home directory. The /home/ directory is configured
+    to support multiple users on a single machine. If you type ``ls /home`` it will list everything inside of the
+    ``/home`` directory, and you will have one entry for each user on your Linux machine. The ``~`` symbol knows
+    the location of your home directory using the ``HOME`` environment variable. You can run ``echo $HOME`` to see 
+    the value of the ``HOME`` environment variable.
+
+    For some fun with this you can run ``HOME=/opt`` and then you can run ``cd ~`` and it will take you to the ``/opt``
+    directory! To verify run ``pwd`` and it will show you your current path. This will be reset to ``/home/<username>`` 
+    when you launch a new shell instance (eg when you open a new terminal). To learn more about what a shell is, 
+    read this other article: :doc:`linux_info/bashrc`.
+
+    You can also play with this feature on MacOS and on Powershell. Environment variables are different on Powershell so
+    if you are interested in that you can check out the `Powershell Environment Variables Docs <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2>`_.
+
 
 Optional:
 
@@ -113,7 +130,7 @@ To enable plantuml from anywhere in your file structure add the following line t
 
 .. code-block::
 
-    echo alias plantuml="'java -jar /home/<username>/java/plantuml.jar'" >> ~/.bashrc
+    echo alias plantuml="'java -jar /home/<username>/java/plantuml.jar'" >> /home/<username>/.bashrc
 
 Where you replace ``<username>`` with your username. For example I would write ``/home/charlie/java/plantuml.jar``.
 
@@ -137,11 +154,16 @@ Step 4 - Build Documentation
 
 .. code-block::
 
-    cd docs
+    cd ~/roboracing_ws/src/roboracing-software
     doxygen
     make html
 
 Step 5 - View Documentation
 ----------------------------
 
-You can now open up index.html at ``docs/_build/html/index.html``
+You can now open up index.html at ``~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html``
+and view the documentation by running ``gio open ~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html``!
+``gio open`` is a general purpose tool to launch a file in the registered application, eg an ``html`` file will be opened
+in you firefox, a ``txt`` file will open in ``gedit`` the default Ubuntu text editor, and so on. To view all or change all
+of the defaults you can run ``gedit /usr/share/applications/defaults.list``. At least was where mine was located, I had to
+hunt for it so if it is not here then you can look at `this post.<https://askubuntu.com/questions/957608/where-i-find-mimeapps-list>`_
