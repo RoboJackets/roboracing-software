@@ -11,7 +11,7 @@ Welcome to the ROS2 version of the [RoboJackets](http://robojackets.org) RoboRac
 
 ## Documentation
 
-View our documentation at https://example.com
+View our documentation at https://robojackets.github.io/roboracing-software/. Documentation is built on every merge into the ros2/main branch.
 
 ## Organization
 
