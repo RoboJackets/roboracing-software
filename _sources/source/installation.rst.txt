@@ -166,4 +166,4 @@ and view the documentation by running ``gio open ~/roboracing_ws/src/roboracing-
 ``gio open`` is a general purpose tool to launch a file in the registered application, eg an ``html`` file will be opened
 in you firefox, a ``txt`` file will open in ``gedit`` the default Ubuntu text editor, and so on. To view all or change all
 of the defaults you can run ``gedit /usr/share/applications/defaults.list``. At least was where mine was located, I had to
-hunt for it so if it is not here then you can look at `this post.<https://askubuntu.com/questions/957608/where-i-find-mimeapps-list>`_
+hunt for it so if it is not here then you can look at `this post <https://askubuntu.com/questions/957608/where-i-find-mimeapps-list>`_.
