@@ -1,36 +1,28 @@
 #include <math.h>
-#include <rclcpp/rclcpp.hpp>
-#include <rr_msgs/msg/axes.hpp>
-#include <sensor_msgs/msg/imu.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <std/vector.hpp>
-#include <rclcpp_components/register_node_macro.hpp>
 
-namespace rr_gazebo
-{
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_components/register_node_macro.hpp>
+#include <rr_msgs/msg/axes.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <std/vector.hpp>
+
+namespace rr_gazebo {
 
 float w, x, y, z;
 float roll, pitch, yaw;
 rr_msgs::msg::Axes::SharedPtr axes_msg;
 
-
-class ImuAxisNode : public rclcpp::Node
-{
-public:
-    explicit ImuAxisNode(const rclcpp::NodeOptions &options)
-    : rclcpp::Node("imu_axes", options) {
-        axes_pub_ = create_publisher<rr_msgs::msg::Axes>(
-            "/axes",
-            rclcpp::SystemDefaultsQoS()
-        );
+class ImuAxisNode : public rclcpp::Node {
+  public:
+    explicit ImuAxisNode(const rclcpp::NodeOptions& options) : rclcpp::Node("imu_axes", options) {
+        axes_pub_ = create_publisher<rr_msgs::msg::Axes>("/axes", rclcpp::SystemDefaultsQoS());
 
         imu_sub_ = create_subscription<sensor_msgs::msg::Imu>(
-            "/imu",
-            rclcpp::SystemDefaultsQoS(),
-            std::bind(ImuAxisNode::imuCB, this, std::placeholders::_1)
-        );
+              "/imu", rclcpp::SystemDefaultsQoS(), std::bind(ImuAxisNode::imuCB, this, std::placeholders::_1));
     }
-private:
+
+  private:
     rclcpp::Publisher<rr_msgs::msg::Axes>::SharedPtr axes_pub_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
 
@@ -68,9 +60,9 @@ private:
         axes_msg->pitch = pitch;
         axes_msg->yaw = yaw;
     }
-}; //ImuAxisNode
+};  // ImuAxisNode
 
-} //rr_gazebo
+}  // namespace rr_gazebo
 
 RCLCPP_COMPONENTS_REGISTER_NODE(rr_gazebo::ImuAxisNode);
 
@@ -79,7 +71,7 @@ int main(int argc, char** argv) {
     auto node = std::make_shared<rr_gazebo::ImuAxisNode>();
     rclcpp::Rate rate(30);
     // rclcpp::spin(node);
-    while(rclcpp::ok()) {
+    while (rclcpp::ok()) {
         rclcpp::spin_some(node);
         rate.sleep();
     }

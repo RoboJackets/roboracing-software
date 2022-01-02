@@ -6,12 +6,10 @@
 #include <rr_msgs/msg/speed.hpp>
 #include <rr_msgs/msg/steering.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
-#include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/string.hpp>
 
-
-namespace rr_gazebo 
-{
+namespace rr_gazebo {
 
 class PIDController {
   public:
@@ -38,73 +36,48 @@ class PIDController {
     double accError = 0.0;
 };
 
-class SimCarController : public rclcpp::Node 
-{
-public:
-    explicit SimCarController(const rclcpp::NodeOptions &options) 
-    : rclcpp::Node("sim_car_controller", options) {
+class SimCarController : public rclcpp::Node {
+  public:
+    explicit SimCarController(const rclcpp::NodeOptions& options) : rclcpp::Node("sim_car_controller", options) {
         // Declare params
         for (auto param_name : param_names) {
             this->declare_parameter(param_name);
         }
 
-        //Publishers
+        // Publishers
 
-        left_drive_pub_ = create_publisher<std_msgs::msg::Float64>(
-            "/left_wheel_effort_controller/command",
-            rclcpp::SystemDefaultsQoS()
-        );
+        left_drive_pub_ = create_publisher<std_msgs::msg::Float64>("/left_wheel_effort_controller/command",
+                                                                   rclcpp::SystemDefaultsQoS());
 
-        right_drive_pub_ = create_publisher<std_msgs::msg::Float64>(
-            "/right_wheel_effort_controller/command",
-            rclcpp::SystemDefaultsQoS()
-        );
+        right_drive_pub_ = create_publisher<std_msgs::msg::Float64>("/right_wheel_effort_controller/command",
+                                                                    rclcpp::SystemDefaultsQoS());
 
-        left_steering_pub_ = create_publisher<std_msgs::msg::Float64>(
-            "/left_steer_position_controller/command",
-            rclcpp::SystemDefaultsQoS()
-        );
+        left_steering_pub_ = create_publisher<std_msgs::msg::Float64>("/left_steer_position_controller/command",
+                                                                      rclcpp::SystemDefaultsQoS());
 
-        right_steering_pub_ = create_publisher<std_msgs::msg::Float64>(
-            "/right_steer_position_controller/command",
-            rclcpp::SystemDefaultsQoS()
-        );
+        right_steering_pub_ = create_publisher<std_msgs::msg::Float64>("/right_steer_position_controller/command",
+                                                                       rclcpp::SystemDefaultsQoS());
 
-        chassis_state_pub_ = create_publisher<rr_msgs::msg::ChassisState>(
-            "/chassis_state",
-            rclcpp::SystemDefaultsQoS()
-        );
+        chassis_state_pub_ =
+              create_publisher<rr_msgs::msg::ChassisState>("/chassis_state", rclcpp::SystemDefaultsQoS());
 
-        odometry_pub_ = create_publisher<nav_msgs::msg::Odometry>(
-            "/odometry_encoder",
-            rclcpp::SystemDefaultsQoS()
-        );
+        odometry_pub_ = create_publisher<nav_msgs::msg::Odometry>("/odometry_encoder", rclcpp::SystemDefaultsQoS());
 
-        //Subscribers
+        // Subscribers
 
         speed_sub_ = create_subscription<rr_msgs::msg::Speed>(
-            "/speed",
-            rclcpp::SystemDefaultsQoS(),
-            std::bind(rr_gazebo::SimCarController::speedCallback, this)
-        );
+              "/speed", rclcpp::SystemDefaultsQoS(), std::bind(rr_gazebo::SimCarController::speedCallback, this));
 
         steer_sub_ = create_subscription<rr_msgs::msg::Steering>(
-            "/steering",
-            rclcpp::SystemDefaultsQoS(),
-            std::bind(rr_gazebo::SimCarController::steeringCallback, this)
-        );
+              "/steering", rclcpp::SystemDefaultsQoS(), std::bind(rr_gazebo::SimCarController::steeringCallback, this));
 
         state_sub_ = create_subscription<sensor_msgs::msg::JointState>(
-            "/joint_states",
-            rclcpp::SystemDefaultsQoS(),
-            std::bind(rr_gazebo::SimCarController::jointStateCallback, this)
-        );
-        
-
+              "/joint_states", rclcpp::SystemDefaultsQoS(),
+              std::bind(rr_gazebo::SimCarController::jointStateCallback, this));
     }
     // Pubs and subs
-    PIDController left_controller{ speed_kP, speed_kI, speed_kD};
-    PIDController right_controller{ speed_kP, speed_kI, speed_kD};
+    PIDController left_controller{ speed_kP, speed_kI, speed_kD };
+    PIDController right_controller{ speed_kP, speed_kI, speed_kD };
 
     double speed_measured_left = 0.0;
     double speed_measured_right = 0.0;
@@ -122,8 +95,8 @@ public:
 
     void fillWheelSpeeds(double& left_speed, double& right_speed) {
         if (steer_set_point == 0) {
-                left_speed = speed_set_point;
-                right_speed = speed_set_point;
+            left_speed = speed_set_point;
+            right_speed = speed_set_point;
         } else {
             double turning_radius = chassis_length / fabs(sin(steer_set_point));
             double radius_left = turning_radius - copysign(chassis_width_2, steer_set_point);
@@ -139,7 +112,7 @@ public:
     }
 
     void fillSteeringPositions(double& left, double& right) {
-        double center_y = chassis_length * tan((M_PI_2) - steer_set_point);
+        double center_y = chassis_length * tan((M_PI_2)-steer_set_point);
         left = get_steer_ang(atan(inv_chassis_length * (center_y - chassis_width_2)));
         right = get_steer_ang(atan(inv_chassis_length * (center_y + chassis_width_2)));
     }
@@ -170,11 +143,18 @@ public:
         }
     }
 
-private:
+  private:
+    // Parameters
 
-    //Parameters
-    
-    std::vector<std::string> param_names = {"wheelbase", "track", "max_torque", "wheel_radius_back", "speed_kP", "speed_kD", "speed_kI", "left_motor_joint_name", "right_motor_joint_name"};
+    std::vector<std::string> param_names = { "wheelbase",
+                                             "track",
+                                             "max_torque",
+                                             "wheel_radius_back",
+                                             "speed_kP",
+                                             "speed_kD",
+                                             "speed_kI",
+                                             "left_motor_joint_name",
+                                             "right_motor_joint_name" };
 
     double chassis_length = this->get_parameter("wheelbase").as_double();
     double chassis_width = this->get_parameter("track").as_double();
@@ -191,20 +171,18 @@ private:
 
     double speed_set_point = 0.0;
     double steer_set_point = 0.0;
-
-
 };
 
-int new_main(int argc, char **argv) {
+int new_main(int argc, char** argv) {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<rr_gazebo::SimCarController>();
     rclcpp::Rate rate(30);
-    while(rclcpp::ok()) {
+    while (rclcpp::ok()) {
         rclcpp::spin_some(node);
 
         double left_speed, right_speed;
         node->fillWheelSpeeds(left_speed, right_speed);
-    
+
         node->left_controller.setDesired(left_speed);
         node->right_controller.setDesired(right_speed);
 
@@ -212,7 +190,6 @@ int new_main(int argc, char **argv) {
         auto set_torque = node->left_controller(node->speed_measured_left);
         left_drive_msg.data = std::max(-node->max_torque, std::min(set_torque, node->max_torque));
         node->left_drive_pub_->publish(left_drive_msg);
-
 
         std_msgs::msg::Float64 right_drive_msg;
         set_torque = node->right_controller(node->speed_measured_right);
@@ -253,4 +230,4 @@ int new_main(int argc, char **argv) {
     rclcpp::shutdown();
 }
 
-} // rr_gazebo
+}  // namespace rr_gazebo
