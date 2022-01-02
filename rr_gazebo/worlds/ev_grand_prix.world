@@ -1,0 +1,39 @@
+<sdf version="1.6">
+    <world name="EV Grand Prix">
+        <scene>
+            <ambient>1 1 1 1</ambient>
+            <background>0.7 0.7 0.7 1</background>
+            <shadows>true</shadows>
+            <grid>false</grid>
+            <origin_visual>false</origin_visual>
+            <sky>
+                <clouds>
+                    <speed>12</speed>
+                </clouds>
+            </sky>
+        </scene>
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <include>
+            <uri>model://ground_plane</uri>
+            <name>ground_plane0</name>
+            <pose>0 20 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://ground_plane</uri>
+            <name>ground_plane1</name>
+            <pose>50 20 0 0 0 0 0</pose>
+            
+        </include>
+	    <include>
+            <uri>model://ground_plane</uri>
+            <name>ground_plane2</name>
+            <pose>100 20 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://EVGPTrack2</uri>
+	        <pose>-50 70 0 0 0 0</pose>
+        </include>
+    </world>
+</sdf>
