@@ -68,3 +68,18 @@ html_static_path = ['_static']
 import os
 home = os.getenv("HOME")
 plantuml = f'java -jar {home}/java/plantuml.jar'
+
+html_context = {
+    'web_base_url' : 'https://github.com/robojackets/roboracing-software/edit/ros2/main/docs',
+    'vcs_host' : 'Github'
+}
+
+html_sidebars = {
+    "**" : [  "sidebar/brand.html",
+  "sidebar/search.html",
+  "sidebar/scroll-start.html",
+  "sidebar/navigation.html",
+  "sidebar/ethical-ads.html",
+  "sidebar/gitadd.html",
+  "sidebar/scroll-end.html"]
+}
