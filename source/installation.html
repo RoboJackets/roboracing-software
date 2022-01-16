@@ -2,9 +2,9 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Packages" href="overview/packages.html" /><link rel="prev" title="Welcome to Robojackets Roboracing’s documentation!" href="../index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Committing to the Repository" href="committing.html" /><link rel="prev" title="Welcome to Robojackets Roboracing’s documentation!" href="../index.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.png"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../_static/favicon.png"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
         <title>Installation - Robojackets Roboracing</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -159,6 +159,7 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="committing.html">Committing to the Repository</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="overview/packages.html">Packages</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="code_pages/rr_demo.html">rr_demo</a></li>
 </ul>
@@ -169,13 +170,19 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="resources/resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources/header_guards.html">What even are header guards?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="resources/committing.html">Committing to the Repository</a></li>
 </ul>
 </li>
 </ul>
 
 </div>
-</div>
+
+<div>
+
+  <a style= "display: flex; justify-content: center; border-style: solid; padding:.25em; margin: .5em; border-radius: 5px" 
+     href=https://github.com/robojackets/roboracing-software/edit/ros2/main/docs/source/installation.rst>
+      Edit page on Github
+  </a>
+</div></div>
       </div>
       
     </div>
@@ -218,8 +225,10 @@ Samsung published an article detailing some of the differences <a class="referen
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">locales</span>
 <span class="n">sudo</span> <span class="n">locale</span><span class="o">-</span><span class="n">gen</span> <span class="n">en_US</span> <span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
 <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">locale</span> <span class="n">LC_ALL</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="n">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="n">export</span> <span class="n">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span> <span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="n">universe</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">curl</span> <span class="n">gnupg</span> <span class="n">lsb</span><span class="o">-</span><span class="n">release</span> <span class="n">sudo</span> <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rosdistro</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">ros</span><span class="o">.</span><span class="n">key</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">keyrings</span><span class="o">/</span><span class="n">ros</span><span class="o">-</span><span class="n">archive</span><span class="o">-</span><span class="n">keyring</span><span class="o">.</span><span class="n">gpg</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span>
+<span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="n">universe</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">curl</span> <span class="n">gnupg</span> <span class="n">lsb</span><span class="o">-</span><span class="n">release</span>
+<span class="n">sudo</span> <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rosdistro</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">ros</span><span class="o">.</span><span class="n">key</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">keyrings</span><span class="o">/</span><span class="n">ros</span><span class="o">-</span><span class="n">archive</span><span class="o">-</span><span class="n">keyring</span><span class="o">.</span><span class="n">gpg</span>
 <span class="n">echo</span> <span class="s2">"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main"</span> <span class="o">|</span> <span class="n">sudo</span> <span class="n">tee</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apt</span><span class="o">/</span><span class="n">sources</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ros2</span><span class="o">.</span><span class="n">list</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">ros</span><span class="o">-</span><span class="n">galactic</span><span class="o">-</span><span class="n">desktop</span>
 </pre></div>
@@ -245,12 +254,29 @@ Samsung published an article detailing some of the differences <a class="referen
 <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">RoboJackets</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span><span class="o">.</span><span class="n">git</span> <span class="o">-</span><span class="n">b</span> <span class="n">ros2</span><span class="o">/</span><span class="n">main</span> <span class="o">--</span><span class="n">recursive</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should notice that this clone is different from a normal clone. We append <code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">ros2/main</span></code> which tells git to only download one branch,
+the <code class="docutils literal notranslate"><span class="pre">ros2/main</span></code> branch. This is important because while we are in this transition period between ROS1 and ROS2 the default branch is <code class="docutils literal notranslate"><span class="pre">master</span></code>
+while the branch you will most likely be working on is actually <code class="docutils literal notranslate"><span class="pre">ros2/main</span></code>.
+Then we have <code class="docutils literal notranslate"><span class="pre">--recursive</span></code>. This is an interesting feature of git. There are certain pieces of code that we rely on that are not published
+on some platform such as rosdep (the default package manager for ROS) or pip (the python package manager). When that occurs, we opt
+to grab the code directly from the source, another git repository. In order to add a git repository inside of another git repository, we use
+something called <code class="docutils literal notranslate"><span class="pre">submodules</span></code>. This flag iterates through the repository and clones any submodules for you. If you do not add this <code class="docutils literal notranslate"><span class="pre">--recursive</span></code> flag,
+you will need to run this command instead:</p>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span> <span class="pre">--init</span></code></p>
+<p>But we don’t need to run this since we added <code class="docutils literal notranslate"><span class="pre">--recursive</span></code>. We place all of these submodules inside of the <code class="docutils literal notranslate"><span class="pre">third_party</span></code> directory so you
+can explore there if you are interested. If you ever see an error that includes code you don’t think you changed, try running <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span></code>
+because maybe somebody added a new submodule.</p>
+</div>
 </div>
 <div class="section" id="step-5-install-dependencies">
 <h3>Step 5 - Install Dependencies<a class="headerlink" href="#step-5-install-dependencies" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="n">python3</span><span class="o">-</span><span class="n">rosdep</span>
 <span class="n">rosdep</span> <span class="n">install</span> <span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">path</span> <span class="n">src</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">src</span> <span class="o">-</span><span class="n">y</span>
+<span class="n">rosdep</span> <span class="n">init</span>
+<span class="n">rosdep</span> <span class="n">update</span>
 </pre></div>
 </div>
 </div>
@@ -268,8 +294,9 @@ Samsung published an article detailing some of the differences <a class="referen
 <div class="section" id="step-1-install-sphinx">
 <h3>Step 1 - Install Sphinx<a class="headerlink" href="#step-1-install-sphinx" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">sphinx</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">furo</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">furo</span>
 </pre></div>
 </div>
 </div>
@@ -281,8 +308,11 @@ Samsung published an article detailing some of the differences <a class="referen
 </pre></div>
 </div>
 <p>Download most recent version of plantuml from: <a class="reference external" href="https://github.com/plantuml/plantuml/releases/latest">https://github.com/plantuml/plantuml/releases/latest</a>.
-Download the one that has no suffix, meaning NOT -javadoc or -sources.</p>
-<p>Download the file into <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/</span></code> and rename the file to plantuml.jar. The download path must be: <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/plantuml.jar</span></code></p>
+Download the one that has no suffix, meaning NOT -javadoc or -sources. It is probably the third one on the list.</p>
+<p>Download the file into <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/</span></code> and rename the file to plantuml.jar. The download path must be: <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java/plantuml.jar</span></code>.
+To create a new directory in the command line you can run <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/java</span></code>. To move the file you can run <code class="docutils literal notranslate"><span class="pre">mv</span> <span class="pre">original_file_name</span> <span class="pre">~/java/plantuml.jar</span></code>.
+You can find more information about <code class="docutils literal notranslate"><span class="pre">mkdir</span></code> and <code class="docutils literal notranslate"><span class="pre">mv</span></code> by reading the man-pages (short for manual). For example, run: <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">mkdir</span></code>. To learn about man you
+can even run <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">man</span></code>!</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/</span></code> has a nice alias on Linux which is <code class="docutils literal notranslate"><span class="pre">~</span></code>. So instead of writing <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/java</span></code>
@@ -308,6 +338,13 @@ if you are interested in that you can check out the <a class="reference external
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dot</span> <span class="n">version</span><span class="p">:</span> <span class="n">dot</span> <span class="o">-</span> <span class="n">graphviz</span> <span class="n">version</span> <span class="mf">2.43</span><span class="o">.</span><span class="mi">0</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">Installation</span> <span class="n">seems</span> <span class="n">OK</span><span class="o">.</span> <span class="n">File</span> <span class="n">generation</span> <span class="n">OK</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you got an error it may be because you did not re-source your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file. Anytime you make a change to the <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>, the changes
+are not automatically applied, afterall it is just a text file and only get automatically called when you create a new shell instance. To manually
+apply changes, you need to execute the file. In order to do this, you can use the <code class="docutils literal notranslate"><span class="pre">source</span></code> command. So you should run:</p>
+<p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/.bashrc</span></code></p>
 </div>
 </div>
 <div class="section" id="step-3-install-doxygen-and-breathe">
@@ -342,12 +379,12 @@ hunt for it so if it is not here then you can look at <a class="reference extern
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="overview/packages.html">
+          <a class="next-page" href="committing.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Packages</div>
+                <div class="title">Committing to the Repository</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
