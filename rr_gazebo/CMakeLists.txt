@@ -25,7 +25,10 @@ install(
 # not sure if I need this or what this does
 # install(
 #     DIRECTORY
-#     ${CMAKE_CURRENT_BINARY_DIR}/models/
+#     ${CMAKE_C_DIR}/models/
 #     DESTINATION share/${PROJECT_NAME}/models
 # )
+
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/rr_gazebo.dsv.in")
+
 ament_package()

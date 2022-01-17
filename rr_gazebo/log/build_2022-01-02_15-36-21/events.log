@@ -1,0 +1,45 @@
+[0.000000] (-) TimerEvent: {}
+[0.000273] (rr_gazebo) JobQueued: {'identifier': 'rr_gazebo', 'dependencies': OrderedDict()}
+[0.000335] (rr_gazebo) JobStarted: {'identifier': 'rr_gazebo'}
+[0.010204] (rr_gazebo) JobProgress: {'identifier': 'rr_gazebo', 'progress': 'cmake'}
+[0.010557] (rr_gazebo) Command: {'cmd': ['/usr/bin/cmake', '/home/nico/rr_ws/src/roboracing-software/rr_gazebo', '-DCMAKE_INSTALL_PREFIX=/home/nico/rr_ws/src/roboracing-software/rr_gazebo/install/rr_gazebo'], 'cwd': '/home/nico/rr_ws/src/roboracing-software/rr_gazebo/build/rr_gazebo', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'nico'), ('SSH_AGENT_PID', '2545'), ('XDG_SESSION_TYPE', 'x11'), ('GIT_ASKPASS', '/snap/code/85/usr/share/code/resources/app/extensions/git/dist/askpass.sh'), ('SHLVL', '1'), ('HOME', '/home/nico'), ('CHROME_DESKTOP', 'code-url-handler.desktop'), ('OLDPWD', '/home/nico/rr_ws/src/roboracing-software/rr_gazebo/worlds'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('DESKTOP_SESSION', 'ubuntu'), ('GIO_LAUNCHED_DESKTOP_FILE', '/var/lib/snapd/desktop/applications/code_code.desktop'), ('APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL', 'true'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('VSCODE_GIT_ASKPASS_MAIN', '/snap/code/85/usr/share/code/resources/app/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/snap/code/85/usr/share/code/code'), ('MANAGERPID', '2371'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('LIBVIRT_DEFAULT_URI', 'qemu:///system'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '13730'), ('MANDATORY_PATH', '/usr/share/gconf/ubuntu.mandatory.path'), ('IM_CONFIG_PHASE', '1'), ('LOGNAME', 'nico'), ('JOURNAL_STREAM', '8:64157'), ('_', '/usr/bin/colcon'), ('XDG_SESSION_CLASS', 'user'), ('DEFAULTS_PATH', '/usr/share/gconf/ubuntu.default.path'), ('USERNAME', 'nico'), ('TERM', 'xterm'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '2'), ('PATH', '/home/nico/.cargo/bin:/home/nico/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nico/Downloads/clion-2019.2.5/bin'), ('SESSION_MANAGER', 'local/pc:@/tmp/.ICE-unix/2580,unix/pc:/tmp/.ICE-unix/2580'), ('INVOCATION_ID', 'd85b483425e840dc91e1af7f21b49232'), ('XDG_MENU_PREFIX', 'gnome-'), ('BAMF_DESKTOP_FILE_HINT', '/var/lib/snapd/desktop/applications/code_code.desktop'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('GDK_BACKEND', 'x11'), ('DISPLAY', ':1'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'Unity'), ('PYTHONSTARTUP', '/home/nico/python_settings.py'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=04;01;34:st=37;44:ex=01;32:*.cmd=01;32:*.exe=01;32:*.com=01;32:*.btm=01;32:*.bat=01;32:*.mb=00;32;03:*.py=00;32;04:*.sh=01;32:*.csh=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31.:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.save=01;33:*.nico=00;03;05;35;53;04:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*.mb=00;93:*.txt=00;35:*.xml=00;33:*.cpp=01;35:*.nico=00;03;05;35;53;04;21:*.desktop=01;31:*.log=03;01;33:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-06ea8f8bd6.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('GSETTINGS_SCHEMA_DIR', '/snap/code/85/usr/share/glib-2.0/schemas'), ('ORIGINAL_XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('SHELL', '/bin/bash'), ('DISABLE_WAYLAND', '1'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', '--ms-enable-electron-run-as-node'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/nico/rr_ws/src/roboracing-software/rr_gazebo/build/rr_gazebo'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('COLCON', '1')]), 'shell': False}
+[0.068452] (rr_gazebo) StdoutLine: {'line': b'-- The C compiler identification is GNU 9.3.0\n'}
+[0.099298] (-) TimerEvent: {}
+[0.119743] (rr_gazebo) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 9.3.0\n'}
+[0.124105] (rr_gazebo) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[0.186318] (rr_gazebo) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[0.187167] (rr_gazebo) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.199423] (-) TimerEvent: {}
+[0.249003] (rr_gazebo) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.260980] (rr_gazebo) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.261335] (rr_gazebo) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.263802] (rr_gazebo) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[0.299534] (-) TimerEvent: {}
+[0.337583] (rr_gazebo) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[0.338748] (rr_gazebo) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.399624] (-) TimerEvent: {}
+[0.411972] (rr_gazebo) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.424025] (rr_gazebo) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.424642] (rr_gazebo) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.436136] (rr_gazebo) StderrLine: {'line': b'CMake Error at CMakeLists.txt:4 (find_package):\n'}
+[0.436297] (rr_gazebo) StderrLine: {'line': b'  By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project\n'}
+[0.436495] (rr_gazebo) StderrLine: {'line': b'  has asked CMake to find a package configuration file provided by\n'}
+[0.436640] (rr_gazebo) StderrLine: {'line': b'  "ament_cmake", but CMake did not find one.\n'}
+[0.436721] (rr_gazebo) StderrLine: {'line': b'\n'}
+[0.436795] (rr_gazebo) StderrLine: {'line': b'  Could not find a package configuration file provided by "ament_cmake" with\n'}
+[0.436855] (rr_gazebo) StderrLine: {'line': b'  any of the following names:\n'}
+[0.436914] (rr_gazebo) StderrLine: {'line': b'\n'}
+[0.436971] (rr_gazebo) StderrLine: {'line': b'    ament_cmakeConfig.cmake\n'}
+[0.437029] (rr_gazebo) StderrLine: {'line': b'    ament_cmake-config.cmake\n'}
+[0.437087] (rr_gazebo) StderrLine: {'line': b'\n'}
+[0.437144] (rr_gazebo) StderrLine: {'line': b'  Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set\n'}
+[0.437203] (rr_gazebo) StderrLine: {'line': b'  "ament_cmake_DIR" to a directory containing one of the above files.  If\n'}
+[0.437261] (rr_gazebo) StderrLine: {'line': b'  "ament_cmake" provides a separate development package or SDK, be sure it\n'}
+[0.437318] (rr_gazebo) StderrLine: {'line': b'  has been installed.\n'}
+[0.437384] (rr_gazebo) StderrLine: {'line': b'\n'}
+[0.437441] (rr_gazebo) StderrLine: {'line': b'\n'}
+[0.437500] (rr_gazebo) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.437565] (rr_gazebo) StdoutLine: {'line': b'See also "/home/nico/rr_ws/src/roboracing-software/rr_gazebo/build/rr_gazebo/CMakeFiles/CMakeOutput.log".\n'}
+[0.439296] (rr_gazebo) CommandEnded: {'returncode': 1}
+[0.460027] (rr_gazebo) JobEnded: {'identifier': 'rr_gazebo', 'rc': 1}
+[0.470976] (-) EventReactorShutdown: {}

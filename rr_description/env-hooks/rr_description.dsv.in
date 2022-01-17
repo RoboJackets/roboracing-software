@@ -1,0 +1,3 @@
+prepend-non-duplicate;GAZEBO_MEDIA_PATH;share/rr_description/media/materials
+prepend-non-duplicate;GAZEBO_RESOURCE_PATH;share/rr_description/meshes
+prepend-non-duplicate;GAZEBO_RESOURCE_PATH;share/rr_description/media/materials

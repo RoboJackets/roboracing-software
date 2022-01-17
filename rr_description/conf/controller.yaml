@@ -1,0 +1,19 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100 #Hz    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster    joint_state_controller:
+      type: joint_state_controller/JointStateController    effort_controllers:
+      type: effort_controllers/JointGroupEffortController    velocity_controller:
+      type: velocity_controllers/JointGroupVelocityControllereffort_controllers:
+  ros__parameters:
+    joints:
+      - base_link_right_wheel_frontside
+      - base_link_left_wheel_frontside
+      - base_link_right_wheel_backside
+      - base_link_left_wheel_backsidevelocity_controller:
+  ros__parameters:
+    joints:
+      - base_link_right_wheel_frontside
+      - base_link_left_wheel_frontside
+      - base_link_right_wheel_backside
+      - base_link_left_wheel_backside
