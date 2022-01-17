@@ -5,39 +5,40 @@
     <arg name="heading" default="0"/>
     <arg name="model_type" default="rigatoni"/>
 
-    <param name="/use_sim_time" value="true" />
+    <!-- <param name="/use_sim_time" value="true" /> -->
 
-    <rosparam ns="/camera/image_color_rect">
+    <!-- <rosparam ns="/camera/image_color_rect">
         disable_pub_plugins:
         - "image_transport/compressed"
         - "image_transport/theora"
         - "image_transport/compressedDepth"
-    </rosparam>
+    </rosparam> -->
 
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
-          args="-e ode $(arg world)" required="true"/>
+          args="-e ode $(arg world)" required="true">
+        <param name="/use_sim_time" value="true"/>
+    </node>
 
     <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
 
-    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch">
+    <!-- <include file="$(find rr_platform)/launch/evgp_state_publisher.launch">
         <arg name="model_type" value="$(arg model_type)"/>
-    </include>
+    </include> -->
 
-    <rosparam file="$(find rr_gazebo)/config/evgp_control.yaml" command="load"/>
     <node name="controller_spawner" pkg="rr_gazebo" type="controller_spawner.py" respawn="false" output="screen"
           args="joint_state_controller left_wheel_effort_controller right_wheel_effort_controller
-                right_steer_position_controller left_steer_position_controller"/>
+                right_steer_position_controller left_steer_position_controller">
+        <param from="$(find rr_gazebo)/config/evgp_control.yaml"/>
+    </node>
 
     <node name="sim_controller" pkg="rr_gazebo" type="sim_car_controller" required="true" output="screen">
-        <rosparam command="load" file="$(find rr_description)/conf/evgp_car_params.yaml"/>
-        <rosparam>
-            max_torque: 20
-            speed_kP: 5
-            speed_kI: 0.01
-            speed_kD: 3
-            left_motor_joint_name: base_footprint_to_wheel_BL
-            right_motor_joint_name: base_footprint_to_wheel_BR
-        </rosparam>
+        <param from="$(find rr_description)/conf/evgp_car_params.yaml"/>
+        <param name="max_torque" value="20.0" />
+        <param name="speed_kP" value="5.0" />
+        <param name="speed_kI" value="0.01" />
+        <param name="speed_kD" value="3.0" />
+        <param name="left_motor_joint_name" value="base_footprint_to_wheel_BL" />
+        <param name="right_motor_joint_name" value="base_footprint_to_wheel_BR" />
     </node>
 
     <node name="spawn_platform" pkg="gazebo_ros" type="spawn_model"

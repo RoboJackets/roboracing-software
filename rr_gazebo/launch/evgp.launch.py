@@ -359,6 +359,7 @@ from launch import LaunchDescription
 from launch.actions import ExecuteProcess, DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -399,5 +400,20 @@ def generate_launch_description():
     ExecuteProcess(
       cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity', spawn_args],
       output='screen'
+    ),
+
+    Node(
+      package='rr_gazebo',
+      executable='sim_car_controller.cpp',
+      name='sim_car_controller',
+      output='screen',
+      parameters=[{
+        "max_torque": 20,
+        "speed_kP": 5,
+        "speed_kI": 0.01,
+        "speed_kD": 3,
+        "left_motor_joint_name": "base_footprint_to_wheel_BL",
+        "right_motor_joint_name": "base_footprint_to_wheel_BR"
+      }]
     )
   ])

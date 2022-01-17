@@ -5,7 +5,7 @@
 #include <rr_msgs/msg/axes.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
-#include <std/vector.hpp>
+#include <vector>
 
 namespace rr_gazebo {
 
