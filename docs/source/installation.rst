@@ -87,9 +87,9 @@ Step 5 - Install Dependencies
 
     cd ~/roboracing_ws 
     sudo apt install -y python3-colcon-common-extensions python3-rosdep 
-    rosdep install --from-path src --ignore-src -y
     rosdep init
     rosdep update
+    rosdep install --from-path src --ignore-src -y
 
 Step 6 - Building the Code
 --------------------------
