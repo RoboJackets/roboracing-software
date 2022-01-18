@@ -6,8 +6,6 @@ Welcome to the ROS2 version of the [RoboJackets](http://robojackets.org) RoboRac
 
 ![Project Manager](https://img.shields.io/badge/Project%20Manager-Sam%20Walters-blue.svg)
 
-[![Maintainer](https://img.shields.io/badge/Maintainer-Matthew%20Barulic-blue.svg)](https://github.com/barulicm)
-
 
 ## Documentation
 
