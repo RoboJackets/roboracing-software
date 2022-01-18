@@ -4,3 +4,6 @@
 [submodule "third_party/apriltag_ros"]
 	path = third_party/apriltag_ros
 	url = git@github.com:christianrauch/apriltag_ros.git
+[submodule "third_party/apriltag_msgs"]
+	path = third_party/apriltag_msgs
+	url = git@github.com:christianrauch/apriltag_msgs.git
