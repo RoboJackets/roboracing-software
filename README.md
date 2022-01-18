@@ -38,8 +38,7 @@ This repository is comprised of multiple ROS packages and one sandbox folder for
 
 The following files and folders enable our continuous integration system.
 
-* .circleci
-* Dockerfile
+* .github
 
 ## Installation
 
