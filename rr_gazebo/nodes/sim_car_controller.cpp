@@ -71,13 +71,16 @@ class SimCarController : public rclcpp::Node {
         // Subscribers
 
         speed_sub_ = create_subscription<rr_msgs::msg::Speed>(
-              "/speed", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::speedCallback, this, std::placeholders::_1));
+              "/speed", rclcpp::SystemDefaultsQoS(),
+              std::bind(&rr_gazebo::SimCarController::speedCallback, this, std::placeholders::_1));
 
         steer_sub_ = create_subscription<rr_msgs::msg::Steering>(
-              "/steering", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::steeringCallback, this, std::placeholders::_1));
+              "/steering", rclcpp::SystemDefaultsQoS(),
+              std::bind(&rr_gazebo::SimCarController::steeringCallback, this, std::placeholders::_1));
 
         state_sub_ = create_subscription<sensor_msgs::msg::JointState>(
-              "/joint_states", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::jointStateCallback, this, std::placeholders::_1));
+              "/joint_states", rclcpp::SystemDefaultsQoS(),
+              std::bind(&rr_gazebo::SimCarController::jointStateCallback, this, std::placeholders::_1));
     }
     // Pubs and subs
     PIDController left_controller{ speed_kP, speed_kI, speed_kD };

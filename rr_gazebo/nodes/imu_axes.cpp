@@ -16,7 +16,7 @@ rr_msgs::msg::Axes::SharedPtr axes_msg;
 class ImuAxisNode : public rclcpp::Node {
   public:
     explicit ImuAxisNode(const rclcpp::NodeOptions& options) : rclcpp::Node("imu_axes", options) {
-       ImuAxisNode();
+        ImuAxisNode();
     }
     explicit ImuAxisNode() : rclcpp::Node("imu_axes") {
         axes_pub_ = create_publisher<rr_msgs::msg::Axes>("/axes", rclcpp::SystemDefaultsQoS());
