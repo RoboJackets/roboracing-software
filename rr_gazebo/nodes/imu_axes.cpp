@@ -16,10 +16,13 @@ rr_msgs::msg::Axes::SharedPtr axes_msg;
 class ImuAxisNode : public rclcpp::Node {
   public:
     explicit ImuAxisNode(const rclcpp::NodeOptions& options) : rclcpp::Node("imu_axes", options) {
+       ImuAxisNode();
+    }
+    explicit ImuAxisNode() : rclcpp::Node("imu_axes") {
         axes_pub_ = create_publisher<rr_msgs::msg::Axes>("/axes", rclcpp::SystemDefaultsQoS());
 
         imu_sub_ = create_subscription<sensor_msgs::msg::Imu>(
-              "/imu", rclcpp::SystemDefaultsQoS(), std::bind(ImuAxisNode::imuCB, this, std::placeholders::_1));
+              "/imu", rclcpp::SystemDefaultsQoS(), std::bind(&ImuAxisNode::imuCB, this, std::placeholders::_1));
     }
 
   private:
@@ -76,6 +79,7 @@ int main(int argc, char** argv) {
         rate.sleep();
     }
     rclcpp::shutdown();
+    return 1;
 }
 
 // if this is being buggy then try setting the rate to 30hz

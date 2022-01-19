@@ -38,11 +38,16 @@ class PIDController {
 
 class SimCarController : public rclcpp::Node {
   public:
-    explicit SimCarController(const rclcpp::NodeOptions& options) : rclcpp::Node("sim_car_controller", options) {
+    explicit SimCarController() : rclcpp::Node("sim controller node") {
         // Declare params
-        for (auto param_name : param_names) {
-            this->declare_parameter(param_name);
-        }
+        this->declare_parameter<double>("wheelbase");
+        this->declare_parameter<double>("max_torque");
+        this->declare_parameter<double>("wheel_radius_back");
+        this->declare_parameter<double>("speed_kP");
+        this->declare_parameter<double>("speed_kD");
+        this->declare_parameter<double>("speed_kI");
+        this->declare_parameter<std::string>("left_motor_joint_name");
+        this->declare_parameter<std::string>("right_motor_joint_name");
 
         // Publishers
 
@@ -66,14 +71,13 @@ class SimCarController : public rclcpp::Node {
         // Subscribers
 
         speed_sub_ = create_subscription<rr_msgs::msg::Speed>(
-              "/speed", rclcpp::SystemDefaultsQoS(), std::bind(rr_gazebo::SimCarController::speedCallback, this));
+              "/speed", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::speedCallback, this, std::placeholders::_1));
 
         steer_sub_ = create_subscription<rr_msgs::msg::Steering>(
-              "/steering", rclcpp::SystemDefaultsQoS(), std::bind(rr_gazebo::SimCarController::steeringCallback, this));
+              "/steering", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::steeringCallback, this, std::placeholders::_1));
 
         state_sub_ = create_subscription<sensor_msgs::msg::JointState>(
-              "/joint_states", rclcpp::SystemDefaultsQoS(),
-              std::bind(rr_gazebo::SimCarController::jointStateCallback, this));
+              "/joint_states", rclcpp::SystemDefaultsQoS(), std::bind(&rr_gazebo::SimCarController::jointStateCallback, this, std::placeholders::_1));
     }
     // Pubs and subs
     PIDController left_controller{ speed_kP, speed_kI, speed_kD };
@@ -146,16 +150,6 @@ class SimCarController : public rclcpp::Node {
   private:
     // Parameters
 
-    std::vector<std::string> param_names = { "wheelbase",
-                                             "track",
-                                             "max_torque",
-                                             "wheel_radius_back",
-                                             "speed_kP",
-                                             "speed_kD",
-                                             "speed_kI",
-                                             "left_motor_joint_name",
-                                             "right_motor_joint_name" };
-
     double chassis_length = this->get_parameter("wheelbase").as_double();
     double chassis_width = this->get_parameter("track").as_double();
     double wheel_radius = this->get_parameter("wheel_radius_back").as_double();
@@ -173,7 +167,7 @@ class SimCarController : public rclcpp::Node {
     double steer_set_point = 0.0;
 };
 
-int new_main(int argc, char** argv) {
+int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<rr_gazebo::SimCarController>();
     rclcpp::Rate rate(30);
@@ -228,6 +222,7 @@ int new_main(int argc, char** argv) {
         rate.sleep();
     }
     rclcpp::shutdown();
+    return 1;
 }
 
 }  // namespace rr_gazebo
