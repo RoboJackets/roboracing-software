@@ -2,7 +2,7 @@
 Committing to the Repository
 ============================
 
-1. Make sure you followed the :doc:`Installation Guide </docs/source/installation>`
+1. Make sure you followed the :doc:`Installation Guide <./installation>`
 2. Go to ClickUp.com
     * If you are not already signed up, navigate to my.robojackets.com, go to the profile and add an email to the ClickUp field.
 3. Find the issues assigned to you
