@@ -21,8 +21,6 @@ This repository is comprised of multiple ROS packages and one sandbox folder for
 
 **rr_gazebo**: This package contains resources for running the car in the [Gazebo](http://gazebosim.org) simulator.
 
-**rr_iarrc**: This package contains mission code for the [International Autonomous Robot Racing Challenge](http://robotracing.wordpress.com).
-
 **rr_msgs**: This package contains all of the message types used by ROS.
 
 **rr_rviz_plugins**: This package contains some rviz plugins.
