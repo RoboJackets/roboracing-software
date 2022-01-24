@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import rospy
-from rr_platform.msg import steering as Steering, speed as Speed
+import rclpy
+from rr_msgs.msg import steering as Steering, speed as Speed
 import pynput
 import time
 
@@ -13,7 +13,7 @@ def on_key_press(key):
     try:
         pressed_set.add(key.char)
     except Exception as e:
-        print "Keyboard driver error:", e
+        print (f'Keyboard driver error: {e}')
 
     if 'esc' in dir(key) and key.esc:
         # ends key listener loop
@@ -80,6 +80,6 @@ if __name__ == '__main__':
             speed_msg.speed = speed_mps
             speed_pub.publish(speed_msg)
 
-            print "speed: %1.3f     steering: %1.3f" % (speed_mps, steering_rad)
+            print ("speed: %1.3f     steering: %1.3f" % (speed_mps, steering_rad))
 
             rate.sleep()

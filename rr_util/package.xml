@@ -2,7 +2,7 @@
 <package format="2">
     <name>rr_util</name>
     <version>0.0.0</version>
-    <description>RoboRacing package with files that support competition code<description>
+    <description>RoboRacing package with files that support competition code</description>
 
     <maintainer email="nfbartholomai@gmail.com">Nico Bartholomai</maintainer>
 
@@ -21,15 +21,8 @@
     <depend>rr_msgs</depend>
     <depend>tf2_ros</depend>
     <depend>nav2_msgs</depend>
-    <depend>pcl_ros</depend>
-
-    <exec_depend>pid</exec_depend>
-
-    <build_depend>cv_bridge</build_depend>
-    <build_depend>image_transport</build_depend>
-    <build_depend>parameter_assertions</build_depend>
 
     <export>
-        <nodelet plugin="${prefix}/nodelet_plugins.xml"/>
+        <build_type>ament_cmake</build_type>
     </export>
 </package>

@@ -1,1 +1,0 @@
-add_executable(rosbag_remote_recorder rosbag_remote_recorder.cpp)

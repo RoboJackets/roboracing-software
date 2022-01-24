@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_c5ddb7e4503f42a7c837fff9696d2943" kind="dir">
+    <compoundname>/home/isaac/rr_ws/src/roboracing-software/rr_description</compoundname>
+    <innerdir refid="dir_03974da24e45658019a78d7ec88938e2">/home/isaac/rr_ws/src/roboracing-software/rr_description/src</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/isaac/rr_ws/src/roboracing-software/rr_description/"/>
+  </compounddef>
+</doxygen>
