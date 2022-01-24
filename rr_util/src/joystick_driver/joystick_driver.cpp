@@ -6,25 +6,16 @@
 #include <std_msgs/msg/string.hpp>
 #include <string>
 
-namespace rr_util
-{
-class JoystickDriver : public rclcpp::Node {    
-public:
-
-    explicit JoystickDriver(const rclcpp::NodeOptions& options)
-    : rclcpp::Node("joystick_driver", options)
-    {
+namespace rr_util {
+class JoystickDriver : public rclcpp::Node {
+  public:
+    explicit JoystickDriver(const rclcpp::NodeOptions& options) : rclcpp::Node("joystick_driver", options) {
         JoystickDriver();
     }
-    explicit JoystickDriver()
-    : rclcpp::Node("joystick_driver")
-    {
+    explicit JoystickDriver() : rclcpp::Node("joystick_driver") {
         // Subscribe to joystick_driver topic
         auto float_command_sub = create_subscription<sensor_msgs::msg::Joy>(
-                                                "/joy", 
-                                                rclcpp::SystemDefaultsQoS(), 
-                                                std::bind(&JoystickDriver::JoystickCB, this, std::placeholders::_1)
-                                            );
+              "/joy", rclcpp::SystemDefaultsQoS(), std::bind(&JoystickDriver::JoystickCB, this, std::placeholders::_1));
         // Convert joystick_driver commands into motor commands on these topics
         speed_publisher = this->create_publisher<rr_msgs::msg::Speed>("speed", 10);
         steering_publisher = this->create_publisher<rr_msgs::msg::Steering>("steering", 10);
@@ -35,7 +26,8 @@ public:
         this->declare_parameter<double>(std::string("speed_max"), speed_max);
         std::string speed = std::to_string(speed_max);
     }
-private:
+
+  private:
     rclcpp::Publisher<rr_msgs::msg::Speed>::SharedPtr speed_publisher;
     rclcpp::Publisher<rr_msgs::msg::Steering>::SharedPtr steering_publisher;
     double angle_max;
@@ -49,18 +41,17 @@ private:
         speed_publisher->publish(sp_cmd);
         steering_publisher->publish(st_cmd);
     }
-
 };
 
-} // rr_util
+}  // namespace rr_util
 
 RCLCPP_COMPONENTS_REGISTER_NODE(rr_util::JoystickDriver)
 
 int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
-    
+
     auto node = std::make_shared<rr_util::JoystickDriver>();
-    
+
     RCLCPP_INFO(node->get_logger(), "joystick_driver node ready.");
     rclcpp::spin(node);
     RCLCPP_INFO(node->get_logger(), "Shutting down joystick_driver node.");
