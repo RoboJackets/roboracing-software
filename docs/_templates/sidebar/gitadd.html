@@ -1,0 +1,19 @@
+{%- if web_base_url %}
+<div>
+  {#- Support for Sphinx 1.3+ page_source_suffix, but don't break old builds. #}
+  {%- if page_source_suffix %}
+    {%- set suffix = page_source_suffix %}
+  {%- else %}
+    {%- set suffix = source_suffix %}
+  {%- endif %}
+
+  <a style= "display: flex; justify-content: center; border-style: solid; padding:.25em; margin: .5em; border-radius: 5px" 
+     href={{ web_base_url }}/{{ pagename }}{{ suffix }}>
+    {%- if vcs_host %}
+      Edit page on {{ vcs_host }}
+    {%- else %}
+      Edit page online
+    {%- endif %}
+  </a>
+</div>
+{%- endif %}
