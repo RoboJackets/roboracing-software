@@ -7,6 +7,8 @@
   <maintainer email="nfbartholomai@gmail.com">nico</maintainer>
   <license>MIT</license>
 
+  <depend>std_msgs</depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>
