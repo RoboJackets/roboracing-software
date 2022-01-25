@@ -11,6 +11,7 @@ Welcome to Robojackets Roboracing's documentation!
    :caption: Contents:
 
    source/installation
+   source/committing
    source/overview/packages
    source/linux_info/linux_info
    source/resources/resources

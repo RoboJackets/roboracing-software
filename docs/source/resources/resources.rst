@@ -7,4 +7,3 @@ Resources
    :caption: Contents:
 
    header_guards
-   committing
