@@ -38,7 +38,7 @@ class PIDController {
 
 class SimCarController : public rclcpp::Node {
   public:
-    explicit SimCarController() : rclcpp::Node("sim controller node") {
+    explicit SimCarController() : rclcpp::Node("sim_controller_node") {
         // Declare params
         this->declare_parameter<double>("wheelbase");
         this->declare_parameter<double>("max_torque");
@@ -169,6 +169,7 @@ class SimCarController : public rclcpp::Node {
     double speed_set_point = 0.0;
     double steer_set_point = 0.0;
 };
+}  // namespace rr_gazebo
 
 int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
@@ -227,5 +228,3 @@ int main(int argc, char** argv) {
     rclcpp::shutdown();
     return 1;
 }
-
-}  // namespace rr_gazebo

@@ -404,7 +404,7 @@ def generate_launch_description():
 
     Node(
       package='rr_gazebo',
-      executable='sim_car_controller.cpp',
+      executable='sim_car_controller',
       name='sim_car_controller',
       output='screen',
       parameters=[{

@@ -8,8 +8,9 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(rclcpp_components REQUIRED)
 
-add_library(sim_car_controller SHARED nodes/sim_car_controller.cpp)
+add_executable(sim_car_controller nodes/sim_car_controller.cpp)
 ament_target_dependencies(sim_car_controller
     "rclcpp"
     "rr_msgs"
@@ -17,13 +18,15 @@ ament_target_dependencies(sim_car_controller
     "nav_msgs"
     "sensor_msgs"
     "std_msgs"
+    "rclcpp_components"
 )
 
-add_library(imu_axes SHARED nodes/imu_axes.cpp)
+add_executable(imu_axes nodes/imu_axes.cpp)
 ament_target_dependencies(imu_axes
     "rclcpp"
     "rr_msgs"
     "sensor_msgs"
+    "rclcpp_components"
 )
 
 install(
