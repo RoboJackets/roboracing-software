@@ -14,20 +14,19 @@ class JoystickDriver : public rclcpp::Node {
     }
     explicit JoystickDriver() : rclcpp::Node("joystick_driver") {
         // Subscribe to joystick_driver topic
-        auto float_command_sub = create_subscription<sensor_msgs::msg::Joy>(
+        float_command_sub = create_subscription<sensor_msgs::msg::Joy>(
               "/joy", rclcpp::SystemDefaultsQoS(), std::bind(&JoystickDriver::JoystickCB, this, std::placeholders::_1));
         // Convert joystick_driver commands into motor commands on these topics
-        speed_publisher = this->create_publisher<rr_msgs::msg::Speed>("speed", 10);
-        steering_publisher = this->create_publisher<rr_msgs::msg::Steering>("steering", 10);
+        speed_publisher = this->create_publisher<rr_msgs::msg::Speed>("/speed", 10);
+        steering_publisher = this->create_publisher<rr_msgs::msg::Steering>("/steering", 10);
 
         // Driving limits
-        this->declare_parameter<double>(std::string("angle_max"), angle_max);
-        std::string angle = std::to_string(angle_max);
-        this->declare_parameter<double>(std::string("speed_max"), speed_max);
-        std::string speed = std::to_string(speed_max);
+        angle_max = this->declare_parameter<double>("angle_max");
+        speed_max = this->declare_parameter<double>("speed_max");
     }
 
   private:
+    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr float_command_sub;
     rclcpp::Publisher<rr_msgs::msg::Speed>::SharedPtr speed_publisher;
     rclcpp::Publisher<rr_msgs::msg::Steering>::SharedPtr steering_publisher;
     double angle_max;
@@ -37,7 +36,7 @@ class JoystickDriver : public rclcpp::Node {
         rr_msgs::msg::Steering st_cmd;
         sp_cmd.speed = speed_max * ((-1 * msg->axes[5] + 1.) / 2.);
         st_cmd.angle = -(angle_max * msg->axes[0]);
-
+        RCLCPP_INFO(this->get_logger(), "going to callback");
         speed_publisher->publish(sp_cmd);
         steering_publisher->publish(st_cmd);
     }
