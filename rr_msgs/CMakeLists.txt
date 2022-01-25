@@ -16,7 +16,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Steering.msg"
   "msg/HsvTuned.msg"
   "msg/Speed.msg"
-  "msg/UrcSign.msg"
   "srv/Turning.srv"
 )
 
