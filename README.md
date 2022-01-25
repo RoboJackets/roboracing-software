@@ -13,13 +13,9 @@ Welcome to the ROS2 version of the [RoboJackets](http://robojackets.org) RoboRac
 
 View our documentation at https://robojackets.github.io/roboracing-software/. Documentation is built on every merge into the ros2/main branch.
 
-<<<<<<< HEAD
-**rr_util**: This package contains general-purpose or mission-agnostic intelligence code.
-=======
 ## Organization
 
 This repository is comprised of multiple ROS packages and one sandbox folder for miscellaneous resources.
->>>>>>> ros2/main
 
 **rr_description**: This package contains URDFs and meshes that describe the platform's layout.
 
