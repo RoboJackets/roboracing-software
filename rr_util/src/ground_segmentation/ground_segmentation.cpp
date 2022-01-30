@@ -5,9 +5,8 @@
 GroundSegmentation::GroundSegmentation() : Node("ground_segmentation") {
     pcl_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation", rclcpp::SystemDefaultsQoS());
     velodyne_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-        "/velodyne_points", rclcpp::SensorDataQoS(),
-        std::bind(&GroundSegmentation::PointCloudCallback, this, std::placeholders::_1)
-    );
+          "/velodyne_points", rclcpp::SensorDataQoS(),
+          std::bind(&GroundSegmentation::PointCloudCallback, this, std::placeholders::_1));
 }
 
 void GroundSegmentation::PointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
