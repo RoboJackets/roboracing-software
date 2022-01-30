@@ -13,6 +13,8 @@
   <test_depend>ament_lint_common</test_depend>
 
   <buildtool_depend>velodyne</buildtool_depend>
+  <buildtool_depend>pcl_ros</buildtool_depend>
+  <buildtool_depend>pcl_conversions</buildtool_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

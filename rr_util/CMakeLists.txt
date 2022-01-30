@@ -12,6 +12,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(pcl_ros REQUIRED)
+find_package(pcl_conversions REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -21,6 +23,8 @@ ament_target_dependencies(ground_segmentation
     "std_msgs"
     "rclcpp_components"
     "sensor_msgs"
+    "pcl_ros"
+    "pcl_conversions"
 )
 
 if(BUILD_TESTING)
