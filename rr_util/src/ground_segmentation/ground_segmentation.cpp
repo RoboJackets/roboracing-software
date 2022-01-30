@@ -1,6 +1,7 @@
 #include "ground_segmentation.hpp"
-#include <pcl_conversions/pcl_conversions.h>
+
 #include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 GroundSegmentation::GroundSegmentation() : Node("ground_segmentation") {
     pcl_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation", rclcpp::SystemDefaultsQoS());
