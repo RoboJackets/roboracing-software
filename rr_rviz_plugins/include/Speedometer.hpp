@@ -1,11 +1,12 @@
 #ifndef CATKIN_WS_SPEEDOMETER_H
 #define CATKIN_WS_SPEEDOMETER_H
 
-#include <ros/ros.h>
-#include <rr_msgs/speed.h>
-#include <rviz/display.h>
-#include <std_msgs/Bool.h>
+#include <pluginlib/class_list_macros.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rviz_common/panel.hpp>
+#include <rr_msgs/msg/speed.hpp>
 
+#include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QtGui/QPaintEvent>
@@ -13,19 +14,16 @@
 
 namespace rr_rviz_plugins {
 
-// class ChassisPanel : public rviz::Panel {
-//     Q_OBJECT
-//   public:
-//     explicit ChassisPanel(QWidget *parent = nullptr);
+    class Speedometer : public rviz_common::Panel {
+        Q_OBJECT
 
-    protected:
-        rclcpp::Subscription<rr_msgs::msg::Speed>::SharedPtr speed_subscriber;
+        public:
+            Speedometer(QWidget *parent);
 
-    private:
-        void Speedometer::speedCallback(const rr_msgs::msg::Speed::SharedPtr msg);
-        void Speedometer::paintEvent(QPaintEvent *event);
-// };
-
-} 
+        private:
+            void speedCallback(const rr_msgs::msg::Speed::SharedPtr msg);
+            void paintEvent(QPaintEvent *event);
+    };
+}
 
 #endif 

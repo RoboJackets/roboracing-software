@@ -1,0 +1,13 @@
+<library path = "rr_rviz_plugins">
+
+    <class
+        name="rr_rviz_plugins/Speedometer"
+        type="rr_rviz_plugins::Speedometer"
+        base_class_type="rr_common::Panel"
+    >
+        <description>
+        Displays speed as a speedometer.
+        </description>
+    </class>
+    
+</library>
