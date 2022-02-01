@@ -1,0 +1,4 @@
+source;share/usb_camera_driver/local_setup.bash
+source;share/usb_camera_driver/local_setup.dsv
+source;share/usb_camera_driver/local_setup.sh
+source;share/usb_camera_driver/local_setup.zsh

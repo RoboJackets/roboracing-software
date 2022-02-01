@@ -1,0 +1,1 @@
+libopencv-dev;rclcpp;rclcpp_components;std_msgs;sensor_msgs;image_transport;camera_calibration_parsers;camera_info_manager;launch_ros;ament_lint_auto

@@ -1,0 +1,36 @@
+-- The C compiler identification is GNU 9.3.0
+-- The CXX compiler identification is GNU 9.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator
+-- Install configuration: ""
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/package_run_dependencies/velodyne_simulator
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/parent_prefix_path/velodyne_simulator
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/ament_prefix_path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/ament_prefix_path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.bash
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.zsh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/package.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/packages/velodyne_simulator
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/cmake/velodyne_simulatorConfig.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/cmake/velodyne_simulatorConfig-version.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/package.xml

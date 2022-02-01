@@ -1,0 +1,165 @@
+[0.000000] (-) TimerEvent: {}
+[0.001026] (usb_camera_driver) JobQueued: {'identifier': 'usb_camera_driver', 'dependencies': OrderedDict()}
+[0.001181] (velodyne_description) JobQueued: {'identifier': 'velodyne_description', 'dependencies': OrderedDict()}
+[0.001305] (velodyne_gazebo_plugins) JobQueued: {'identifier': 'velodyne_gazebo_plugins', 'dependencies': OrderedDict()}
+[0.001408] (velodyne_simulator) JobQueued: {'identifier': 'velodyne_simulator', 'dependencies': OrderedDict([('velodyne_description', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description'), ('velodyne_gazebo_plugins', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins')])}
+[0.001522] (velodyne_description) JobStarted: {'identifier': 'velodyne_description'}
+[0.016792] (velodyne_gazebo_plugins) JobStarted: {'identifier': 'velodyne_gazebo_plugins'}
+[0.024409] (usb_camera_driver) JobStarted: {'identifier': 'usb_camera_driver'}
+[0.034878] (velodyne_description) JobProgress: {'identifier': 'velodyne_description', 'progress': 'cmake'}
+[0.036111] (velodyne_description) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('SHLVL', '1'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Harsh_Laptop'), ('WSL_INTEROP', '/run/WSL/2978_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('TERM', 'xterm-256color'), ('PATH', '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', '')]), 'shell': False}
+[0.046206] (velodyne_gazebo_plugins) JobProgress: {'identifier': 'velodyne_gazebo_plugins', 'progress': 'cmake'}
+[0.049187] (velodyne_gazebo_plugins) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('SHLVL', '1'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Harsh_Laptop'), ('WSL_INTEROP', '/run/WSL/2978_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('TERM', 'xterm-256color'), ('PATH', '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', '')]), 'shell': False}
+[0.060708] (usb_camera_driver) JobProgress: {'identifier': 'usb_camera_driver', 'progress': 'cmake'}
+[0.060873] (usb_camera_driver) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('SHLVL', '1'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Harsh_Laptop'), ('WSL_INTEROP', '/run/WSL/2978_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('TERM', 'xterm-256color'), ('PATH', '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', '')]), 'shell': False}
+[0.096339] (-) TimerEvent: {}
+[0.197061] (-) TimerEvent: {}
+[0.297598] (-) TimerEvent: {}
+[0.398190] (-) TimerEvent: {}
+[0.498880] (-) TimerEvent: {}
+[0.565734] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- The C compiler identification is GNU 9.3.0\n'}
+[0.566645] (velodyne_description) StdoutLine: {'line': b'-- The C compiler identification is GNU 9.3.0\n'}
+[0.566986] (usb_camera_driver) StdoutLine: {'line': b'-- The C compiler identification is GNU 9.3.0\n'}
+[0.599142] (-) TimerEvent: {}
+[0.699868] (-) TimerEvent: {}
+[0.800474] (-) TimerEvent: {}
+[0.901004] (-) TimerEvent: {}
+[1.001737] (-) TimerEvent: {}
+[1.102403] (-) TimerEvent: {}
+[1.127145] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 9.3.0\n'}
+[1.130390] (usb_camera_driver) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 9.3.0\n'}
+[1.130802] (velodyne_description) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 9.3.0\n'}
+[1.202626] (-) TimerEvent: {}
+[1.303321] (-) TimerEvent: {}
+[1.322473] (usb_camera_driver) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[1.322731] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[1.322856] (velodyne_description) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[1.403563] (-) TimerEvent: {}
+[1.504379] (-) TimerEvent: {}
+[1.553914] (velodyne_description) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[1.557613] (usb_camera_driver) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[1.559395] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[1.564464] (velodyne_description) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[1.565162] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[1.565372] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[1.604575] (-) TimerEvent: {}
+[1.705121] (-) TimerEvent: {}
+[1.805786] (-) TimerEvent: {}
+[1.806941] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[1.811814] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[1.812068] (velodyne_description) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[1.833498] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[1.836199] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[1.842575] (velodyne_description) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[1.842880] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[1.843256] (velodyne_description) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[1.843961] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[1.844173] (usb_camera_driver) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[1.848740] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[1.849076] (velodyne_description) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[1.906012] (-) TimerEvent: {}
+[2.006618] (-) TimerEvent: {}
+[2.096637] (velodyne_description) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[2.099115] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[2.099661] (velodyne_description) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[2.099866] (usb_camera_driver) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[2.101780] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[2.102425] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[2.106819] (-) TimerEvent: {}
+[2.207396] (-) TimerEvent: {}
+[2.308108] (-) TimerEvent: {}
+[2.368377] (velodyne_description) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[2.369059] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[2.393585] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[2.394913] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[2.402186] (velodyne_description) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[2.403723] (velodyne_description) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[2.408791] (-) TimerEvent: {}
+[2.450189] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[2.476745] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[2.478816] (usb_camera_driver) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[2.508976] (-) TimerEvent: {}
+[2.609678] (-) TimerEvent: {}
+[2.710261] (-) TimerEvent: {}
+[2.810953] (-) TimerEvent: {}
+[2.911622] (-) TimerEvent: {}
+[3.012272] (-) TimerEvent: {}
+[3.113115] (-) TimerEvent: {}
+[3.213888] (-) TimerEvent: {}
+[3.314760] (-) TimerEvent: {}
+[3.415383] (-) TimerEvent: {}
+[3.441280] (velodyne_gazebo_plugins) StderrLine: {'line': b'CMake Error at CMakeLists.txt:12 (find_package):\n'}
+[3.441654] (velodyne_gazebo_plugins) StderrLine: {'line': b'  By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project\n'}
+[3.442263] (velodyne_gazebo_plugins) StderrLine: {'line': b'  has asked CMake to find a package configuration file provided by\n'}
+[3.442421] (velodyne_gazebo_plugins) StderrLine: {'line': b'  "ament_cmake", but CMake did not find one.\n'}
+[3.442640] (velodyne_gazebo_plugins) StderrLine: {'line': b'\n'}
+[3.443008] (velodyne_gazebo_plugins) StderrLine: {'line': b'  Could not find a package configuration file provided by "ament_cmake" with\n'}
+[3.443620] (velodyne_gazebo_plugins) StderrLine: {'line': b'  any of the following names:\n'}
+[3.444114] (velodyne_gazebo_plugins) StderrLine: {'line': b'\n'}
+[3.445303] (velodyne_gazebo_plugins) StderrLine: {'line': b'    ament_cmakeConfig.cmake\n'}
+[3.446627] (velodyne_gazebo_plugins) StderrLine: {'line': b'    ament_cmake-config.cmake\n'}
+[3.447513] (velodyne_gazebo_plugins) StderrLine: {'line': b'\n'}
+[3.448099] (velodyne_gazebo_plugins) StderrLine: {'line': b'  Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set\n'}
+[3.451414] (velodyne_gazebo_plugins) StderrLine: {'line': b'  "ament_cmake_DIR" to a directory containing one of the above files.  If\n'}
+[3.453968] (velodyne_gazebo_plugins) StderrLine: {'line': b'  "ament_cmake" provides a separate development package or SDK, be sure it\n'}
+[3.455100] (velodyne_gazebo_plugins) StderrLine: {'line': b'  has been installed.\n'}
+[3.456211] (velodyne_gazebo_plugins) StderrLine: {'line': b'\n'}
+[3.456587] (velodyne_gazebo_plugins) StderrLine: {'line': b'\n'}
+[3.457201] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[3.457571] (velodyne_gazebo_plugins) StdoutLine: {'line': b'See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins/CMakeFiles/CMakeOutput.log".\n'}
+[3.457925] (velodyne_description) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[3.460339] (velodyne_description) StdoutLine: {'line': b'See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description/CMakeFiles/CMakeOutput.log".\n'}
+[3.461441] (velodyne_description) StderrLine: {'line': b'CMake Error at CMakeLists.txt:4 (find_package):\n'}
+[3.462257] (velodyne_description) StderrLine: {'line': b'  By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project\n'}
+[3.462716] (velodyne_description) StderrLine: {'line': b'  has asked CMake to find a package configuration file provided by\n'}
+[3.466994] (velodyne_description) StderrLine: {'line': b'  "ament_cmake", but CMake did not find one.\n'}
+[3.467529] (velodyne_description) StderrLine: {'line': b'\n'}
+[3.468064] (velodyne_description) StderrLine: {'line': b'  Could not find a package configuration file provided by "ament_cmake" with\n'}
+[3.469443] (velodyne_description) StderrLine: {'line': b'  any of the following names:\n'}
+[3.472889] (velodyne_description) StderrLine: {'line': b'\n'}
+[3.476497] (velodyne_description) StderrLine: {'line': b'    ament_cmakeConfig.cmake\n'}
+[3.476740] (velodyne_description) StderrLine: {'line': b'    ament_cmake-config.cmake\n'}
+[3.477136] (velodyne_description) StderrLine: {'line': b'\n'}
+[3.477538] (velodyne_description) StderrLine: {'line': b'  Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set\n'}
+[3.477972] (velodyne_description) StderrLine: {'line': b'  "ament_cmake_DIR" to a directory containing one of the above files.  If\n'}
+[3.478421] (velodyne_description) StderrLine: {'line': b'  "ament_cmake" provides a separate development package or SDK, be sure it\n'}
+[3.482437] (velodyne_description) StderrLine: {'line': b'  has been installed.\n'}
+[3.483024] (velodyne_description) StderrLine: {'line': b'\n'}
+[3.483597] (velodyne_description) StderrLine: {'line': b'\n'}
+[3.484245] (velodyne_gazebo_plugins) CommandEnded: {'returncode': 1}
+[3.488133] (velodyne_description) CommandEnded: {'returncode': 1}
+[3.508109] (velodyne_gazebo_plugins) JobEnded: {'identifier': 'velodyne_gazebo_plugins', 'rc': 1}
+[3.511781] (velodyne_description) JobEnded: {'identifier': 'velodyne_description', 'rc': 'SIGINT'}
+[3.515686] (-) TimerEvent: {}
+[3.616396] (-) TimerEvent: {}
+[3.717048] (-) TimerEvent: {}
+[3.817609] (-) TimerEvent: {}
+[3.918323] (-) TimerEvent: {}
+[4.019313] (-) TimerEvent: {}
+[4.120041] (-) TimerEvent: {}
+[4.220811] (-) TimerEvent: {}
+[4.321378] (-) TimerEvent: {}
+[4.421930] (-) TimerEvent: {}
+[4.522551] (-) TimerEvent: {}
+[4.605029] (usb_camera_driver) StderrLine: {'line': b'CMake Error at CMakeLists.txt:16 (find_package):\n'}
+[4.605647] (usb_camera_driver) StderrLine: {'line': b'  By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project\n'}
+[4.605786] (usb_camera_driver) StderrLine: {'line': b'  has asked CMake to find a package configuration file provided by\n'}
+[4.605893] (usb_camera_driver) StderrLine: {'line': b'  "ament_cmake", but CMake did not find one.\n'}
+[4.605997] (usb_camera_driver) StderrLine: {'line': b'\n'}
+[4.606106] (usb_camera_driver) StderrLine: {'line': b'  Could not find a package configuration file provided by "ament_cmake" with\n'}
+[4.606292] (usb_camera_driver) StderrLine: {'line': b'  any of the following names:\n'}
+[4.606404] (usb_camera_driver) StderrLine: {'line': b'\n'}
+[4.606506] (usb_camera_driver) StderrLine: {'line': b'    ament_cmakeConfig.cmake\n'}
+[4.606606] (usb_camera_driver) StderrLine: {'line': b'    ament_cmake-config.cmake\n'}
+[4.606706] (usb_camera_driver) StderrLine: {'line': b'\n'}
+[4.606805] (usb_camera_driver) StderrLine: {'line': b'  Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set\n'}
+[4.606908] (usb_camera_driver) StderrLine: {'line': b'  "ament_cmake_DIR" to a directory containing one of the above files.  If\n'}
+[4.607045] (usb_camera_driver) StderrLine: {'line': b'  "ament_cmake" provides a separate development package or SDK, be sure it\n'}
+[4.607253] (usb_camera_driver) StderrLine: {'line': b'  has been installed.\n'}
+[4.607368] (usb_camera_driver) StderrLine: {'line': b'\n'}
+[4.607473] (usb_camera_driver) StderrLine: {'line': b'\n'}
+[4.607581] (usb_camera_driver) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[4.607718] (usb_camera_driver) StdoutLine: {'line': b'See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver/CMakeFiles/CMakeOutput.log".\n'}
+[4.610523] (usb_camera_driver) JobEnded: {'identifier': 'usb_camera_driver', 'rc': 'SIGINT'}
+[4.621779] (velodyne_simulator) JobSkipped: {'identifier': 'velodyne_simulator'}
+[4.621938] (-) EventReactorShutdown: {}

@@ -1,0 +1,1374 @@
+[0.000000] (-) TimerEvent: {}
+[0.001999] (usb_camera_driver) JobQueued: {'identifier': 'usb_camera_driver', 'dependencies': OrderedDict()}
+[0.002172] (velodyne_description) JobQueued: {'identifier': 'velodyne_description', 'dependencies': OrderedDict()}
+[0.002325] (velodyne_gazebo_plugins) JobQueued: {'identifier': 'velodyne_gazebo_plugins', 'dependencies': OrderedDict()}
+[0.002468] (velodyne_simulator) JobQueued: {'identifier': 'velodyne_simulator', 'dependencies': OrderedDict([('velodyne_description', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description'), ('velodyne_gazebo_plugins', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins')])}
+[0.003096] (velodyne_description) JobStarted: {'identifier': 'velodyne_description'}
+[0.024562] (velodyne_gazebo_plugins) JobStarted: {'identifier': 'velodyne_gazebo_plugins'}
+[0.040295] (usb_camera_driver) JobStarted: {'identifier': 'usb_camera_driver'}
+[0.067162] (velodyne_description) JobProgress: {'identifier': 'velodyne_description', 'progress': 'cmake'}
+[0.069614] (velodyne_description) JobProgress: {'identifier': 'velodyne_description', 'progress': 'build'}
+[0.071491] (velodyne_description) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description', '--', '-j16', '-l16'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[0.086499] (velodyne_gazebo_plugins) JobProgress: {'identifier': 'velodyne_gazebo_plugins', 'progress': 'cmake'}
+[0.090302] (velodyne_gazebo_plugins) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[0.110369] (-) TimerEvent: {}
+[0.112044] (usb_camera_driver) JobProgress: {'identifier': 'usb_camera_driver', 'progress': 'cmake'}
+[0.112352] (usb_camera_driver) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[0.149188] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)\n'}
+[0.155148] (usb_camera_driver) StdoutLine: {'line': b'-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)\n'}
+[0.195493] (velodyne_description) CommandEnded: {'returncode': 0}
+[0.207844] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[0.208628] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.210679] (-) TimerEvent: {}
+[0.211847] (usb_camera_driver) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[0.212588] (usb_camera_driver) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.236760] (velodyne_description) JobProgress: {'identifier': 'velodyne_description', 'progress': 'install'}
+[0.253002] (velodyne_description) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[0.265962] (velodyne_description) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[0.267272] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/launch\n'}
+[0.268554] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/launch/example.launch.py\n'}
+[0.269175] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes\n'}
+[0.270529] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_scan.dae\n'}
+[0.271184] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_2.stl\n'}
+[0.271704] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_scan.stl\n'}
+[0.272450] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_scan.dae\n'}
+[0.272820] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_base.dae\n'}
+[0.273033] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_base.stl\n'}
+[0.273337] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_scan.stl\n'}
+[0.273543] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_1.stl\n'}
+[0.273736] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_1.dae\n'}
+[0.273866] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_2.dae\n'}
+[0.274058] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/rviz\n'}
+[0.274188] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/rviz/example.rviz\n'}
+[0.274389] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf\n'}
+[0.274648] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/example.urdf.xacro\n'}
+[0.275881] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/HDL-32E.urdf.xacro\n'}
+[0.277733] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/VLP-16.urdf.xacro\n'}
+[0.280009] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/world\n'}
+[0.282934] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/world/example.world\n'}
+[0.284284] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/velodyne_description.dsv\n'}
+[0.285181] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/package_run_dependencies/velodyne_description\n'}
+[0.287494] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/parent_prefix_path/velodyne_description\n'}
+[0.288683] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/ament_prefix_path.sh\n'}
+[0.290289] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/ament_prefix_path.dsv\n'}
+[0.293380] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/path.sh\n'}
+[0.295319] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/path.dsv\n'}
+[0.296772] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.bash\n'}
+[0.298208] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.sh\n'}
+[0.300712] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.zsh\n'}
+[0.301703] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.dsv\n'}
+[0.302498] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/package.dsv\n'}
+[0.303038] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/packages/velodyne_description\n'}
+[0.303966] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig.cmake\n'}
+[0.304771] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig-version.cmake\n'}
+[0.305879] (velodyne_description) StdoutLine: {'line': b'-- Up-to-date: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/package.xml\n'}
+[0.308674] (velodyne_description) CommandEnded: {'returncode': 0}
+[0.311567] (-) TimerEvent: {}
+[0.368135] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found gazebo_dev: 3.5.2 (/opt/ros/galactic/share/gazebo_dev/cmake)\n'}
+[0.374804] (usb_camera_driver) StdoutLine: {'line': b'-- Found rclcpp: 9.2.0 (/opt/ros/galactic/share/rclcpp/cmake)\n'}
+[0.377069] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") \n'}
+[0.381984] (velodyne_description) JobEnded: {'identifier': 'velodyne_description', 'rc': 0}
+[0.386073] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'bullet>=2.82'\n"}
+[0.410180] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found bullet, version 2.88\n'}
+[0.411739] (-) TimerEvent: {}
+[0.512292] (-) TimerEvent: {}
+[0.612938] (-) TimerEvent: {}
+[0.713614] (-) TimerEvent: {}
+[0.714854] (usb_camera_driver) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.728233] (usb_camera_driver) StdoutLine: {'line': b'-- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)\n'}
+[0.813797] (-) TimerEvent: {}
+[0.914512] (-) TimerEvent: {}
+[1.015283] (-) TimerEvent: {}
+[1.116201] (-) TimerEvent: {}
+[1.216780] (-) TimerEvent: {}
+[1.317546] (-) TimerEvent: {}
+[1.418112] (-) TimerEvent: {}
+[1.518738] (-) TimerEvent: {}
+[1.619468] (-) TimerEvent: {}
+[1.720072] (-) TimerEvent: {}
+[1.820776] (-) TimerEvent: {}
+[1.921542] (-) TimerEvent: {}
+[2.022473] (-) TimerEvent: {}
+[2.123146] (-) TimerEvent: {}
+[2.223879] (-) TimerEvent: {}
+[2.324597] (-) TimerEvent: {}
+[2.425403] (-) TimerEvent: {}
+[2.526218] (-) TimerEvent: {}
+[2.626901] (-) TimerEvent: {}
+[2.706539] (usb_camera_driver) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  \n'}
+[2.727113] (-) TimerEvent: {}
+[2.827683] (-) TimerEvent: {}
+[2.902846] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found ccd: /usr/include (found suitable version "2.0", minimum required is "2.0") \n'}
+[2.927986] (-) TimerEvent: {}
+[3.028977] (-) TimerEvent: {}
+[3.071717] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found fcl: /usr/include (found suitable version "0.5.0", minimum required is "0.3.2") \n'}
+[3.129203] (-) TimerEvent: {}
+[3.229869] (-) TimerEvent: {}
+[3.299984] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found assimp: /usr/include (found version "5.0.0") \n'}
+[3.330117] (-) TimerEvent: {}
+[3.345707] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found DART: /usr/include (Required is at least version "6.6") found components: dart \n'}
+[3.430419] (-) TimerEvent: {}
+[3.531481] (-) TimerEvent: {}
+[3.632975] (-) TimerEvent: {}
+[3.734460] (-) TimerEvent: {}
+[3.835244] (-) TimerEvent: {}
+[3.936059] (-) TimerEvent: {}
+[4.036669] (-) TimerEvent: {}
+[4.137343] (-) TimerEvent: {}
+[4.237984] (-) TimerEvent: {}
+[4.338613] (-) TimerEvent: {}
+[4.439255] (-) TimerEvent: {}
+[4.512988] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.40.0") found components: thread system filesystem program_options regex iostreams date_time \n'}
+[4.539599] (-) TimerEvent: {}
+[4.640311] (-) TimerEvent: {}
+[4.701602] (usb_camera_driver) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/galactic/include  \n'}
+[4.740530] (-) TimerEvent: {}
+[4.841226] (-) TimerEvent: {}
+[4.941940] (-) TimerEvent: {}
+[5.042777] (-) TimerEvent: {}
+[5.143554] (-) TimerEvent: {}
+[5.223642] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found version "3.6.1") \n'}
+[5.233656] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.9.2\n'}
+[5.243771] (-) TimerEvent: {}
+[5.251080] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6\n'}
+[5.259424] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE...\n'}
+[5.261074] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- OGRE_PREFIX_WATCH changed.\n'}
+[5.272657] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'OGRE'\n"}
+[5.303991] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found OGRE, version 1.9.0\n'}
+[5.343971] (-) TimerEvent: {}
+[5.444640] (-) TimerEvent: {}
+[5.527540] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found Ogre Ghadamon (1.9.0)\n'}
+[5.544883] (-) TimerEvent: {}
+[5.645565] (-) TimerEvent: {}
+[5.746291] (-) TimerEvent: {}
+[5.847089] (-) TimerEvent: {}
+[5.947813] (-) TimerEvent: {}
+[6.048433] (-) TimerEvent: {}
+[6.149151] (-) TimerEvent: {}
+[6.249768] (-) TimerEvent: {}
+[6.350536] (-) TimerEvent: {}
+[6.451297] (-) TimerEvent: {}
+[6.551982] (-) TimerEvent: {}
+[6.652730] (-) TimerEvent: {}
+[6.753335] (-) TimerEvent: {}
+[6.853977] (-) TimerEvent: {}
+[6.954664] (-) TimerEvent: {}
+[7.055740] (-) TimerEvent: {}
+[7.063921] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE: optimized;/usr/lib/x86_64-linux-gnu/libOgreMain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreMain.so\n'}
+[7.100396] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_Paging...\n'}
+[7.155969] (-) TimerEvent: {}
+[7.256942] (-) TimerEvent: {}
+[7.357651] (-) TimerEvent: {}
+[7.458403] (-) TimerEvent: {}
+[7.559117] (-) TimerEvent: {}
+[7.659855] (-) TimerEvent: {}
+[7.760500] (-) TimerEvent: {}
+[7.861224] (-) TimerEvent: {}
+[7.883033] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_Paging: optimized;/usr/lib/x86_64-linux-gnu/libOgrePaging.so;debug;/usr/lib/x86_64-linux-gnu/libOgrePaging.so\n'}
+[7.883623] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_Terrain...\n'}
+[7.961516] (-) TimerEvent: {}
+[8.062458] (-) TimerEvent: {}
+[8.163167] (-) TimerEvent: {}
+[8.263933] (-) TimerEvent: {}
+[8.364535] (-) TimerEvent: {}
+[8.465185] (-) TimerEvent: {}
+[8.560364] (usb_camera_driver) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[8.565409] (-) TimerEvent: {}
+[8.647710] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_Terrain: optimized;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so\n'}
+[8.648318] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_Property...\n'}
+[8.665643] (-) TimerEvent: {}
+[8.707733] (usb_camera_driver) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)\n'}
+[8.713133] (usb_camera_driver) StdoutLine: {'line': b'-- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)\n'}
+[8.765677] (usb_camera_driver) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_cyclonedds_cpp' as default\n"}
+[8.766138] (-) TimerEvent: {}
+[8.767739] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[8.866393] (-) TimerEvent: {}
+[8.967087] (-) TimerEvent: {}
+[9.067784] (-) TimerEvent: {}
+[9.098488] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[9.106349] (usb_camera_driver) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[9.168016] (-) TimerEvent: {}
+[9.268682] (-) TimerEvent: {}
+[9.369327] (-) TimerEvent: {}
+[9.418362] (usb_camera_driver) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed\n'}
+[9.418960] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads\n'}
+[9.453948] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_Property: optimized;/usr/lib/x86_64-linux-gnu/libOgreProperty.so;debug;/usr/lib/x86_64-linux-gnu/libOgreProperty.so\n'}
+[9.454313] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_RTShaderSystem...\n'}
+[9.469526] (-) TimerEvent: {}
+[9.570341] (-) TimerEvent: {}
+[9.671140] (-) TimerEvent: {}
+[9.672443] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads - not found\n'}
+[9.673493] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread_create in pthread\n'}
+[9.771332] (-) TimerEvent: {}
+[9.871995] (-) TimerEvent: {}
+[9.952745] (usb_camera_driver) StdoutLine: {'line': b'-- Looking for pthread_create in pthread - found\n'}
+[9.955333] (usb_camera_driver) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[9.972236] (-) TimerEvent: {}
+[10.073073] (-) TimerEvent: {}
+[10.173976] (-) TimerEvent: {}
+[10.235545] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_RTShaderSystem: optimized;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so;debug;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so\n'}
+[10.236271] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_Volume...\n'}
+[10.274186] (-) TimerEvent: {}
+[10.371748] (usb_camera_driver) StdoutLine: {'line': b'-- Found rclcpp_components: 9.2.0 (/opt/ros/galactic/share/rclcpp_components/cmake)\n'}
+[10.374401] (-) TimerEvent: {}
+[10.475040] (-) TimerEvent: {}
+[10.526957] (usb_camera_driver) StdoutLine: {'line': b'-- Found sensor_msgs: 2.2.3 (/opt/ros/galactic/share/sensor_msgs/cmake)\n'}
+[10.575285] (-) TimerEvent: {}
+[10.676022] (-) TimerEvent: {}
+[10.776706] (-) TimerEvent: {}
+[10.847072] (usb_camera_driver) StdoutLine: {'line': b'-- Found camera_info_manager: 2.3.0 (/opt/ros/galactic/share/camera_info_manager/cmake)\n'}
+[10.876947] (-) TimerEvent: {}
+[10.977655] (-) TimerEvent: {}
+[10.982554] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_Volume: optimized;/usr/lib/x86_64-linux-gnu/libOgreVolume.so;debug;/usr/lib/x86_64-linux-gnu/libOgreVolume.so\n'}
+[10.983198] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for OGRE_Overlay...\n'}
+[11.077893] (-) TimerEvent: {}
+[11.178526] (-) TimerEvent: {}
+[11.279153] (-) TimerEvent: {}
+[11.379876] (-) TimerEvent: {}
+[11.480636] (-) TimerEvent: {}
+[11.581382] (-) TimerEvent: {}
+[11.682024] (-) TimerEvent: {}
+[11.698916] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OGRE_Overlay: optimized;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so;debug;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so\n'}
+[11.782262] (-) TimerEvent: {}
+[11.883089] (-) TimerEvent: {}
+[11.983895] (-) TimerEvent: {}
+[12.084548] (-) TimerEvent: {}
+[12.185346] (-) TimerEvent: {}
+[12.286162] (-) TimerEvent: {}
+[12.387061] (-) TimerEvent: {}
+[12.487797] (-) TimerEvent: {}
+[12.588556] (-) TimerEvent: {}
+[12.681437] (usb_camera_driver) StdoutLine: {'line': b"-- Setting yaml-cpp_DIR to: '/opt/ros/galactic/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/lib/cmake/yaml-cpp'\n"}
+[12.688801] (-) TimerEvent: {}
+[12.789495] (-) TimerEvent: {}
+[12.883160] (usb_camera_driver) StdoutLine: {'line': b'-- Found image_transport: 2.3.0 (/opt/ros/galactic/share/image_transport/cmake)\n'}
+[12.889878] (-) TimerEvent: {}
+[12.990670] (-) TimerEvent: {}
+[13.091407] (-) TimerEvent: {}
+[13.192231] (-) TimerEvent: {}
+[13.292913] (-) TimerEvent: {}
+[13.393827] (-) TimerEvent: {}
+[13.494474] (-) TimerEvent: {}
+[13.595295] (-) TimerEvent: {}
+[13.696088] (-) TimerEvent: {}
+[13.796810] (-) TimerEvent: {}
+[13.897577] (-) TimerEvent: {}
+[13.998411] (-) TimerEvent: {}
+[14.099158] (-) TimerEvent: {}
+[14.199877] (-) TimerEvent: {}
+[14.300691] (-) TimerEvent: {}
+[14.401519] (-) TimerEvent: {}
+[14.502201] (-) TimerEvent: {}
+[14.602948] (-) TimerEvent: {}
+[14.703758] (-) TimerEvent: {}
+[14.804527] (-) TimerEvent: {}
+[14.905270] (-) TimerEvent: {}
+[14.945221] (usb_camera_driver) StdoutLine: {'line': b'-- Found OpenCV: /usr (found suitable version "4.2.0", minimum required is "4") \n'}
+[15.005496] (-) TimerEvent: {}
+[15.106167] (-) TimerEvent: {}
+[15.173767] (usb_camera_driver) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.10.6 (/opt/ros/galactic/share/ament_lint_auto/cmake)\n'}
+[15.206406] (-) TimerEvent: {}
+[15.304107] (usb_camera_driver) StdoutLine: {'line': b'-- Found ament_cmake_gtest: 1.1.4 (/opt/ros/galactic/share/ament_cmake_gtest/cmake)\n'}
+[15.306625] (-) TimerEvent: {}
+[15.317943] (usb_camera_driver) StdoutLine: {'line': b"-- Found gtest sources under '/opt/ros/galactic/src/gtest_vendor': C++ tests using 'Google Test' will be built\n"}
+[15.325302] (usb_camera_driver) StdoutLine: {'line': b'-- Check if compiler accepts -pthread\n'}
+[15.406861] (-) TimerEvent: {}
+[15.507609] (-) TimerEvent: {}
+[15.608220] (-) TimerEvent: {}
+[15.611105] (usb_camera_driver) StdoutLine: {'line': b'-- Check if compiler accepts -pthread - yes\n'}
+[15.634748] (usb_camera_driver) StdoutLine: {'line': b'-- Configuring done\n'}
+[15.708470] (-) TimerEvent: {}
+[15.727785] (usb_camera_driver) StdoutLine: {'line': b'-- Generating done\n'}
+[15.732094] (usb_camera_driver) StdoutLine: {'line': b'-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver\n'}
+[15.751808] (usb_camera_driver) CommandEnded: {'returncode': 0}
+[15.757648] (usb_camera_driver) JobProgress: {'identifier': 'usb_camera_driver', 'progress': 'build'}
+[15.758731] (usb_camera_driver) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', '--', '-j16', '-l16'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[15.808753] (-) TimerEvent: {}
+[15.816456] (usb_camera_driver) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target gtest_main\x1b[0m\n'}
+[15.817545] (usb_camera_driver) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target usb_camera_driver\x1b[0m\n'}
+[15.818001] (usb_camera_driver) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target gtest\x1b[0m\n'}
+[15.845185] (usb_camera_driver) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o\x1b[0m\n'}
+[15.864315] (usb_camera_driver) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o\x1b[0m\n'}
+[15.908948] (-) TimerEvent: {}
+[16.009608] (-) TimerEvent: {}
+[16.039025] (usb_camera_driver) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/usb_camera_driver.dir/src/usb_camera_driver.cpp.o\x1b[0m\n'}
+[16.109858] (-) TimerEvent: {}
+[16.210551] (-) TimerEvent: {}
+[16.311367] (-) TimerEvent: {}
+[16.412153] (-) TimerEvent: {}
+[16.512882] (-) TimerEvent: {}
+[16.613502] (-) TimerEvent: {}
+[16.714234] (-) TimerEvent: {}
+[16.815015] (-) TimerEvent: {}
+[16.915975] (-) TimerEvent: {}
+[17.016841] (-) TimerEvent: {}
+[17.117631] (-) TimerEvent: {}
+[17.218260] (-) TimerEvent: {}
+[17.319089] (-) TimerEvent: {}
+[17.419789] (-) TimerEvent: {}
+[17.520440] (-) TimerEvent: {}
+[17.621221] (-) TimerEvent: {}
+[17.638806] (usb_camera_driver) StdoutLine: {'line': b'[ 40%] \x1b[32m\x1b[1mLinking CXX static library libgtest_main.a\x1b[0m\n'}
+[17.707364] (usb_camera_driver) StdoutLine: {'line': b'[ 40%] Built target gtest_main\n'}
+[17.721442] (-) TimerEvent: {}
+[17.822179] (-) TimerEvent: {}
+[17.922844] (-) TimerEvent: {}
+[18.023572] (-) TimerEvent: {}
+[18.124289] (-) TimerEvent: {}
+[18.224967] (-) TimerEvent: {}
+[18.325755] (-) TimerEvent: {}
+[18.426501] (-) TimerEvent: {}
+[18.527195] (-) TimerEvent: {}
+[18.627944] (-) TimerEvent: {}
+[18.728669] (-) TimerEvent: {}
+[18.829432] (-) TimerEvent: {}
+[18.930050] (-) TimerEvent: {}
+[19.030698] (-) TimerEvent: {}
+[19.131539] (-) TimerEvent: {}
+[19.232326] (-) TimerEvent: {}
+[19.333066] (-) TimerEvent: {}
+[19.433985] (-) TimerEvent: {}
+[19.534660] (-) TimerEvent: {}
+[19.635493] (-) TimerEvent: {}
+[19.736303] (-) TimerEvent: {}
+[19.837136] (-) TimerEvent: {}
+[19.937866] (-) TimerEvent: {}
+[20.038663] (-) TimerEvent: {}
+[20.139365] (-) TimerEvent: {}
+[20.240123] (-) TimerEvent: {}
+[20.340812] (-) TimerEvent: {}
+[20.441417] (-) TimerEvent: {}
+[20.542244] (-) TimerEvent: {}
+[20.642952] (-) TimerEvent: {}
+[20.743612] (-) TimerEvent: {}
+[20.844459] (-) TimerEvent: {}
+[20.945084] (-) TimerEvent: {}
+[21.045811] (-) TimerEvent: {}
+[21.146666] (-) TimerEvent: {}
+[21.247454] (-) TimerEvent: {}
+[21.348158] (-) TimerEvent: {}
+[21.448995] (-) TimerEvent: {}
+[21.549728] (-) TimerEvent: {}
+[21.650362] (-) TimerEvent: {}
+[21.750957] (-) TimerEvent: {}
+[21.851641] (-) TimerEvent: {}
+[21.952325] (-) TimerEvent: {}
+[22.052979] (-) TimerEvent: {}
+[22.153588] (-) TimerEvent: {}
+[22.254225] (-) TimerEvent: {}
+[22.354946] (-) TimerEvent: {}
+[22.455798] (-) TimerEvent: {}
+[22.556573] (-) TimerEvent: {}
+[22.657268] (-) TimerEvent: {}
+[22.758014] (-) TimerEvent: {}
+[22.858757] (-) TimerEvent: {}
+[22.959444] (-) TimerEvent: {}
+[23.060169] (-) TimerEvent: {}
+[23.160999] (-) TimerEvent: {}
+[23.261607] (-) TimerEvent: {}
+[23.362357] (-) TimerEvent: {}
+[23.463094] (-) TimerEvent: {}
+[23.563910] (-) TimerEvent: {}
+[23.664671] (-) TimerEvent: {}
+[23.765307] (-) TimerEvent: {}
+[23.866141] (-) TimerEvent: {}
+[23.942441] (usb_camera_driver) StdoutLine: {'line': b'[ 50%] \x1b[32m\x1b[1mLinking CXX static library libgtest.a\x1b[0m\n'}
+[23.966340] (-) TimerEvent: {}
+[24.057825] (usb_camera_driver) StdoutLine: {'line': b'[ 50%] Built target gtest\n'}
+[24.066586] (-) TimerEvent: {}
+[24.167281] (-) TimerEvent: {}
+[24.267946] (-) TimerEvent: {}
+[24.368742] (-) TimerEvent: {}
+[24.469386] (-) TimerEvent: {}
+[24.569986] (-) TimerEvent: {}
+[24.670717] (-) TimerEvent: {}
+[24.771416] (-) TimerEvent: {}
+[24.872074] (-) TimerEvent: {}
+[24.972837] (-) TimerEvent: {}
+[25.073623] (-) TimerEvent: {}
+[25.174746] (-) TimerEvent: {}
+[25.275611] (-) TimerEvent: {}
+[25.376292] (-) TimerEvent: {}
+[25.477138] (-) TimerEvent: {}
+[25.578075] (-) TimerEvent: {}
+[25.678849] (-) TimerEvent: {}
+[25.779557] (-) TimerEvent: {}
+[25.880198] (-) TimerEvent: {}
+[25.980883] (-) TimerEvent: {}
+[26.081458] (-) TimerEvent: {}
+[26.182178] (-) TimerEvent: {}
+[26.283181] (-) TimerEvent: {}
+[26.383891] (-) TimerEvent: {}
+[26.484687] (-) TimerEvent: {}
+[26.585328] (-) TimerEvent: {}
+[26.686011] (-) TimerEvent: {}
+[26.786749] (-) TimerEvent: {}
+[26.887537] (-) TimerEvent: {}
+[26.988221] (-) TimerEvent: {}
+[27.088942] (-) TimerEvent: {}
+[27.189738] (-) TimerEvent: {}
+[27.290478] (-) TimerEvent: {}
+[27.391174] (-) TimerEvent: {}
+[27.491993] (-) TimerEvent: {}
+[27.592774] (-) TimerEvent: {}
+[27.693526] (-) TimerEvent: {}
+[27.794295] (-) TimerEvent: {}
+[27.895151] (-) TimerEvent: {}
+[27.995844] (-) TimerEvent: {}
+[28.096500] (-) TimerEvent: {}
+[28.197237] (-) TimerEvent: {}
+[28.297977] (-) TimerEvent: {}
+[28.398758] (-) TimerEvent: {}
+[28.499569] (-) TimerEvent: {}
+[28.600302] (-) TimerEvent: {}
+[28.701007] (-) TimerEvent: {}
+[28.801854] (-) TimerEvent: {}
+[28.902455] (-) TimerEvent: {}
+[29.003116] (-) TimerEvent: {}
+[29.103902] (-) TimerEvent: {}
+[29.204547] (-) TimerEvent: {}
+[29.305312] (-) TimerEvent: {}
+[29.406245] (-) TimerEvent: {}
+[29.429722] (usb_camera_driver) StdoutLine: {'line': b'[ 60%] \x1b[32m\x1b[1mLinking CXX shared library libusb_camera_driver.so\x1b[0m\n'}
+[29.506456] (-) TimerEvent: {}
+[29.607162] (-) TimerEvent: {}
+[29.707886] (-) TimerEvent: {}
+[29.808652] (-) TimerEvent: {}
+[29.909444] (-) TimerEvent: {}
+[30.010130] (-) TimerEvent: {}
+[30.072811] (usb_camera_driver) StdoutLine: {'line': b'[ 60%] Built target usb_camera_driver\n'}
+[30.091632] (usb_camera_driver) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target usb_camera_driver_node\x1b[0m\n'}
+[30.092377] (usb_camera_driver) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target usb_camera_driver_tests\x1b[0m\n'}
+[30.110347] (-) TimerEvent: {}
+[30.211082] (-) TimerEvent: {}
+[30.214424] (usb_camera_driver) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/usb_camera_driver_node.dir/src/usb_camera_driver_node.cpp.o\x1b[0m\n'}
+[30.220715] (usb_camera_driver) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object test/CMakeFiles/usb_camera_driver_tests.dir/usb_camera_driver_tests.cpp.o\x1b[0m\n'}
+[30.311265] (-) TimerEvent: {}
+[30.412339] (-) TimerEvent: {}
+[30.513067] (-) TimerEvent: {}
+[30.613836] (-) TimerEvent: {}
+[30.714485] (-) TimerEvent: {}
+[30.815412] (-) TimerEvent: {}
+[30.916464] (-) TimerEvent: {}
+[31.017454] (-) TimerEvent: {}
+[31.118214] (-) TimerEvent: {}
+[31.218947] (-) TimerEvent: {}
+[31.319588] (-) TimerEvent: {}
+[31.420340] (-) TimerEvent: {}
+[31.521004] (-) TimerEvent: {}
+[31.621824] (-) TimerEvent: {}
+[31.722572] (-) TimerEvent: {}
+[31.823448] (-) TimerEvent: {}
+[31.924299] (-) TimerEvent: {}
+[32.025293] (-) TimerEvent: {}
+[32.126180] (-) TimerEvent: {}
+[32.226891] (-) TimerEvent: {}
+[32.327707] (-) TimerEvent: {}
+[32.428470] (-) TimerEvent: {}
+[32.529191] (-) TimerEvent: {}
+[32.629836] (-) TimerEvent: {}
+[32.730507] (-) TimerEvent: {}
+[32.831127] (-) TimerEvent: {}
+[32.931882] (-) TimerEvent: {}
+[33.032648] (-) TimerEvent: {}
+[33.133496] (-) TimerEvent: {}
+[33.234323] (-) TimerEvent: {}
+[33.335185] (-) TimerEvent: {}
+[33.435954] (-) TimerEvent: {}
+[33.536875] (-) TimerEvent: {}
+[33.637645] (-) TimerEvent: {}
+[33.738543] (-) TimerEvent: {}
+[33.839453] (-) TimerEvent: {}
+[33.940368] (-) TimerEvent: {}
+[34.041214] (-) TimerEvent: {}
+[34.142068] (-) TimerEvent: {}
+[34.242780] (-) TimerEvent: {}
+[34.343559] (-) TimerEvent: {}
+[34.444243] (-) TimerEvent: {}
+[34.545208] (-) TimerEvent: {}
+[34.646232] (-) TimerEvent: {}
+[34.747242] (-) TimerEvent: {}
+[34.847915] (-) TimerEvent: {}
+[34.948807] (-) TimerEvent: {}
+[35.049561] (-) TimerEvent: {}
+[35.150213] (-) TimerEvent: {}
+[35.250779] (-) TimerEvent: {}
+[35.351646] (-) TimerEvent: {}
+[35.452291] (-) TimerEvent: {}
+[35.553016] (-) TimerEvent: {}
+[35.653738] (-) TimerEvent: {}
+[35.754567] (-) TimerEvent: {}
+[35.855345] (-) TimerEvent: {}
+[35.956187] (-) TimerEvent: {}
+[36.056945] (-) TimerEvent: {}
+[36.157780] (-) TimerEvent: {}
+[36.258485] (-) TimerEvent: {}
+[36.359129] (-) TimerEvent: {}
+[36.459793] (-) TimerEvent: {}
+[36.560443] (-) TimerEvent: {}
+[36.661110] (-) TimerEvent: {}
+[36.761858] (-) TimerEvent: {}
+[36.862939] (-) TimerEvent: {}
+[36.963651] (-) TimerEvent: {}
+[37.064430] (-) TimerEvent: {}
+[37.165141] (-) TimerEvent: {}
+[37.265788] (-) TimerEvent: {}
+[37.366460] (-) TimerEvent: {}
+[37.467137] (-) TimerEvent: {}
+[37.567803] (-) TimerEvent: {}
+[37.668574] (-) TimerEvent: {}
+[37.769362] (-) TimerEvent: {}
+[37.870134] (-) TimerEvent: {}
+[37.970822] (-) TimerEvent: {}
+[38.071649] (-) TimerEvent: {}
+[38.172478] (-) TimerEvent: {}
+[38.273149] (-) TimerEvent: {}
+[38.373811] (-) TimerEvent: {}
+[38.474671] (-) TimerEvent: {}
+[38.575415] (-) TimerEvent: {}
+[38.676102] (-) TimerEvent: {}
+[38.776751] (-) TimerEvent: {}
+[38.877522] (-) TimerEvent: {}
+[38.978360] (-) TimerEvent: {}
+[39.079157] (-) TimerEvent: {}
+[39.179942] (-) TimerEvent: {}
+[39.280687] (-) TimerEvent: {}
+[39.381349] (-) TimerEvent: {}
+[39.475126] (usb_camera_driver) StdoutLine: {'line': b'[ 90%] \x1b[32m\x1b[1mLinking CXX executable usb_camera_driver_tests\x1b[0m\n'}
+[39.481581] (-) TimerEvent: {}
+[39.582405] (-) TimerEvent: {}
+[39.683235] (-) TimerEvent: {}
+[39.784484] (-) TimerEvent: {}
+[39.885298] (-) TimerEvent: {}
+[39.986176] (-) TimerEvent: {}
+[40.086913] (-) TimerEvent: {}
+[40.187666] (-) TimerEvent: {}
+[40.288545] (-) TimerEvent: {}
+[40.389294] (-) TimerEvent: {}
+[40.489989] (-) TimerEvent: {}
+[40.524098] (usb_camera_driver) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable usb_camera_driver_node\x1b[0m\n'}
+[40.590291] (-) TimerEvent: {}
+[40.691023] (-) TimerEvent: {}
+[40.791838] (-) TimerEvent: {}
+[40.892532] (-) TimerEvent: {}
+[40.993369] (-) TimerEvent: {}
+[41.094209] (-) TimerEvent: {}
+[41.194964] (-) TimerEvent: {}
+[41.295750] (-) TimerEvent: {}
+[41.353838] (usb_camera_driver) StdoutLine: {'line': b'[100%] Built target usb_camera_driver_tests\n'}
+[41.395916] (-) TimerEvent: {}
+[41.496608] (-) TimerEvent: {}
+[41.597479] (-) TimerEvent: {}
+[41.698276] (-) TimerEvent: {}
+[41.799000] (-) TimerEvent: {}
+[41.899684] (-) TimerEvent: {}
+[42.000373] (-) TimerEvent: {}
+[42.032069] (usb_camera_driver) StdoutLine: {'line': b'[100%] Built target usb_camera_driver_node\n'}
+[42.063445] (usb_camera_driver) CommandEnded: {'returncode': 0}
+[42.100663] (-) TimerEvent: {}
+[42.124179] (usb_camera_driver) JobProgress: {'identifier': 'usb_camera_driver', 'progress': 'install'}
+[42.127564] (usb_camera_driver) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[42.150510] (usb_camera_driver) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[42.151296] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/libusb_camera_driver.so\n'}
+[42.155438] (usb_camera_driver) StdoutLine: {'line': b'-- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/libusb_camera_driver.so" to ""\n'}
+[42.158513] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/usb_camera_driver/usb_camera_driver_node\n'}
+[42.159707] (usb_camera_driver) StdoutLine: {'line': b'-- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/usb_camera_driver/usb_camera_driver_node" to ""\n'}
+[42.160401] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch\n'}
+[42.161007] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/__camera_id:=config.yaml\n'}
+[42.161875] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/usb_camera_node.launch.py\n'}
+[42.162655] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/usb_camera_component.launch.py\n'}
+[42.163343] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config\n'}
+[42.163875] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config/config.yaml\n'}
+[42.164641] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config/camera.yaml\n'}
+[42.165553] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/package_run_dependencies/usb_camera_driver\n'}
+[42.166318] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/parent_prefix_path/usb_camera_driver\n'}
+[42.167085] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/ament_prefix_path.sh\n'}
+[42.167706] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/ament_prefix_path.dsv\n'}
+[42.168426] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/path.sh\n'}
+[42.169335] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/path.dsv\n'}
+[42.170317] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.bash\n'}
+[42.171109] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.sh\n'}
+[42.171577] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.zsh\n'}
+[42.172130] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.dsv\n'}
+[42.172623] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/package.dsv\n'}
+[42.173006] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/packages/usb_camera_driver\n'}
+[42.173707] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/rclcpp_components/usb_camera_driver\n'}
+[42.174182] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/cmake/usb_camera_driverConfig.cmake\n'}
+[42.174384] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/cmake/usb_camera_driverConfig-version.cmake\n'}
+[42.174618] (usb_camera_driver) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/package.xml\n'}
+[42.177811] (usb_camera_driver) CommandEnded: {'returncode': 0}
+[42.201668] (-) TimerEvent: {}
+[42.277965] (usb_camera_driver) JobEnded: {'identifier': 'usb_camera_driver', 'rc': 0}
+[42.301848] (-) TimerEvent: {}
+[42.402547] (-) TimerEvent: {}
+[42.503212] (-) TimerEvent: {}
+[42.603842] (-) TimerEvent: {}
+[42.704588] (-) TimerEvent: {}
+[42.805206] (-) TimerEvent: {}
+[42.905993] (-) TimerEvent: {}
+[43.006766] (-) TimerEvent: {}
+[43.107456] (-) TimerEvent: {}
+[43.208204] (-) TimerEvent: {}
+[43.308918] (-) TimerEvent: {}
+[43.409605] (-) TimerEvent: {}
+[43.510296] (-) TimerEvent: {}
+[43.611041] (-) TimerEvent: {}
+[43.711786] (-) TimerEvent: {}
+[43.812474] (-) TimerEvent: {}
+[43.913088] (-) TimerEvent: {}
+[44.013798] (-) TimerEvent: {}
+[44.114482] (-) TimerEvent: {}
+[44.215317] (-) TimerEvent: {}
+[44.316003] (-) TimerEvent: {}
+[44.416635] (-) TimerEvent: {}
+[44.517360] (-) TimerEvent: {}
+[44.617966] (-) TimerEvent: {}
+[44.718652] (-) TimerEvent: {}
+[44.819283] (-) TimerEvent: {}
+[44.920108] (-) TimerEvent: {}
+[45.021000] (-) TimerEvent: {}
+[45.121713] (-) TimerEvent: {}
+[45.222379] (-) TimerEvent: {}
+[45.323108] (-) TimerEvent: {}
+[45.423730] (-) TimerEvent: {}
+[45.524561] (-) TimerEvent: {}
+[45.625240] (-) TimerEvent: {}
+[45.726040] (-) TimerEvent: {}
+[45.826845] (-) TimerEvent: {}
+[45.927577] (-) TimerEvent: {}
+[46.028138] (-) TimerEvent: {}
+[46.128824] (-) TimerEvent: {}
+[46.229674] (-) TimerEvent: {}
+[46.330733] (-) TimerEvent: {}
+[46.431492] (-) TimerEvent: {}
+[46.532275] (-) TimerEvent: {}
+[46.632940] (-) TimerEvent: {}
+[46.733695] (-) TimerEvent: {}
+[46.834337] (-) TimerEvent: {}
+[46.935044] (-) TimerEvent: {}
+[47.035808] (-) TimerEvent: {}
+[47.136621] (-) TimerEvent: {}
+[47.237332] (-) TimerEvent: {}
+[47.338062] (-) TimerEvent: {}
+[47.438660] (-) TimerEvent: {}
+[47.539370] (-) TimerEvent: {}
+[47.640037] (-) TimerEvent: {}
+[47.740660] (-) TimerEvent: {}
+[47.841365] (-) TimerEvent: {}
+[47.942060] (-) TimerEvent: {}
+[48.042647] (-) TimerEvent: {}
+[48.143426] (-) TimerEvent: {}
+[48.244244] (-) TimerEvent: {}
+[48.344926] (-) TimerEvent: {}
+[48.445909] (-) TimerEvent: {}
+[48.546526] (-) TimerEvent: {}
+[48.647314] (-) TimerEvent: {}
+[48.747993] (-) TimerEvent: {}
+[48.848719] (-) TimerEvent: {}
+[48.949404] (-) TimerEvent: {}
+[49.050108] (-) TimerEvent: {}
+[49.150823] (-) TimerEvent: {}
+[49.251593] (-) TimerEvent: {}
+[49.352466] (-) TimerEvent: {}
+[49.453199] (-) TimerEvent: {}
+[49.553805] (-) TimerEvent: {}
+[49.654421] (-) TimerEvent: {}
+[49.755084] (-) TimerEvent: {}
+[49.781586] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.9.2\n'}
+[49.793108] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-transport8 -- found version 8.2.1\n'}
+[49.793902] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport8\n'}
+[49.855280] (-) TimerEvent: {}
+[49.955881] (-) TimerEvent: {}
+[50.056526] (-) TimerEvent: {}
+[50.157154] (-) TimerEvent: {}
+[50.257740] (-) TimerEvent: {}
+[50.358308] (-) TimerEvent: {}
+[50.459006] (-) TimerEvent: {}
+[50.560195] (-) TimerEvent: {}
+[50.660958] (-) TimerEvent: {}
+[50.761749] (-) TimerEvent: {}
+[50.862558] (-) TimerEvent: {}
+[50.963232] (-) TimerEvent: {}
+[51.063848] (-) TimerEvent: {}
+[51.164711] (-) TimerEvent: {}
+[51.265366] (-) TimerEvent: {}
+[51.304310] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found suitable version "3.6.1", minimum required is "3") \n'}
+[51.365567] (-) TimerEvent: {}
+[51.466460] (-) TimerEvent: {}
+[51.567130] (-) TimerEvent: {}
+[51.667769] (-) TimerEvent: {}
+[51.768396] (-) TimerEvent: {}
+[51.869188] (-) TimerEvent: {}
+[51.969924] (-) TimerEvent: {}
+[52.070670] (-) TimerEvent: {}
+[52.171362] (-) TimerEvent: {}
+[52.272117] (-) TimerEvent: {}
+[52.372808] (-) TimerEvent: {}
+[52.473520] (-) TimerEvent: {}
+[52.574337] (-) TimerEvent: {}
+[52.675073] (-) TimerEvent: {}
+[52.749703] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Config-file not installed for ZeroMQ -- checking for pkg-config\n'}
+[52.756889] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'libzmq >= 4'\n"}
+[52.775295] (-) TimerEvent: {}
+[52.790428] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found libzmq , version 4.3.2\n'}
+[52.875574] (-) TimerEvent: {}
+[52.976367] (-) TimerEvent: {}
+[52.985019] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found ZeroMQ: TRUE (Required is at least version "4") \n'}
+[53.076278] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'uuid'\n"}
+[53.076694] (-) TimerEvent: {}
+[53.101540] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found uuid, version 2.34.0\n'}
+[53.177151] (-) TimerEvent: {}
+[53.278011] (-) TimerEvent: {}
+[53.309623] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found UUID: TRUE  \n'}
+[53.321262] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-msgs5 -- found version 5.8.1\n'}
+[53.322014] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-msgs5\n'}
+[53.378239] (-) TimerEvent: {}
+[53.478973] (-) TimerEvent: {}
+[53.579662] (-) TimerEvent: {}
+[53.680322] (-) TimerEvent: {}
+[53.780984] (-) TimerEvent: {}
+[53.881626] (-) TimerEvent: {}
+[53.982306] (-) TimerEvent: {}
+[54.082919] (-) TimerEvent: {}
+[54.183620] (-) TimerEvent: {}
+[54.284209] (-) TimerEvent: {}
+[54.384958] (-) TimerEvent: {}
+[54.485583] (-) TimerEvent: {}
+[54.586388] (-) TimerEvent: {}
+[54.687140] (-) TimerEvent: {}
+[54.787842] (-) TimerEvent: {}
+[54.888598] (-) TimerEvent: {}
+[54.989517] (-) TimerEvent: {}
+[55.025974] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.9.2\n'}
+[55.042467] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'tinyxml2'\n"}
+[55.066970] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found tinyxml2, version 6.2.0\n'}
+[55.089731] (-) TimerEvent: {}
+[55.190332] (-) TimerEvent: {}
+[55.271744] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-msgs5 -- found version 5.8.1\n'}
+[55.276046] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-common3 -- found version 3.14.0\n'}
+[55.277685] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common3\n'}
+[55.290570] (-) TimerEvent: {}
+[55.343949] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[55.390796] (-) TimerEvent: {}
+[55.414845] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[55.417900] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found DL: TRUE  \n'}
+[55.437846] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for <ignition-common3> component [graphics]\n'}
+[55.441715] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-common3-graphics -- found version 3.14.0\n'}
+[55.443312] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common3-graphics\n'}
+[55.444036] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.9.2\n'}
+[55.452893] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-fuel_tools4 -- found version 4.4.0\n'}
+[55.453653] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Searching for dependencies of ignition-fuel_tools4\n'}
+[55.490975] (-) TimerEvent: {}
+[55.591567] (-) TimerEvent: {}
+[55.692390] (-) TimerEvent: {}
+[55.793097] (-) TimerEvent: {}
+[55.869044] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version "7.68.0")  \n'}
+[55.891488] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'jsoncpp'\n"}
+[55.893346] (-) TimerEvent: {}
+[55.917430] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found jsoncpp, version 1.7.4\n'}
+[55.993679] (-) TimerEvent: {}
+[56.094464] (-) TimerEvent: {}
+[56.155854] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found JSONCPP: TRUE  \n'}
+[56.175853] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Checking for module 'libzip'\n"}
+[56.194792] (-) TimerEvent: {}
+[56.208062] (velodyne_gazebo_plugins) StdoutLine: {'line': b'--   Found libzip, version 1.5.1\n'}
+[56.295021] (-) TimerEvent: {}
+[56.395809] (-) TimerEvent: {}
+[56.432865] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found ZIP: TRUE  \n'}
+[56.433695] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-common3 -- found version 3.14.0\n'}
+[56.434583] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.9.2\n'}
+[56.435491] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Looking for ignition-msgs5 -- found version 5.8.1\n'}
+[56.439240] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Gazebo version: 11.9\n'}
+[56.442959] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found gazebo_ros: 3.5.2 (/opt/ros/galactic/share/gazebo_ros/cmake)\n'}
+[56.496011] (-) TimerEvent: {}
+[56.596607] (-) TimerEvent: {}
+[56.603215] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[56.615575] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)\n'}
+[56.696788] (-) TimerEvent: {}
+[56.797426] (-) TimerEvent: {}
+[56.898050] (-) TimerEvent: {}
+[56.998706] (-) TimerEvent: {}
+[57.099334] (-) TimerEvent: {}
+[57.200070] (-) TimerEvent: {}
+[57.300796] (-) TimerEvent: {}
+[57.401453] (-) TimerEvent: {}
+[57.502102] (-) TimerEvent: {}
+[57.602752] (-) TimerEvent: {}
+[57.703474] (-) TimerEvent: {}
+[57.804145] (-) TimerEvent: {}
+[57.904810] (-) TimerEvent: {}
+[58.005426] (-) TimerEvent: {}
+[58.106154] (-) TimerEvent: {}
+[58.206745] (-) TimerEvent: {}
+[58.307484] (-) TimerEvent: {}
+[58.408192] (-) TimerEvent: {}
+[58.429776] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  \n'}
+[58.508447] (-) TimerEvent: {}
+[58.609169] (-) TimerEvent: {}
+[58.710091] (-) TimerEvent: {}
+[58.810673] (-) TimerEvent: {}
+[58.911299] (-) TimerEvent: {}
+[59.012079] (-) TimerEvent: {}
+[59.112757] (-) TimerEvent: {}
+[59.213429] (-) TimerEvent: {}
+[59.314118] (-) TimerEvent: {}
+[59.414829] (-) TimerEvent: {}
+[59.515434] (-) TimerEvent: {}
+[59.616126] (-) TimerEvent: {}
+[59.716766] (-) TimerEvent: {}
+[59.817355] (-) TimerEvent: {}
+[59.917987] (-) TimerEvent: {}
+[60.018669] (-) TimerEvent: {}
+[60.119315] (-) TimerEvent: {}
+[60.219996] (-) TimerEvent: {}
+[60.320686] (-) TimerEvent: {}
+[60.412628] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/galactic/include  \n'}
+[60.420879] (-) TimerEvent: {}
+[60.521462] (-) TimerEvent: {}
+[60.622099] (-) TimerEvent: {}
+[60.722877] (-) TimerEvent: {}
+[60.823679] (-) TimerEvent: {}
+[60.924492] (-) TimerEvent: {}
+[61.025231] (-) TimerEvent: {}
+[61.126086] (-) TimerEvent: {}
+[61.226744] (-) TimerEvent: {}
+[61.327405] (-) TimerEvent: {}
+[61.428113] (-) TimerEvent: {}
+[61.529131] (-) TimerEvent: {}
+[61.629873] (-) TimerEvent: {}
+[61.730820] (-) TimerEvent: {}
+[61.831530] (-) TimerEvent: {}
+[61.932190] (-) TimerEvent: {}
+[62.032913] (-) TimerEvent: {}
+[62.133645] (-) TimerEvent: {}
+[62.234667] (-) TimerEvent: {}
+[62.335335] (-) TimerEvent: {}
+[62.436319] (-) TimerEvent: {}
+[62.537021] (-) TimerEvent: {}
+[62.637825] (-) TimerEvent: {}
+[62.738563] (-) TimerEvent: {}
+[62.839258] (-) TimerEvent: {}
+[62.940203] (-) TimerEvent: {}
+[63.040972] (-) TimerEvent: {}
+[63.141762] (-) TimerEvent: {}
+[63.242480] (-) TimerEvent: {}
+[63.343116] (-) TimerEvent: {}
+[63.443851] (-) TimerEvent: {}
+[63.544674] (-) TimerEvent: {}
+[63.645287] (-) TimerEvent: {}
+[63.746269] (-) TimerEvent: {}
+[63.747972] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[63.847580] (-) TimerEvent: {}
+[63.885546] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)\n'}
+[63.892558] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)\n'}
+[63.934152] (velodyne_gazebo_plugins) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_cyclonedds_cpp' as default\n"}
+[63.937594] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[63.947850] (-) TimerEvent: {}
+[64.048558] (-) TimerEvent: {}
+[64.149250] (-) TimerEvent: {}
+[64.249930] (-) TimerEvent: {}
+[64.288637] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found gazebo_msgs: 3.5.2 (/opt/ros/galactic/share/gazebo_msgs/cmake)\n'}
+[64.350168] (-) TimerEvent: {}
+[64.450836] (-) TimerEvent: {}
+[64.551419] (-) TimerEvent: {}
+[64.652066] (-) TimerEvent: {}
+[64.752772] (-) TimerEvent: {}
+[64.853562] (-) TimerEvent: {}
+[64.954602] (-) TimerEvent: {}
+[65.055555] (-) TimerEvent: {}
+[65.064337] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found sensor_msgs: 2.2.3 (/opt/ros/galactic/share/sensor_msgs/cmake)\n'}
+[65.155798] (-) TimerEvent: {}
+[65.222898] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Found tf2: 0.17.2 (/opt/ros/galactic/share/tf2/cmake)\n'}
+[65.256003] (-) TimerEvent: {}
+[65.356657] (-) TimerEvent: {}
+[65.422420] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Configuring done\n'}
+[65.456915] (-) TimerEvent: {}
+[65.542998] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Generating done\n'}
+[65.548661] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins\n'}
+[65.557155] (-) TimerEvent: {}
+[65.568369] (velodyne_gazebo_plugins) CommandEnded: {'returncode': 0}
+[65.570691] (velodyne_gazebo_plugins) JobProgress: {'identifier': 'velodyne_gazebo_plugins', 'progress': 'build'}
+[65.574596] (velodyne_gazebo_plugins) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', '--', '-j16', '-l16'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[65.642268] (velodyne_gazebo_plugins) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target gazebo_ros_velodyne_laser\x1b[0m\n'}
+[65.657389] (-) TimerEvent: {}
+[65.758096] (-) TimerEvent: {}
+[65.858708] (-) TimerEvent: {}
+[65.959340] (-) TimerEvent: {}
+[66.059918] (-) TimerEvent: {}
+[66.160615] (-) TimerEvent: {}
+[66.199605] (velodyne_gazebo_plugins) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/gazebo_ros_velodyne_laser.dir/src/GazeboRosVelodyneLaser.cpp.o\x1b[0m\n'}
+[66.260785] (-) TimerEvent: {}
+[66.361546] (-) TimerEvent: {}
+[66.462487] (-) TimerEvent: {}
+[66.563281] (-) TimerEvent: {}
+[66.664068] (-) TimerEvent: {}
+[66.764794] (-) TimerEvent: {}
+[66.865489] (-) TimerEvent: {}
+[66.966186] (-) TimerEvent: {}
+[67.066806] (-) TimerEvent: {}
+[67.167486] (-) TimerEvent: {}
+[67.268181] (-) TimerEvent: {}
+[67.368890] (-) TimerEvent: {}
+[67.470019] (-) TimerEvent: {}
+[67.570822] (-) TimerEvent: {}
+[67.671610] (-) TimerEvent: {}
+[67.772391] (-) TimerEvent: {}
+[67.873115] (-) TimerEvent: {}
+[67.973903] (-) TimerEvent: {}
+[68.074672] (-) TimerEvent: {}
+[68.175485] (-) TimerEvent: {}
+[68.276255] (-) TimerEvent: {}
+[68.376991] (-) TimerEvent: {}
+[68.477542] (-) TimerEvent: {}
+[68.578396] (-) TimerEvent: {}
+[68.679203] (-) TimerEvent: {}
+[68.779769] (-) TimerEvent: {}
+[68.880400] (-) TimerEvent: {}
+[68.981128] (-) TimerEvent: {}
+[69.081898] (-) TimerEvent: {}
+[69.182614] (-) TimerEvent: {}
+[69.283161] (-) TimerEvent: {}
+[69.383736] (-) TimerEvent: {}
+[69.484561] (-) TimerEvent: {}
+[69.585231] (-) TimerEvent: {}
+[69.686131] (-) TimerEvent: {}
+[69.786906] (-) TimerEvent: {}
+[69.887588] (-) TimerEvent: {}
+[69.988205] (-) TimerEvent: {}
+[70.088815] (-) TimerEvent: {}
+[70.189407] (-) TimerEvent: {}
+[70.290034] (-) TimerEvent: {}
+[70.390741] (-) TimerEvent: {}
+[70.491694] (-) TimerEvent: {}
+[70.592417] (-) TimerEvent: {}
+[70.693226] (-) TimerEvent: {}
+[70.793956] (-) TimerEvent: {}
+[70.894589] (-) TimerEvent: {}
+[70.995370] (-) TimerEvent: {}
+[71.096105] (-) TimerEvent: {}
+[71.196800] (-) TimerEvent: {}
+[71.297429] (-) TimerEvent: {}
+[71.398695] (-) TimerEvent: {}
+[71.500400] (-) TimerEvent: {}
+[71.601458] (-) TimerEvent: {}
+[71.713227] (-) TimerEvent: {}
+[71.815072] (-) TimerEvent: {}
+[71.916989] (-) TimerEvent: {}
+[72.018161] (-) TimerEvent: {}
+[72.119357] (-) TimerEvent: {}
+[72.220506] (-) TimerEvent: {}
+[72.321524] (-) TimerEvent: {}
+[72.422597] (-) TimerEvent: {}
+[72.523926] (-) TimerEvent: {}
+[72.624665] (-) TimerEvent: {}
+[72.725515] (-) TimerEvent: {}
+[72.826199] (-) TimerEvent: {}
+[72.926862] (-) TimerEvent: {}
+[73.027594] (-) TimerEvent: {}
+[73.128179] (-) TimerEvent: {}
+[73.228905] (-) TimerEvent: {}
+[73.329597] (-) TimerEvent: {}
+[73.430349] (-) TimerEvent: {}
+[73.531232] (-) TimerEvent: {}
+[73.632052] (-) TimerEvent: {}
+[73.732804] (-) TimerEvent: {}
+[73.833552] (-) TimerEvent: {}
+[73.934141] (-) TimerEvent: {}
+[74.034860] (-) TimerEvent: {}
+[74.135578] (-) TimerEvent: {}
+[74.236294] (-) TimerEvent: {}
+[74.337087] (-) TimerEvent: {}
+[74.437978] (-) TimerEvent: {}
+[74.538673] (-) TimerEvent: {}
+[74.639332] (-) TimerEvent: {}
+[74.739967] (-) TimerEvent: {}
+[74.840644] (-) TimerEvent: {}
+[74.941293] (-) TimerEvent: {}
+[75.042214] (-) TimerEvent: {}
+[75.143340] (-) TimerEvent: {}
+[75.244444] (-) TimerEvent: {}
+[75.345227] (-) TimerEvent: {}
+[75.446303] (-) TimerEvent: {}
+[75.547247] (-) TimerEvent: {}
+[75.648086] (-) TimerEvent: {}
+[75.748842] (-) TimerEvent: {}
+[75.849627] (-) TimerEvent: {}
+[75.950408] (-) TimerEvent: {}
+[76.051151] (-) TimerEvent: {}
+[76.151746] (-) TimerEvent: {}
+[76.252362] (-) TimerEvent: {}
+[76.352995] (-) TimerEvent: {}
+[76.453613] (-) TimerEvent: {}
+[76.554300] (-) TimerEvent: {}
+[76.654941] (-) TimerEvent: {}
+[76.755799] (-) TimerEvent: {}
+[76.856420] (-) TimerEvent: {}
+[76.957129] (-) TimerEvent: {}
+[77.057818] (-) TimerEvent: {}
+[77.158375] (-) TimerEvent: {}
+[77.258959] (-) TimerEvent: {}
+[77.359608] (-) TimerEvent: {}
+[77.460298] (-) TimerEvent: {}
+[77.560910] (-) TimerEvent: {}
+[77.661653] (-) TimerEvent: {}
+[77.762566] (-) TimerEvent: {}
+[77.863339] (-) TimerEvent: {}
+[77.964142] (-) TimerEvent: {}
+[78.064867] (-) TimerEvent: {}
+[78.165547] (-) TimerEvent: {}
+[78.266426] (-) TimerEvent: {}
+[78.367131] (-) TimerEvent: {}
+[78.467805] (-) TimerEvent: {}
+[78.568463] (-) TimerEvent: {}
+[78.669187] (-) TimerEvent: {}
+[78.769942] (-) TimerEvent: {}
+[78.870658] (-) TimerEvent: {}
+[78.971290] (-) TimerEvent: {}
+[79.071907] (-) TimerEvent: {}
+[79.172560] (-) TimerEvent: {}
+[79.273170] (-) TimerEvent: {}
+[79.373756] (-) TimerEvent: {}
+[79.474448] (-) TimerEvent: {}
+[79.575278] (-) TimerEvent: {}
+[79.676096] (-) TimerEvent: {}
+[79.776784] (-) TimerEvent: {}
+[79.877442] (-) TimerEvent: {}
+[79.978204] (-) TimerEvent: {}
+[80.078944] (-) TimerEvent: {}
+[80.179617] (-) TimerEvent: {}
+[80.280563] (-) TimerEvent: {}
+[80.381338] (-) TimerEvent: {}
+[80.482226] (-) TimerEvent: {}
+[80.583164] (-) TimerEvent: {}
+[80.683780] (-) TimerEvent: {}
+[80.784609] (-) TimerEvent: {}
+[80.885458] (-) TimerEvent: {}
+[80.986253] (-) TimerEvent: {}
+[81.087044] (-) TimerEvent: {}
+[81.187715] (-) TimerEvent: {}
+[81.288411] (-) TimerEvent: {}
+[81.389168] (-) TimerEvent: {}
+[81.489868] (-) TimerEvent: {}
+[81.590954] (-) TimerEvent: {}
+[81.691658] (-) TimerEvent: {}
+[81.792612] (-) TimerEvent: {}
+[81.893570] (-) TimerEvent: {}
+[81.994329] (-) TimerEvent: {}
+[82.094985] (-) TimerEvent: {}
+[82.195799] (-) TimerEvent: {}
+[82.296540] (-) TimerEvent: {}
+[82.397254] (-) TimerEvent: {}
+[82.497923] (-) TimerEvent: {}
+[82.598744] (-) TimerEvent: {}
+[82.699492] (-) TimerEvent: {}
+[82.800335] (-) TimerEvent: {}
+[82.901160] (-) TimerEvent: {}
+[83.001858] (-) TimerEvent: {}
+[83.102635] (-) TimerEvent: {}
+[83.203528] (-) TimerEvent: {}
+[83.304142] (-) TimerEvent: {}
+[83.404781] (-) TimerEvent: {}
+[83.505589] (-) TimerEvent: {}
+[83.606419] (-) TimerEvent: {}
+[83.707051] (-) TimerEvent: {}
+[83.807822] (-) TimerEvent: {}
+[83.908659] (-) TimerEvent: {}
+[84.009529] (-) TimerEvent: {}
+[84.110559] (-) TimerEvent: {}
+[84.211295] (-) TimerEvent: {}
+[84.312056] (-) TimerEvent: {}
+[84.412801] (-) TimerEvent: {}
+[84.513646] (-) TimerEvent: {}
+[84.614341] (-) TimerEvent: {}
+[84.714949] (-) TimerEvent: {}
+[84.815812] (-) TimerEvent: {}
+[84.916450] (-) TimerEvent: {}
+[85.017054] (-) TimerEvent: {}
+[85.117794] (-) TimerEvent: {}
+[85.218516] (-) TimerEvent: {}
+[85.298460] (velodyne_gazebo_plugins) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/client.hpp:40\x1b[m\x1b[K,\n'}
+[85.299388] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/callback_group.hpp:23\x1b[m\x1b[K,\n'}
+[85.299673] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/any_executable.hpp:20\x1b[m\x1b[K,\n'}
+[85.299893] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/memory_strategy.hpp:25\x1b[m\x1b[K,\n'}
+[85.300148] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/memory_strategies.hpp:18\x1b[m\x1b[K,\n'}
+[85.300347] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/executor_options.hpp:20\x1b[m\x1b[K,\n'}
+[85.300613] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/executor.hpp:36\x1b[m\x1b[K,\n'}
+[85.300745] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/executors/multi_threaded_executor.hpp:26\x1b[m\x1b[K,\n'}
+[85.301112] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/executors.hpp:21\x1b[m\x1b[K,\n'}
+[85.301593] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/rclcpp/rclcpp.hpp:156\x1b[m\x1b[K,\n'}
+[85.301774] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/opt/ros/galactic/include/gazebo_ros/node.hpp:18\x1b[m\x1b[K,\n'}
+[85.302099] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins/GazeboRosVelodyneLaser.hpp:48\x1b[m\x1b[K,\n'}
+[85.302397] (velodyne_gazebo_plugins) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:35\x1b[m\x1b[K:\n'}
+[85.302589] (velodyne_gazebo_plugins) StderrLine: {'line': b'\x1b[01m\x1b[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvirtual void gazebo::GazeboRosVelodyneLaser::Load(gazebo::sensors::SensorPtr, sdf::v9::ElementPtr)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[85.302799] (velodyne_gazebo_plugins) StderrLine: {'line': b'\x1b[01m\x1b[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:124:40:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kformat \xe2\x80\x98\x1b[01m\x1b[K%s\x1b[m\x1b[K\xe2\x80\x99 expects a matching \xe2\x80\x98\x1b[01m\x1b[Kchar*\x1b[m\x1b[K\xe2\x80\x99 argument [\x1b[01;35m\x1b[K-Wformat=\x1b[m\x1b[K]\n'}
+[85.303075] (velodyne_gazebo_plugins) StderrLine: {'line': b'  124 |   RCLCPP_INFO(ros_node_->get_logger(), \x1b[01;35m\x1b[K"Velodyne %slaser plugin ready"\x1b[m\x1b[K);\n'}
+[85.303265] (velodyne_gazebo_plugins) StderrLine: {'line': b'      |                                        \x1b[01;35m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[85.303519] (velodyne_gazebo_plugins) StderrLine: {'line': b'\x1b[01m\x1b[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:124:51:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kformat string is defined here\n'}
+[85.303807] (velodyne_gazebo_plugins) StderrLine: {'line': b'  124 |   RCLCPP_INFO(ros_node_->get_logger(), "Velodyne \x1b[01;36m\x1b[K%s\x1b[m\x1b[Klaser plugin ready");\n'}
+[85.304066] (velodyne_gazebo_plugins) StderrLine: {'line': b'      |                                                  \x1b[01;36m\x1b[K~^\x1b[m\x1b[K\n'}
+[85.304397] (velodyne_gazebo_plugins) StderrLine: {'line': b'      |                                                   \x1b[01;36m\x1b[K|\x1b[m\x1b[K\n'}
+[85.304685] (velodyne_gazebo_plugins) StderrLine: {'line': b'      |                                                   \x1b[01;36m\x1b[Kchar*\x1b[m\x1b[K\n'}
+[85.318762] (-) TimerEvent: {}
+[85.419772] (-) TimerEvent: {}
+[85.521304] (-) TimerEvent: {}
+[85.622014] (-) TimerEvent: {}
+[85.722638] (-) TimerEvent: {}
+[85.823447] (-) TimerEvent: {}
+[85.924234] (-) TimerEvent: {}
+[86.025073] (-) TimerEvent: {}
+[86.125856] (-) TimerEvent: {}
+[86.226608] (-) TimerEvent: {}
+[86.327344] (-) TimerEvent: {}
+[86.428194] (-) TimerEvent: {}
+[86.528948] (-) TimerEvent: {}
+[86.629600] (-) TimerEvent: {}
+[86.730273] (-) TimerEvent: {}
+[86.831004] (-) TimerEvent: {}
+[86.932478] (-) TimerEvent: {}
+[87.033214] (-) TimerEvent: {}
+[87.133894] (-) TimerEvent: {}
+[87.234507] (-) TimerEvent: {}
+[87.335198] (-) TimerEvent: {}
+[87.435826] (-) TimerEvent: {}
+[87.536564] (-) TimerEvent: {}
+[87.637266] (-) TimerEvent: {}
+[87.738054] (-) TimerEvent: {}
+[87.838714] (-) TimerEvent: {}
+[87.939489] (-) TimerEvent: {}
+[88.040200] (-) TimerEvent: {}
+[88.140827] (-) TimerEvent: {}
+[88.241551] (-) TimerEvent: {}
+[88.342386] (-) TimerEvent: {}
+[88.443187] (-) TimerEvent: {}
+[88.543961] (-) TimerEvent: {}
+[88.644661] (-) TimerEvent: {}
+[88.745381] (-) TimerEvent: {}
+[88.846009] (-) TimerEvent: {}
+[88.946693] (-) TimerEvent: {}
+[89.047507] (-) TimerEvent: {}
+[89.148247] (-) TimerEvent: {}
+[89.249054] (-) TimerEvent: {}
+[89.349953] (-) TimerEvent: {}
+[89.450654] (-) TimerEvent: {}
+[89.551475] (-) TimerEvent: {}
+[89.653023] (-) TimerEvent: {}
+[89.753870] (-) TimerEvent: {}
+[89.854611] (-) TimerEvent: {}
+[89.955339] (-) TimerEvent: {}
+[90.056224] (-) TimerEvent: {}
+[90.156963] (-) TimerEvent: {}
+[90.257707] (-) TimerEvent: {}
+[90.358515] (-) TimerEvent: {}
+[90.459048] (-) TimerEvent: {}
+[90.559639] (-) TimerEvent: {}
+[90.660583] (-) TimerEvent: {}
+[90.761200] (-) TimerEvent: {}
+[90.861888] (-) TimerEvent: {}
+[90.962460] (-) TimerEvent: {}
+[91.063168] (-) TimerEvent: {}
+[91.163902] (-) TimerEvent: {}
+[91.264720] (-) TimerEvent: {}
+[91.365742] (-) TimerEvent: {}
+[91.466418] (-) TimerEvent: {}
+[91.567110] (-) TimerEvent: {}
+[91.667845] (-) TimerEvent: {}
+[91.768555] (-) TimerEvent: {}
+[91.869524] (-) TimerEvent: {}
+[91.970363] (-) TimerEvent: {}
+[92.071191] (-) TimerEvent: {}
+[92.171964] (-) TimerEvent: {}
+[92.272684] (-) TimerEvent: {}
+[92.373364] (-) TimerEvent: {}
+[92.474084] (-) TimerEvent: {}
+[92.574849] (-) TimerEvent: {}
+[92.675681] (-) TimerEvent: {}
+[92.776299] (-) TimerEvent: {}
+[92.877072] (-) TimerEvent: {}
+[92.977703] (-) TimerEvent: {}
+[93.078570] (-) TimerEvent: {}
+[93.179779] (-) TimerEvent: {}
+[93.280608] (-) TimerEvent: {}
+[93.381470] (-) TimerEvent: {}
+[93.482251] (-) TimerEvent: {}
+[93.582873] (-) TimerEvent: {}
+[93.683614] (-) TimerEvent: {}
+[93.784262] (-) TimerEvent: {}
+[93.884966] (-) TimerEvent: {}
+[93.985792] (-) TimerEvent: {}
+[94.086593] (-) TimerEvent: {}
+[94.187296] (-) TimerEvent: {}
+[94.288032] (-) TimerEvent: {}
+[94.388918] (-) TimerEvent: {}
+[94.490023] (-) TimerEvent: {}
+[94.590894] (-) TimerEvent: {}
+[94.691596] (-) TimerEvent: {}
+[94.792160] (-) TimerEvent: {}
+[94.892801] (-) TimerEvent: {}
+[94.993640] (-) TimerEvent: {}
+[95.094411] (-) TimerEvent: {}
+[95.195112] (-) TimerEvent: {}
+[95.295772] (-) TimerEvent: {}
+[95.396390] (-) TimerEvent: {}
+[95.496945] (-) TimerEvent: {}
+[95.597541] (-) TimerEvent: {}
+[95.698147] (-) TimerEvent: {}
+[95.798815] (-) TimerEvent: {}
+[95.899519] (-) TimerEvent: {}
+[96.000618] (-) TimerEvent: {}
+[96.101534] (-) TimerEvent: {}
+[96.202255] (-) TimerEvent: {}
+[96.302958] (-) TimerEvent: {}
+[96.403576] (-) TimerEvent: {}
+[96.504172] (-) TimerEvent: {}
+[96.604891] (-) TimerEvent: {}
+[96.705793] (-) TimerEvent: {}
+[96.806414] (-) TimerEvent: {}
+[96.907180] (-) TimerEvent: {}
+[97.007853] (-) TimerEvent: {}
+[97.108514] (-) TimerEvent: {}
+[97.209263] (-) TimerEvent: {}
+[97.309979] (-) TimerEvent: {}
+[97.410560] (-) TimerEvent: {}
+[97.511364] (-) TimerEvent: {}
+[97.612162] (-) TimerEvent: {}
+[97.712777] (-) TimerEvent: {}
+[97.813376] (-) TimerEvent: {}
+[97.914881] (-) TimerEvent: {}
+[98.015552] (-) TimerEvent: {}
+[98.116489] (-) TimerEvent: {}
+[98.217222] (-) TimerEvent: {}
+[98.365977] (-) TimerEvent: {}
+[98.466844] (-) TimerEvent: {}
+[98.567558] (-) TimerEvent: {}
+[98.668259] (-) TimerEvent: {}
+[98.769016] (-) TimerEvent: {}
+[98.869638] (-) TimerEvent: {}
+[98.925036] (velodyne_gazebo_plugins) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX shared library libgazebo_ros_velodyne_laser.so\x1b[0m\n'}
+[98.969845] (-) TimerEvent: {}
+[99.070546] (-) TimerEvent: {}
+[99.171320] (-) TimerEvent: {}
+[99.272035] (-) TimerEvent: {}
+[99.372906] (-) TimerEvent: {}
+[99.473654] (-) TimerEvent: {}
+[99.574462] (-) TimerEvent: {}
+[99.675278] (-) TimerEvent: {}
+[99.776026] (-) TimerEvent: {}
+[99.876643] (-) TimerEvent: {}
+[99.977457] (-) TimerEvent: {}
+[100.078154] (-) TimerEvent: {}
+[100.178855] (-) TimerEvent: {}
+[100.279405] (-) TimerEvent: {}
+[100.380022] (-) TimerEvent: {}
+[100.480755] (-) TimerEvent: {}
+[100.563830] (velodyne_gazebo_plugins) StdoutLine: {'line': b'[100%] Built target gazebo_ros_velodyne_laser\n'}
+[100.581018] (-) TimerEvent: {}
+[100.592154] (velodyne_gazebo_plugins) CommandEnded: {'returncode': 0}
+[100.642456] (velodyne_gazebo_plugins) JobProgress: {'identifier': 'velodyne_gazebo_plugins', 'progress': 'install'}
+[100.643578] (velodyne_gazebo_plugins) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[100.662395] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[100.663062] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/library_path.sh\n'}
+[100.663800] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/library_path.dsv\n'}
+[100.664763] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/package_run_dependencies/velodyne_gazebo_plugins\n'}
+[100.665445] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/parent_prefix_path/velodyne_gazebo_plugins\n'}
+[100.666496] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/ament_prefix_path.sh\n'}
+[100.667302] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/ament_prefix_path.dsv\n'}
+[100.668021] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/path.sh\n'}
+[100.669025] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/path.dsv\n'}
+[100.669870] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.bash\n'}
+[100.670637] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.sh\n'}
+[100.671417] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.zsh\n'}
+[100.672103] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.dsv\n'}
+[100.672850] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.dsv\n'}
+[100.673384] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/packages/velodyne_gazebo_plugins\n'}
+[100.673949] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[100.674225] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[100.674608] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[100.675007] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/velodyne_gazebo_pluginsConfig.cmake\n'}
+[100.675507] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/velodyne_gazebo_pluginsConfig-version.cmake\n'}
+[100.676390] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.xml\n'}
+[100.676545] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include\n'}
+[100.676672] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins\n'}
+[100.676781] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins/GazeboRosVelodyneLaser.hpp\n'}
+[100.677531] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_laser.so\n'}
+[100.681229] (-) TimerEvent: {}
+[100.685471] (velodyne_gazebo_plugins) StdoutLine: {'line': b'-- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_laser.so" to ""\n'}
+[100.689946] (velodyne_gazebo_plugins) CommandEnded: {'returncode': 0}
+[100.782016] (-) TimerEvent: {}
+[100.786442] (velodyne_gazebo_plugins) JobEnded: {'identifier': 'velodyne_gazebo_plugins', 'rc': 0}
+[100.793346] (velodyne_simulator) JobStarted: {'identifier': 'velodyne_simulator'}
+[100.882353] (-) TimerEvent: {}
+[100.983166] (-) TimerEvent: {}
+[101.053993] (velodyne_simulator) JobProgress: {'identifier': 'velodyne_simulator', 'progress': 'cmake'}
+[101.057919] (velodyne_simulator) Command: {'cmd': ['/usr/bin/cmake', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_simulator', '-DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic')]), 'shell': False}
+[101.083395] (-) TimerEvent: {}
+[101.184203] (-) TimerEvent: {}
+[101.284855] (-) TimerEvent: {}
+[101.385713] (-) TimerEvent: {}
+[101.390376] (velodyne_simulator) StdoutLine: {'line': b'-- The C compiler identification is GNU 9.3.0\n'}
+[101.485871] (-) TimerEvent: {}
+[101.586542] (-) TimerEvent: {}
+[101.687504] (-) TimerEvent: {}
+[101.788142] (-) TimerEvent: {}
+[101.836968] (velodyne_simulator) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 9.3.0\n'}
+[101.888349] (-) TimerEvent: {}
+[101.989223] (-) TimerEvent: {}
+[102.089793] (velodyne_simulator) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[102.090121] (-) TimerEvent: {}
+[102.190668] (-) TimerEvent: {}
+[102.291357] (-) TimerEvent: {}
+[102.346010] (velodyne_simulator) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[102.348008] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[102.391598] (-) TimerEvent: {}
+[102.492281] (-) TimerEvent: {}
+[102.592977] (-) TimerEvent: {}
+[102.614633] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[102.638563] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[102.639300] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[102.644134] (velodyne_simulator) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[102.693206] (-) TimerEvent: {}
+[102.793796] (-) TimerEvent: {}
+[102.894409] (-) TimerEvent: {}
+[102.905375] (velodyne_simulator) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[102.907557] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[102.994689] (-) TimerEvent: {}
+[103.095383] (-) TimerEvent: {}
+[103.181851] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[103.195598] (-) TimerEvent: {}
+[103.205851] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[103.207211] (velodyne_simulator) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[103.211049] (velodyne_simulator) StdoutLine: {'line': b'-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)\n'}
+[103.255121] (velodyne_simulator) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[103.256048] (velodyne_simulator) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[103.296024] (-) TimerEvent: {}
+[103.396672] (-) TimerEvent: {}
+[103.497287] (-) TimerEvent: {}
+[103.501412] (velodyne_simulator) StdoutLine: {'line': b'-- Configuring done\n'}
+[103.507673] (velodyne_simulator) StdoutLine: {'line': b'-- Generating done\n'}
+[103.510813] (velodyne_simulator) StdoutLine: {'line': b'-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator\n'}
+[103.515224] (velodyne_simulator) CommandEnded: {'returncode': 0}
+[103.520688] (velodyne_simulator) JobProgress: {'identifier': 'velodyne_simulator', 'progress': 'build'}
+[103.521064] (velodyne_simulator) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator', '--', '-j16', '-l16'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic')]), 'shell': False}
+[103.583071] (velodyne_simulator) CommandEnded: {'returncode': 0}
+[103.597600] (-) TimerEvent: {}
+[103.627506] (velodyne_simulator) JobProgress: {'identifier': 'velodyne_simulator', 'progress': 'install'}
+[103.630545] (velodyne_simulator) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator'], 'cwd': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'harshmuriki'), ('GIT_ASKPASS', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('WT_PROFILE_ID', '{2c4de342-38b7-51cf-b940-2309a097f518}'), ('HOME', '/home/harshmuriki'), ('OLDPWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software'), ('TERM_PROGRAM_VERSION', '1.63.2'), ('VSCODE_IPC_HOOK_CLI', '/mnt/wslg/runtime-dir/vscode-ipc-d648b0b6-9c58-4ea7-b888-a2a5b42ecbbf.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node'), ('COLORTERM', 'truecolor'), ('WSL_DISTRO_NAME', 'Ubuntu'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'harshmuriki'), ('NAME', 'Code'), ('WSL_INTEROP', '/run/WSL/2089_interop'), ('PULSE_SERVER', '/mnt/wslg/PulseServer'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/galactic/bin:/home/harshmuriki/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/windows/system32:/mnt/c/windows:/mnt/c/windows/System32/Wbem:/mnt/c/windows/System32/WindowsPowerShell/v1.0/:/mnt/c/windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/harsh/miniconda3:/mnt/c/Users/harsh/miniconda3/Library/mingw-w64/bin:/mnt/c/Users/harsh/miniconda3/Library/usr/bin:/mnt/c/Users/harsh/miniconda3/Library/bin:/mnt/c/Users/harsh/miniconda3/Scripts:/mnt/c/Users/harsh/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/harsh/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2021.3.1/bin:/mnt/c/Users/harsh/.dotnet/tools:/mnt/c/Program Files/JetBrains/PyCharm Edu 2021.3.1/bin:/snap/bin'), ('WT_SESSION', 'b9b8370f-295c-4b6b-871b-c60507f84c67'), ('XDG_RUNTIME_DIR', '/mnt/wslg/runtime-dir'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/mnt/wslg/runtime-dir/vscode-git-545cca0496.sock'), ('TERM_PROGRAM', 'vscode'), ('AMENT_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('PWD', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', 'ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID'), ('CMAKE_PREFIX_PATH', '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins:/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description:/opt/ros/galactic')]), 'shell': False}
+[103.644923] (velodyne_simulator) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[103.646417] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/package_run_dependencies/velodyne_simulator\n'}
+[103.647377] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/parent_prefix_path/velodyne_simulator\n'}
+[103.648334] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/ament_prefix_path.sh\n'}
+[103.649014] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/ament_prefix_path.dsv\n'}
+[103.649451] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/path.sh\n'}
+[103.650129] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/environment/path.dsv\n'}
+[103.650865] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.bash\n'}
+[103.651723] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.sh\n'}
+[103.652226] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.zsh\n'}
+[103.652435] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/local_setup.dsv\n'}
+[103.652936] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/package.dsv\n'}
+[103.653149] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/ament_index/resource_index/packages/velodyne_simulator\n'}
+[103.653708] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/cmake/velodyne_simulatorConfig.cmake\n'}
+[103.654154] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/cmake/velodyne_simulatorConfig-version.cmake\n'}
+[103.654483] (velodyne_simulator) StdoutLine: {'line': b'-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator/share/velodyne_simulator/package.xml\n'}
+[103.657667] (velodyne_simulator) CommandEnded: {'returncode': 0}
+[103.697891] (-) TimerEvent: {}
+[103.723548] (velodyne_simulator) JobEnded: {'identifier': 'velodyne_simulator', 'rc': 0}
+[103.727665] (-) EventReactorShutdown: {}

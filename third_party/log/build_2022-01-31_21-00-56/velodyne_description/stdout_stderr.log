@@ -1,0 +1,44 @@
+-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description
+-- Install configuration: ""
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/launch
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/launch/example.launch.py
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_scan.dae
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_2.stl
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_scan.stl
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_scan.dae
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_base.dae
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/HDL32E_base.stl
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_scan.stl
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_1.stl
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_1.dae
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/meshes/VLP16_base_2.dae
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/rviz
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/rviz/example.rviz
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/example.urdf.xacro
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/HDL-32E.urdf.xacro
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/urdf/VLP-16.urdf.xacro
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/world
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/world/example.world
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/velodyne_description.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/package_run_dependencies/velodyne_description
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/parent_prefix_path/velodyne_description
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/ament_prefix_path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/ament_prefix_path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/environment/path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.bash
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.zsh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/local_setup.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/package.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/ament_index/resource_index/packages/velodyne_description
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig-version.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description/share/velodyne_description/package.xml

@@ -1,0 +1,3 @@
+source;share/velodyne_gazebo_plugins/environment/ament_prefix_path.sh
+source;share/velodyne_gazebo_plugins/environment/library_path.sh
+source;share/velodyne_gazebo_plugins/environment/path.sh

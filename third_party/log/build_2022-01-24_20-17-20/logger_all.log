@@ -1,0 +1,197 @@
+[0.474s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.475s] DEBUG:colcon:Parsed command line arguments: Namespace(allow_overriding=[], ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='parallel', ignore_user_meta=False, install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7f93b76421c0>>, merge_install=False, metas=['./colcon.meta'], packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_end=None, packages_ignore=None, packages_ignore_regex=None, packages_select=None, packages_select_build_failed=False, packages_select_by_dep=None, packages_select_regex=None, packages_select_test_failures=False, packages_skip=None, packages_skip_build_finished=False, packages_skip_by_dep=None, packages_skip_regex=None, packages_skip_test_passed=False, packages_skip_up_to=None, packages_start=None, packages_up_to=None, packages_up_to_regex=None, parallel_workers=16, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7f93b76421c0>, verb_name='build', verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7f93b7642700>)
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.486s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.486s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party'
+[0.486s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.510s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.511s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.511s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.511s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.511s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.511s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extensions ['ignore', 'ignore_ament_install']
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extension 'ignore'
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extension 'ignore_ament_install'
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extensions ['colcon_pkg']
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extension 'colcon_pkg'
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extensions ['colcon_meta']
+[0.512s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extension 'colcon_meta'
+[0.513s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extensions ['ros']
+[0.513s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_usb_camera) by extension 'ros'
+[0.518s] DEBUG:colcon.colcon_core.package_identification:Package 'ros2_usb_camera' with type 'ros.ament_cmake' and name 'usb_camera_driver'
+[0.518s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['ignore', 'ignore_ament_install']
+[0.518s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'ignore'
+[0.518s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'ignore_ament_install'
+[0.518s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['colcon_pkg']
+[0.518s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'colcon_pkg'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['colcon_meta']
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'colcon_meta'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['ros']
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'ros'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['cmake', 'python']
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'cmake'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'python'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extensions ['python_setup_py']
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator) by extension 'python_setup_py'
+[0.519s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['ignore', 'ignore_ament_install']
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'ignore'
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'ignore_ament_install'
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['colcon_pkg']
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'colcon_pkg'
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['colcon_meta']
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'colcon_meta'
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['ros']
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'ros'
+[0.520s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['cmake', 'python']
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'cmake'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'python'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extensions ['python_setup_py']
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/img) by extension 'python_setup_py'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extensions ['ignore', 'ignore_ament_install']
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extension 'ignore'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extension 'ignore_ament_install'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extensions ['colcon_pkg']
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extension 'colcon_pkg'
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extensions ['colcon_meta']
+[0.521s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extension 'colcon_meta'
+[0.522s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extensions ['ros']
+[0.522s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_description) by extension 'ros'
+[0.523s] DEBUG:colcon.colcon_core.package_identification:Package 'velodyne_simulator/velodyne_description' with type 'ros.ament_cmake' and name 'velodyne_description'
+[0.523s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extensions ['ignore', 'ignore_ament_install']
+[0.523s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extension 'ignore'
+[0.524s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extension 'ignore_ament_install'
+[0.524s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extensions ['colcon_pkg']
+[0.524s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extension 'colcon_pkg'
+[0.524s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extensions ['colcon_meta']
+[0.524s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extension 'colcon_meta'
+[0.525s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extensions ['ros']
+[0.525s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_gazebo_plugins) by extension 'ros'
+[0.526s] DEBUG:colcon.colcon_core.package_identification:Package 'velodyne_simulator/velodyne_gazebo_plugins' with type 'ros.ament_cmake' and name 'velodyne_gazebo_plugins'
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extensions ['ignore', 'ignore_ament_install']
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extension 'ignore'
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extension 'ignore_ament_install'
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extensions ['colcon_pkg']
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extension 'colcon_pkg'
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extensions ['colcon_meta']
+[0.527s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extension 'colcon_meta'
+[0.528s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extensions ['ros']
+[0.528s] Level 1:colcon.colcon_core.package_identification:_identify(velodyne_simulator/velodyne_simulator) by extension 'ros'
+[0.528s] DEBUG:colcon.colcon_core.package_identification:Package 'velodyne_simulator/velodyne_simulator' with type 'ros.ament_cmake' and name 'velodyne_simulator'
+[0.529s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.529s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.529s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.529s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.529s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.560s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_args' from command line to 'None'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_target' from command line to 'None'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_clean_cache' from command line to 'False'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_clean_first' from command line to 'False'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'cmake_force_configure' from command line to 'False'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'ament_cmake_args' from command line to 'None'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'catkin_cmake_args' from command line to 'None'
+[0.561s] Level 5:colcon.colcon_core.verb:set package 'usb_camera_driver' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.561s] DEBUG:colcon.colcon_core.verb:Building package 'usb_camera_driver' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver', 'merge_install': False, 'path': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera', 'symlink_install': False, 'test_result_base': None}
+[0.562s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_args' from command line to 'None'
+[0.562s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_target' from command line to 'None'
+[0.562s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.562s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.563s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.563s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.563s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.563s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.563s] Level 5:colcon.colcon_core.verb:set package 'velodyne_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.563s] DEBUG:colcon.colcon_core.verb:Building package 'velodyne_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description', 'merge_install': False, 'path': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description', 'symlink_install': False, 'test_result_base': None}
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_args' from command line to 'None'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_target' from command line to 'None'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_clean_cache' from command line to 'False'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_clean_first' from command line to 'False'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'cmake_force_configure' from command line to 'False'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'ament_cmake_args' from command line to 'None'
+[0.564s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'catkin_cmake_args' from command line to 'None'
+[0.565s] Level 5:colcon.colcon_core.verb:set package 'velodyne_gazebo_plugins' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.565s] DEBUG:colcon.colcon_core.verb:Building package 'velodyne_gazebo_plugins' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins', 'merge_install': False, 'path': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins', 'symlink_install': False, 'test_result_base': None}
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_args' from command line to 'None'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_target' from command line to 'None'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_clean_cache' from command line to 'False'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_clean_first' from command line to 'False'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'cmake_force_configure' from command line to 'False'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'ament_cmake_args' from command line to 'None'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'catkin_cmake_args' from command line to 'None'
+[0.566s] Level 5:colcon.colcon_core.verb:set package 'velodyne_simulator' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.566s] DEBUG:colcon.colcon_core.verb:Building package 'velodyne_simulator' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_simulator', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_simulator', 'merge_install': False, 'path': '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_simulator', 'symlink_install': False, 'test_result_base': None}
+[0.570s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.575s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.575s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description' with build type 'ament_cmake'
+[0.575s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description'
+[0.585s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.585s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.585s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.591s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins' with build type 'ament_cmake'
+[0.591s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins'
+[0.593s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.593s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.599s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera' with build type 'ament_cmake'
+[0.599s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera'
+[0.600s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.600s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.623s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description
+[0.638s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins
+[0.651s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver
+[4.058s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(velodyne_gazebo_plugins)
+[4.065s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins' returned '1': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins
+[4.066s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description' returned '1': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description
+[4.073s] Level 1:colcon.colcon_core.environment:checking '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins' for CMake module files
+[4.074s] Level 1:colcon.colcon_core.environment:checking '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins' for CMake config files
+[4.075s] Level 1:colcon.colcon_core.environment:checking '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/bin'
+[4.075s] Level 1:colcon.colcon_core.environment:checking '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/pkgconfig/velodyne_gazebo_plugins.pc'
+[4.076s] Level 1:colcon.colcon_core.environment:checking '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/python3.8/site-packages'
+[4.077s] INFO:colcon.colcon_core.shell:Creating package script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.ps1'
+[4.079s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.dsv'
+[4.080s] INFO:colcon.colcon_core.shell:Creating package script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.sh'
+[4.081s] INFO:colcon.colcon_core.shell:Creating package script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.bash'
+[4.083s] INFO:colcon.colcon_core.shell:Creating package script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.zsh'
+[4.084s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/colcon-core/packages/velodyne_gazebo_plugins)
+[5.198s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[5.199s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[5.199s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[5.199s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[5.302s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[5.303s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[5.303s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[5.303s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[5.317s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.Notifications was not provided by any .service files
+[5.318s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[5.319s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/local_setup.ps1'
+[5.320s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/_local_setup_util_ps1.py'
+[5.323s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/setup.ps1'
+[5.324s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/local_setup.sh'
+[5.326s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/_local_setup_util_sh.py'
+[5.327s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/setup.sh'
+[5.329s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/local_setup.bash'
+[5.329s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/setup.bash'
+[5.331s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/local_setup.zsh'
+[5.332s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/setup.zsh'

@@ -1,0 +1,35 @@
+[0.041s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins
+[0.550s] -- The C compiler identification is GNU 9.3.0
+[1.110s] -- The CXX compiler identification is GNU 9.3.0
+[1.306s] -- Check for working C compiler: /usr/bin/cc
+[1.543s] -- Check for working C compiler: /usr/bin/cc -- works
+[1.549s] -- Detecting C compiler ABI info
+[1.795s] -- Detecting C compiler ABI info - done
+[1.826s] -- Detecting C compile features
+[1.827s] -- Detecting C compile features - done
+[1.832s] -- Check for working CXX compiler: /usr/bin/c++
+[2.083s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[2.085s] -- Detecting CXX compiler ABI info
+[2.352s] -- Detecting CXX compiler ABI info - done
+[2.377s] -- Detecting CXX compile features
+[2.378s] -- Detecting CXX compile features - done
+[3.425s] CMake Error at CMakeLists.txt:12 (find_package):
+[3.425s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[3.425s]   has asked CMake to find a package configuration file provided by
+[3.426s]   "ament_cmake", but CMake did not find one.
+[3.426s] 
+[3.426s]   Could not find a package configuration file provided by "ament_cmake" with
+[3.427s]   any of the following names:
+[3.428s] 
+[3.429s]     ament_cmakeConfig.cmake
+[3.430s]     ament_cmake-config.cmake
+[3.431s] 
+[3.434s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[3.437s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[3.437s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[3.439s]   has been installed.
+[3.440s] 
+[3.440s] 
+[3.441s] -- Configuring incomplete, errors occurred!
+[3.441s] See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins/CMakeFiles/CMakeOutput.log".
+[3.471s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins' returned '1': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins

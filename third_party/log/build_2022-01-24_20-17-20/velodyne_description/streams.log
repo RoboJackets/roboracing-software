@@ -1,0 +1,35 @@
+[0.044s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description
+[0.565s] -- The C compiler identification is GNU 9.3.0
+[1.129s] -- The CXX compiler identification is GNU 9.3.0
+[1.321s] -- Check for working C compiler: /usr/bin/cc
+[1.553s] -- Check for working C compiler: /usr/bin/cc -- works
+[1.563s] -- Detecting C compiler ABI info
+[1.811s] -- Detecting C compiler ABI info - done
+[1.841s] -- Detecting C compile features
+[1.842s] -- Detecting C compile features - done
+[1.848s] -- Check for working CXX compiler: /usr/bin/c++
+[2.095s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[2.098s] -- Detecting CXX compiler ABI info
+[2.367s] -- Detecting CXX compiler ABI info - done
+[2.401s] -- Detecting CXX compile features
+[2.402s] -- Detecting CXX compile features - done
+[3.458s] -- Configuring incomplete, errors occurred!
+[3.460s] See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description/CMakeFiles/CMakeOutput.log".
+[3.460s] CMake Error at CMakeLists.txt:4 (find_package):
+[3.461s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[3.465s]   has asked CMake to find a package configuration file provided by
+[3.466s]   "ament_cmake", but CMake did not find one.
+[3.466s] 
+[3.467s]   Could not find a package configuration file provided by "ament_cmake" with
+[3.469s]   any of the following names:
+[3.475s] 
+[3.475s]     ament_cmakeConfig.cmake
+[3.475s]     ament_cmake-config.cmake
+[3.476s] 
+[3.476s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[3.477s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[3.478s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[3.481s]   has been installed.
+[3.482s] 
+[3.482s] 
+[3.487s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_description' returned '1': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_description -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_description

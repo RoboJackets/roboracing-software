@@ -1,0 +1,1 @@
+Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver

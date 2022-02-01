@@ -1,0 +1,15 @@
+[0.064s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver
+[0.093s] -- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)
+[0.168s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[0.169s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.403s] -- Found rclcpp: 9.2.0 (/opt/ros/galactic/share/rclcpp/cmake)
+[0.820s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.844s] -- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+[2.818s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[4.899s] -- Found FastRTPS: /opt/ros/galactic/include  
+[8.620s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[8.831s] -- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+[8.843s] -- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+[8.906s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[8.908s] -- Looking for pthread.h
+[8.978s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver' returned '-2': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver

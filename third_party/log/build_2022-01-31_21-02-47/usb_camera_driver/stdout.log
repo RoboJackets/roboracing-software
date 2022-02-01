@@ -1,0 +1,83 @@
+-- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found rclcpp: 9.2.0 (/opt/ros/galactic/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+-- Found FastRTPS: /opt/ros/galactic/include  
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+-- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+-- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- Found rclcpp_components: 9.2.0 (/opt/ros/galactic/share/rclcpp_components/cmake)
+-- Found sensor_msgs: 2.2.3 (/opt/ros/galactic/share/sensor_msgs/cmake)
+-- Found camera_info_manager: 2.3.0 (/opt/ros/galactic/share/camera_info_manager/cmake)
+-- Setting yaml-cpp_DIR to: '/opt/ros/galactic/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/lib/cmake/yaml-cpp'
+-- Found image_transport: 2.3.0 (/opt/ros/galactic/share/image_transport/cmake)
+-- Found OpenCV: /usr (found suitable version "4.2.0", minimum required is "4") 
+-- Found ament_lint_auto: 0.10.6 (/opt/ros/galactic/share/ament_lint_auto/cmake)
+-- Found ament_cmake_gtest: 1.1.4 (/opt/ros/galactic/share/ament_cmake_gtest/cmake)
+-- Found gtest sources under '/opt/ros/galactic/src/gtest_vendor': C++ tests using 'Google Test' will be built
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver
+[35m[1mScanning dependencies of target gtest_main[0m
+[35m[1mScanning dependencies of target usb_camera_driver[0m
+[35m[1mScanning dependencies of target gtest[0m
+[ 10%] [32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o[0m
+[ 20%] [32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o[0m
+[ 30%] [32mBuilding CXX object CMakeFiles/usb_camera_driver.dir/src/usb_camera_driver.cpp.o[0m
+[ 40%] [32m[1mLinking CXX static library libgtest_main.a[0m
+[ 40%] Built target gtest_main
+[ 50%] [32m[1mLinking CXX static library libgtest.a[0m
+[ 50%] Built target gtest
+[ 60%] [32m[1mLinking CXX shared library libusb_camera_driver.so[0m
+[ 60%] Built target usb_camera_driver
+[35m[1mScanning dependencies of target usb_camera_driver_node[0m
+[35m[1mScanning dependencies of target usb_camera_driver_tests[0m
+[ 70%] [32mBuilding CXX object CMakeFiles/usb_camera_driver_node.dir/src/usb_camera_driver_node.cpp.o[0m
+[ 80%] [32mBuilding CXX object test/CMakeFiles/usb_camera_driver_tests.dir/usb_camera_driver_tests.cpp.o[0m
+[ 90%] [32m[1mLinking CXX executable usb_camera_driver_tests[0m
+[100%] [32m[1mLinking CXX executable usb_camera_driver_node[0m
+[100%] Built target usb_camera_driver_tests
+[100%] Built target usb_camera_driver_node
+-- Install configuration: ""
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/libusb_camera_driver.so
+-- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/libusb_camera_driver.so" to ""
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/usb_camera_driver/usb_camera_driver_node
+-- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/lib/usb_camera_driver/usb_camera_driver_node" to ""
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/__camera_id:=config.yaml
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/usb_camera_node.launch.py
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/launch/usb_camera_component.launch.py
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config/config.yaml
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/config/camera.yaml
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/package_run_dependencies/usb_camera_driver
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/parent_prefix_path/usb_camera_driver
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/ament_prefix_path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/ament_prefix_path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/path.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/environment/path.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.bash
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.sh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.zsh
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/local_setup.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/package.dsv
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/packages/usb_camera_driver
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/ament_index/resource_index/rclcpp_components/usb_camera_driver
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/cmake/usb_camera_driverConfig.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/cmake/usb_camera_driverConfig-version.cmake
+-- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver/share/usb_camera_driver/package.xml

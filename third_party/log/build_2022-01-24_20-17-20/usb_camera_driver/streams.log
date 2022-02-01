@@ -1,0 +1,34 @@
+[0.049s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver': /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/ros2_usb_camera -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/usb_camera_driver
+[0.543s] -- The C compiler identification is GNU 9.3.0
+[1.106s] -- The CXX compiler identification is GNU 9.3.0
+[1.298s] -- Check for working C compiler: /usr/bin/cc
+[1.533s] -- Check for working C compiler: /usr/bin/cc -- works
+[1.541s] -- Detecting C compiler ABI info
+[1.783s] -- Detecting C compiler ABI info - done
+[1.809s] -- Detecting C compile features
+[1.812s] -- Detecting C compile features - done
+[1.820s] -- Check for working CXX compiler: /usr/bin/c++
+[2.076s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[2.078s] -- Detecting CXX compiler ABI info
+[2.426s] -- Detecting CXX compiler ABI info - done
+[2.452s] -- Detecting CXX compile features
+[2.455s] -- Detecting CXX compile features - done
+[4.581s] CMake Error at CMakeLists.txt:16 (find_package):
+[4.581s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[4.581s]   has asked CMake to find a package configuration file provided by
+[4.581s]   "ament_cmake", but CMake did not find one.
+[4.582s] 
+[4.582s]   Could not find a package configuration file provided by "ament_cmake" with
+[4.582s]   any of the following names:
+[4.582s] 
+[4.582s]     ament_cmakeConfig.cmake
+[4.582s]     ament_cmake-config.cmake
+[4.582s] 
+[4.582s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[4.582s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[4.583s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[4.583s]   has been installed.
+[4.583s] 
+[4.583s] 
+[4.583s] -- Configuring incomplete, errors occurred!
+[4.583s] See also "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/usb_camera_driver/CMakeFiles/CMakeOutput.log".

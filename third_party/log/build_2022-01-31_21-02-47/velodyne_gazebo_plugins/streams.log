@@ -1,0 +1,146 @@
+[0.079s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins
+[0.125s] -- Found ament_cmake: 1.1.4 (/opt/ros/galactic/share/ament_cmake/cmake)
+[0.183s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[0.184s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.344s] -- Found gazebo_dev: 3.5.2 (/opt/ros/galactic/share/gazebo_dev/cmake)
+[0.352s] -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
+[0.361s] -- Checking for module 'bullet>=2.82'
+[0.385s] --   Found bullet, version 2.88
+[2.878s] -- Found ccd: /usr/include (found suitable version "2.0", minimum required is "2.0") 
+[3.047s] -- Found fcl: /usr/include (found suitable version "0.5.0", minimum required is "0.3.2") 
+[3.275s] -- Found assimp: /usr/include (found version "5.0.0") 
+[3.321s] -- Found DART: /usr/include (Required is at least version "6.6") found components: dart 
+[4.488s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.40.0") found components: thread system filesystem program_options regex iostreams date_time 
+[5.199s] -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found version "3.6.1") 
+[5.209s] -- Looking for ignition-math6 -- found version 6.9.2
+[5.226s] -- Searching for dependencies of ignition-math6
+[5.235s] -- Looking for OGRE...
+[5.236s] -- OGRE_PREFIX_WATCH changed.
+[5.248s] -- Checking for module 'OGRE'
+[5.279s] --   Found OGRE, version 1.9.0
+[5.503s] -- Found Ogre Ghadamon (1.9.0)
+[7.039s] -- Found OGRE: optimized;/usr/lib/x86_64-linux-gnu/libOgreMain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreMain.so
+[7.076s] -- Looking for OGRE_Paging...
+[7.858s] -- Found OGRE_Paging: optimized;/usr/lib/x86_64-linux-gnu/libOgrePaging.so;debug;/usr/lib/x86_64-linux-gnu/libOgrePaging.so
+[7.859s] -- Looking for OGRE_Terrain...
+[8.623s] -- Found OGRE_Terrain: optimized;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so
+[8.623s] -- Looking for OGRE_Property...
+[9.429s] -- Found OGRE_Property: optimized;/usr/lib/x86_64-linux-gnu/libOgreProperty.so;debug;/usr/lib/x86_64-linux-gnu/libOgreProperty.so
+[9.429s] -- Looking for OGRE_RTShaderSystem...
+[10.211s] -- Found OGRE_RTShaderSystem: optimized;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so;debug;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so
+[10.211s] -- Looking for OGRE_Volume...
+[10.958s] -- Found OGRE_Volume: optimized;/usr/lib/x86_64-linux-gnu/libOgreVolume.so;debug;/usr/lib/x86_64-linux-gnu/libOgreVolume.so
+[10.958s] -- Looking for OGRE_Overlay...
+[11.674s] -- Found OGRE_Overlay: optimized;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so;debug;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so
+[49.757s] -- Looking for ignition-math6 -- found version 6.9.2
+[49.768s] -- Looking for ignition-transport8 -- found version 8.2.1
+[49.769s] -- Searching for dependencies of ignition-transport8
+[51.280s] -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found suitable version "3.6.1", minimum required is "3") 
+[52.725s] -- Config-file not installed for ZeroMQ -- checking for pkg-config
+[52.732s] -- Checking for module 'libzmq >= 4'
+[52.766s] --   Found libzmq , version 4.3.2
+[52.960s] -- Found ZeroMQ: TRUE (Required is at least version "4") 
+[53.051s] -- Checking for module 'uuid'
+[53.077s] --   Found uuid, version 2.34.0
+[53.285s] -- Found UUID: TRUE  
+[53.296s] -- Looking for ignition-msgs5 -- found version 5.8.1
+[53.297s] -- Searching for dependencies of ignition-msgs5
+[55.001s] -- Looking for ignition-math6 -- found version 6.9.2
+[55.018s] -- Checking for module 'tinyxml2'
+[55.042s] --   Found tinyxml2, version 6.2.0
+[55.247s] -- Looking for ignition-msgs5 -- found version 5.8.1
+[55.251s] -- Looking for ignition-common3 -- found version 3.14.0
+[55.253s] -- Searching for dependencies of ignition-common3
+[55.319s] -- Looking for dlfcn.h - found
+[55.390s] -- Looking for libdl - found
+[55.393s] -- Found DL: TRUE  
+[55.413s] -- Searching for <ignition-common3> component [graphics]
+[55.417s] -- Looking for ignition-common3-graphics -- found version 3.14.0
+[55.419s] -- Searching for dependencies of ignition-common3-graphics
+[55.419s] -- Looking for ignition-math6 -- found version 6.9.2
+[55.428s] -- Looking for ignition-fuel_tools4 -- found version 4.4.0
+[55.429s] -- Searching for dependencies of ignition-fuel_tools4
+[55.844s] -- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version "7.68.0")  
+[55.867s] -- Checking for module 'jsoncpp'
+[55.893s] --   Found jsoncpp, version 1.7.4
+[56.131s] -- Found JSONCPP: TRUE  
+[56.151s] -- Checking for module 'libzip'
+[56.183s] --   Found libzip, version 1.5.1
+[56.408s] -- Found ZIP: TRUE  
+[56.409s] -- Looking for ignition-common3 -- found version 3.14.0
+[56.410s] -- Looking for ignition-math6 -- found version 6.9.2
+[56.411s] -- Looking for ignition-msgs5 -- found version 5.8.1
+[56.414s] -- Gazebo version: 11.9
+[56.418s] -- Found gazebo_ros: 3.5.2 (/opt/ros/galactic/share/gazebo_ros/cmake)
+[56.578s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[56.591s] -- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+[58.405s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[60.388s] -- Found FastRTPS: /opt/ros/galactic/include  
+[63.723s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[63.861s] -- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+[63.868s] -- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+[63.909s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[63.913s] -- Found Threads: TRUE  
+[64.264s] -- Found gazebo_msgs: 3.5.2 (/opt/ros/galactic/share/gazebo_msgs/cmake)
+[65.039s] -- Found sensor_msgs: 2.2.3 (/opt/ros/galactic/share/sensor_msgs/cmake)
+[65.198s] -- Found tf2: 0.17.2 (/opt/ros/galactic/share/tf2/cmake)
+[65.398s] -- Configuring done
+[65.518s] -- Generating done
+[65.524s] -- Build files have been written to: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins
+[65.544s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins' returned '0': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins -DCMAKE_INSTALL_PREFIX=/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins
+[65.552s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --build /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins -- -j16 -l16
+[65.618s] [35m[1mScanning dependencies of target gazebo_ros_velodyne_laser[0m
+[66.175s] [ 50%] [32mBuilding CXX object CMakeFiles/gazebo_ros_velodyne_laser.dir/src/GazeboRosVelodyneLaser.cpp.o[0m
+[85.274s] In file included from [01m[K/opt/ros/galactic/include/rclcpp/client.hpp:40[m[K,
+[85.274s]                  from [01m[K/opt/ros/galactic/include/rclcpp/callback_group.hpp:23[m[K,
+[85.275s]                  from [01m[K/opt/ros/galactic/include/rclcpp/any_executable.hpp:20[m[K,
+[85.275s]                  from [01m[K/opt/ros/galactic/include/rclcpp/memory_strategy.hpp:25[m[K,
+[85.275s]                  from [01m[K/opt/ros/galactic/include/rclcpp/memory_strategies.hpp:18[m[K,
+[85.275s]                  from [01m[K/opt/ros/galactic/include/rclcpp/executor_options.hpp:20[m[K,
+[85.276s]                  from [01m[K/opt/ros/galactic/include/rclcpp/executor.hpp:36[m[K,
+[85.276s]                  from [01m[K/opt/ros/galactic/include/rclcpp/executors/multi_threaded_executor.hpp:26[m[K,
+[85.276s]                  from [01m[K/opt/ros/galactic/include/rclcpp/executors.hpp:21[m[K,
+[85.277s]                  from [01m[K/opt/ros/galactic/include/rclcpp/rclcpp.hpp:156[m[K,
+[85.277s]                  from [01m[K/opt/ros/galactic/include/gazebo_ros/node.hpp:18[m[K,
+[85.277s]                  from [01m[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins/GazeboRosVelodyneLaser.hpp:48[m[K,
+[85.277s]                  from [01m[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:35[m[K:
+[85.278s] [01m[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:[m[K In member function ‘[01m[Kvirtual void gazebo::GazeboRosVelodyneLaser::Load(gazebo::sensors::SensorPtr, sdf::v9::ElementPtr)[m[K’:
+[85.278s] [01m[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:124:40:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%s[m[K’ expects a matching ‘[01m[Kchar*[m[K’ argument [[01;35m[K-Wformat=[m[K]
+[85.278s]   124 |   RCLCPP_INFO(ros_node_->get_logger(), [01;35m[K"Velodyne %slaser plugin ready"[m[K);
+[85.278s]       |                                        [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[85.279s] [01m[K/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/velodyne_simulator/velodyne_gazebo_plugins/src/GazeboRosVelodyneLaser.cpp:124:51:[m[K [01;36m[Knote: [m[Kformat string is defined here
+[85.279s]   124 |   RCLCPP_INFO(ros_node_->get_logger(), "Velodyne [01;36m[K%s[m[Klaser plugin ready");
+[85.279s]       |                                                  [01;36m[K~^[m[K
+[85.279s]       |                                                   [01;36m[K|[m[K
+[85.280s]       |                                                   [01;36m[Kchar*[m[K
+[98.900s] [100%] [32m[1mLinking CXX shared library libgazebo_ros_velodyne_laser.so[0m
+[100.539s] [100%] Built target gazebo_ros_velodyne_laser
+[100.570s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins' returned '0': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --build /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins -- -j16 -l16
+[100.623s] Invoking command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --install /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins
+[100.638s] -- Install configuration: ""
+[100.638s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/library_path.sh
+[100.639s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/library_path.dsv
+[100.640s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/package_run_dependencies/velodyne_gazebo_plugins
+[100.641s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/parent_prefix_path/velodyne_gazebo_plugins
+[100.642s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/ament_prefix_path.sh
+[100.643s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/ament_prefix_path.dsv
+[100.643s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/path.sh
+[100.644s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/environment/path.dsv
+[100.645s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.bash
+[100.646s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.sh
+[100.647s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.zsh
+[100.648s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/local_setup.dsv
+[100.648s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.dsv
+[100.649s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/ament_index/resource_index/packages/velodyne_gazebo_plugins
+[100.649s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_libraries-extras.cmake
+[100.649s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_include_directories-extras.cmake
+[100.650s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/ament_cmake_export_dependencies-extras.cmake
+[100.650s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/velodyne_gazebo_pluginsConfig.cmake
+[100.651s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/cmake/velodyne_gazebo_pluginsConfig-version.cmake
+[100.651s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/share/velodyne_gazebo_plugins/package.xml
+[100.651s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include
+[100.652s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins
+[100.652s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/include/velodyne_gazebo_plugins/GazeboRosVelodyneLaser.hpp
+[100.653s] -- Installing: /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_laser.so
+[100.661s] -- Set runtime path of "/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/install/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_laser.so" to ""
+[100.669s] Invoked command in '/home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins' returned '0': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --install /home/harshmuriki/roboracing_ws/src/roboracing-software/third_party/build/velodyne_gazebo_plugins
