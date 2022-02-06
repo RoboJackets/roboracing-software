@@ -1,3 +1,6 @@
 [submodule "third_party/velodyne_simulator"]
 	path = third_party/velodyne_simulator
 	url = https://bitbucket.org/DataspeedInc/velodyne_simulator
+[submodule "third_party/velodyne"]
+	path = third_party/velodyne
+	url = https://github.com/ros-drivers/velodyne.git
