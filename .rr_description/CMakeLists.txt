@@ -6,7 +6,7 @@ project(rr_description)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
 find_package(xacro REQUIRED)
 find_package(ament_cmake REQUIRED)
-find_package(velodyne_description REQUIRED)
+# find_package(velodyne_description REQUIRED)
 
 xacro_add_files(
         urdf/evgp.urdf.xacro
