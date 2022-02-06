@@ -13,16 +13,16 @@
 namespace rr_util {
 
 /**
-* @brief Node to publish speed and steering data from joystick
-*/
+ * @brief Node to publish speed and steering data from joystick
+ */
 class JoystickDriver : public rclcpp::Node {
   public:
     explicit JoystickDriver(const rclcpp::NodeOptions& options) : rclcpp::Node("joystick_driver", options) {
         JoystickDriver();
     }
     /**
-    * @brief Constructer creates subscription to /joy and publishers to /speed and /steering to help control robot
-    */
+     * @brief Constructer creates subscription to /joy and publishers to /speed and /steering to help control robot
+     */
     explicit JoystickDriver() : rclcpp::Node("joystick_driver") {
         // Subscribe to joystick_driver topic
         joystick_sub = create_subscription<sensor_msgs::msg::Joy>(
@@ -38,23 +38,23 @@ class JoystickDriver : public rclcpp::Node {
 
   private:
     /**
-    * @brief Subscribes to /joy
-    */
+     * @brief Subscribes to /joy
+     */
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joystick_sub;
     /**
-    * @brief Publishes to /speed
-    */
+     * @brief Publishes to /speed
+     */
     rclcpp::Publisher<rr_msgs::msg::Speed>::SharedPtr speed_publisher;
     /**
-    * @brief Publishes to /steering
-    */
+     * @brief Publishes to /steering
+     */
     rclcpp::Publisher<rr_msgs::msg::Steering>::SharedPtr steering_publisher;
     double angle_max;
     double speed_max;
 
     /**
-    * @brief Callback function to publish updated speed and steering when new /joy messages are received
-    */
+     * @brief Callback function to publish updated speed and steering when new /joy messages are received
+     */
     void JoystickCB(const sensor_msgs::msg::Joy::SharedPtr msg) {
         rr_msgs::msg::Speed sp_cmd;
         rr_msgs::msg::Steering st_cmd;
@@ -71,8 +71,8 @@ class JoystickDriver : public rclcpp::Node {
 RCLCPP_COMPONENTS_REGISTER_NODE(rr_util::JoystickDriver)
 
 /**
-* @brief Main function to launch node
-*/
+ * @brief Main function to launch node
+ */
 int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
 
