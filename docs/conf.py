@@ -50,7 +50,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 breathe_projects = {
     'rr_description': 'xml',
-    'rr_demo': 'xml'
+    'rr_demo': 'xml',
+    'rr_util': 'xml'
 }
 
 # -- Options for HTML output -------------------------------------------------
