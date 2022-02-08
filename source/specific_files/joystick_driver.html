@@ -1,0 +1,343 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Linux Info" href="../linux_info/linux_info.html" /><link rel="prev" title="rr_util" href="../code_pages/rr_util.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.png"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
+        <title>joystick_driver - Robojackets Roboracing</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Robojackets Roboracing</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/robobuzz.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Robojackets Roboracing</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../committing.html">Committing to the Repository</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../overview/packages.html">Packages</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code_pages/rr_demo.html">rr_demo</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../code_pages/rr_util.html">rr_util</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">joystick_driver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../linux_info/linux_info.html">Linux Info</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../linux_info/bashrc.html">What is Bashrc?</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources/resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../resources/header_guards.html">What even are header guards?</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+<div>
+
+  <a style= "display: flex; justify-content: center; border-style: solid; padding:.25em; margin: .5em; border-radius: 5px" 
+     href=https://github.com/robojackets/roboracing-software/edit/ros2/main/docs/source/specific_files/joystick_driver.rst>
+      Edit page on Github
+  </a>
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <div class="section" id="joystick-driver">
+<h1>joystick_driver<a class="headerlink" href="#joystick-driver" title="Permalink to this headline">¶</a></h1>
+<p>To launch node run the following command in the terminal</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">launch</span> <span class="n">rr_util</span> <span class="n">joystick_driver</span><span class="o">.</span><span class="n">launch</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">Uses joy node from ros2 package <a class="reference external" href="https://index.ros.org/p/joy/">joy</a></div>
+<div class="line"><br/></div>
+<div class="line">Read that documentation to debug the joystick, but should just be able to plug the usb into the controller and have it work out of the box.</div>
+<div class="line"><br/></div>
+</div>
+<p>Node to manually send speed and steering data to robot. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv44mainiPPc">
+<span id="_CPPv34mainiPPc"></span><span id="_CPPv24mainiPPc"></span><span id="main__i.cPP"></span><span class="target" id="joystick__driver_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">main</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv44mainiPPc" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Main function to launch node. </p>
+</dd></dl>
+</div>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47rr_util">
+<span id="_CPPv37rr_util"></span><span id="_CPPv27rr_util"></span><span id="rr_util"></span><span class="target" id="namespacerr__util"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rr_util</span></span></span><a class="headerlink" href="#_CPPv47rr_util" title="Permalink to this definition">¶</a><br/></dt>
+<dd><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriverE">
+<span id="_CPPv3N7rr_util14JoystickDriverE"></span><span id="_CPPv2N7rr_util14JoystickDriverE"></span><span id="rr_util::JoystickDriver"></span><span class="target" id="classrr__util_1_1JoystickDriver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JoystickDriver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Node</span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriverE" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Node to publish speed and steering data from joystick. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver14JoystickDriverERKN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N7rr_util14JoystickDriver14JoystickDriverERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N7rr_util14JoystickDriver14JoystickDriverERKN6rclcpp11NodeOptionsE"></span><span id="rr_util::JoystickDriver::JoystickDriver__rclcpp::NodeOptionsCR"></span><span class="target" id="classrr__util_1_1JoystickDriver_1aca762b55114228157ecf959449ece4a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JoystickDriver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver14JoystickDriverERKN6rclcpp11NodeOptionsE" title="Permalink to this definition">¶</a><br/></dt>
+<dd></dd></dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver14JoystickDriverEv">
+<span id="_CPPv3N7rr_util14JoystickDriver14JoystickDriverEv"></span><span id="_CPPv2N7rr_util14JoystickDriver14JoystickDriverEv"></span><span id="rr_util::JoystickDriver::JoystickDriver"></span><span class="target" id="classrr__util_1_1JoystickDriver_1aae77631e32f78aa0683a7b5715fb5512"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JoystickDriver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver14JoystickDriverEv" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Constructer creates subscription to /joy and publishers to /speed and /steering to help control robot. </p>
+</dd></dl>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver10JoystickCBEKN11sensor_msgs3msg3Joy9SharedPtrE">
+<span id="_CPPv3N7rr_util14JoystickDriver10JoystickCBEKN11sensor_msgs3msg3Joy9SharedPtrE"></span><span id="_CPPv2N7rr_util14JoystickDriver10JoystickCBEKN11sensor_msgs3msg3Joy9SharedPtrE"></span><span id="rr_util::JoystickDriver::JoystickCB__sensor_msgs::msg::Joy::SharedPtrC"></span><span class="target" id="classrr__util_1_1JoystickDriver_1ab65278ba9f52eae949ff6ffe188d887d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JoystickCB</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">sensor_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Joy</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver10JoystickCBEKN11sensor_msgs3msg3Joy9SharedPtrE" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Callback function to publish updated speed and steering when new /joy messages are received. </p>
+</dd></dl>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver12joystick_subE">
+<span id="_CPPv3N7rr_util14JoystickDriver12joystick_subE"></span><span id="_CPPv2N7rr_util14JoystickDriver12joystick_subE"></span><span id="rr_util::JoystickDriver::joystick_sub__rclcpp::Subscription:sensor_msgs::msg::Joy:::SharedPtr"></span><span class="target" id="classrr__util_1_1JoystickDriver_1ae48c2a294abfd2287c33066c4225b55e"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Subscription</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">sensor_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Joy</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">joystick_sub</span></span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver12joystick_subE" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Subscribes to /joy. </p>
+</dd></dl>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver15speed_publisherE">
+<span id="_CPPv3N7rr_util14JoystickDriver15speed_publisherE"></span><span id="_CPPv2N7rr_util14JoystickDriver15speed_publisherE"></span><span id="rr_util::JoystickDriver::speed_publisher__rclcpp::Publisher:rr_msgs::msg::Speed:::SharedPtr"></span><span class="target" id="classrr__util_1_1JoystickDriver_1ae1044b3b5fe66ee974a5ae1a17db7022"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rr_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Speed</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">speed_publisher</span></span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver15speed_publisherE" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Publishes to /speed. </p>
+</dd></dl>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver18steering_publisherE">
+<span id="_CPPv3N7rr_util14JoystickDriver18steering_publisherE"></span><span id="_CPPv2N7rr_util14JoystickDriver18steering_publisherE"></span><span id="rr_util::JoystickDriver::steering_publisher__rclcpp::Publisher:rr_msgs::msg::Steering:::SharedPtr"></span><span class="target" id="classrr__util_1_1JoystickDriver_1ab10ba7819f08ced15456102a0ec3548c"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rr_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Steering</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">steering_publisher</span></span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver18steering_publisherE" title="Permalink to this definition">¶</a><br/></dt>
+<dd><p>Publishes to /steering. </p>
+</dd></dl>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver9angle_maxE">
+<span id="_CPPv3N7rr_util14JoystickDriver9angle_maxE"></span><span id="_CPPv2N7rr_util14JoystickDriver9angle_maxE"></span><span id="rr_util::JoystickDriver::angle_max__double"></span><span class="target" id="classrr__util_1_1JoystickDriver_1a9f43c378409dfd431f1cc9fbf15e5312"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angle_max</span></span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver9angle_maxE" title="Permalink to this definition">¶</a><br/></dt>
+<dd></dd></dl>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7rr_util14JoystickDriver9speed_maxE">
+<span id="_CPPv3N7rr_util14JoystickDriver9speed_maxE"></span><span id="_CPPv2N7rr_util14JoystickDriver9speed_maxE"></span><span id="rr_util::JoystickDriver::speed_max__double"></span><span class="target" id="classrr__util_1_1JoystickDriver_1a04265eb2c1bb4dbe846b5a5e3fea9169"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">speed_max</span></span></span><a class="headerlink" href="#_CPPv4N7rr_util14JoystickDriver9speed_maxE" title="Permalink to this definition">¶</a><br/></dt>
+<dd></dd></dl>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../linux_info/linux_info.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Linux Info</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../code_pages/rr_util.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">rr_util</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Robojackets |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
+            <a class="muted-link" href="../../_sources/source/specific_files/joystick_driver.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/main.js"></script>
+    </body>
+</html>
