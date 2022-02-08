@@ -1,11 +1,9 @@
 <launch>
 
 	<!-- Joystick node -->
-	<node name="joy_node" pkg="joy" exec="joy_node" output="screen" respawn="false">
-		<param name="dev" value="/dev/input/js0"/>
-	</node>
-
-    <!-- rr_util joystick node -->
+	<node name="joy_node" pkg="joy" exec="joy_node" output="screen" respawn="false"/>
+    
+	<!-- rr_util joystick node -->
 	<node name="joystick_driver" pkg="rr_util" exec="joystick_driver" output="screen" respawn="false">
 		<param name="angle_max" value="0.3"/>
 		<param name="speed_max" value="1.0"/>

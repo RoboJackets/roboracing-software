@@ -60,7 +60,6 @@ class JoystickDriver : public rclcpp::Node {
         rr_msgs::msg::Steering st_cmd;
         sp_cmd.speed = speed_max * ((-1 * msg->axes[5] + 1.) / 2.);
         st_cmd.angle = -(angle_max * msg->axes[0]);
-        RCLCPP_INFO(this->get_logger(), "going to callback");
         speed_publisher->publish(sp_cmd);
         steering_publisher->publish(st_cmd);
     }
