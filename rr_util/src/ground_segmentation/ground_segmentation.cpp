@@ -1,15 +1,17 @@
 #include "ground_segmentation.hpp"
 
-#include <pcl/point_cloud.h>
-#include <pcl_conversions/pcl_conversions.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 #include "ground_segmenter/ground_segmenter.hpp"
 
 GroundSegmentation::GroundSegmentation() : Node("ground_segmentation") {
-    pcl_ground_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation/ground", rclcpp::SystemDefaultsQoS());
-    pcl_obstacle_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation/obstacle", rclcpp::SystemDefaultsQoS());
+    pcl_ground_pub_ =
+          create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation/ground", rclcpp::SystemDefaultsQoS());
+    pcl_obstacle_pub_ =
+          create_publisher<sensor_msgs::msg::PointCloud2>("/ground_segmentation/obstacle", rclcpp::SystemDefaultsQoS());
     velodyne_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
           "/velodyne_points2", rclcpp::SensorDataQoS(),
           std::bind(&GroundSegmentation::PointCloudCallback, this, std::placeholders::_1));
@@ -57,9 +59,9 @@ void GroundSegmentation::PointCloudCallback(const sensor_msgs::msg::PointCloud2:
 
     std::vector<int> labels;
 
-    //todo: transform cloud so that the vertical axis (z) is always up relative to gravity
-    //Eigen::Affine3d tf = Eigen::Affine3d::Identity<double, 3, 2>;
-    //pcl::transformPointCloud(pcl_cloud, cloud_transformed, tf);
+    // todo: transform cloud so that the vertical axis (z) is always up relative to gravity
+    // Eigen::Affine3d tf = Eigen::Affine3d::Identity<double, 3, 2>;
+    // pcl::transformPointCloud(pcl_cloud, cloud_transformed, tf);
 
     segmenter.segment(pcl_cloud, &labels);
     pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
