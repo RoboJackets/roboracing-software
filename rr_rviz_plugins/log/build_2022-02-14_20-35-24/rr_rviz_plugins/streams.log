@@ -1,0 +1,35 @@
+[0.142s] Invoking command in '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins': /usr/bin/cmake /home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins -DCMAKE_INSTALL_PREFIX=/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/install/rr_rviz_plugins
+[3.129s] -- The C compiler identification is GNU 9.3.0
+[4.826s] -- The CXX compiler identification is GNU 9.3.0
+[5.126s] -- Check for working C compiler: /usr/bin/cc
+[5.380s] -- Check for working C compiler: /usr/bin/cc -- works
+[5.401s] -- Detecting C compiler ABI info
+[5.530s] -- Detecting C compiler ABI info - done
+[5.554s] -- Detecting C compile features
+[5.555s] -- Detecting C compile features - done
+[5.628s] -- Check for working CXX compiler: /usr/bin/c++
+[5.850s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[5.850s] -- Detecting CXX compiler ABI info
+[5.937s] -- Detecting CXX compiler ABI info - done
+[5.949s] -- Detecting CXX compile features
+[5.949s] -- Detecting CXX compile features - done
+[6.060s] CMake Error at CMakeLists.txt:9 (find_package):
+[6.061s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[6.062s]   has asked CMake to find a package configuration file provided by
+[6.062s]   "ament_cmake", but CMake did not find one.
+[6.063s] 
+[6.064s]   Could not find a package configuration file provided by "ament_cmake" with
+[6.064s]   any of the following names:
+[6.065s] 
+[6.065s]     ament_cmakeConfig.cmake
+[6.066s]     ament_cmake-config.cmake
+[6.066s] 
+[6.067s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[6.067s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[6.068s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[6.068s]   has been installed.
+[6.069s] 
+[6.069s] 
+[6.070s] -- Configuring incomplete, errors occurred!
+[6.071s] See also "/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins/CMakeFiles/CMakeOutput.log".
+[6.078s] Invoked command in '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins' returned '1': /usr/bin/cmake /home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins -DCMAKE_INSTALL_PREFIX=/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/install/rr_rviz_plugins

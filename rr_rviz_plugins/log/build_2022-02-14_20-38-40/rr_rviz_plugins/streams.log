@@ -1,0 +1,76 @@
+[0.040s] Invoking command in '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins -DCMAKE_INSTALL_PREFIX=/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/install/rr_rviz_plugins
+[0.227s] -- Found ament_cmake: 1.1.5 (/opt/ros/galactic/share/ament_cmake/cmake)
+[0.365s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[0.366s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.715s] -- Found rviz_common: 8.5.0 (/opt/ros/galactic/share/rviz_common/cmake)
+[1.204s] -- Setting OGRE_DIR to: '/opt/ros/galactic/share/rviz_ogre_vendor/cmake/../../../opt/rviz_ogre_vendor/lib/OGRE/cmake'
+[1.210s] -- Found OGRE
+[1.210s] --   static     : OFF
+[1.210s] --   components : HLMS;MeshLodGenerator;Overlay;Paging;Property;RTShaderSystem;Terrain;Volume
+[1.210s] --   plugins    : Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI
+[1.211s] --   media      : /opt/ros/galactic/opt/rviz_ogre_vendor/share/OGRE/Media
+[1.211s] -- OGRE_LIBRARIES: OgreHLMS;OgreMeshLodGenerator;OgreOverlay;OgrePaging;OgreProperty;OgreRTShaderSystem;OgreTerrain;OgreVolume;OgreMain
+[1.211s] -- OGRE_LIBRARY_DIRS: /opt/ros/galactic/opt/rviz_ogre_vendor/lib
+[1.212s] -- OGRE_PLUGINS: Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI
+[1.212s] -- OGRE_PLUGIN_DIR: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/OGRE
+[1.212s] -- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_RELEASE: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreOverlay.so
+[1.213s] -- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_DEBUG: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreOverlay.so
+[1.213s] -- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_RELEASE: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreMain.so
+[1.213s] -- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_DEBUG: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreMain.so
+[1.655s] -- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.2.11") 
+[1.733s] -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+[2.587s] -- Found X11: /usr/include   
+[2.602s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
+[2.868s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found
+[2.868s] -- Looking for gethostbyname
+[2.947s] -- Looking for gethostbyname - found
+[2.947s] -- Looking for connect
+[3.024s] -- Looking for connect - found
+[3.025s] -- Looking for remove
+[3.092s] -- Looking for remove - found
+[3.092s] -- Looking for shmat
+[3.159s] -- Looking for shmat - found
+[3.159s] -- Looking for IceConnectionNumber in ICE
+[3.237s] -- Looking for IceConnectionNumber in ICE - found
+[3.240s] -- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_RELEASE: _render_system_gl_static_library_abs-NOTFOUND
+[3.240s] -- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_DEBUG: _render_system_gl_static_library_abs-NOTFOUND
+[3.517s] -- library: /usr/lib/x86_64-linux-gnu/libcurl.so
+[3.763s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.787s] -- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+[4.126s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[4.170s] -- Found FastRTPS: /opt/ros/galactic/include  
+[4.369s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[4.659s] -- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+[4.678s] -- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+[4.708s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[4.737s] -- Looking for pthread.h
+[5.170s] -- Looking for pthread.h - found
+[5.170s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[5.255s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+[5.286s] -- Looking for pthread_create in pthreads
+[5.379s] -- Looking for pthread_create in pthreads - not found
+[5.379s] -- Looking for pthread_create in pthread
+[5.447s] -- Looking for pthread_create in pthread - found
+[5.449s] -- Found Threads: TRUE  
+[5.803s] -- Found Eigen3: TRUE (found version "3.3.7") 
+[6.457s] CMake Error at CMakeLists.txt:13 (find_package):
+[6.457s]   By not providing "Findrr_msgs.cmake" in CMAKE_MODULE_PATH this project has
+[6.457s]   asked CMake to find a package configuration file provided by "rr_msgs", but
+[6.457s]   CMake did not find one.
+[6.457s] 
+[6.458s]   Could not find a package configuration file provided by "rr_msgs" with any
+[6.458s]   of the following names:
+[6.458s] 
+[6.458s]     rr_msgsConfig.cmake
+[6.458s]     rr_msgs-config.cmake
+[6.458s] 
+[6.458s]   Add the installation prefix of "rr_msgs" to CMAKE_PREFIX_PATH or set
+[6.458s]   "rr_msgs_DIR" to a directory containing one of the above files.  If
+[6.458s]   "rr_msgs" provides a separate development package or SDK, be sure it has
+[6.458s]   been installed.
+[6.458s] 
+[6.458s] 
+[6.460s] -- Configuring incomplete, errors occurred!
+[6.460s] See also "/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins/CMakeFiles/CMakeOutput.log".
+[6.460s] See also "/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins/CMakeFiles/CMakeError.log".
+[6.470s] Invoked command in '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins' returned '1': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake /home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins -DCMAKE_INSTALL_PREFIX=/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/install/rr_rviz_plugins

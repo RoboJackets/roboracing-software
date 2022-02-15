@@ -1,0 +1,17 @@
+CMake Error at CMakeLists.txt:13 (find_package):
+  By not providing "Findrr_msgs.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "rr_msgs", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "rr_msgs" with any
+  of the following names:
+
+    rr_msgsConfig.cmake
+    rr_msgs-config.cmake
+
+  Add the installation prefix of "rr_msgs" to CMAKE_PREFIX_PATH or set
+  "rr_msgs_DIR" to a directory containing one of the above files.  If
+  "rr_msgs" provides a separate development package or SDK, be sure it has
+  been installed.
+
+

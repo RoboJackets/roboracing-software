@@ -1,0 +1,147 @@
+[0.000000] (-) TimerEvent: {}
+[0.003211] (rr_rviz_plugins) JobQueued: {'identifier': 'rr_rviz_plugins', 'dependencies': OrderedDict()}
+[0.003435] (rr_rviz_plugins) JobStarted: {'identifier': 'rr_rviz_plugins'}
+[0.040997] (rr_rviz_plugins) JobProgress: {'identifier': 'rr_rviz_plugins', 'progress': 'cmake'}
+[0.041709] (rr_rviz_plugins) Command: {'cmd': ['/usr/bin/cmake', '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins', '-DCMAKE_INSTALL_PREFIX=/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/install/rr_rviz_plugins'], 'cwd': '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'szl'), ('SSH_AGENT_PID', '1576'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib'), ('HOME', '/home/szl'), ('OLDPWD', '/home/szl/roboracing_ws/src/roboracing-software'), ('DESKTOP_SESSION', 'ubuntu'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '1387'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('IM_CONFIG_PHASE', '1'), ('ROS_DISTRO', 'galactic'), ('LOGNAME', 'szl'), ('JOURNAL_STREAM', '8:44372'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'szl'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/opt/ros/galactic/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('SESSION_MANAGER', 'local/szl:@/tmp/.ICE-unix/1619,unix/szl:/tmp/.ICE-unix/1619'), ('INVOCATION_ID', '088ad617d95646638fb1194aba6c8a25'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_TERMINAL_SCREEN', '/org/gnome/Terminal/screen/053c543f_b87d_4711_a942_92d7eafdac43'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('GNOME_TERMINAL_SERVICE', ':1.107'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/opt/ros/galactic'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/galactic/lib/python3.8/site-packages'), ('COLCON', '1'), ('VTE_VERSION', '6003'), ('CMAKE_PREFIX_PATH', '/opt/ros/galactic')]), 'shell': False}
+[0.098952] (-) TimerEvent: {}
+[0.199694] (-) TimerEvent: {}
+[0.229355] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found ament_cmake: 1.1.5 (/opt/ros/galactic/share/ament_cmake/cmake)\n'}
+[0.299937] (-) TimerEvent: {}
+[0.368599] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") \n'}
+[0.368903] (rr_rviz_plugins) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.400119] (-) TimerEvent: {}
+[0.501030] (-) TimerEvent: {}
+[0.601594] (-) TimerEvent: {}
+[0.702485] (-) TimerEvent: {}
+[0.717592] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found rviz_common: 8.5.0 (/opt/ros/galactic/share/rviz_common/cmake)\n'}
+[0.802783] (-) TimerEvent: {}
+[0.903591] (-) TimerEvent: {}
+[1.004692] (-) TimerEvent: {}
+[1.105577] (-) TimerEvent: {}
+[1.206420] (-) TimerEvent: {}
+[1.206941] (rr_rviz_plugins) StdoutLine: {'line': b"-- Setting OGRE_DIR to: '/opt/ros/galactic/share/rviz_ogre_vendor/cmake/../../../opt/rviz_ogre_vendor/lib/OGRE/cmake'\n"}
+[1.212619] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found OGRE\n'}
+[1.213146] (rr_rviz_plugins) StdoutLine: {'line': b'--   static     : OFF\n'}
+[1.213462] (rr_rviz_plugins) StdoutLine: {'line': b'--   components : HLMS;MeshLodGenerator;Overlay;Paging;Property;RTShaderSystem;Terrain;Volume\n'}
+[1.213762] (rr_rviz_plugins) StdoutLine: {'line': b'--   plugins    : Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI\n'}
+[1.214020] (rr_rviz_plugins) StdoutLine: {'line': b'--   media      : /opt/ros/galactic/opt/rviz_ogre_vendor/share/OGRE/Media\n'}
+[1.214415] (rr_rviz_plugins) StdoutLine: {'line': b'-- OGRE_LIBRARIES: OgreHLMS;OgreMeshLodGenerator;OgreOverlay;OgrePaging;OgreProperty;OgreRTShaderSystem;OgreTerrain;OgreVolume;OgreMain\n'}
+[1.214718] (rr_rviz_plugins) StdoutLine: {'line': b'-- OGRE_LIBRARY_DIRS: /opt/ros/galactic/opt/rviz_ogre_vendor/lib\n'}
+[1.215001] (rr_rviz_plugins) StdoutLine: {'line': b'-- OGRE_PLUGINS: Plugin_BSPSceneManager;Plugin_OctreeSceneManager;Plugin_PCZSceneManager;Plugin_ParticleFX;RenderSystem_GL;RenderSystem_GL3Plus;Codec_STBI\n'}
+[1.215277] (rr_rviz_plugins) StdoutLine: {'line': b'-- OGRE_PLUGIN_DIR: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/OGRE\n'}
+[1.215552] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_RELEASE: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreOverlay.so\n'}
+[1.215868] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::OgreOverlay for IMPORTED_LOCATION_DEBUG: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreOverlay.so\n'}
+[1.216283] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_RELEASE: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreMain.so\n'}
+[1.216589] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::OgreMain for IMPORTED_LOCATION_DEBUG: /opt/ros/galactic/opt/rviz_ogre_vendor/lib/libOgreMain.so\n'}
+[1.306704] (-) TimerEvent: {}
+[1.407460] (-) TimerEvent: {}
+[1.508265] (-) TimerEvent: {}
+[1.609159] (-) TimerEvent: {}
+[1.658167] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.2.11") \n'}
+[1.709252] (-) TimerEvent: {}
+[1.735926] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   \n'}
+[1.809419] (-) TimerEvent: {}
+[1.910114] (-) TimerEvent: {}
+[2.010840] (-) TimerEvent: {}
+[2.111889] (-) TimerEvent: {}
+[2.212716] (-) TimerEvent: {}
+[2.313910] (-) TimerEvent: {}
+[2.414977] (-) TimerEvent: {}
+[2.515884] (-) TimerEvent: {}
+[2.589915] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found X11: /usr/include   \n'}
+[2.605168] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so\n'}
+[2.616036] (-) TimerEvent: {}
+[2.716641] (-) TimerEvent: {}
+[2.817006] (-) TimerEvent: {}
+[2.871423] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found\n'}
+[2.871830] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for gethostbyname\n'}
+[2.917124] (-) TimerEvent: {}
+[2.950169] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for gethostbyname - found\n'}
+[2.950444] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for connect\n'}
+[3.017211] (-) TimerEvent: {}
+[3.027756] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for connect - found\n'}
+[3.028014] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for remove\n'}
+[3.095477] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for remove - found\n'}
+[3.095755] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for shmat\n'}
+[3.117337] (-) TimerEvent: {}
+[3.162484] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for shmat - found\n'}
+[3.162765] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for IceConnectionNumber in ICE\n'}
+[3.217490] (-) TimerEvent: {}
+[3.240756] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for IceConnectionNumber in ICE - found\n'}
+[3.243702] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_RELEASE: _render_system_gl_static_library_abs-NOTFOUND\n'}
+[3.243897] (rr_rviz_plugins) StdoutLine: {'line': b'-- rviz_ogre_vendor::RenderSystem_GL for IMPORTED_LOCATION_DEBUG: _render_system_gl_static_library_abs-NOTFOUND\n'}
+[3.317659] (-) TimerEvent: {}
+[3.418145] (-) TimerEvent: {}
+[3.518694] (-) TimerEvent: {}
+[3.519676] (rr_rviz_plugins) StdoutLine: {'line': b'-- library: /usr/lib/x86_64-linux-gnu/libcurl.so\n'}
+[3.618873] (-) TimerEvent: {}
+[3.719627] (-) TimerEvent: {}
+[3.765994] (rr_rviz_plugins) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[3.789999] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found rosidl_adapter: 2.2.1 (/opt/ros/galactic/share/rosidl_adapter/cmake)\n'}
+[3.819856] (-) TimerEvent: {}
+[3.920575] (-) TimerEvent: {}
+[4.021317] (-) TimerEvent: {}
+[4.122466] (-) TimerEvent: {}
+[4.129161] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  \n'}
+[4.173070] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/galactic/include  \n'}
+[4.222684] (-) TimerEvent: {}
+[4.323438] (-) TimerEvent: {}
+[4.372499] (rr_rviz_plugins) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[4.423578] (-) TimerEvent: {}
+[4.523988] (-) TimerEvent: {}
+[4.624299] (-) TimerEvent: {}
+[4.661904] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)\n'}
+[4.681013] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found rmw_cyclonedds_cpp: 0.22.4 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)\n'}
+[4.711523] (rr_rviz_plugins) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_cyclonedds_cpp' as default\n"}
+[4.724431] (-) TimerEvent: {}
+[4.740241] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[4.824726] (-) TimerEvent: {}
+[4.925621] (-) TimerEvent: {}
+[5.026712] (-) TimerEvent: {}
+[5.127557] (-) TimerEvent: {}
+[5.173185] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[5.173499] (rr_rviz_plugins) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[5.227678] (-) TimerEvent: {}
+[5.258307] (rr_rviz_plugins) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed\n'}
+[5.288941] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads\n'}
+[5.327855] (-) TimerEvent: {}
+[5.382123] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads - not found\n'}
+[5.382390] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread_create in pthread\n'}
+[5.427974] (-) TimerEvent: {}
+[5.450656] (rr_rviz_plugins) StdoutLine: {'line': b'-- Looking for pthread_create in pthread - found\n'}
+[5.452219] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[5.528087] (-) TimerEvent: {}
+[5.628471] (-) TimerEvent: {}
+[5.728759] (-) TimerEvent: {}
+[5.806820] (rr_rviz_plugins) StdoutLine: {'line': b'-- Found Eigen3: TRUE (found version "3.3.7") \n'}
+[5.828894] (-) TimerEvent: {}
+[5.929217] (-) TimerEvent: {}
+[6.029852] (-) TimerEvent: {}
+[6.130978] (-) TimerEvent: {}
+[6.231371] (-) TimerEvent: {}
+[6.331657] (-) TimerEvent: {}
+[6.431937] (-) TimerEvent: {}
+[6.460402] (rr_rviz_plugins) StderrLine: {'line': b'CMake Error at CMakeLists.txt:13 (find_package):\n'}
+[6.460625] (rr_rviz_plugins) StderrLine: {'line': b'  By not providing "Findrr_msgs.cmake" in CMAKE_MODULE_PATH this project has\n'}
+[6.460717] (rr_rviz_plugins) StderrLine: {'line': b'  asked CMake to find a package configuration file provided by "rr_msgs", but\n'}
+[6.460796] (rr_rviz_plugins) StderrLine: {'line': b'  CMake did not find one.\n'}
+[6.460872] (rr_rviz_plugins) StderrLine: {'line': b'\n'}
+[6.460947] (rr_rviz_plugins) StderrLine: {'line': b'  Could not find a package configuration file provided by "rr_msgs" with any\n'}
+[6.461022] (rr_rviz_plugins) StderrLine: {'line': b'  of the following names:\n'}
+[6.461095] (rr_rviz_plugins) StderrLine: {'line': b'\n'}
+[6.461169] (rr_rviz_plugins) StderrLine: {'line': b'    rr_msgsConfig.cmake\n'}
+[6.461241] (rr_rviz_plugins) StderrLine: {'line': b'    rr_msgs-config.cmake\n'}
+[6.461325] (rr_rviz_plugins) StderrLine: {'line': b'\n'}
+[6.461397] (rr_rviz_plugins) StderrLine: {'line': b'  Add the installation prefix of "rr_msgs" to CMAKE_PREFIX_PATH or set\n'}
+[6.461498] (rr_rviz_plugins) StderrLine: {'line': b'  "rr_msgs_DIR" to a directory containing one of the above files.  If\n'}
+[6.461571] (rr_rviz_plugins) StderrLine: {'line': b'  "rr_msgs" provides a separate development package or SDK, be sure it has\n'}
+[6.461643] (rr_rviz_plugins) StderrLine: {'line': b'  been installed.\n'}
+[6.461715] (rr_rviz_plugins) StderrLine: {'line': b'\n'}
+[6.461787] (rr_rviz_plugins) StderrLine: {'line': b'\n'}
+[6.462955] (rr_rviz_plugins) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[6.463047] (rr_rviz_plugins) StdoutLine: {'line': b'See also "/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins/CMakeFiles/CMakeOutput.log".\n'}
+[6.463130] (rr_rviz_plugins) StdoutLine: {'line': b'See also "/home/szl/roboracing_ws/src/roboracing-software/rr_rviz_plugins/build/rr_rviz_plugins/CMakeFiles/CMakeError.log".\n'}
+[6.472872] (rr_rviz_plugins) CommandEnded: {'returncode': 1}
+[6.532267] (-) TimerEvent: {}
+[6.564453] (rr_rviz_plugins) JobEnded: {'identifier': 'rr_rviz_plugins', 'rc': 1}
+[6.575663] (-) EventReactorShutdown: {}

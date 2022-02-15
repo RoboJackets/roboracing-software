@@ -18,7 +18,7 @@ namespace rr_rviz_plugins {
         Q_OBJECT
 
         public:
-            Speedometer(QWidget *parent);
+            explicit Speedometer(QWidget *parent = nullptr);
 
         private:
             void speedCallback(const rr_msgs::msg::Speed::SharedPtr msg);
