@@ -17,7 +17,12 @@ find_package(pcl_conversions REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
-add_executable(ground_segmentation src/ground_segmentation/ground_segmentation.cpp)
+add_executable(ground_segmentation
+  src/ground_segmentation/ground_segmentation.cpp
+  src/ground_segmentation/ground_segmenter/ground_segmenter.cpp
+  src/ground_segmentation/ground_segmenter/segment.cpp
+  src/ground_segmentation/ground_segmenter/bin.cpp
+)
 ament_target_dependencies(ground_segmentation
     "rclcpp"
     "std_msgs"

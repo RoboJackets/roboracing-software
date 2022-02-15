@@ -15,6 +15,7 @@
   <buildtool_depend>velodyne</buildtool_depend>
   <buildtool_depend>pcl_ros</buildtool_depend>
   <buildtool_depend>pcl_conversions</buildtool_depend>
+  <buildtool_depend>pcl_visualization</buildtool_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

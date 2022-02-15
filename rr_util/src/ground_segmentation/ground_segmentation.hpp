@@ -10,6 +10,7 @@ class GroundSegmentation : public rclcpp::Node {
   private:
     void PointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
 
-    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_pub_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_ground_pub_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_obstacle_pub_;
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_sub_;
 };

@@ -1,0 +1,16 @@
+ground_segmentation:
+  ros__parameters:
+    r_min_square: 0.09
+    r_max_square: 400.0
+    n_bins: 50
+    n_segments: 180
+    max_dist_to_line: .15
+    min_slope: 0.0
+    max_slope: 1.25
+    max_error_square: 0.01
+    long_threshold: 2.0
+    max_long_height: 0.1
+    max_start_height: 0.25
+    sensor_height: 0.6
+    line_search_angle: 0.3
+    n_threads: 4
