@@ -1,0 +1,12 @@
+<library path="rviz_default_plugins">
+    <class
+    name="rviz_default_plugins/pid_plugins"
+    type="rviz_default_plugins::displays::PidDisplay"
+    base_class_type="rviz_common::Display"
+  >
+    <description>
+      Displays PID information
+    </description>
+  </class>
+
+</library>
