@@ -5,15 +5,17 @@
   <version>0.0.0</version>
   <description>Rviz visualization plugins</description>
 
-  <maintainer email="nbartholomai3@gatech.edu">Nico Bartholomai</maintainer>
-  <license>MIT</license>
+  <maintainer email="natset456@gmail.com">Natasha</maintainer>
+  <license>?</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
+  <build_depend>rr_msgs</build_depend>
+  <exec_depend>rr_msgs</exec_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
+    <rviz plugin="$plugin_description.xml"/>
   </export>
 </package>

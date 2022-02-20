@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Axes.msg"
@@ -19,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Speed.msg"
   "msg/UrcSign.msg"
   "srv/Turning.srv"
+  DEPENDENCIES std_msgs
 )
 
 ament_package()

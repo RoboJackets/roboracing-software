@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share rr_rviz_plugins)/rviz/speedometer.rviz">
+    </node>
+</launch>
