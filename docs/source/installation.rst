@@ -88,7 +88,7 @@ Step 5 - Install Dependencies
 
     cd ~/roboracing_ws 
     sudo apt install -y python3-colcon-common-extensions python3-rosdep 
-    rosdep init
+    sudo rosdep init
     rosdep update
     rosdep install --from-path src --ignore-src -y
 
@@ -187,7 +187,7 @@ Step 4 - Build Documentation
 
 .. code-block::
 
-    cd ~/roboracing_ws/src/roboracing-software
+    cd ~/roboracing_ws/src/roboracing-software/docs
     doxygen
     make html
 
