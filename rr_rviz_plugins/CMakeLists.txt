@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rviz_common REQUIRED)
-# find_package(rr_msgs REQUIRED)
+find_package(rr_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
@@ -26,6 +26,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "rclcpp_components"
   "rviz_common"
   "pluginlib"
+  "rr_msgs"
   "Qt5"
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
