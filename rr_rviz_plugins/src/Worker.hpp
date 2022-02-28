@@ -2,14 +2,15 @@
 
 class Worker : public QObject {
     Q_OBJECT
-public:
+  public:
     Worker();
     ~Worker();
-public slots:
+  public slots:
     void process();
-signals:
+  signals:
     void finished();
     void error(QString err);
-private:
+
+  private:
     // add your variables here
 };

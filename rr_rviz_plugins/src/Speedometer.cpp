@@ -9,7 +9,8 @@ namespace rr_rviz_plugins {
 // rclcpp::Publisher<rr_msgs::msg::Speed>::SharedPtr speed_pub_;
 // rclcpp::Subscription<rr_msgs::msg::Speed>::SharedPtr speed_sub_;
 
-Speedometer::Speedometer(QWidget *parent) : rviz_common::Panel(parent)  // Base class constructor
+Speedometer::Speedometer(QWidget *parent)
+      : rviz_common::Panel(parent)  // Base class constructor
 {
     // Initialize a label for displaying some data
     label = new QLabel("0 m/s");
