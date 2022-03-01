@@ -19,6 +19,8 @@ find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 add_library(${PROJECT_NAME} SHARED
   src/Speedometer.cpp
   src/Speedometer.hpp
+  src/Worker.cpp
+  src/Worker.hpp
 )
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 ament_target_dependencies(${PROJECT_NAME}
