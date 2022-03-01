@@ -5,7 +5,7 @@ Worker::Worker() {  // Constructor
     node = std::make_shared<rclcpp::Node>("Speed");
     speed_pub_ = node->create_publisher<rr_msgs::msg::Speed>("/speed_new", rclcpp::SystemDefaultsQoS());
     speed_sub_ = node->create_subscription<rr_msgs::msg::Speed>(
-        "/speed", rclcpp::SystemDefaultsQoS(), std::bind(&Worker::speedCallback, this, std::placeholders::_1));
+          "/speed", rclcpp::SystemDefaultsQoS(), std::bind(&Worker::speedCallback, this, std::placeholders::_1));
 }
 
 Worker::~Worker() {  // Destructor

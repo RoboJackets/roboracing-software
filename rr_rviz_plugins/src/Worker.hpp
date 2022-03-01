@@ -1,8 +1,8 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include <QWidget>
 #include <QObject>
+#include <QWidget>
 #include <rclcpp/rclcpp.hpp>
 #include <rr_msgs/msg/speed.hpp>
 
