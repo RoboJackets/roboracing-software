@@ -279,7 +279,7 @@ because maybe somebody added a new submodule.</p>
 <h3>Step 5 - Install Dependencies<a class="headerlink" href="#step-5-install-dependencies" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="n">python3</span><span class="o">-</span><span class="n">rosdep</span>
-<span class="n">rosdep</span> <span class="n">init</span>
+<span class="n">sudo</span> <span class="n">rosdep</span> <span class="n">init</span>
 <span class="n">rosdep</span> <span class="n">update</span>
 <span class="n">rosdep</span> <span class="n">install</span> <span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">path</span> <span class="n">src</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">src</span> <span class="o">-</span><span class="n">y</span>
 </pre></div>
@@ -288,10 +288,16 @@ because maybe somebody added a new submodule.</p>
 <div class="section" id="step-6-building-the-code">
 <h3>Step 6 - Building the Code<a class="headerlink" href="#step-6-building-the-code" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">colcon</span> <span class="n">build</span>
-<span class="n">source</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">install</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
 </pre></div>
 </div>
-<p>Similar to step 3, you should run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/roboracing_ws/install/setup.bash</span></code> with every new shell instance.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You will need two shell instances at all times while doing ROS2 development. On terminator, if you use the key combination <cite>CTRL + SHIFT + L</cite> the screen
+will split. One instance is for <em>building</em> code and another is for <em>running code</em>. You will need to make sure that both of these terminals are sourced with:
+<cite>source /opt/ros/galactic/setup.bash</cite> so that the shell instance knows where the ROS2 libraries are located. In the <em>running code</em> terminal you will also need to source
+<cite>source ~/roboracing_ws/install/setup.zsh</cite> so that the shell instance knows where all of your code is located. This is very important! If you don’t do this,
+you will get an error telling you that you are overriding packages and this may cause errors!</p>
+</div>
 </div>
 </div>
 <div class="section" id="documentation">
@@ -309,7 +315,7 @@ because maybe somebody added a new submodule.</p>
 <h3>Step 2 - Install PlantUML<a class="headerlink" href="#step-2-install-plantuml" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">default</span><span class="o">-</span><span class="n">jre</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">graphviz</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">sphinxcontrib</span><span class="o">-</span><span class="n">plantuml</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinxcontrib</span><span class="o">-</span><span class="n">plantuml</span>
 </pre></div>
 </div>
 <p>Download most recent version of plantuml from: <a class="reference external" href="https://github.com/plantuml/plantuml/releases/latest">https://github.com/plantuml/plantuml/releases/latest</a>.
@@ -355,13 +361,13 @@ apply changes, you need to execute the file. In order to do this, you can use th
 <div class="section" id="step-3-install-doxygen-and-breathe">
 <h3>Step 3 - Install Doxygen and Breathe<a class="headerlink" href="#step-3-install-doxygen-and-breathe" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">doxygen</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">breathe</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">breathe</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="step-4-build-documentation">
 <h3>Step 4 - Build Documentation<a class="headerlink" href="#step-4-build-documentation" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span><span class="o">/</span><span class="n">docs</span>
 <span class="n">doxygen</span>
 <span class="n">make</span> <span class="n">html</span>
 </pre></div>

@@ -36,7 +36,7 @@ This guide will follow https://docs.ros.org/en/galactic/Installation/Ubuntu-Inst
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
     sudo apt update
     sudo apt install ros-galactic-desktop
-    
+
 
 
 Step 2 - Get Terminator
@@ -88,7 +88,7 @@ Step 5 - Install Dependencies
 
     cd ~/roboracing_ws 
     sudo apt install -y python3-colcon-common-extensions python3-rosdep 
-    rosdep init
+    sudo rosdep init
     rosdep update
     rosdep install --from-path src --ignore-src -y
 
@@ -98,9 +98,13 @@ Step 6 - Building the Code
 .. code-block::
 
     colcon build 
-    source ~/roboracing_ws/install/setup.bash
 
-Similar to step 3, you should run ``source ~/roboracing_ws/install/setup.bash`` with every new shell instance.
+.. important::
+   You will need two shell instances at all times while doing ROS2 development. On terminator, if you use the key combination `CTRL + SHIFT + L` the screen
+   will split. One instance is for *building* code and another is for *running code*. You will need to make sure that both of these terminals are sourced with:
+   `source /opt/ros/galactic/setup.bash` so that the shell instance knows where the ROS2 libraries are located. In the *running code* terminal you will also need to source
+   `source ~/roboracing_ws/install/setup.zsh` so that the shell instance knows where all of your code is located. This is very important! If you don't do this,
+   you will get an error telling you that you are overriding packages and this may cause errors!
 
 Documentation
 =============
@@ -122,7 +126,7 @@ Step 2 - Install PlantUML
 
     sudo apt install default-jre
     sudo apt install graphviz
-    pip install sphinxcontrib-plantuml
+    pip install -U sphinxcontrib-plantuml
 
 Download most recent version of plantuml from: https://github.com/plantuml/plantuml/releases/latest.
 Download the one that has no suffix, meaning NOT -javadoc or -sources. It is probably the third one on the list.
@@ -180,14 +184,14 @@ Step 3 - Install Doxygen and Breathe
 .. code-block::
     
     sudo apt-get install doxygen
-    pip install breathe
+    pip install -U breathe
 
 Step 4 - Build Documentation
 ----------------------------
 
 .. code-block::
 
-    cd ~/roboracing_ws/src/roboracing-software
+    cd ~/roboracing_ws/src/roboracing-software/docs
     doxygen
     make html
 
