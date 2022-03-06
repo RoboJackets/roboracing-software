@@ -1,0 +1,36 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    effort_controllers:
+      type: effort_controllers/JointGroupEffortController
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+
+
+effort_controllers:
+  ros__parameters:
+    joints:
+      - base_footprint_to_wheel_BL
+      - base_footprint_to_wheel_BR
+    command_interfaces:
+      - effort
+    state_interfaces:
+      - position
+      - velocity
+      - effort
+    interface_name: effort
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - base_footprint_to_steering_link_left
+      - base_footprint_to_steering_link_right
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    interface_name: position

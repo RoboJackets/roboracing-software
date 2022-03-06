@@ -1,14 +1,17 @@
 import launch
 from launch.substitutions import Command, LaunchConfiguration
 from launch_ros.actions import Node
+from launch.actions import ExecuteProcess
 import launch_ros
 import os
 
 def generate_launch_description():
-    pkg_share = launch_ros.substitutions.FindPackageShare(package='sam_bot_description').find('sam_bot_description')
-    default_model_path = os.path.join(pkg_share, 'src/description/sam_bot_description.urdf')
-    default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf_config.rviz')
-    world_path=os.path.join(pkg_share, 'world/my_world.sdf')
+    pkg_rr_description = launch_ros.substitutions.FindPackageShare(package='rr_description').find('sam_bot_description')
+    pkg_rr_gazebo = launch_ros.substitutions.FindPackageShare(package='rr_gazebo').find('sam_bot_description')
+
+    default_model_path = os.path.join(pkg_rr_description, 'src/description/rigatoni.urdf.xacro')
+    default_rviz_config_path = os.path.join(pkg_rr_description, 'rviz/urdf_config.rviz')
+    world_path=os.path.join(pkg_rr_gazebo, 'world/my_world.sdf')
     
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
@@ -38,8 +41,23 @@ def generate_launch_description():
          executable='ekf_node',
          name='ekf_filter_node',
          output='screen',
-         parameters=[os.path.join(pkg_share, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+         parameters=[os.path.join(pkg_rr_description, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
+    load_joint_state_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
+             'joint_state_broadcaster'],
+        output='screen'
+    )
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start', 'joint_trajectory_controller'],
+        output='screen'
+    )
+    load_effort_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start', 'effort_controllers'],
+        output='screen'
+    )
+
+
 
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(name='gui', default_value='True',
@@ -51,7 +69,10 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument(name='use_sim_time', default_value='True',
                                             description='Flag to enable use_sim_time'),
         launch.actions.ExecuteProcess(cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_init.so', '-s', 'libgazebo_ros_factory.so', world_path], output='screen'),
-        joint_state_publisher_node,
+        # joint_state_publisher_node,
+        load_joint_state_controller,
+        load_joint_trajectory_controller,
+        load_effort_controller,
         robot_state_publisher_node,
         spawn_entity,
         robot_localization_node,
