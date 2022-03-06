@@ -1,4 +1,5 @@
 #include "Speedometer.hpp"
+#include "qthread.h"
 
 #include <cmath>
 
@@ -19,9 +20,17 @@ Speedometer::Speedometer(QWidget *parent)
     setLayout(layout);
     label->setText("10 m/s");
 
-    Worker work;
-    QObject::connect(&work, &Worker::finished, this, &Speedometer::setLabel);
-    QObject::connect(this, &Speedometer::startNode, &work, &Worker::startNode);
+    QThread *thread = new QThread();
+    worker = new Worker();
+    QObject::connect(worker, &Worker::finished, this, &Speedometer::setLabel);
+    QObject::connect(this, &Speedometer::startNode, worker, &Worker::startNode);
+    worker->moveToThread(thread);
+    // connect( worker, &Worker::error, this, &MyClass::errorString);
+    // connect( thread, &QThread::started, worker, &Worker::process);
+    connect( worker, &Worker::finished, thread, &QThread::quit);
+    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+    thread->start();
     emit startNode();
 }
 

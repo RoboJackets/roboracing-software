@@ -9,11 +9,11 @@ Worker::Worker() {  // Constructor
 }
 
 Worker::~Worker() {  // Destructor
-    // rclcpp::shutdown();
+    rclcpp::shutdown();
 }
 
 void Worker::startNode() {
-    // rclcpp::spin(node);
+    rclcpp::spin(node);
 }
 
 void Worker::speedCallback(const rr_msgs::msg::Speed::SharedPtr msg) {

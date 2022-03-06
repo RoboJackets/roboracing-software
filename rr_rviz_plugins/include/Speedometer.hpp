@@ -30,6 +30,7 @@ class Speedometer : public rviz_common::Panel {
 
   private:
     QLabel *label;
+    Worker *worker;
 };
 }  // namespace rr_rviz_plugins
 

@@ -18,10 +18,17 @@ find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
 add_library(${PROJECT_NAME} SHARED
   src/Speedometer.cpp
-  src/Speedometer.hpp
   src/Worker.cpp
-  src/Worker.hpp
+  include/Speedometer.hpp
+  include/Worker.hpp
 )
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+)
+
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 ament_target_dependencies(${PROJECT_NAME}
   "rclcpp"
