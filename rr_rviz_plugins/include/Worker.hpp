@@ -16,7 +16,7 @@ class Worker : public QObject {
     void startNode();
 
   signals:
-    void finished(float current_speed);
+    void updateSpeed(float current_speed);
     void error(QString err);
 
   private:

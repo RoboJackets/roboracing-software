@@ -19,5 +19,5 @@ void Worker::startNode() {
 void Worker::speedCallback(const rr_msgs::msg::Speed::SharedPtr msg) {
     // Create the new contents of the label based on the speed message.
     current_speed = std::abs(msg->speed);
-    emit finished(current_speed);
+    emit updateSpeed(current_speed);
 }
