@@ -1,0 +1,7 @@
+<launch>
+
+    <include file="$(find rr_gazebo)/launch/macaroni_sim.launch">
+        <arg name="world" value="$(find rr_gazebo)/worlds/iarrc_drag.world"/>
+    </include>
+
+</launch>

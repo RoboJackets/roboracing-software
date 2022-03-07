@@ -1,0 +1,3 @@
+prepend-non-duplicate;GAZEBO_MODEL_PATH;share/rr_gazebo/models
+prepend-non-duplicate;GAZEBO_RESOURCE_PATH;share/rr_gazebo/resource
+prepend-non-duplicate;GAZEBO_RESOURCE_PATH;shrea/rr_gazebo/worlds

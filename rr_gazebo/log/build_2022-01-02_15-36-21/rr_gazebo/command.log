@@ -1,0 +1,2 @@
+Invoking command in '/home/nico/rr_ws/src/roboracing-software/rr_gazebo/build/rr_gazebo': /usr/bin/cmake /home/nico/rr_ws/src/roboracing-software/rr_gazebo -DCMAKE_INSTALL_PREFIX=/home/nico/rr_ws/src/roboracing-software/rr_gazebo/install/rr_gazebo
+Invoked command in '/home/nico/rr_ws/src/roboracing-software/rr_gazebo/build/rr_gazebo' returned '1': /usr/bin/cmake /home/nico/rr_ws/src/roboracing-software/rr_gazebo -DCMAKE_INSTALL_PREFIX=/home/nico/rr_ws/src/roboracing-software/rr_gazebo/install/rr_gazebo
