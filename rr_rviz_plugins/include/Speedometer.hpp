@@ -21,6 +21,7 @@ class Speedometer : public rviz_common::Panel {
 
   public:
     explicit Speedometer(QWidget *parent = nullptr);
+    // DO NOT CREATE A DESTRUCTOR
 
   public slots:
     void setLabel(float speed);

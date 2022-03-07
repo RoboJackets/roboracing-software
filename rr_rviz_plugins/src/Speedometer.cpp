@@ -17,18 +17,25 @@ Speedometer::Speedometer(QWidget *parent)
 
     QThread *thread = new QThread();
     worker = new Worker();
+    // Connect the update speed and start node methods
     QObject::connect(worker, &Worker::updateSpeed, this, &Speedometer::setLabel);
     QObject::connect(this, &Speedometer::startNode, worker, &Worker::startNode);
+
+    // Make worker execute in separate thread
     worker->moveToThread(thread);
-    // connect( worker, &Worker::error, this, &MyClass::errorString);
-    // connect( thread, &QThread::started, worker, &Worker::process);
-    // connect( worker, &Worker::finished, thread, &QThread::quit);
-    // connect( worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+    // Initialize thread
     thread->start();
+
+    // Tell the worker to start execution
     emit startNode();
 }
 
+/**
+ * @brief Update label to include speed
+ * @param speed the speed to display
+ */
 void Speedometer::setLabel(float speed) {
     auto text = std::to_string(speed) + " m/s";
     // Set the contents of the label.
