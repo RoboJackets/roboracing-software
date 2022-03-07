@@ -1,7 +1,8 @@
 #include "Speedometer.hpp"
-#include "qthread.h"
 
 #include <cmath>
+
+#include "qthread.h"
 
 namespace rr_rviz_plugins {
 
