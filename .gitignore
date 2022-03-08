@@ -28,3 +28,6 @@ cmake-build-debug/*
 # ML training data and logs
 rr_ml/data/*
 rr_ml/tensorboard_logs/*
+
+# Extra
+*/build
