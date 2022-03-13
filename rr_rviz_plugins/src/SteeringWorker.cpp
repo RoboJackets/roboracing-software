@@ -8,7 +8,8 @@ SteeringWorker::SteeringWorker() {  // Constructor
     // you could copy data from constructor arguments to internal variables here.
     node = std::make_shared<rclcpp::Node>("Steering");
     steering_sub_ = node->create_subscription<rr_msgs::msg::ChassisState>(
-          "/angle", rclcpp::SystemDefaultsQoS(), std::bind(&SteeringWorker::angleCallback, this, std::placeholders::_1));
+          "/angle", rclcpp::SystemDefaultsQoS(),
+          std::bind(&SteeringWorker::angleCallback, this, std::placeholders::_1));
 }
 
 /**
