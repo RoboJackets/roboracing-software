@@ -1,4 +1,4 @@
-#include "Speedometer.hpp"
+#include "SteeringDirection.hpp"
 
 #include <cmath>
 
@@ -6,7 +6,7 @@
 
 namespace rr_rviz_plugins {
 
-Speedometer::Speedometer(QWidget *parent)
+SteeringDirection::SteeringDirection(QWidget *parent)
       : rviz_common::Panel(parent)  // Base class constructor
 {
     // Initialize a label for displaying some data
@@ -17,10 +17,10 @@ Speedometer::Speedometer(QWidget *parent)
     label->setText("10 m/s");
 
     QThread *thread = new QThread();
-    worker = new SpeedometerWorker();
-    // Connect the update speed and start node methods
-    QObject::connect(worker, &SpeedometerWorker::updateSpeed, this, &Speedometer::setLabel);
-    QObject::connect(this, &Speedometer::startNode, worker, &SpeedometerWorker::startNode);
+    worker = new SteeringWorker();
+    // Connect the update angle and start node methods
+    QObject::connect(worker, &SteeringWorker::updateAngle, this, &SteeringDirection::setLabel);
+    QObject::connect(this, &SteeringDirection::startNode, worker, &SteeringWorker::startNode);
 
     // Make worker execute in separate thread
     worker->moveToThread(thread);
@@ -34,15 +34,15 @@ Speedometer::Speedometer(QWidget *parent)
 }
 
 /**
- * @brief Update label to include speed
- * @param speed the speed to display
+ * @brief Update label to include angle
+ * @param angle the angle to display
  */
-void Speedometer::setLabel(float speed) {
-    auto text = std::to_string(speed) + " m/s";
+void SteeringDirection::setLabel(float angle) {
+    auto text = std::to_string(angle) + " radians";
     // Set the contents of the label.
     label->setText(text.c_str());
 }
 
 }  // namespace rr_rviz_plugins
 
-PLUGINLIB_EXPORT_CLASS(rr_rviz_plugins::Speedometer, rviz_common::Panel)
+PLUGINLIB_EXPORT_CLASS(rr_rviz_plugins::SteeringDirection, rviz_common::Panel)

@@ -4,4 +4,9 @@
       Provides speedometer.
     </description>
   </class>
+  <class name="rr_rviz_plugins/SteeringDirection" type="rr_rviz_plugins::SteeringDirection" base_class_type="rviz_common::Panel">
+    <description>
+      Provides direction of steering of the robot.
+    </description>
+  </class>
 </library>

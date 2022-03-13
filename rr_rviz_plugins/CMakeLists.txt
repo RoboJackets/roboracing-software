@@ -18,9 +18,13 @@ find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
 add_library(${PROJECT_NAME} SHARED
   src/Speedometer.cpp
-  src/Worker.cpp
+  src/SpeedometerWorker.cpp
+  src/SteeringDirection.cpp
+  src/SteeringWorker.cpp
   include/Speedometer.hpp
-  include/Worker.hpp
+  include/SpeedometerWorker.hpp
+  include/SteeringDirection.hpp
+  include/SteeringWorker.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

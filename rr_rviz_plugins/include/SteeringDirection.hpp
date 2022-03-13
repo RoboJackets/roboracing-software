@@ -12,15 +12,15 @@
 #include <rr_msgs/msg/chassis_state.hpp>
 #include <rviz_common/panel.hpp>
 
-#include "SpeedometerWorker.hpp"
+#include "SteeringWorker.hpp"
 
 namespace rr_rviz_plugins {
 
-class Speedometer : public rviz_common::Panel {
+class SteeringDirection : public rviz_common::Panel {
     Q_OBJECT
 
   public:
-    explicit Speedometer(QWidget *parent = nullptr);
+    explicit SteeringDirection(QWidget *parent = nullptr);
     // DO NOT CREATE A DESTRUCTOR
 
   public slots:
@@ -31,7 +31,7 @@ class Speedometer : public rviz_common::Panel {
 
   private:
     QLabel *label;
-    SpeedometerWorker *worker;
+    SteeringWorker *worker;
 };
 }  // namespace rr_rviz_plugins
 
