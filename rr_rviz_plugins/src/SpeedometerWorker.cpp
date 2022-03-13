@@ -8,7 +8,8 @@ SpeedometerWorker::SpeedometerWorker() {  // Constructor
     // you could copy data from constructor arguments to internal variables here.
     node = std::make_shared<rclcpp::Node>("Speed");
     speed_sub_ = node->create_subscription<rr_msgs::msg::ChassisState>(
-          "/speed", rclcpp::SystemDefaultsQoS(), std::bind(&SpeedometerWorker::speedCallback, this, std::placeholders::_1));
+          "/speed", rclcpp::SystemDefaultsQoS(),
+          std::bind(&SpeedometerWorker::speedCallback, this, std::placeholders::_1));
 }
 
 /**
