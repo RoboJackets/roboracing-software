@@ -1,5 +1,5 @@
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef STEERING_WORKER_H
+#define STEERING_WORKER_H
 
 #include <QObject>
 #include <QWidget>
@@ -20,12 +20,12 @@ class SteeringWorker : public QObject {
     void error(QString err);
 
   private:
-    void angleCallback(const rr_msgs::msg::Steering::SharedPtr msg);
+    void angleCallback(const rr_msgs::msg::ChassisState::SharedPtr msg);
 
     // add your variables here
     float current_angle;
     std::shared_ptr<rclcpp::Node> node;
-    rclcpp::Subscription<rr_msgs::msg::Steering>::SharedPtr steering_sub_;
+    rclcpp::Subscription<rr_msgs::msg::ChassisState>::SharedPtr steering_sub_;
 };
 
 #endif

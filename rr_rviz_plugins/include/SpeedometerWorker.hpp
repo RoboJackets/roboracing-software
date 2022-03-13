@@ -1,5 +1,5 @@
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef SPEEDOMETER_WORKER_H
+#define SPEEDOMETER_WORKER_H
 
 #include <QObject>
 #include <QWidget>

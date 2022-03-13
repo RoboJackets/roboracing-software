@@ -31,6 +31,6 @@ void SpeedometerWorker::startNode() {
  */
 void SpeedometerWorker::speedCallback(const rr_msgs::msg::ChassisState::SharedPtr msg) {
     // Create the new contents of the label based on the speed message.
-    current_speed = std::abs(msg->speed);
+    current_speed = std::abs(msg->speed_mps);
     emit updateSpeed(current_speed);
 }

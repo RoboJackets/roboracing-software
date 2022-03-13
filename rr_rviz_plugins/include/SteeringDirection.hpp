@@ -1,5 +1,5 @@
-#ifndef SPEEDOMETER_H
-#define SPEEDOMETER_H
+#ifndef STEERING_DIRECTION_H
+#define STEERING_DIRECTION_H
 
 #include <QObject>
 #include <QPushButton>

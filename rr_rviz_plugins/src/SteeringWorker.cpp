@@ -31,6 +31,6 @@ void SteeringWorker::startNode() {
  */
 void SteeringWorker::angleCallback(const rr_msgs::msg::ChassisState::SharedPtr msg) {
     // Create the new contents of the label based on the speed message.
-    current_angle = std::abs(msg->angle);
+    current_angle = std::abs(msg->steer_rad);
     emit updateAngle(current_angle);
 }
