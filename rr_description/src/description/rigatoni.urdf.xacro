@@ -426,16 +426,16 @@
     </joint>
     <joint name="base_footprint_to_steering_link_left">
       <command_interface name="position">
-        <param name="min">-1</param>
-        <param name="max">1</param>
+        <param name="min">-0.3</param>
+        <param name="max">0.3</param>
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="base_footprint_to_steering_link_right">
       <command_interface name="position">
-        <param name="min">-1</param>
-        <param name="max">1</param>
+        <param name="min">-0.3</param>
+        <param name="max">0.3</param>
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
