@@ -59,17 +59,19 @@ private:
         }
       }
     }
-    pose.pose.position.x = x_meters;
-    pose.pose.position.y = y_meters;
-    pose.pose.position.z = 0;
-    pose.pose.orientation.x = 0;
-    pose.pose.orientation.y = 0;
-    pose.pose.orientation.z = 0;
-    pose.pose.orientation.w = 1;
+    if (distance > 0) {
+      pose.pose.position.x = x_meters;
+      pose.pose.position.y = y_meters;
+      pose.pose.position.z = 0;
+      pose.pose.orientation.x = 0;
+      pose.pose.orientation.y = 0;
+      pose.pose.orientation.z = 0;
+      pose.pose.orientation.w = 1;
       
-    goal_pose_ = pose;
-    RCLCPP_INFO(this->get_logger(), "publisher publishing");
-    pub_->publish(pose);
+      goal_pose_ = pose;
+      RCLCPP_INFO(this->get_logger(), "publisher publishing");
+      pub_->publish(pose);
+    }
   }
   
   

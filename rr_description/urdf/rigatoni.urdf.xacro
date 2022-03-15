@@ -7,6 +7,8 @@
 
     <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
 
+    <!-- <xacro:include filename="$(find rr_description)/" -->
+
     <!-- ************************** Links *************************** -->
     <xacro:macro name="null_inertia">
         <inertial>
@@ -17,7 +19,7 @@
 
     <xacro:macro name="mesh_geometry">
         <geometry>
-            <mesh filename="package://rr_description/meshes/rigatoni.stl" scale="0.01 0.01 0.01"/>
+            <mesh filename="$(find rr_description)/meshes/rigatoni.stl" scale="0.01 0.01 0.01"/>
         </geometry>
     </xacro:macro>
 
@@ -392,8 +394,11 @@
     <!-- ****************** Actuators ********************** -->
 
     <gazebo>
-        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/</robotNamespace>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <robot_namespace>rigatoni</robot_namespace>
+            <robot_param>robot_description</robot_param>
+            <robot_param_node>robot_state_publisher</robot_param_node>
+            <parameters>$(find rr_description)/conf/controller.yaml</parameters>
         </plugin>
     </gazebo>
 

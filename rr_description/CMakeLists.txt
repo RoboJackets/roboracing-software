@@ -15,7 +15,7 @@ xacro_add_files(
         urdf/opponents/evgp_opponent_2.urdf.xacro
         urdf/opponents/evgp_opponent_3.urdf.xacro
         urdf/opponents/evgp_opponent_4.urdf.xacro
-        urdf/rigatoni.urdf.xacro
+        # urdf/rigatoni.urdf.xacro
 	TARGET urdf_generation
 	INSTALL DESTINATION urdf
 )
@@ -31,5 +31,7 @@ install(
 	DESTINATION share/${PROJECT_NAME}
 )
 
+
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/rr_description.dsv.in")
 
 ament_package()

@@ -1,18 +1,39 @@
-<?xml version="1.0"?>
+<?xml version="2.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rr_gazebo</name>
-  <version>0.0.0</version>
-  <description>Gazebo utilities</description>
-  <maintainer email="nbartholomai3@gatech.edu">Nico Bartholomai</maintainer>
+  <version>2.0.0</version>
+  <description>Gazebo simulation files for RoboRacing</description>
+  <maintainer email="nbartholomai3@gatech.edu">nico</maintainer>
   <license>MIT</license>
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://robojackets.org</url>
+
+
+  <depend>rr_msgs</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_plugins</exec_depend>
+  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>effort_controller</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
+  <exec_depend>gazebo_ros_pkgs</exec_depend>
+  <exec_depend>hector_gazebo_plugins</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+    <gazebo_ros gazebo_media_path="${prefix}/models"/>
+
   </export>
 </package>
