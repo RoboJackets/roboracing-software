@@ -1,0 +1,13 @@
+<launch>
+    <arg name="launch_prefix" default=""/> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
+    <arg name="node_namespace" default="ground_segmentation_node"/>
+
+    <!-- Set parameters -->
+    <!-- rosparam command="load" file="$(find rr_evgp)/conf/april_tag_settings.yaml" ns="$(arg node_namespace)"/ -->
+    <!-- rosparam command="load" file="$(find rr_evgp)/conf/april_tag_taglist.yaml" ns="$(arg node_namespace)"/ -->
+
+    <node pkg="rr_evgp" type="ground_segmentation" name="$(arg node_namespace)" clear_params="true"
+          output="screen" launch-prefix="$(arg launch_prefix)">
+        
+    </node>
+</launch>

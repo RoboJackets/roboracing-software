@@ -1,0 +1,2 @@
+add_executable(ground_segmentation ground_segmentation.cpp ground_segmentation.hpp)
+target_link_libraries(ground_segmentation ${catkin_LIBRARIES})
