@@ -4,57 +4,116 @@
 
 #include "ground_segmentation.hpp"
 
+#include <pcl/common/transforms.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 #include <utility>
+#include <iostream>
+
+#include "ground_segmenter/ground_segmenter.hpp"
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "ground_segmentation");
     ros::NodeHandle nhp("~");
     ros::NodeHandle nh;
-    std::string camera_frame, pointcloud, tag_detections_topic, tag_detection_markers, destination_frame,
-          opponents_april;
-    /*double x_offset, y_offset, px_per_m, width, height;
-    XmlRpc::XmlRpcValue tags;
-    nhp.getParam("camera_frame", camera_frame);
-    nhp.getParam("pointcloud", pointcloud);
-    nhp.getParam("tag_detections_topic", tag_detections_topic);
-    nhp.getParam("tag_detection_markers", tag_detection_markers);
-    nhp.getParam("opponents_april", opponents_april);
-    nhp.getParam("destination_frame", destination_frame);
-    nhp.getParam("x_offset", x_offset);
-    nhp.getParam("y_offset", y_offset);
-    nhp.getParam("px_per_m", px_per_m);
-    nhp.getParam("width", width);
-    nhp.getParam("height", height);
-    nhp.getParam("tags", tags);*/
-    ground_segmentation ground_segmentation(&nh);
+
+    GroundSegmenterParams params = GroundSegmenterParams{};
+    nhp.getParam("r_min_square", params.r_min_square);
+    nhp.getParam("r_max_square", params.r_max_square);
+    nhp.getParam("n_bins", params.n_bins);
+    nhp.getParam("n_segments", params.n_segments);
+
+    nhp.getParam("max_dist_to_line", params.max_dist_to_line);
+    nhp.getParam("min_slope", params.min_slope);
+    nhp.getParam("max_slope", params.max_slope);
+    nhp.getParam("max_error_square", params.max_error_square);
+    nhp.getParam("long_threshold", params.long_threshold);
+    nhp.getParam("max_long_height", params.max_long_height);
+    nhp.getParam("max_start_height", params.max_start_height);
+    nhp.getParam("sensor_height", params.sensor_height);
+    nhp.getParam("line_search_angle", params.line_search_angle);
+
+    nhp.getParam("n_threads", params.n_threads);
+
+    ground_segmentation ground_segmentation(&nh, params);
 
     ros::spin();
     return 0;
 }
 
-ground_segmentation::ground_segmentation(ros::NodeHandle *nh) {
+ground_segmentation::ground_segmentation(ros::NodeHandle *nh, GroundSegmenterParams params) {
     // Storing as an instance variable keeps subscriber alive
-    velodyne_sub_ = nh->subscribe("velodyne_points2", 1, &ground_segmentation::callback, this);
+    velodyne_sub_ = nh->subscribe("/velodyne_points", 1, &ground_segmentation::callback, this);
     pcl_ground_pub_ = nh->advertise<sensor_msgs::PointCloud2>("/ground_segmentation/ground", 1);
     pcl_obstacle_pub_ = nh->advertise<sensor_msgs::PointCloud2>("/ground_segmentation/obstacle", 1);
     //pub_markers = nh->advertise<visualization_msgs::MarkerArray>(tag_detection_markers, 1);
     //pub_opponents = nh->advertise<geometry_msgs::PoseArray>(opponents_april, 1);
+
+    nh->getParam("robot_width", robot_width);
+    nh->getParam("robot_depth_forward", robot_depth_forward);
+    nh->getParam("robot_depth_backward", robot_depth_backward);
+
+    segmentation_params = params;
 }
 
 void ground_segmentation::callback(const sensor_msgs::PointCloud2 &cloud) {
     pcl::PointCloud<pcl::PointXYZ> pcl_cloud{};
     pcl::fromROSMsg(cloud, pcl_cloud);
 
+    GroundSegmenter segmenter(segmentation_params);
+    pcl::PointCloud<pcl::PointXYZ> cloud_transformed;
+
+    std::string frame_id = cloud.header.frame_id;
+
+    std::vector<int> labels;
+
+    // todo: transform cloud so that the vertical axis (z) is always up relative to gravity
+    // Eigen::Affine3d tf = Eigen::Affine3d::Identity<double, 3, 2>;
+    // pcl::transformPointCloud(pcl_cloud, cloud_transformed, tf);
+
+    for (size_t i = 0; i < pcl_cloud.size(); ++i) {
+        auto pt = pcl_cloud[i];
+        if (fabs(pt.y) > robot_width) continue;
+        if (!(robot_depth_backward < pt.x && pt.x < robot_depth_forward)) continue;
+
+        cloud_transformed.push_back(pt);
+    }
+
+    segmenter.segment(cloud_transformed, &labels);
+    pcl::PointCloud<pcl::PointXYZ> ground_cloud, obstacle_cloud;
+
+    ground_cloud.sensor_orientation_ = pcl_cloud.sensor_orientation_;
+    ground_cloud.sensor_origin_ = pcl_cloud.sensor_origin_;
+
+    obstacle_cloud.sensor_orientation_ = pcl_cloud.sensor_orientation_;
+    obstacle_cloud.sensor_origin_ = pcl_cloud.sensor_origin_;
+
+    for (size_t i = 0; i < cloud_transformed.size(); ++i) {
+        if (labels[i] == 1) {
+            ground_cloud.push_back(cloud_transformed[i]);
+        } else {
+            obstacle_cloud.push_back(cloud_transformed[i]);
+        }
+    }
+
+    publishPointCloud(ground_cloud, pcl_ground_pub_, frame_id);
+    publishPointCloud(obstacle_cloud, pcl_obstacle_pub_, frame_id);
+
     //pcl::PointCloud<pcl::PointXYZ> cloud2 = pcl::PointCloud<pcl::PointXYZ>(cloud);
-    publishPointCloud(pcl_cloud, pcl_ground_pub_);
+    //publishPointCloud(pcl_cloud, pcl_ground_pub_);
     
     //draw_opponents(&tag_groups);
 }
 
-void ground_segmentation::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud, ros::Publisher &pub) {
+void ground_segmentation::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud, ros::Publisher &pub, std::string frame_id) {
     sensor_msgs::PointCloud2 outmsg;
-    //pcl::toROSMsg(cloud, outmsg);
+    pcl::toROSMsg(cloud, outmsg);
+    outmsg.header.frame_id = frame_id;
     pub.publish(outmsg);
+
+    std::cout << "Published cloud with " << cloud.size() << " points to " << pub.getTopic() << std::endl;
 }
 
 tf::Pose ground_segmentation::poseAverage(std::vector<tf::Pose> poses) {

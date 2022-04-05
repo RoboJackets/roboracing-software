@@ -19,9 +19,11 @@
 
 #include "geometry_msgs/PoseArray.h"
 
+#include "ground_segmenter/ground_segmenter.hpp"
+
 class ground_segmentation {
   public:
-    ground_segmentation(ros::NodeHandle *nh);
+    ground_segmentation(ros::NodeHandle *nh, GroundSegmenterParams params);
 
   private:
     ros::Publisher pcl_ground_pub_;
@@ -33,7 +35,9 @@ class ground_segmentation {
     pcl::PointCloud<pcl::PointXYZ> pcl_ground;
     pcl::PointCloud<pcl::PointXYZ> pcl_obstacle;
 
-    void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud, ros::Publisher &pub);
+    GroundSegmenterParams segmentation_params;
+
+    void publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &cloud, ros::Publisher &pub, std::string frame_id);
     constexpr static const double pose_distance = 0.1;
 
     void callback(const sensor_msgs::PointCloud2 &cloud);
@@ -41,4 +45,8 @@ class ground_segmentation {
     static tf::Pose poseAverage(std::vector<tf::Pose> poses);
 
     static tf::Quaternion getAverageQuaternion(std::vector<tf::Quaternion> &quaternions, std::vector<double> &weights);
+
+    double robot_width = .25;
+    double robot_depth_forward = .15;
+    double robot_depth_backward = .5;
 };
