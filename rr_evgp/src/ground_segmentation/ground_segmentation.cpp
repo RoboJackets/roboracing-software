@@ -75,8 +75,7 @@ void ground_segmentation::callback(const sensor_msgs::PointCloud2 &cloud) {
 
     for (size_t i = 0; i < pcl_cloud.size(); ++i) {
         auto pt = pcl_cloud[i];
-        if (fabs(pt.y) > robot_width) continue;
-        if (!(robot_depth_backward < pt.x && pt.x < robot_depth_forward)) continue;
+        //if (fabs(pt.y) < robot_width && -robot_depth_backward < pt.x && pt.x < robot_depth_forward) continue;
 
         cloud_transformed.push_back(pt);
     }
