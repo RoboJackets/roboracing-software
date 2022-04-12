@@ -159,6 +159,12 @@ int main(int argc, char** argv) {
 
     ros::Rate rate(10);
 
+    //     Send state to estop
+        estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
+        string estop_response = estopBoardSocket->read_with_timeout();
+        ROS_INFO_STREAM("Estop Receiving: " << estop_response);
+        bool current_estop = extractEstop(estop_response);
+
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -192,11 +198,7 @@ int main(int argc, char** argv) {
 //        string manual_response = manualBoardSocket->read_with_timeout();
 //        ROS_INFO_STREAM("Manual Receiving: " << manual_response);
 
-    //     Send state to estop
-        estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
-        string estop_response = estopBoardSocket->read_with_timeout();
-        ROS_INFO_STREAM("Estop Receiving: " << estop_response);
-        bool current_estop = extractEstop(estop_response);
+    
 
 
         rr_msgs::chassis_state chassisStateMsg;
