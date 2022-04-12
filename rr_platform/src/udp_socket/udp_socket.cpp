@@ -114,10 +114,12 @@ int main(int argc, char** argv) {
 
     // IP address and port
     int udpPort = nhp.param(string("udp_port"), 7);
-    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.00.3"));
-    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.00.4"));
-    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.00.5"));
-    // string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.00.6"));
+    string estopBoardIP = nhp.param(string("estop_ip_address"), string("192.168.20.3"));
+    string driveBoardIP = nhp.param(string("drive_ip_address"), string("192.168.20.4"));
+    string steeringBoardIP = nhp.param(string("steering_ip_address"), string("192.168.20.5"));
+    string manualBoardIP = nhp.param(string("manual_ip_address"), string("192.168.20.6"));
+    string brakeIP = nhp.param(string("brake_ip_address"), string("192.168.20.7"));
+    string batteryMonitorIP = nhp.param(string("battery_monitor_ip_address"), string("192.168.20.11"));
 
     ROS_INFO_STREAM("[Motor Relay] Trying to connect to UDP Motor Board at " + driveBoardIP +
                     " port: " + std::to_string(udpPort));
@@ -172,7 +174,7 @@ int main(int argc, char** argv) {
         double current_speed = extractSpeed(drive_response);
 
         // Get Current Steering
-        steeringBoardSocket->send("$S=" + std::to_string(cmd_steering) + ";");
+        steeringBoardSocket->send("$A=" + std::to_string(cmd_steering) + ";");
         string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Steering Receiving: " << steering_response);
         double current_steer;
