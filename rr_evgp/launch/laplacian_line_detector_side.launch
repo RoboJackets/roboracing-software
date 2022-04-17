@@ -1,7 +1,7 @@
 <launch>
     <arg name="camera_namespace" default="camera_side"/>
 
-    <node name="laplacian_line_detector" pkg="rr_iarrc" type="laplacian_line_detector"
+    <node name="laplacian_line_detector" pkg="rr_evgp" type="laplacian_line_detector"
           output="screen" ns="$(arg camera_namespace)">
         <!--Range of the Laplacian Area to Floodfill-->
         <param name="laplacian_threshold_min" type="int" value="-4" />
