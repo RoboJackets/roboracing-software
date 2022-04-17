@@ -28,6 +28,7 @@ class PointCloudProjector : public nodelet::Nodelet {
     std::thread load_info_thread_;
 
     void ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
+        NODELET_INFO("image callback pointcloud projector");
         if (!cam_geom_ready_) {
             NODELET_INFO("Pointcloud projector waiting for camera geometry load");
             return;

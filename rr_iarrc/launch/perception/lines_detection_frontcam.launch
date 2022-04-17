@@ -1,0 +1,22 @@
+<launch>
+    <!-- detection -->
+    <include file="$(dirname)/laplacian_line_detector_front.launch">
+        <arg name="camera_namespace" value="camera"/>
+    </include>
+
+    <!-- projection -->
+    <include file="$(dirname)/lines_projector.launch">
+        <arg name="use_camera_manager" value="false"/>
+        <arg name="camera_name" value="camera"/>
+        <arg name="is_side_cam" value="false"/>
+    </include>
+
+    <!-- combine pointclouds -->
+    <node pkg="rr_common" type="pointcloud_combiner" name="lines_combiner" output="screen">
+        <param name="sources" value="/camera/lines/cloud"/>
+        <param name="destination" value="/current_obstacles"/>
+        <param name="refresh_rate" value="100"/>
+        <param name="combined_frame" value="base_footprint"/>
+        <param name="vg_filter_size" value="0.05"/>
+    </node>
+</launch>

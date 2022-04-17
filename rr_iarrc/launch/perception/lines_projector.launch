@@ -10,7 +10,7 @@
 
     <node pkg="nodelet" type="nodelet" name="line_projector" output="screen"
           args="$(arg nodelet_command) rr_platform/pointcloud_projector $(arg manager_name)"
-          ns="$(arg camera_name)">
+          ns="$(arg camera_name)" required="true">
         <param name="camera_info_topic" value="camera_info"/>
         <param name="camera_tf_frame" value="$(arg camera_name)"/>
         <param name="image_topic_in" value="lines/detection_img"/>
