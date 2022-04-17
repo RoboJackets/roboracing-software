@@ -14,7 +14,7 @@
 
         <!--The larger the height the lower it will be on the screen (Image Height = 1280)-->
         <!--Camera_center 570, 800, 760-->
-        <param name="blockSky_height" type="int" value="560" />
+        <param name="blockSky_height" type="int" value="360" />
         <param name="blockWheels_height" type="int" value="750" />
         <param name="blockBumper_height" type="int" value="720" />
 
@@ -32,7 +32,7 @@
         <param name="ignore_color_low_V" type="int" value="-1" />
         <param name="ignore_color_high_V" type="int" value="-1" /> -->
 
-        <param name="subscription_node" type="string" value="image_color_rect"/>
+        <param name="subscription_node" type="string" value="/camera/image_color_rect"/>
         <param name="publish_detection_node" type="string" value="lines/detection_img"/>
         <param name="publish_debug_node" type="string" value="lines/debug_img"/>
     </node>
