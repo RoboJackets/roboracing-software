@@ -112,7 +112,7 @@ void ground_segmentation::publishPointCloud(pcl::PointCloud<pcl::PointXYZ> &clou
     outmsg.header.frame_id = frame_id;
     pub.publish(outmsg);
 
-    std::cout << "Published cloud with " << cloud.size() << " points to " << pub.getTopic() << std::endl;
+    //std::cout << "Published cloud with " << cloud.size() << " points to " << pub.getTopic() << std::endl;
 }
 
 tf::Pose ground_segmentation::poseAverage(std::vector<tf::Pose> poses) {
