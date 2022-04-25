@@ -1,0 +1,30 @@
+<launch>
+    <arg name="launch_prefix" default=""/> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
+    <arg name="node_namespace" default="ground_segmentation_node"/>
+
+    <!-- Set parameters -->
+    <!-- rosparam command="load" file="$(find rr_evgp)/conf/april_tag_settings.yaml" ns="$(arg node_namespace)"/ -->
+    <!-- rosparam command="load" file="$(find rr_evgp)/conf/april_tag_taglist.yaml" ns="$(arg node_namespace)"/ -->
+
+    <node pkg="rr_evgp" type="ground_segmentation" name="$(arg node_namespace)" clear_params="true"
+          output="screen" launch-prefix="$(arg launch_prefix)">
+            <param name="r_min_square" value="0.09"/>
+            <param name="r_max_square" value="300.0"/>
+            <param name="n_bins" value="30"/>
+            <param name="n_segments" value="180"/>
+            <param name="max_dist_to_line" value="0.15"/>
+            <param name="min_slope" value="0.0"/>
+            <param name="max_slope" value="1.25"/>
+            <param name="max_error_square" value="0.015"/>
+            <param name="long_threshold" value="2.0"/>
+            <param name="max_long_height" value="0.1"/>
+            <param name="max_start_height" value="0.25"/>
+            <param name="sensor_height" value="0.3"/>
+            <param name="line_search_angle" value="0.3"/>
+            <param name="n_threads" value="4"/>
+
+            <param name="robot_width" value=".4" />
+            <param name="robot_depth_forward" value="0.15" />
+            <param name="robot_depth_backward" value=".65" />
+    </node>
+</launch>
