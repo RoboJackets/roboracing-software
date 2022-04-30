@@ -15,7 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "udp_serial.h"
+#include <rr_platform/udp_socket.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -147,12 +147,37 @@ std::string udp_client::get_addr() const
  * \return -1 if an error occurs, otherwise the number of bytes sent. errno
  * is set accordingly on error.
  */
-int udp_client::send(const char *msg, size_t size)
+int udp_client::send(const std::string& msg)
 {
-    return sendto(f_socket, msg, size, 0, f_addrinfo->ai_addr, f_addrinfo->ai_addrlen);
+    return sendto(f_socket, msg.c_str(), msg.size(), 0, f_addrinfo->ai_addr, f_addrinfo->ai_addrlen);
 }
 
 
+/** \brief Wait on a message.
+ *
+ * This function waits until a message is received on this UDP server.
+ * There are no means to return from this function except by receiving
+ * a message. Remember that UDP does not have a connect state so whether
+ * another process quits does not change the status of this UDP server
+ * and thus it continues to wait forever.
+ *
+ * Note that you may change the type of socket by making it non-blocking
+ * (use the get_socket() to retrieve the socket identifier) in which
+ * case this function will not block if no message is available. Instead
+ * it returns immediately.
+ *
+ * \param[in] msg  The buffer where the message is saved.
+ * \param[in] max_size  The maximum size the message (i.e. size of the \p msg buffer.)
+ *
+ * \return The number of bytes read or -1 if an error occurs.
+ */
+std::string udp_client::read()
+{
+    size_t max_size = 1024; 
+    char buf[max_size];
+    recv(f_socket, buf, max_size, 0);
+    return std::string(buf);
+}
 
 // ========================= SEVER =========================
 

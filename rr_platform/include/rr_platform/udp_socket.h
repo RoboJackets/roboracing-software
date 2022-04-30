@@ -42,7 +42,8 @@ public:
     int                 get_port() const;
     std::string         get_addr() const;
 
-    int                 send(const char *msg, size_t size);
+    int                 send(const std::string& msg);
+    std::string         read();
 
 private:
     int                 f_socket;

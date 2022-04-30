@@ -45,6 +45,7 @@ include_directories(
 )
 
 add_library(rr_serial src/SerialPort.cpp)
+add_library(rr_udp src/udp_serial.cpp)
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
@@ -53,3 +54,4 @@ add_subdirectory(src/scanToPointCloud)
 add_subdirectory(src/razor_imu)
 add_subdirectory(src/ultrasonic_array)
 add_subdirectory(src/sedani_motor_relay_node)
+add_subdirectory(src/udp_socket)

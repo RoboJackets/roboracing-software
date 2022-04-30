@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 
     //     Send state to estop
         estopBoardSocket->send("$G;"); //todo, dont always send G maybe?
-        string estop_response = estopBoardSocket->read_with_timeout();
+        string estop_response = estopBoardSocket->read();
         ROS_INFO_STREAM("Estop Receiving: " << estop_response);
         bool current_estop = extractEstop(estop_response);
 
@@ -175,13 +175,13 @@ int main(int argc, char** argv) {
         // std::string speed_str = "$v=5.0;";
         // driveBoardSocket->send(speed_str);
         driveBoardSocket->send("$v=" + std::to_string(cmd_speed) + ";"); //
-        string drive_response = driveBoardSocket->read_with_timeout();  // Clear response "R" from buffet
+        string drive_response = driveBoardSocket->read();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Drive Receiving: " << drive_response);
         double current_speed = extractSpeed(drive_response);
 
         // Get Current Steering
         steeringBoardSocket->send("$A=" + std::to_string(cmd_steering) + ";");
-        string steering_response = steeringBoardSocket->read_with_timeout();  // Clear response "R" from buffet
+        string steering_response = steeringBoardSocket->read();  // Clear response "R" from buffet
         ROS_INFO_STREAM("Steering Receiving: " << steering_response);
         double current_steer;
         if (steering_response != "TIME_OUT") {
