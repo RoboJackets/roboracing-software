@@ -15,7 +15,4 @@
     <param name="enable_trigger" value="false"/>
   </node>
 
-  <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_configurator_flir" output="screen"
-        args="load camera_nodelet_pointgrey $(find rr_platform)/conf/flir_blackfly_dynparams.yaml">
-  </node>
 </launch>
