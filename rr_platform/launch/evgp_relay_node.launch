@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="rr_platform" type="evgp_relay_node" name="evgp_drive_relay" output="screen" respawn="false">
+    <node pkg="rr_platform" type="udp_drive_relay" name="ethernet_drive_relay" output="screen" respawn="false">
         <param name="serial_port" value="/dev/arduino_drive"/>
         <param name="speed_topic" value="/speed"/>
         <param name="steering_topic" value="/steering"/>

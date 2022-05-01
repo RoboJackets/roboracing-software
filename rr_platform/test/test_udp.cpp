@@ -1,5 +1,6 @@
-#include <string>
 #include <stdio.h>
+
+#include <string>
 
 double extractSpeed(std::string s) {
     // v=$float I=$float
@@ -23,8 +24,7 @@ double extractSteering(std::string a) {
     return angle;
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     std::string val = "A=$30.1";
     printf("steering: %f\n", extractSteering(val));
     return 0;

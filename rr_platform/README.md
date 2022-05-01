@@ -1,0 +1,2 @@
+## Setup
+Need to start up the UDP node. This can be ran using the `evgp_relay_node.launch` file. After you have an shell with `roscore` running, in another shell you can call `ros launch rr_platform evgp_relay_node.launch` and this will start the relay node. It will infinitely loop while looking for data from the provided IP addresses.

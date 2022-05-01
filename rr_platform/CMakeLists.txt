@@ -45,7 +45,6 @@ include_directories(
 )
 
 add_library(rr_serial src/SerialPort.cpp)
-add_library(rr_udp src/udp_serial.cpp)
 
 add_subdirectory(src/joystick_driver)
 add_subdirectory(src/motor_relay_node)
