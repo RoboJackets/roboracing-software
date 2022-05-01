@@ -116,38 +116,22 @@ int main(int argc, char** argv) {
     string brakeIP = nhp.param(string("brake_ip_address"), string("192.168.20.7"));
     string batteryMonitorIP = nhp.param(string("battery_monitor_ip_address"), string("192.168.20.11"));
 
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to UDP Motor Board at " + driveBoardIP +
+    ROS_INFO_STREAM("[Motor Relay] Connecting to UDP Drive Board at " + driveBoardIP +
                     " port: " + std::to_string(udpPort));
-    try {
-        driveBoardSocket = std::make_unique<rr::udp_client>(driveBoardIP, udpPort);
-    } catch (...) {
-        ROS_ERROR_STREAM("[Motor Relay] Exiting... Failed to connect to motor board at " + driveBoardIP +
-                         " port: " + std::to_string(udpPort));
-        return 1;
-    }
+    
+    driveBoardSocket = std::make_unique<rr::udp_client>(driveBoardIP, udpPort);
 
-    ROS_INFO_STREAM("[Motor Relay] Exiting... Trying to connect to UDP steering board at " + steeringBoardIP +
+    ROS_INFO_STREAM("[Motor Relay] Connecting to UDP steering board at " + steeringBoardIP +
                     " port: " + std::to_string(udpPort));
 
-    try {
-        steeringBoardSocket = std::make_unique<rr::udp_client>(steeringBoardIP, udpPort);
-    } catch (...) {
-        ROS_ERROR_STREAM("[Motor Relay] Exiting... Failed to connect to UDP steering board at " + steeringBoardIP +
-                         " port: " + std::to_string(udpPort));
-        return 1;
-    }
-    ROS_INFO_STREAM("[Motor Relay] Trying to connect to UDP E-Stop Board at " + estopBoardIP +
+    steeringBoardSocket = std::make_unique<rr::udp_client>(steeringBoardIP, udpPort);
+
+    ROS_INFO_STREAM("[Motor Relay] Connecting to UDP E-Stop Board at " + estopBoardIP +
                     " port: " + std::to_string(udpPort));
 
-    try {
-        estopBoardSocket = std::make_unique<rr::udp_client>(estopBoardIP, udpPort);
-    } catch (...) {
-        ROS_ERROR_STREAM("[Motor Relay] Exiting... Failed to connect to UDP E-Stop Board at " + steeringBoardIP +
-                         " port: " + std::to_string(udpPort));
-        return 1;
-    }
+    estopBoardSocket = std::make_unique<rr::udp_client>(estopBoardIP, udpPort);
 
-    ROS_INFO_STREAM("[Motor Relay] Connected to UDP host devices");
+    ROS_INFO_STREAM("[Motor Relay] Initialized connection to all UDP host devices");
 
     ros::Rate rate(10);
 
