@@ -1,0 +1,13 @@
+<launch>
+    <node pkg="rr_platform" type="udp_drive_relay" name="ethernet_drive_relay" output="screen" respawn="false">
+        <param name="serial_port" value="/dev/arduino_drive"/>
+        <param name="speed_topic" value="/speed"/>
+        <param name="steering_topic" value="/steering"/>
+        <param name="estop_ip_address" value="192.168.20.3"/>
+        <param name="drive_ip_address" value="192.168.20.4"/>
+        <param name="steering_ip_address" value="192.168.20.5"/>
+        <param name="manual_ip_address" value="192.168.20.6"/>
+        <param name="brake_ip_address" value="192.168.20.7"/>
+        <param name="battery_monitor_ip_address" value="192.168.20.11"/>
+    </node>
+</launch>

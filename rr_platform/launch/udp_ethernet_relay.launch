@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="rr_platform" type="udp_drive_relay" name="ethernet_drive_relay" output="screen" respawn="false">
+        <param name="accel_pid_p" type="double" value="0.0"/>
+        <param name="accel_pid_i" type="double" value="0.0"/>
+        <param name="accel_pid_d" type="double" value="0.0"/>
+        <param name="steering_pid_p" type="double" value="0.0"/>
+        <param name="steering_pid_i" type="double" value="0.0"/>
+        <param name="steering_pid_d" type="double" value="0.0"/>
+    </node>
+</launch>
