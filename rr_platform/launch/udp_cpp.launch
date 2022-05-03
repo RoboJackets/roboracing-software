@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="rr_platform" name="udp_pub" type="udp_pub_cpp" output="screen"/>
+    <node pkg="rr_platform" name="udp_sub" type="udp_sub_cpp" output="screen"/>
+</launch>

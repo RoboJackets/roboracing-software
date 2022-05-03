@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
     const std::unique_ptr<rr::udp_socket> steeringSocket = std::make_unique<rr::udp_socket>(steeringAddress, port);
     const std::unique_ptr<rr::udp_socket> speedSocket = std::make_unique<rr::udp_socket>(speedAddress, port);
 
+    ros::Rate rate(10);
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -40,6 +41,6 @@ int main(int argc, char** argv) {
         string steer_msg = "A=" + std::to_string(cmd_steering);
         steeringSocket->send(steer_msg);
         ROS_INFO_STREAM("Sent steering: " << steer_msg);
-        ros::Rate rate(10);
+        rate.sleep();
     }
 }
