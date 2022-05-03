@@ -18,6 +18,7 @@ class udp_socket {
         int send(const std::string& msg);
         std::string recv();
         void bind();
+        void connect();
     
     private:
         int sockfd_;

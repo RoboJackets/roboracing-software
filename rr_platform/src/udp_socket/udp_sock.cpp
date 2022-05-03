@@ -13,20 +13,24 @@ namespace rr {
 
         sockfd_ = socket(AF_INET, SOCK_DGRAM, 0);
         if (sockfd_ < 0) {
-            cerr << "Bind failed" << endl;
+            cerr << "Socket creation failed" << endl;
             exit(EXIT_FAILURE);
         }
 
-        if (connect(sockfd_, (struct sockaddr*)&addr_, sizeof(addr_)) < 0) {
+        
+    }
+   
+    udp_socket::~udp_socket() {
+        close(sockfd_);
+    }
+    
+    void udp_socket::connect() {
+        if (::connect(sockfd_, (struct sockaddr*)&addr_, sizeof(addr_)) < 0) {
             cerr << "Connection Failed" << endl;
             exit(EXIT_FAILURE);
         }
     }
-
-    udp_socket::~udp_socket() {
-        close(sockfd_);
-    }
-
+    
     int udp_socket::send(const string& msg) {
         return sendto(sockfd_, msg.c_str(), msg.size(), 0, (struct sockaddr*)&addr_, sizeof(addr_));
     }
@@ -44,7 +48,7 @@ namespace rr {
 
     void udp_socket::bind() {
         //addr_.sin_addr.s_addr = htonl(INADDR_ANY);
-        if (::bind(sockfd_, (struct sockaddr*)&addr_, sizeof(addr_)) < 0) {
+        if (::bind(sockfd_, (const struct sockaddr*)&addr_, sizeof(addr_)) < 0) {
             cerr << "Bind failed" << endl;
             exit(EXIT_FAILURE);
         }

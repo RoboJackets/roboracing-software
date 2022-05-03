@@ -4,7 +4,7 @@
 using std::string;
 
 const string myArress = "192.168.20.2";
-const int myPort = 8888;
+const int myPort = 8000;
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "udp_sub_node");
