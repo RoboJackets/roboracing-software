@@ -1,0 +1,34 @@
+<launch>
+    <remap from="/plan/speed" to="/speed"/>
+    <remap from="/plan/steering" to="/steering"/>
+    <remap from="/velodyne_points" to="/lidar_up"/>
+    <remap from="/imu" to="/imu_bottom" />
+
+
+<!--    Only use pointcloud_combiner when using nearest_point_cache for planner map_type-->
+<!--    <node pkg="rr_common" type="pointcloud_combiner" name="transform_scan" output="screen">-->
+<!--        <param name="sources" value="/scan/pointcloud"/>-->
+<!--        <param name="destination" value="/current_obstacles"/>-->
+<!--        <param name="refresh_rate" value="50"/>-->
+<!--        <param name="combined_frame" value="base_footprint"/>-->
+<!--        <param name="vg_filter_size" value="0.05"/>-->
+<!--    </node>-->
+
+    <include file="$(dirname)/mapping.launch"/>
+    <include file="$(find rr_platform)/launch/evgp_state_publisher.launch">
+        <arg name="model_type" value="rigatoni"/>
+    </include>
+
+    <include file="$(find rr_platform)/launch/velodyne_lidar.launch"/>
+    <include file="$(find rr_platform)/launch/yost_imu_bottom.launch"/>
+    <include file="$(find rr_evgp)/launch/opponent_detection.launch"/>
+    <include file="$(find rr_evgp)/launch/cone_connection.launch"/>
+    <include file="$(find rr_platform)/launch/udp_cpp.launch"/>    
+    <!-- <include file="$(find rr_evgp)/launch/cone_connection.launch"/> -->
+    <node pkg="rr_common" type="planner" name="planner" output="screen" required="true">
+        <rosparam command="load" file="$(find rr_evgp)/conf/planner.yaml" subst_value="true"/>
+    </node>
+
+    <!-- <node pkg="rviz" type="rviz" name="evgp_rviz" output="log" required="false" respawn="false" -->
+          <!-- args="-d $(find rr_evgp)/rviz/evgp.rviz"/> -->
+</launch>

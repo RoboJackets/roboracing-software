@@ -14,9 +14,9 @@ steering_filter:
     rate_min: -1
 
 speed_filter:
-    init_val: 0
-    val_max: 5
-    val_min: 0
+    init_val: 1
+    val_max: 10
+    val_min: 1
     rate_max: 5
     rate_min: -5
 

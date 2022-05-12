@@ -10,7 +10,7 @@
 		<param name="joystick_topic" type="str" value="/joy"/>
 		<param name="speed_topic" type="str" value="/speed"/>
 		<param name="steering_topic" type="str" value="/steering"/>
-		<param name="angle_max" type="double" value="1.5"/>
+		<param name="angle_max" type="double" value="0.25"/>
 		<param name="speed_max" type="double" value="3.0"/>
 	</node>
 

@@ -30,7 +30,7 @@ void JoystickCB(const sensor_msgs::Joy::ConstPtr& msg) {
     last_button = msg->buttons[0];
 
     sp_cmd.speed = speed_max * (dir * msg->axes[4] > 0 ? msg->axes[4] : 0);
-    st_cmd.angle = (angle_max * msg->axes[0]);
+    st_cmd.angle = -(angle_max * msg->axes[6]);
 
     speed_publisher.publish(sp_cmd);
     steering_publisher.publish(st_cmd);

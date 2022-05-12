@@ -14,9 +14,9 @@ steering_filter:
     rate_min: -0.2
 
 speed_filter:
-    init_val: 0
+    init_val: 1
     val_max: 30
-    val_min: 0
+    val_min: 1
     rate_max: 20
     rate_min: -20
 
@@ -92,8 +92,8 @@ effector_tracker:
         message_type: chassis
         guessing_between_updates: false
 
-#planner_type: "annealing"
-#annealing_optimizer:
+# planner_type: "annealing"
+# annealing_optimizer:
 #    stddevs_start: [0.2]
 #    temperature_end: 0.1
 #    annealing_steps: 1000

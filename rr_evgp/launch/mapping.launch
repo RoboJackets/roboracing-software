@@ -1,7 +1,7 @@
 <launch>
     <arg name="global_map_size" value="500.0"/>
 
-    <include file="$(dirname)/localization_sim.launch">
+    <include file="$(dirname)/localization.launch">
         <arg name="map_origin_x" value="$(eval -global_map_size/2)"/>
         <arg name="map_origin_y" value="$(eval -global_map_size/2)"/>
     </include>

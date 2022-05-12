@@ -7,7 +7,7 @@ using std::string;
 
 double cmd_speed = 0;
 double cmd_steering = 0;
-const string steeringAddress = "192.168.20.3";
+const string steeringAddress = "192.168.20.5";
 const string speedAddress = "192.168.20.4";
 const int port = 8888;
 

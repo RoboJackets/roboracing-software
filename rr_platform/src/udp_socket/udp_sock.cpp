@@ -37,8 +37,9 @@ namespace rr {
 
     string udp_socket::recv() {
         char buf[1024];
-        int addr_len_ = 0;
-        int n = recvfrom(sockfd_, buf, sizeof(buf), 0, (struct sockaddr*)&addr_, (socklen_t *) &addr_len_);
+        int addr_len_ = sizeof(addr_);
+        std::cout << "wait for receive" << endl;
+        int n = recvfrom(sockfd_, buf, 1024, 0, (struct sockaddr*)nullptr, (socklen_t *) &addr_len_);
         if (n < 0) {
             cerr << "Recv failed" << endl;
             exit(EXIT_FAILURE);

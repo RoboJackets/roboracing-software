@@ -57,7 +57,7 @@ size_t total_plans;
 void update_messages(double speed, double angle) {
     auto now = ros::Time::now();
 
-    speed_message->speed = speed;
+    speed_message->speed = std::min(speed, 1.0);
     speed_message->header.stamp = now;
 
     steer_message->angle = angle;

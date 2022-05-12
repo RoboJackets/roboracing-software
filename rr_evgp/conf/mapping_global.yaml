@@ -29,7 +29,7 @@ costmap:
             min_obstacle_height: -100
         laser_down:
             data_type: PointCloud2
-            topic: /lidar_down
+            topic: /lidar_up
             frame_name: lidar
             expected_update_rate: 10.0
             observation_persistence: 0.0
