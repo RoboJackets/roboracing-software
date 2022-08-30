@@ -7,8 +7,7 @@ jobs:
     steps:
       - uses: ros-tooling/setup-ros@v0.2
       with:
-        required-ros-distributions: noetic humble
-      - run: "source /opt/ros/humble/setup.bash"
+        required-ros-distributions: humble
       # Pass the file to the action
       - uses: ros-tooling/action-ros-ci@v0.2
           with:
