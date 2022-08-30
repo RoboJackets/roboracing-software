@@ -3,11 +3,9 @@ name: Tests
 on: [push, pull_request]
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: ros-tooling/setup-ros@v0.2
-        with:
-          required-ros-distributions: humble
       # Pass the file to the action
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
