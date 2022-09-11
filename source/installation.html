@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Committing to the Repository" href="committing.html" /><link rel="prev" title="Welcome to Robojackets Roboracing’s documentation!" href="../index.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.png"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../_static/favicon.png"/><meta name="generator" content="sphinx-5.1.1, furo 2021.10.09"/>
         <title>Installation - Robojackets Roboracing</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -210,21 +210,21 @@
         </div>
         <article role="main">
           <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>Welcome!</p>
 <p>This will eventually replace the existing RoboRacing Software Installation Instructions at <a class="reference external" href="https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions">https://wiki.robojackets.org/RoboRacing_Software_Installation_Instructions</a>.
 We are currently in the process of migrating our repository to ROS2.</p>
 <div class="section" id="version-information">
-<h2>Version Information<a class="headerlink" href="#version-information" title="Permalink to this headline">¶</a></h2>
+<h2>Version Information<a class="headerlink" href="#version-information" title="Permalink to this heading">¶</a></h2>
 <p>We have decided on using ROS2 Galactic due to its drastic stability increase over Foxy.
 One primary example is rosbag2 having only a 30% message recording rate in Foxy, but 100% in Galactic.
 Samsung published an article detailing some of the differences <a class="reference external" href="https://research.samsung.com/blog/Newest-ROS2-Distribution-Galactic-Geochelone-Released.">here</a>.</p>
 <div class="section" id="prerequisites">
-<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
 <p>This guide will assume that you are running Ubuntu 20.04. If you do not have Ubuntu 20.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.</p>
 </div>
 <div class="section" id="step-1-ros2-galactic-installation">
-<h3>Step 1 - ROS2 Galactic Installation<a class="headerlink" href="#step-1-ros2-galactic-installation" title="Permalink to this headline">¶</a></h3>
+<h3>Step 1 - ROS2 Galactic Installation<a class="headerlink" href="#step-1-ros2-galactic-installation" title="Permalink to this heading">¶</a></h3>
 <p>This guide will follow <a class="reference external" href="https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html">https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">locales</span>
 <span class="n">sudo</span> <span class="n">locale</span><span class="o">-</span><span class="n">gen</span> <span class="n">en_US</span> <span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
@@ -240,20 +240,20 @@ Samsung published an article detailing some of the differences <a class="referen
 </div>
 </div>
 <div class="section" id="step-2-get-terminator">
-<h3>Step 2 - Get Terminator<a class="headerlink" href="#step-2-get-terminator" title="Permalink to this headline">¶</a></h3>
+<h3>Step 2 - Get Terminator<a class="headerlink" href="#step-2-get-terminator" title="Permalink to this heading">¶</a></h3>
 <p>We primarily use terminator instead of the default terminal since it allows for both horizontal and vertical splitting (which obviously increases overall productivity). Start up the default terminal and type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">terminator</span></code></p>
 </div>
 <div class="section" id="step-3-source-environment-variables">
-<h3>Step 3 - Source Environment Variables<a class="headerlink" href="#step-3-source-environment-variables" title="Permalink to this headline">¶</a></h3>
+<h3>Step 3 - Source Environment Variables<a class="headerlink" href="#step-3-source-environment-variables" title="Permalink to this heading">¶</a></h3>
 <p>For the time being, we do not recommend placing these commands into ~/.bashrc (or equivalent) because we will be switching between ROS and ROS2. Instead, you will need to source your environment with each shell instance.</p>
 <p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">/opt/ros/galactic/setup.bash</span></code></p>
 </div>
 </div>
 <div class="section" id="setup-workspace">
-<h2>Setup Workspace<a class="headerlink" href="#setup-workspace" title="Permalink to this headline">¶</a></h2>
+<h2>Setup Workspace<a class="headerlink" href="#setup-workspace" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="step-4-make-file-structure">
-<h3>Step 4 - Make File Structure<a class="headerlink" href="#step-4-make-file-structure" title="Permalink to this headline">¶</a></h3>
+<h3>Step 4 - Make File Structure<a class="headerlink" href="#step-4-make-file-structure" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span>
 <span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span>
 <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">RoboJackets</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span><span class="o">.</span><span class="n">git</span> <span class="o">-</span><span class="n">b</span> <span class="n">ros2</span><span class="o">/</span><span class="n">main</span> <span class="o">--</span><span class="n">recursive</span>
@@ -276,7 +276,7 @@ because maybe somebody added a new submodule.</p>
 </div>
 </div>
 <div class="section" id="step-5-install-dependencies">
-<h3>Step 5 - Install Dependencies<a class="headerlink" href="#step-5-install-dependencies" title="Permalink to this headline">¶</a></h3>
+<h3>Step 5 - Install Dependencies<a class="headerlink" href="#step-5-install-dependencies" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="n">python3</span><span class="o">-</span><span class="n">rosdep</span>
 <span class="n">sudo</span> <span class="n">rosdep</span> <span class="n">init</span>
@@ -286,7 +286,7 @@ because maybe somebody added a new submodule.</p>
 </div>
 </div>
 <div class="section" id="step-6-building-the-code">
-<h3>Step 6 - Building the Code<a class="headerlink" href="#step-6-building-the-code" title="Permalink to this headline">¶</a></h3>
+<h3>Step 6 - Building the Code<a class="headerlink" href="#step-6-building-the-code" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">colcon</span> <span class="n">build</span>
 </pre></div>
 </div>
@@ -301,9 +301,9 @@ you will get an error telling you that you are overriding packages and this may 
 </div>
 </div>
 <div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="step-1-install-sphinx">
-<h3>Step 1 - Install Sphinx<a class="headerlink" href="#step-1-install-sphinx" title="Permalink to this headline">¶</a></h3>
+<h3>Step 1 - Install Sphinx<a class="headerlink" href="#step-1-install-sphinx" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx</span>
@@ -312,7 +312,7 @@ you will get an error telling you that you are overriding packages and this may 
 </div>
 </div>
 <div class="section" id="step-2-install-plantuml">
-<h3>Step 2 - Install PlantUML<a class="headerlink" href="#step-2-install-plantuml" title="Permalink to this headline">¶</a></h3>
+<h3>Step 2 - Install PlantUML<a class="headerlink" href="#step-2-install-plantuml" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">default</span><span class="o">-</span><span class="n">jre</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">graphviz</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinxcontrib</span><span class="o">-</span><span class="n">plantuml</span>
@@ -359,14 +359,14 @@ apply changes, you need to execute the file. In order to do this, you can use th
 </div>
 </div>
 <div class="section" id="step-3-install-doxygen-and-breathe">
-<h3>Step 3 - Install Doxygen and Breathe<a class="headerlink" href="#step-3-install-doxygen-and-breathe" title="Permalink to this headline">¶</a></h3>
+<h3>Step 3 - Install Doxygen and Breathe<a class="headerlink" href="#step-3-install-doxygen-and-breathe" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">doxygen</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">breathe</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="step-4-build-documentation">
-<h3>Step 4 - Build Documentation<a class="headerlink" href="#step-4-build-documentation" title="Permalink to this headline">¶</a></h3>
+<h3>Step 4 - Build Documentation<a class="headerlink" href="#step-4-build-documentation" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">roboracing</span><span class="o">-</span><span class="n">software</span><span class="o">/</span><span class="n">docs</span>
 <span class="n">doxygen</span>
 <span class="n">make</span> <span class="n">html</span>
@@ -374,7 +374,7 @@ apply changes, you need to execute the file. In order to do this, you can use th
 </div>
 </div>
 <div class="section" id="step-5-view-documentation">
-<h3>Step 5 - View Documentation<a class="headerlink" href="#step-5-view-documentation" title="Permalink to this headline">¶</a></h3>
+<h3>Step 5 - View Documentation<a class="headerlink" href="#step-5-view-documentation" title="Permalink to this heading">¶</a></h3>
 <p>You can now open up index.html at <code class="docutils literal notranslate"><span class="pre">~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html</span></code>
 and view the documentation by running <code class="docutils literal notranslate"><span class="pre">gio</span> <span class="pre">open</span> <span class="pre">~/roboracing_ws/src/roboracing-software/docs/_build/html/index.html</span></code>!
 <code class="docutils literal notranslate"><span class="pre">gio</span> <span class="pre">open</span></code> is a general purpose tool to launch a file in the registered application, eg an <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be opened
@@ -474,6 +474,7 @@ hunt for it so if it is not here then you can look at <a class="reference extern
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/scripts/main.js"></script>
     </body>
