@@ -4,15 +4,13 @@ on: [push, pull_request]
 jobs:
   build-and-test:
     runs-on: ubuntu-22.04
+    container:
+      image: osrf/ros:humble-desktop
     steps:
-      - uses: ros-tooling/setup-ros@v0.3
-        with:
-          required-ros-distributions: humble
-      # Pass the file to the action
+      - uses: actions/checkout@v2
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           target-ros2-distro: humble 
-          vcs-repo-file-url:  'https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos'
           skip-tests: True
     if: always()
   
