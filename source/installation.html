@@ -216,16 +216,17 @@
 We are currently in the process of migrating our repository to ROS2.</p>
 <div class="section" id="version-information">
 <h2>Version Information<a class="headerlink" href="#version-information" title="Permalink to this heading">¶</a></h2>
-<p>We have decided on using ROS2 Galactic due to its drastic stability increase over Foxy.
-One primary example is rosbag2 having only a 30% message recording rate in Foxy, but 100% in Galactic.
-Samsung published an article detailing some of the differences <a class="reference external" href="https://research.samsung.com/blog/Newest-ROS2-Distribution-Galactic-Geochelone-Released.">here</a>.</p>
+<p>We are currently using ROS Humble, which at the time of the creation of this install guide is the newest version of ROS2. It is also the version with the longest
+support available currently.</p>
 <div class="section" id="prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
-<p>This guide will assume that you are running Ubuntu 20.04. If you do not have Ubuntu 20.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.</p>
+<p>This guide will assume that you are running Ubuntu 22.04. If you do not have Ubuntu 22.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.
+Using WSL or a Virtual Machine solution on MacOS are also solutions. Just make sure you are running Ubuntu 22.04. Otherwise you cannot install ROS Humble. Dual booting will also make set up with devices
+and other things significantly easier. To check Ubuntu version run <code class="docutils literal notranslate"><span class="pre">lsb_release</span> <span class="pre">-a</span></code></p>
 </div>
-<div class="section" id="step-1-ros2-galactic-installation">
-<h3>Step 1 - ROS2 Galactic Installation<a class="headerlink" href="#step-1-ros2-galactic-installation" title="Permalink to this heading">¶</a></h3>
-<p>This guide will follow <a class="reference external" href="https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html">https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html</a>.</p>
+<div class="section" id="step-1-ros2-humble-installation">
+<h3>Step 1 - ROS2 Humble Installation<a class="headerlink" href="#step-1-ros2-humble-installation" title="Permalink to this heading">¶</a></h3>
+<p>This guide will follow <a class="reference external" href="https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html">https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">locales</span>
 <span class="n">sudo</span> <span class="n">locale</span><span class="o">-</span><span class="n">gen</span> <span class="n">en_US</span> <span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
 <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">locale</span> <span class="n">LC_ALL</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="n">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="n">export</span> <span class="n">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
@@ -235,7 +236,7 @@ Samsung published an article detailing some of the differences <a class="referen
 <span class="n">sudo</span> <span class="n">curl</span> <span class="o">-</span><span class="n">sSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rosdistro</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">ros</span><span class="o">.</span><span class="n">key</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">keyrings</span><span class="o">/</span><span class="n">ros</span><span class="o">-</span><span class="n">archive</span><span class="o">-</span><span class="n">keyring</span><span class="o">.</span><span class="n">gpg</span>
 <span class="n">echo</span> <span class="s2">"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main"</span> <span class="o">|</span> <span class="n">sudo</span> <span class="n">tee</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apt</span><span class="o">/</span><span class="n">sources</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ros2</span><span class="o">.</span><span class="n">list</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">ros</span><span class="o">-</span><span class="n">galactic</span><span class="o">-</span><span class="n">desktop</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">ros</span><span class="o">-</span><span class="n">humble</span><span class="o">-</span><span class="n">desktop</span>
 </pre></div>
 </div>
 </div>
@@ -244,10 +245,12 @@ Samsung published an article detailing some of the differences <a class="referen
 <p>We primarily use terminator instead of the default terminal since it allows for both horizontal and vertical splitting (which obviously increases overall productivity). Start up the default terminal and type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">terminator</span></code></p>
 </div>
-<div class="section" id="step-3-source-environment-variables">
-<h3>Step 3 - Source Environment Variables<a class="headerlink" href="#step-3-source-environment-variables" title="Permalink to this heading">¶</a></h3>
-<p>For the time being, we do not recommend placing these commands into ~/.bashrc (or equivalent) because we will be switching between ROS and ROS2. Instead, you will need to source your environment with each shell instance.</p>
-<p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">/opt/ros/galactic/setup.bash</span></code></p>
+<div class="section" id="step-3-add-ros-to-bashrc">
+<h3>Step 3 - Add ROS to bashrc<a class="headerlink" href="#step-3-add-ros-to-bashrc" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> \<span class="s2">"source /opt/ros/humble/setup.bash</span><span class="se">\"</span><span class="s2"> \&gt;\&gt; ~/.bashrc</span>
+<span class="n">source</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="setup-workspace">
@@ -278,7 +281,7 @@ because maybe somebody added a new submodule.</p>
 <div class="section" id="step-5-install-dependencies">
 <h3>Step 5 - Install Dependencies<a class="headerlink" href="#step-5-install-dependencies" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">roboracing_ws</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="n">python3</span><span class="o">-</span><span class="n">rosdep</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">colcon</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">extensions</span> <span class="n">python3</span><span class="o">-</span><span class="n">rosdep2</span>
 <span class="n">sudo</span> <span class="n">rosdep</span> <span class="n">init</span>
 <span class="n">rosdep</span> <span class="n">update</span>
 <span class="n">rosdep</span> <span class="n">install</span> <span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">path</span> <span class="n">src</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">src</span> <span class="o">-</span><span class="n">y</span>
@@ -294,8 +297,8 @@ because maybe somebody added a new submodule.</p>
 <p class="admonition-title">Important</p>
 <p>You will need two shell instances at all times while doing ROS2 development. On terminator, if you use the key combination <cite>CTRL + SHIFT + L</cite> the screen
 will split. One instance is for <em>building</em> code and another is for <em>running code</em>. You will need to make sure that both of these terminals are sourced with:
-<cite>source /opt/ros/galactic/setup.bash</cite> so that the shell instance knows where the ROS2 libraries are located. In the <em>running code</em> terminal you will also need to source
-<cite>source ~/roboracing_ws/install/setup.zsh</cite> so that the shell instance knows where all of your code is located. This is very important! If you don’t do this,
+<cite>source /opt/ros/humble/setup.bash</cite> so that the shell instance knows where the ROS2 libraries are located. In the <em>running code</em> terminal you will also need to source
+<cite>source ~/roboracing_ws/install/setup.sh</cite> so that the shell instance knows where all of your code is located. This is very important! If you don’t do this,
 you will get an error telling you that you are overriding packages and this may cause errors!</p>
 </div>
 </div>
@@ -306,6 +309,7 @@ you will get an error telling you that you are overriding packages and this may 
 <h3>Step 1 - Install Sphinx<a class="headerlink" href="#step-1-install-sphinx" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">sphinx</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">sphinx</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">furo</span>
 </pre></div>
@@ -441,9 +445,9 @@ hunt for it so if it is not here then you can look at <a class="reference extern
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#version-information">Version Information</a><ul>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li><a class="reference internal" href="#step-1-ros2-galactic-installation">Step 1 - ROS2 Galactic Installation</a></li>
+<li><a class="reference internal" href="#step-1-ros2-humble-installation">Step 1 - ROS2 Humble Installation</a></li>
 <li><a class="reference internal" href="#step-2-get-terminator">Step 2 - Get Terminator</a></li>
-<li><a class="reference internal" href="#step-3-source-environment-variables">Step 3 - Source Environment Variables</a></li>
+<li><a class="reference internal" href="#step-3-add-ros-to-bashrc">Step 3 - Add ROS to bashrc</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#setup-workspace">Setup Workspace</a><ul>
