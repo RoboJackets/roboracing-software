@@ -9,20 +9,19 @@ We are currently in the process of migrating our repository to ROS2.
 
 Version Information
 ===================
-We have decided on using ROS2 Galactic due to its drastic stability increase over Foxy.
-One primary example is rosbag2 having only a 30% message recording rate in Foxy, but 100% in Galactic.
-Samsung published an article detailing some of the differences here_.
-
-.. _here: https://research.samsung.com/blog/Newest-ROS2-Distribution-Galactic-Geochelone-Released.
+We are currently using ROS Humble, which at the time of the creation of this install guide is the newest version of ROS2. It is also the version with the longest
+support available currently.
 
 Prerequisites
 ---------------------
-This guide will assume that you are running Ubuntu 20.04. If you do not have Ubuntu 20.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.
+This guide will assume that you are running Ubuntu 22.04. If you do not have Ubuntu 22.04, we recommend dual-booting your computer. You can find a guide to dual boot by using your search engine of choice.
+Using WSL or a Virtual Machine solution on MacOS are also solutions. Just make sure you are running Ubuntu 22.04. Otherwise you cannot install ROS Humble. Dual booting will also make set up with devices 
+and other things significantly easier. To check Ubuntu version run ``lsb_release -a``
 
-Step 1 - ROS2 Galactic Installation
+Step 1 - ROS2 Humble Installation
 -----------------------------------
 
-This guide will follow https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html.
+This guide will follow https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html.
 
 .. code-block::
 
@@ -35,7 +34,7 @@ This guide will follow https://docs.ros.org/en/galactic/Installation/Ubuntu-Inst
     sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
     sudo apt update
-    sudo apt install ros-galactic-desktop
+    sudo apt install ros-humble-desktop
 
 
 
@@ -45,13 +44,12 @@ We primarily use terminator instead of the default terminal since it allows for 
 
 ``sudo apt install terminator``
 
-Step 3 - Source Environment Variables
+Step 3 - Add ROS to bashrc
 -------------------------------------
-For the time being, we do not recommend placing these commands into ~/.bashrc (or equivalent) because we will be switching between ROS and ROS2. Instead, you will need to source your environment with each shell instance.
-
-``source /opt/ros/galactic/setup.bash``
-
-
+.. code-block::
+    
+    echo \"source /opt/ros/humble/setup.bash\" \>\> ~/.bashrc
+    source ~/.bashrc
 
 Setup Workspace
 ===============
@@ -87,7 +85,7 @@ Step 5 - Install Dependencies
 .. code-block::
 
     cd ~/roboracing_ws 
-    sudo apt install -y python3-colcon-common-extensions python3-rosdep 
+    sudo apt install -y python3-colcon-common-extensions python3-rosdep2 
     sudo rosdep init
     rosdep update
     rosdep install --from-path src --ignore-src -y
@@ -102,8 +100,8 @@ Step 6 - Building the Code
 .. important::
    You will need two shell instances at all times while doing ROS2 development. On terminator, if you use the key combination `CTRL + SHIFT + L` the screen
    will split. One instance is for *building* code and another is for *running code*. You will need to make sure that both of these terminals are sourced with:
-   `source /opt/ros/galactic/setup.bash` so that the shell instance knows where the ROS2 libraries are located. In the *running code* terminal you will also need to source
-   `source ~/roboracing_ws/install/setup.zsh` so that the shell instance knows where all of your code is located. This is very important! If you don't do this,
+   `source /opt/ros/humble/setup.bash` so that the shell instance knows where the ROS2 libraries are located. In the *running code* terminal you will also need to source
+   `source ~/roboracing_ws/install/setup.sh` so that the shell instance knows where all of your code is located. This is very important! If you don't do this,
    you will get an error telling you that you are overriding packages and this may cause errors!
 
 Documentation
@@ -116,6 +114,7 @@ Step 1 - Install Sphinx
 
     sudo apt update
     sudo apt install python3 python3-pip
+    sudo apt install python3-sphinx
     pip install -U sphinx
     pip install -U furo
 
