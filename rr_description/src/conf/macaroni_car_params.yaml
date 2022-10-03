@@ -1,0 +1,7 @@
+wheelbase: 0.332
+track: 0.287
+
+max_steering: 0.367
+steering_speed: 1000
+
+wheel_radius_back: 0.036

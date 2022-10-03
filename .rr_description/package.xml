@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rr_description</name>
+  <version>0.0.0</version>
+  <description>Platform description for RoboRacing</description>
+
+  <maintainer email="nbartholomai3@gatech.edu">Nico Bartholomai</maintainer>
+
+  <license>MIT</license>
+
+  <url type="website">http://robojackets.org</url>
+  <url type="website">http://wiki.robojackets.org/w/RoboRacing</url>
+  <url type="website">http://www.github.com/robojackets/roboracing-software</url>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>xacro</build_depend>
+  <!-- <build_depend>velodyne_description</build_depend> -->
+
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <!--<depend>gazebo_ros</depend> -->
+  
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

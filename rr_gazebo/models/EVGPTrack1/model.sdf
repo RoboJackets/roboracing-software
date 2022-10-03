@@ -1,0 +1,53 @@
+<sdf version='1.6'>
+    <model name='EVGPTrack1'>
+        <link name='inner_boundary'>
+            <visual name='visual'>
+                <geometry>
+                    <mesh>
+                        <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple.dae</uri>
+                        <scale>1 1 2</scale>
+                    </mesh>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <mesh>
+                        <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple.dae</uri>
+                        <scale>1 1 2</scale>
+                    </mesh>
+                </geometry>
+            </collision>
+        </link>
+
+        <link name='outer_boundary'>
+            <!--      <pose frame=''>0 0 0 0 0 0</pose>-->
+            <visual name='visual'>
+                <geometry>
+                    <mesh>
+                        <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple_outer.dae</uri>
+                        <scale>1 1 2</scale>
+                    </mesh>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <mesh>
+                        <uri>model://EVGPTrack1/roboracing_evgp_raceTrack_styled3_simple_outer.dae</uri>
+                        <scale>1 1 2</scale>
+                    </mesh>
+                </geometry>
+            </collision>
+        </link>
+
+        <static>true</static>
+        <allow_auto_disable>0</allow_auto_disable>
+    </model>
+</sdf>

@@ -1,0 +1,45 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  auto_disable_bodies: false
+  cfm: 0.0
+  contact_max_correcting_vel: 100.0
+  contact_surface_layer: 0.05
+  erp: 1.0
+  gravity_x: 0.0
+  gravity_y: 0.0
+  gravity_z: -9.8
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      auto_disable_bodies: false
+      cfm: 0.0
+      contact_max_correcting_vel: 100.0
+      contact_surface_layer: 0.05
+      erp: 1.0
+      gravity_x: 0.0
+      gravity_y: 0.0
+      gravity_z: -9.8
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      max_contacts: 20
+      max_update_rate: 1000.0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      sor_pgs_iters: 100
+      sor_pgs_precon_iters: 5
+      sor_pgs_rms_error_tol: 0.0
+      sor_pgs_w: 0.9
+      state: true
+      time_step: 0.001
+      type: ''
+    state: []
+  max_contacts: 20
+  max_update_rate: 1000.0
+  sor_pgs_iters: 100
+  sor_pgs_precon_iters: 5
+  sor_pgs_rms_error_tol: 0.0
+  sor_pgs_w: 0.9
+  time_step: 0.001
+state: []

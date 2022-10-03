@@ -1,25 +1,58 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(rr_gazebo)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
-# find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rr_msgs REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rclcpp_components REQUIRED)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+add_executable(sim_car_controller nodes/sim_car_controller.cpp)
+ament_target_dependencies(sim_car_controller
+    "rclcpp"
+    "rr_msgs"
+    "geometry_msgs"
+    "nav_msgs"
+    "sensor_msgs"
+    "std_msgs"
+    "rclcpp_components"
+)
+
+add_executable(imu_axes nodes/imu_axes.cpp)
+ament_target_dependencies(imu_axes
+    "rclcpp"
+    "rr_msgs"
+    "sensor_msgs"
+    "rclcpp_components"
+)
+
+install(
+    TARGETS
+    imu_axes
+    sim_car_controller
+    DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+    DIRECTORY
+    launch
+    models
+    worlds
+    config
+    DESTINATION share/${PROJECT_NAME}
+)
+
+# not sure if I need this or what this does
+# install(
+#     DIRECTORY
+#     ${CMAKE_C_DIR}/models/
+#     DESTINATION share/${PROJECT_NAME}/models
+# )
+
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/rr_gazebo.sh.in")
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/velodyne_description.dsv.in")
 
 ament_package()
