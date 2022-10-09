@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/rr_msgs__cpp"
+  "rosidl_generator_cpp/rr_msgs/msg/axes.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/chassis_state.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/axes__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/axes__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/axes__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/chassis_state__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/chassis_state__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/chassis_state__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/hsv_tuned__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/hsv_tuned__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/hsv_tuned__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/race_reset__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/race_reset__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/race_reset__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/speed__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/speed__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/speed__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/steering__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/steering__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/steering__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/urc_sign__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/urc_sign__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/detail/urc_sign__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/hsv_tuned.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/race_reset.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/speed.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/steering.hpp"
+  "rosidl_generator_cpp/rr_msgs/msg/urc_sign.hpp"
+  "rosidl_generator_cpp/rr_msgs/srv/detail/turning__builder.hpp"
+  "rosidl_generator_cpp/rr_msgs/srv/detail/turning__struct.hpp"
+  "rosidl_generator_cpp/rr_msgs/srv/detail/turning__traits.hpp"
+  "rosidl_generator_cpp/rr_msgs/srv/turning.hpp"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/rr_msgs__cpp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

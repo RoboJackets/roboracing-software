@@ -52,7 +52,4 @@ install(
 #     DESTINATION share/${PROJECT_NAME}/models
 # )
 
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/rr_gazebo.sh.in")
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/velodyne_description.dsv.in")
-
 ament_package()

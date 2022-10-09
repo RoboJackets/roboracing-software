@@ -2,7 +2,7 @@
 
     <xacro:property name="use_gpu" value="false"/>
 
-    <xacro:property name="props" value="${load_yaml('../conf/evgp_car_params.yaml')}"/>
+    <xacro:property name="props" value="${load_yaml('../src/conf/evgp_car_params.yaml')}"/>
     <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
 
     <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
@@ -164,15 +164,6 @@
         </visual>
     </link>
     <xacro:set_link_color link="imu_top_link" color="Gold"/>
-    <link name="imu_bottom_link">
-        <xacro:null_inertia/>
-        <visual>
-            <geometry>
-                <box size="0.05 0.05 0.05"/>
-            </geometry>
-        </visual>
-    </link>
-    <xacro:set_link_color link="imu_bottom_link" color="Gold"/>
 
     <xacro:macro name="april_link" params="name tag_number">
         <link name="${name}">
@@ -258,7 +249,6 @@
 
     <xacro:set_base_footprint_to_link link_name="camera" xyz="0.61 0.39 1.03" rpy="0 0.4 0"/>
 
-    <xacro:set_base_footprint_to_link link_name="imu_bottom_link" xyz="0 0 0.21" rpy="0 0 0"/>
     <xacro:set_base_footprint_to_link link_name="imu_top_link" xyz="0.60 0.39 0.95" rpy="0 0 0"/>
 
     <xacro:set_base_footprint_to_link link_name="april_2" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
@@ -271,10 +261,10 @@
     <!-- ******************* Sensors *********************** -->
 
     <!-- Velodyne Puck VLP-16 -->
-    <xacro:VLP-16 parent="base_footprint" name="lidar" topic="/velodyne_points" hz="10" samples="500" gpu="true">
+    <xacro:VLP-16 parent="base_footprint" name="velodyne" topic="/velodyne_points" organize_cloud="false" hz="10" samples="440" gpu="true">
         <origin xyz="1.175 0 0.175" rpy="0 0 0" />
     </xacro:VLP-16>
-
+    
     <!-- FLIR Blackfly + wide-angle lens -->
     <gazebo reference="camera">
         <sensor name="camera_sensor" type="camera">
@@ -354,29 +344,7 @@
         </sensor>
     </gazebo>
 
-    <!-- GPS -->
-    <gazebo>
-        <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
-            <robotNamespace>/</robotNamespace>
-            <updateRate>10</updateRate>
-            <bodyName>gps_link</bodyName>
-            <frameId>gps_link</frameId>
-            <topicName>gps/fix</topicName>
-            <velocityTopicName>gps/vel</velocityTopicName>
-            <referenceLatitude>33.8</referenceLatitude>
-            <referenceLongitude>-84.4</referenceLongitude>
-            <referenceHeading>0</referenceHeading>
-            <referenceAltitude>0</referenceAltitude>
-            <drift>0.2 0.2 0.2</drift>
-            <driftFrequency>0.01 0.01 0.01</driftFrequency>
-            <gaussianNoise>0.05 0.05 0.05</gaussianNoise>
-            <velocityDrift>0.05 0.05 0.05</velocityDrift>
-            <velocityDriftFrequency>0.1 0.1 0.1</velocityDriftFrequency>
-            <velocityGaussianNoise>0.05 0.05 0.05</velocityGaussianNoise>
-        </plugin>
-    </gazebo>
-
-    <!-- ground-truth localization plugin -->
+        <!-- ground-truth localization plugin -->
     <gazebo>
         <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">
             <alwaysOn>true</alwaysOn>

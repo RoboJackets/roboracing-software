@@ -1,0 +1,23 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rr_msgs/msg/Axes.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rr_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "message for describing the axes of the car in degrees")
+    struct Axes {
+      @verbatim (language="comment", text=
+        "header for when the message is published")
+      std_msgs::msg::Header header;
+
+      float roll;
+
+      float pitch;
+
+      float yaw;
+    };
+  };
+};

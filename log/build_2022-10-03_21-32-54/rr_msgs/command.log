@@ -1,0 +1,1 @@
+Invoking command in '/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/isaac/roboracing_ws/src/roboracing-software/rr_msgs -DCMAKE_INSTALL_PREFIX=/home/isaac/roboracing_ws/src/roboracing-software/install/rr_msgs

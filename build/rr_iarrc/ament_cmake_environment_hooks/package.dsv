@@ -1,0 +1,4 @@
+source;share/rr_iarrc/local_setup.bash
+source;share/rr_iarrc/local_setup.dsv
+source;share/rr_iarrc/local_setup.sh
+source;share/rr_iarrc/local_setup.zsh

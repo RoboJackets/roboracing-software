@@ -18,12 +18,8 @@
 
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo_plugins</exec_depend>
-  <exec_depend>joint_state_controller</exec_depend>
-  <exec_depend>effort_controller</exec_depend>
   <exec_depend>controller_manager</exec_depend>
-  <exec_depend>gazebo_ros_control</exec_depend>
   <exec_depend>gazebo_ros_pkgs</exec_depend>
-  <exec_depend>hector_gazebo_plugins</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
@@ -33,7 +29,5 @@
   <export>
     <build_type>ament_cmake</build_type>
     <gazebo_ros gazebo_model_path="${prefix}/models"/>
-    <gazebo_ros gazebo_media_path="${prefix}/models"/>
-
   </export>
 </package>

@@ -85,10 +85,9 @@ class SimCarController : public rclcpp::Node {
     // Pubs and subs
     PIDController left_controller{ speed_kP, speed_kI, speed_kD };
     PIDController right_controller{ speed_kP, speed_kI, speed_kD };
-
+    double max_torque = this->get_parameter("max_torque").as_double();
     double speed_measured_left = 0.0;
     double speed_measured_right = 0.0;
-    double max_torque = this->get_parameter("max_torque").as_double();
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr left_drive_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr right_drive_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr left_steering_pub_;
@@ -152,7 +151,6 @@ class SimCarController : public rclcpp::Node {
 
   private:
     // Parameters
-
     double chassis_length = this->get_parameter("wheelbase").as_double();
     double chassis_width = this->get_parameter("track").as_double();
     double wheel_radius = this->get_parameter("wheel_radius_back").as_double();

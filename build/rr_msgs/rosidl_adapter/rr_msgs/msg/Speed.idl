@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rr_msgs/msg/Speed.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rr_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "Message for controlling the RC car servo and motors")
+    struct Speed {
+      @verbatim (language="comment", text=
+        "timestamp in the header is the time the command is sent")
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "wheel speed in m/s")
+      double speed;
+    };
+  };
+};

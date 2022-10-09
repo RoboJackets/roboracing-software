@@ -1,0 +1,14 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rr_msgs/msg/RaceReset.msg
+// generated code does not contain a copyright notice
+
+
+module rr_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "Message for reseting the state in the navigation controller")
+    struct RaceReset {
+      uint8 structure_needs_at_least_one_member;
+    };
+  };
+};

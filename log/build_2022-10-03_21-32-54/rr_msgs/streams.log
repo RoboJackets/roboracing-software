@@ -1,0 +1,33 @@
+[0.054s] Invoking command in '/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/isaac/roboracing_ws/src/roboracing-software/rr_msgs -DCMAKE_INSTALL_PREFIX=/home/isaac/roboracing_ws/src/roboracing-software/install/rr_msgs
+[0.180s] -- The C compiler identification is GNU 11.2.0
+[0.317s] -- The CXX compiler identification is GNU 11.2.0
+[0.327s] -- Detecting C compiler ABI info
+[0.460s] -- Detecting C compiler ABI info - done
+[0.488s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.488s] -- Detecting C compile features
+[0.488s] -- Detecting C compile features - done
+[0.498s] -- Detecting CXX compiler ABI info
+[0.661s] -- Detecting CXX compiler ABI info - done
+[0.683s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.684s] -- Detecting CXX compile features
+[0.685s] -- Detecting CXX compile features - done
+[0.690s] -- Found ament_cmake: 1.3.2 (/opt/ros/humble/share/ament_cmake/cmake)
+[1.071s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter 
+[1.273s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[1.279s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.290s] -- Found rosidl_adapter: 3.1.3 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[1.398s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.527s] -- Found std_msgs: 4.2.2 (/opt/ros/humble/share/std_msgs/cmake)
+[2.353s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[2.710s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.178s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.212s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.6", minimum required is "3.6") 
+[3.215s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[3.253s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.6", minimum required is "3.5") 
+[3.254s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[3.254s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[3.254s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[3.285s] -- Found PythonExtra: .so  
+[3.367s] -- Configuring done
+[3.448s] -- Generating done
+[3.453s] -- Build files have been written to: /home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs
