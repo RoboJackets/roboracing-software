@@ -10,32 +10,6 @@ find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
-add_executable(sim_car_controller nodes/sim_car_controller.cpp)
-ament_target_dependencies(sim_car_controller
-    "rclcpp"
-    "rr_msgs"
-    "geometry_msgs"
-    "nav_msgs"
-    "sensor_msgs"
-    "std_msgs"
-    "rclcpp_components"
-)
-
-add_executable(imu_axes nodes/imu_axes.cpp)
-ament_target_dependencies(imu_axes
-    "rclcpp"
-    "rr_msgs"
-    "sensor_msgs"
-    "rclcpp_components"
-)
-
-install(
-    TARGETS
-    imu_axes
-    sim_car_controller
-    DESTINATION lib/${PROJECT_NAME}
-)
-
 install(
     DIRECTORY
     launch

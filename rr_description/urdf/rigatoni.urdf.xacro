@@ -1,26 +1,26 @@
-<robot name="rigatoni" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:property name="use_gpu" value="false"/>
-
-    <xacro:property name="props" value="${load_yaml('../src/conf/evgp_car_params.yaml')}"/>
-    <xacro:property name="body_inertia" value="${props['body_inertia']}"/>
-
+<?xml version="1.0"?>
+<robot name="tricycle_drive" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
 
-    <!-- <xacro:include filename="$(find rr_description)/" -->
+  <material name="Black">
+    <color rgba="0 0 0 1" />
+  </material>
+  <material name="Grey">
+    <color rgba="0.8 0.8 0.8 1" />
+  </material>
+  <material name="Orange">
+    <color rgba="1 0.6 0 1" />
+  </material>
+  <material name="White">
+    <color rgba="1 1 1 1" />
+  </material>
 
-    <!-- ************************** Links *************************** -->
-    <xacro:macro name="null_inertia">
+  <link name="base_link" />
+   <xacro:macro name="null_inertia">
         <inertial>
             <mass value="0.0001"/>
             <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
         </inertial>
-    </xacro:macro>
-
-    <xacro:macro name="mesh_geometry">
-        <geometry>
-            <mesh filename="$(find rr_description)/meshes/rigatoni.stl" scale="0.01 0.01 0.01"/>
-        </geometry>
     </xacro:macro>
 
     <xacro:macro name="set_link_color" params="link color">
@@ -28,107 +28,166 @@
             <material>Gazebo/${color}</material>
         </gazebo>
     </xacro:macro>
+    <!-- Robot Footprint -->
+  <link name="base_footprint"/>
 
-    <xacro:macro name="evgp_body" params="collision_bitmask color">
+  <joint name="base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
 
-        <!-- ************************** Links *************************** -->
+  <!-- Chassis -->
+  <link name="chassis">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2 1 0.5" />
+      </geometry>
+    </collision>
 
-        <link name="base_footprint">
-            <xacro:null_inertia/>
-        </link>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2 1 0.5" />
+      </geometry>
+      <material name="Orange" />
+    </visual>
 
-        <link name="body_visual_origin">
-            <xacro:null_inertia/>
-            <visual>
-                <xacro:mesh_geometry/>
-            </visual>
-<!--            <collision>-->
-<!--                <xacro:mesh_geometry/>-->
-<!--            </collision>-->
-        </link>
-        <xacro:set_link_color link="body_visual_origin" color="${color}"/>
-        <gazebo reference="body_visual_origin">
-            <collision>
-                <surface>
-                    <contact>
-                        <collide_bitmask>${collision_bitmask}</collide_bitmask>
-                    </contact>
-                </surface>
-            </collision>
-        </gazebo>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="0.126164" ixy="0.0" ixz="0.0" iyy="0.416519" iyz="0.0" izz="0.481014" />
+    </inertial>
+  </link>
 
-        <link name="body_inertial_center">
-            <inertial>
-                <mass value="${props['body_mass']}"/>
-                <inertia ixx="${body_inertia[0]}" ixy="${body_inertia[1]}" ixz="${body_inertia[2]}"
-                         iyy="${body_inertia[3]}" iyz="${body_inertia[4]}" izz="${body_inertia[5]}"/>
-            </inertial>
-        </link>
-        <gazebo reference="body_inertial_center"/>
+  <joint name="chassis_joint" type="fixed">
+    <origin xyz="0.8 0 0.5" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="chassis" />
+  </joint>
 
+  <!-- left wheel Link -->
+  <link name="left_wheel">
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
 
-        <!-- ************************** Joints *************************** -->
+    <inertial>
+      <mass value="2" />
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125" />
+    </inertial>
+  </link>
 
-        <joint name="base_footprint_to_mesh_origin" type="fixed">
-            <parent link="base_footprint"/>
-            <child link="body_visual_origin"/>
-            <origin xyz="0.53 0 -0.05" rpy="${pi/2} 0 ${pi/2}"/>
-        </joint>
+  <joint name="left_wheel_joint" type="continuous">
+    <origin xyz="-0.8 0.5 -0.2" rpy="-1.57 0 0" />
+    <parent link="chassis" />
+    <child link="left_wheel" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" />
+  </joint>
 
-        <joint name="base_footprint_to_body_inertial_center" type="fixed">
-            <parent link="base_footprint"/>
-            <child link="body_inertial_center"/>
-            <origin xyz="${' '.join(str(x) for x in props['body_com'])}"/>
-        </joint>
+  <!-- right wheel Link -->
+  <link name="right_wheel">
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
 
-    </xacro:macro>
-    <xacro:evgp_body collision_bitmask="0x1" color="Grey"/>
+    <inertial>
+      <mass value="2" />
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125" />
+    </inertial>
+  </link>
 
-    <xacro:macro name="wheel_link" params="name radius width">
-        <link name="${name}">
-            <inertial>
-                <mass value="0.01"/>
-                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0"
-                         izz="${0.5 * props['wheel_mass'] * pow(radius, 2)}"/>
-            </inertial>
-            <visual>
-                <geometry>
-                    <cylinder radius="${radius}" length="${width}"/>
-                </geometry>
-            </visual>
-            <collision>
-                <geometry>
-                    <cylinder radius="${radius}" length="${width}"/>
-                </geometry>
-            </collision>
-        </link>
-        <gazebo reference="${name}">
-            <mu1>0.7</mu1>
-            <mu2>0.7</mu2>
-            <kp>1000000</kp>
-            <kd>1000000</kd>
-            <collision>
-                <surface>
-                    <contact>
-                        <collide_bitmask>0x1</collide_bitmask>
-                    </contact>
-                </surface>
-            </collision>
-        </gazebo>
-        <xacro:set_link_color link="${name}" color="Black"/>
-    </xacro:macro>
-    <xacro:wheel_link name="wheel_BL" radius="${props['wheel_radius_back']}" width="${props['wheel_width_back']}"/>
-    <xacro:wheel_link name="wheel_BR" radius="${props['wheel_radius_back']}" width="${props['wheel_width_back']}"/>
-    <xacro:wheel_link name="wheel_FL" radius="${props['wheel_radius_front']}" width="${props['wheel_width_front']}"/>
-    <xacro:wheel_link name="wheel_FR" radius="${props['wheel_radius_front']}" width="${props['wheel_width_front']}"/>
+  <joint name="right_wheel_joint" type="continuous">
+    <origin xyz="-0.8 -0.5 -0.2" rpy="-1.57 0 0" />
+    <parent link="chassis" />
+    <child link="right_wheel" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" />
+  </joint>
 
-    <link name="steering_link_left">
-        <xacro:null_inertia/>
-    </link>
-    <link name="steering_link_right">
-        <xacro:null_inertia/>
-    </link>
+  <!-- Steering Link -->
+  <link name="steering_link">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.005" />
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1" />
+    </inertial>
+  </link>
 
+  <joint name="steering_joint" type="continuous">
+    <origin xyz="0.9 0 -0.2" rpy="0 0 0" />
+    <parent link="chassis" />
+    <child link="steering_link" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <!-- traction wheel link -->
+  <link name="wheel_front_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="15" />
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="traction_joint" type="continuous">
+    <parent link="steering_link" />
+    <child link="wheel_front_link" />
+    <origin xyz="0 0 0" rpy="-1.57 1.57 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="steering_joint">
+      <command_interface name="position" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="traction_joint">
+      <command_interface name="velocity" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+
+<!-- Sensors -->
     <link name="gps_link">
         <xacro:null_inertia/>
         <visual>
@@ -154,8 +213,7 @@
         </visual>
     </link>
     <xacro:set_link_color link="camera" color="Gold"/>
-
-    <link name="imu_top_link">
+   <link name="imu_link">
         <xacro:null_inertia/>
         <visual>
             <geometry>
@@ -163,81 +221,9 @@
             </geometry>
         </visual>
     </link>
-    <xacro:set_link_color link="imu_top_link" color="Gold"/>
+    <xacro:set_link_color link="imu_link" color="Gold"/>
 
-    <xacro:macro name="april_link" params="name tag_number">
-        <link name="${name}">
-            <xacro:null_inertia/>
-            <visual>
-                <geometry>
-                    <box size="0.001 0.127 0.127 "/>
-                </geometry>
-            </visual>
-        </link>
-
-        <gazebo reference="${name}">
-            <material>${tag_number}</material>
-        </gazebo>
-    </xacro:macro>
-    <xacro:april_link name="april_2" tag_number="tag36_11_00052"/>
-    <xacro:april_link name="april_3" tag_number="tag36_11_00053"/>
-    <xacro:april_link name="april_4" tag_number="tag36_11_00054"/>
-    <xacro:april_link name="april_5" tag_number="tag36_11_00055"/>
-    <xacro:april_link name="april_6" tag_number="tag36_11_00056"/>
-
-
-    <!-- ************************** Joints *************************** -->
-
-    <xacro:property name="joint_flop_both" value="0.03"/>
-    <xacro:macro name="back_wheel_joint" params="dest_link y">
-        <joint name="base_footprint_to_${dest_link}" type="continuous">
-            <parent link="base_footprint"/>
-            <child link="${dest_link}"/>
-            <origin xyz="0 ${y} ${(props['wheel_radius_back'] / 2) - joint_flop_both}" rpy="${-pi/2} 0 0"/>
-            <axis xyz="0 0 1"/>
-        </joint>
-        <gazebo reference="base_footprint_to_${dest_link}"/>
-    </xacro:macro>
-    <xacro:back_wheel_joint dest_link="wheel_BL" y="${props['track'] / 2}"/>
-    <xacro:back_wheel_joint dest_link="wheel_BR" y="${-props['track'] / 2}"/>
-
-    <xacro:property name="joint_flop_front" value="0.007"/>
-    <xacro:macro name="steering_joints" params="steering_link wheel_link y">
-        <joint name="base_footprint_to_${steering_link}" type="revolute">
-            <parent link="base_footprint"/>
-            <child link="${steering_link}"/>
-            <origin xyz="${props['wheelbase']} ${y} ${props['wheel_radius_front'] / 2}" rpy="0 0 0"/>
-            <axis xyz="0 0 1"/>
-            <limit lower="${-props['max_steering']}" upper="${props['max_steering']}" effort="10000.0"
-                   velocity="${props['steering_speed']}"/>
-        </joint>
-        <gazebo reference="base_footprint_to_${steering_link}"/>
-
-        <joint name="${steering_link}_to_${wheel_link}" type="continuous">
-            <origin xyz="0 0 ${-joint_flop_both - joint_flop_front}" rpy="${pi/2} 0 0"/>
-            <parent link="${steering_link}"/>
-            <child link="${wheel_link}"/>
-            <axis xyz="0 0 1"/>
-        </joint>
-        <gazebo reference="${steering_link}_to_${wheel_link}"/>
-    </xacro:macro>
-    <xacro:steering_joints steering_link="steering_link_left" wheel_link="wheel_FL" y="${props['track'] / 2}"/>
-    <xacro:steering_joints steering_link="steering_link_right" wheel_link="wheel_FR" y="${-props['track'] / 2}"/>
-
-    <xacro:macro name="camera_optical_frame" params="camera_link">
-        <link name="${camera_link}_optical">
-            <xacro:null_inertia/>
-        </link>
-        <joint name="${camera_link}_to_optical" type="fixed">
-            <parent link="${camera_link}"/>
-            <child link="${camera_link}_optical"/>
-            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
-        </joint>
-    </xacro:macro>
-
-    <xacro:camera_optical_frame camera_link="camera"/>
-
-    <xacro:macro name="set_base_footprint_to_link" params="link_name xyz rpy">
+ <xacro:macro name="set_base_footprint_to_link" params="link_name xyz rpy">
         <joint name="base_footprint_to_${link_name}" type="fixed">
             <parent link="base_footprint"/>
             <child link="${link_name}"/>
@@ -249,19 +235,9 @@
 
     <xacro:set_base_footprint_to_link link_name="camera" xyz="0.61 0.39 1.03" rpy="0 0.4 0"/>
 
-    <xacro:set_base_footprint_to_link link_name="imu_top_link" xyz="0.60 0.39 0.95" rpy="0 0 0"/>
+    <xacro:set_base_footprint_to_link link_name="imu_link" xyz="0.60 0.39 0.95" rpy="0 0 0"/>
 
-    <xacro:set_base_footprint_to_link link_name="april_2" xyz=".48  -0.55 0.26" rpy="0 0 ${pi/2}"/>
-    <xacro:set_base_footprint_to_link link_name="april_3" xyz="-.19 -0.43 0.26" rpy="0 0 ${pi/4}"/>
-    <xacro:set_base_footprint_to_link link_name="april_4" xyz="-.38  0    0.26" rpy="0 0 0"/>
-    <xacro:set_base_footprint_to_link link_name="april_5" xyz="-.19  0.43 0.26" rpy="0 0 -${pi/4}"/>
-    <xacro:set_base_footprint_to_link link_name="april_6" xyz=".48   0.55 0.26" rpy="0 0 ${pi/2}"/>
-
-
-    <!-- ******************* Sensors *********************** -->
-
-    <!-- Velodyne Puck VLP-16 -->
-    <xacro:VLP-16 parent="base_footprint" name="velodyne" topic="/velodyne_points" organize_cloud="false" hz="10" samples="440" gpu="true">
+<xacro:VLP-16 parent="base_footprint" name="velodyne" topic="/velodyne_points" organize_cloud="false" hz="10" samples="440" gpu="true">
         <origin xyz="1.175 0 0.175" rpy="0 0 0" />
     </xacro:VLP-16>
     
@@ -344,71 +320,10 @@
         </sensor>
     </gazebo>
 
-        <!-- ground-truth localization plugin -->
-    <gazebo>
-        <plugin name="ground_truth_tracker" filename="libgazebo_ros_p3d.so">
-            <alwaysOn>true</alwaysOn>
-            <updateRate>10.0</updateRate>
-            <bodyName>base_footprint</bodyName>
-            <topicName>/odometry/ground_truth</topicName>
-            <gaussianNoise>0.0</gaussianNoise>
-            <frameName>world</frameName>
-            <xyzOffsets>0 0 0</xyzOffsets>
-            <rpyOffsets>0 0 0</rpyOffsets>
-        </plugin>
-    </gazebo>
-
-
-    <!-- ****************** Actuators ********************** -->
-
-    <gazebo>
-        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-            <robot_namespace>rigatoni</robot_namespace>
-            <robot_param>robot_description</robot_param>
-            <robot_param_node>robot_state_publisher</robot_param_node>
-            <parameters>$(find rr_description)/src/conf/controller.yaml</parameters>
-        </plugin>
-    </gazebo>
-    
-    <ros2_control name="GazeboSystem" type="system">
-    <hardware>
-      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-    </hardware>
-    <joint name="base_footprint_to_wheel_BL">
-      <command_interface name="effort">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="base_footprint_to_wheel_BR">
-      <command_interface name="effort">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="base_footprint_to_steering_link_left">
-      <command_interface name="position">
-        <param name="min">-0.3</param>
-        <param name="max">0.3</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="base_footprint_to_steering_link_right">
-      <command_interface name="position">
-        <param name="min">-0.3</param>
-        <param name="max">0.3</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-
-  </ros2_control>
+  <gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <parameters>$(find rr_description)/config/tricycle_control.yaml</parameters>
+    </plugin>
+  </gazebo>
 
 </robot>

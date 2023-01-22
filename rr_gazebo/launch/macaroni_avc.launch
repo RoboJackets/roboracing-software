@@ -1,8 +1,0 @@
-<launch>
-
-    <include file="$(find rr_gazebo)/launch/macaroni_sim.launch">
-        <arg name="world" value="$(find rr_gazebo)/worlds/avc.world"/>
-        <arg name="start_pose" value="0 0 -0.65"/>
-    </include>
-
-</launch>
