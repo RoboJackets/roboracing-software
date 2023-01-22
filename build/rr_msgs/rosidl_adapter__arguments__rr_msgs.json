@@ -1,0 +1,13 @@
+{
+  "package_name": "rr_msgs",
+  "non_idl_tuples": [
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/Axes.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/ChassisState.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/RaceReset.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/Steering.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/HsvTuned.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/Speed.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:msg/UrcSign.msg",
+    "/home/isaac/roboracing_ws/src/roboracing-software/rr_msgs:srv/Turning.srv"
+  ]
+}

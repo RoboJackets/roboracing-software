@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rr_msgs/msg/UrcSign.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rr_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "message for IARRC Urban Challenge Sign and Stop Bar Detection")
+    struct UrcSign {
+      @verbatim (language="comment", text=
+        "header for when the message is published")
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "direction to turn")
+      string direction;
+
+      @verbatim (language="comment", text=
+        "car angle compared to Stop Bar")
+      double angle;
+    };
+  };
+};

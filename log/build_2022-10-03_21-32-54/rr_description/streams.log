@@ -1,0 +1,364 @@
+[0.049s] Invoking command in '/home/isaac/roboracing_ws/src/roboracing-software/build/rr_description': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/isaac/roboracing_ws/src/roboracing-software/rr_description -DCMAKE_INSTALL_PREFIX=/home/isaac/roboracing_ws/src/roboracing-software/install/rr_description
+[0.162s] -- The C compiler identification is GNU 11.2.0
+[0.269s] -- The CXX compiler identification is GNU 11.2.0
+[0.283s] -- Detecting C compiler ABI info
+[0.448s] -- Detecting C compiler ABI info - done
+[0.471s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.471s] -- Detecting C compile features
+[0.472s] -- Detecting C compile features - done
+[0.482s] -- Detecting CXX compiler ABI info
+[0.641s] -- Detecting CXX compiler ABI info - done
+[0.668s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.669s] -- Detecting CXX compile features
+[0.670s] -- Detecting CXX compile features - done
+[0.729s] -- Found xacro: 2.0.7 (/opt/ros/humble/share/xacro/cmake)
+[0.744s] -- Found ament_cmake: 1.3.2 (/opt/ros/humble/share/ament_cmake/cmake)
+[1.160s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter 
+[1.395s] -- Found velodyne_description: 2.0.2 (/opt/ros/humble/share/velodyne_description/cmake)
+[1.399s] -- xacro: determining deps for: urdf/evgp.urdf.xacro ...
+[1.721s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[1.721s]   failed to determine deps for: urdf/evgp.urdf.xacro
+[1.722s] 
+[1.722s]   Traceback (most recent call last):
+[1.722s] 
+[1.722s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[1.722s]       inp = f = open(filename)
+[1.722s] 
+[1.723s]   FileNotFoundError: [Errno 2] No such file or directory:
+[1.723s]   'urdf/evgp.urdf.xacro'
+[1.723s] 
+[1.724s]   
+[1.724s] 
+[1.724s]   During handling of the above exception, another exception occurred:
+[1.724s] 
+[1.725s]   
+[1.725s] 
+[1.725s]   Traceback (most recent call last):
+[1.726s] 
+[1.726s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[1.727s]       doc = process_file(input_file_name, **opts)
+[1.727s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[1.727s]       doc = parse(None, input_file_name)
+[1.727s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[1.728s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[1.728s] 
+[1.728s]   xacro.XacroException: No such file or directory: urdf/evgp.urdf.xacro
+[1.728s]   [Errno 2] No such file or directory: 'urdf/evgp.urdf.xacro'
+[1.728s] 
+[1.729s]   
+[1.729s] 
+[1.729s]   During handling of the above exception, another exception occurred:
+[1.729s] 
+[1.729s]   
+[1.730s] 
+[1.730s]   Traceback (most recent call last):
+[1.730s] 
+[1.730s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[1.730s]       xacro.main()
+[1.731s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[1.731s]       _process(input_file_name, vars(opts))
+[1.731s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[1.731s]       except xml.parsers.expat.ExpatError as e:
+[1.738s] 
+[1.739s]   AttributeError: module 'xml' has no attribute 'parsers'
+[1.739s] 
+[1.739s] Call Stack (most recent call first):
+[1.740s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[1.740s]   CMakeLists.txt:11 (xacro_add_files)
+[1.740s] 
+[1.740s] [0m
+[1.740s] -- xacro: determining deps for: urdf/opponents/evgp_opponent_0.urdf.xacro ...
+[1.958s] -- xacro: determining deps for: urdf/opponents/evgp_opponent_1.urdf.xacro ...
+[1.958s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[1.959s]   failed to determine deps for: urdf/opponents/evgp_opponent_0.urdf.xacro
+[1.959s] 
+[1.959s]   Traceback (most recent call last):
+[1.960s] 
+[1.960s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[1.961s]       inp = f = open(filename)
+[1.961s] 
+[1.961s]   FileNotFoundError: [Errno 2] No such file or directory:
+[1.962s]   'urdf/opponents/evgp_opponent_0.urdf.xacro'
+[1.962s] 
+[1.962s]   
+[1.963s] 
+[1.963s]   During handling of the above exception, another exception occurred:
+[1.963s] 
+[1.964s]   
+[1.968s] 
+[1.968s]   Traceback (most recent call last):
+[1.969s] 
+[1.969s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[1.970s]       doc = process_file(input_file_name, **opts)
+[1.970s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[1.971s]       doc = parse(None, input_file_name)
+[1.971s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[1.972s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[1.972s] 
+[1.973s]   xacro.XacroException: No such file or directory:
+[1.974s]   urdf/opponents/evgp_opponent_0.urdf.xacro [Errno 2] No such file or
+[1.978s]   directory: 'urdf/opponents/evgp_opponent_0.urdf.xacro'
+[1.979s] 
+[1.979s]   
+[1.980s] 
+[1.980s]   During handling of the above exception, another exception occurred:
+[1.981s] 
+[1.981s]   
+[1.981s] 
+[1.981s]   Traceback (most recent call last):
+[1.981s] 
+[1.982s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[1.982s]       xacro.main()
+[1.982s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[1.982s]       _process(input_file_name, vars(opts))
+[1.983s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[1.983s]       except xml.parsers.expat.ExpatError as e:
+[1.983s] 
+[1.983s]   AttributeError: module 'xml' has no attribute 'parsers'
+[1.983s] 
+[1.984s] Call Stack (most recent call first):
+[1.984s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[1.985s]   CMakeLists.txt:11 (xacro_add_files)
+[1.985s] 
+[1.986s] [0m
+[2.136s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[2.136s]   failed to determine deps for: urdf/opponents/evgp_opponent_1.urdf.xacro
+[2.136s] 
+[2.136s]   Traceback (most recent call last):
+[2.136s] 
+[2.136s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[2.137s]       inp = f = open(filename)
+[2.137s] 
+[2.137s]   FileNotFoundError: [Errno 2] No such file or directory:
+[2.137s]   'urdf/opponents/evgp_opponent_1.urdf.xacro'
+[2.137s] 
+[2.137s]   
+[2.137s] 
+[2.137s]   During handling of the above exception, another exception occurred:
+[2.137s] 
+[2.137s]   
+[2.138s] 
+[2.138s]   Traceback (most recent call last):
+[2.138s] 
+[2.138s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[2.138s]       doc = process_file(input_file_name, **opts)
+[2.138s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[2.138s]       doc = parse(None, input_file_name)
+[2.138s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[2.138s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[2.138s] 
+[2.139s]   xacro.XacroException: No such file or directory:
+[2.139s]   urdf/opponents/evgp_opponent_1.urdf.xacro [Errno 2] No such file or
+[2.139s]   directory: 'urdf/opponents/evgp_opponent_1.urdf.xacro'
+[2.139s] 
+[2.139s]   
+[2.139s] 
+[2.139s]   During handling of the above exception, another exception occurred:
+[2.139s] 
+[2.139s]   
+[2.139s] 
+[2.140s]   Traceback (most recent call last):
+[2.140s] 
+[2.140s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[2.140s]       xacro.main()
+[2.140s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[2.140s]       _process(input_file_name, vars(opts))
+[2.140s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[2.140s]       except xml.parsers.expat.ExpatError as e:
+[2.141s] 
+[2.141s]   AttributeError: module 'xml' has no attribute 'parsers'
+[2.141s] 
+[2.141s] Call Stack (most recent call first):
+[2.141s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[2.141s]   CMakeLists.txt:11 (xacro_add_files)
+[2.141s] 
+[2.141s] [0m
+[2.141s] -- xacro: determining deps for: urdf/opponents/evgp_opponent_2.urdf.xacro ...
+[2.299s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[2.299s]   failed to determine deps for: urdf/opponents/evgp_opponent_2.urdf.xacro
+[2.299s] 
+[2.299s]   Traceback (most recent call last):
+[2.300s] 
+[2.300s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[2.300s]       inp = f = open(filename)
+[2.300s] 
+[2.300s]   FileNotFoundError: [Errno 2] No such file or directory:
+[2.301s]   'urdf/opponents/evgp_opponent_2.urdf.xacro'
+[2.301s] 
+[2.301s]   
+[2.301s] 
+[2.301s]   During handling of the above exception, another exception occurred:
+[2.302s] 
+[2.302s]   
+[2.302s] 
+[2.302s]   Traceback (most recent call last):
+[2.302s] 
+[2.303s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[2.303s]       doc = process_file(input_file_name, **opts)
+[2.303s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[2.303s]       doc = parse(None, input_file_name)
+[2.303s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[2.304s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[2.304s] 
+[2.304s]   xacro.XacroException: No such file or directory:
+[2.304s]   urdf/opponents/evgp_opponent_2.urdf.xacro [Errno 2] No such file or
+[2.304s]   directory: 'urdf/opponents/evgp_opponent_2.urdf.xacro'
+[2.305s] 
+[2.305s]   
+[2.305s] 
+[2.305s]   During handling of the above exception, another exception occurred:
+[2.305s] 
+[2.306s]   
+[2.306s] 
+[2.306s]   Traceback (most recent call last):
+[2.306s] 
+[2.306s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[2.306s]       xacro.main()
+[2.307s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[2.307s]       _process(input_file_name, vars(opts))
+[2.307s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[2.307s]       except xml.parsers.expat.ExpatError as e:
+[2.307s] 
+[2.308s]   AttributeError: module 'xml' has no attribute 'parsers'
+[2.308s] 
+[2.308s] Call Stack (most recent call first):
+[2.308s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[2.308s]   CMakeLists.txt:11 (xacro_add_files)
+[2.309s] 
+[2.309s] [0m
+[2.309s] -- xacro: determining deps for: urdf/opponents/evgp_opponent_3.urdf.xacro ...
+[2.466s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[2.466s]   failed to determine deps for: urdf/opponents/evgp_opponent_3.urdf.xacro
+[2.466s] 
+[2.466s]   Traceback (most recent call last):
+[2.466s] 
+[2.466s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[2.467s]       inp = f = open(filename)
+[2.467s] 
+[2.467s]   FileNotFoundError: [Errno 2] No such file or directory:
+[2.467s]   'urdf/opponents/evgp_opponent_3.urdf.xacro'
+[2.467s] 
+[2.468s]   
+[2.468s] 
+[2.468s]   During handling of the above exception, another exception occurred:
+[2.468s] 
+[2.468s]   
+[2.468s] 
+[2.469s]   Traceback (most recent call last):
+[2.469s] 
+[2.469s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[2.469s]       doc = process_file(input_file_name, **opts)
+[2.469s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[2.470s]       doc = parse(None, input_file_name)
+[2.470s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[2.470s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[2.470s] 
+[2.470s]   xacro.XacroException: No such file or directory:
+[2.470s]   urdf/opponents/evgp_opponent_3.urdf.xacro [Errno 2] No such file or
+[2.471s]   directory: 'urdf/opponents/evgp_opponent_3.urdf.xacro'
+[2.471s] 
+[2.471s]   
+[2.471s] 
+[2.471s]   During handling of the above exception, another exception occurred:
+[2.471s] 
+[2.472s]   
+[2.472s] 
+[2.472s]   Traceback (most recent call last):
+[2.472s] 
+[2.472s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[2.472s]       xacro.main()
+[2.473s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[2.473s]       _process(input_file_name, vars(opts))
+[2.473s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[2.473s]       except xml.parsers.expat.ExpatError as e:
+[2.473s] 
+[2.473s]   AttributeError: module 'xml' has no attribute 'parsers'
+[2.473s] 
+[2.474s] Call Stack (most recent call first):
+[2.474s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[2.474s]   CMakeLists.txt:11 (xacro_add_files)
+[2.474s] 
+[2.474s] [0m
+[2.474s] -- xacro: determining deps for: urdf/opponents/evgp_opponent_4.urdf.xacro ...
+[2.630s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[2.631s]   failed to determine deps for: urdf/opponents/evgp_opponent_4.urdf.xacro
+[2.631s] 
+[2.631s]   Traceback (most recent call last):
+[2.631s] 
+[2.631s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 984, in parse
+[2.632s]       inp = f = open(filename)
+[2.632s] 
+[2.632s]   FileNotFoundError: [Errno 2] No such file or directory:
+[2.632s]   'urdf/opponents/evgp_opponent_4.urdf.xacro'
+[2.632s] 
+[2.633s]   
+[2.633s] 
+[2.633s]   During handling of the above exception, another exception occurred:
+[2.633s] 
+[2.634s]   
+[2.634s] 
+[2.634s]   Traceback (most recent call last):
+[2.634s] 
+[2.634s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1092, in _process
+[2.635s]       doc = process_file(input_file_name, **opts)
+[2.635s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1072, in process_file
+[2.635s]       doc = parse(None, input_file_name)
+[2.635s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 988, in parse
+[2.635s]       raise XacroException(e.strerror + ": " + e.filename, exc=e)
+[2.636s] 
+[2.636s]   xacro.XacroException: No such file or directory:
+[2.636s]   urdf/opponents/evgp_opponent_4.urdf.xacro [Errno 2] No such file or
+[2.636s]   directory: 'urdf/opponents/evgp_opponent_4.urdf.xacro'
+[2.636s] 
+[2.637s]   
+[2.637s] 
+[2.637s]   During handling of the above exception, another exception occurred:
+[2.637s] 
+[2.637s]   
+[2.638s] 
+[2.638s]   Traceback (most recent call last):
+[2.638s] 
+[2.638s]     File "/opt/ros/humble/bin/xacro", line 33, in <module>
+[2.638s]       xacro.main()
+[2.639s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1145, in main
+[2.639s]       _process(input_file_name, vars(opts))
+[2.639s]     File "/opt/ros/humble/local/lib/python3.10/dist-packages/xacro/__init__.py", line 1097, in _process
+[2.639s]       except xml.parsers.expat.ExpatError as e:
+[2.639s] 
+[2.640s]   AttributeError: module 'xml' has no attribute 'parsers'
+[2.640s] 
+[2.640s] Call Stack (most recent call first):
+[2.640s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[2.640s]   CMakeLists.txt:11 (xacro_add_files)
+[2.641s] 
+[2.641s] [0m
+[2.641s] -- xacro: determining deps for: urdf/rigatoni.urdf.xacro ...
+[2.740s] [33mCMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:74 (message):
+[2.740s]   failed to determine deps for: urdf/rigatoni.urdf.xacro
+[2.740s] 
+[2.740s]   error: package not found: "package 'rr_description' not found, searching:
+[2.741s]   ['/opt/ros/humble']"
+[2.741s] 
+[2.741s]   when instantiating macro: mesh_geometry (urdf/rigatoni.urdf.xacro)
+[2.741s] 
+[2.742s]   instantiated from: evgp_body (urdf/rigatoni.urdf.xacro)
+[2.742s] 
+[2.742s]   in file: urdf/rigatoni.urdf.xacro
+[2.742s] 
+[2.742s] Call Stack (most recent call first):
+[2.742s]   /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:133 (xacro_add_xacro_file)
+[2.743s]   CMakeLists.txt:11 (xacro_add_files)
+[2.743s] 
+[2.743s] [0m
+[2.743s] [31mCMake Error at /opt/ros/humble/share/ament_cmake_core/cmake/core/assert_file_exists.cmake:20 (message):
+[2.743s]   ament_environment_hooks() the passed hook file
+[2.744s]   '/home/isaac/roboracing_ws/src/roboracing-software/rr_description/env-hooks/rr_description.dsv.in'
+[2.744s]   does not exist
+[2.744s] Call Stack (most recent call first):
+[2.744s]   /opt/ros/humble/share/ament_cmake_core/cmake/environment_hooks/ament_environment_hooks.cmake:35 (assert_file_exists)
+[2.744s]   CMakeLists.txt:38 (ament_environment_hooks)
+[2.744s] 
+[2.745s] [0m
+[2.745s] -- Configuring incomplete, errors occurred!
+[2.745s] See also "/home/isaac/roboracing_ws/src/roboracing-software/build/rr_description/CMakeFiles/CMakeOutput.log".
+[2.749s] Invoked command in '/home/isaac/roboracing_ws/src/roboracing-software/build/rr_description' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/isaac/roboracing_ws/src/roboracing-software/rr_description -DCMAKE_INSTALL_PREFIX=/home/isaac/roboracing_ws/src/roboracing-software/install/rr_description

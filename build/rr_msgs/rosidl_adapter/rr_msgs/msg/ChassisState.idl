@@ -1,0 +1,37 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rr_msgs/msg/ChassisState.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rr_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "Message for defining the state of the car")
+    struct ChassisState {
+      @verbatim (language="comment", text=
+        "header for when the message is published")
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "whether the estop is turned on. When the estop is on (true) the robot is disabled")
+      boolean estop_on;
+
+      @verbatim (language="comment", text=
+        "when mux_automous is set to true, the robot is being controlled autonomously")
+      boolean mux_autonomous;
+
+      @verbatim (language="comment", text=
+        "speed of the car in m/s")
+      float speed_mps;
+
+      @verbatim (language="comment", text=
+        "steering angle of the car in radians")
+      float steer_rad;
+
+      @verbatim (language="comment", text=
+        "FSM state from the Arduino")
+      string state;
+    };
+  };
+};

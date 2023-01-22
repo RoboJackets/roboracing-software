@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<?xml-model href="http://sdformat.org/schemas/root.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<sdf version='1.7'>
+  <world name='default'>
+
+    <!-- Sun -->
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+
+    <!-- Racetrack -->
+    <model name='track_plane'>
+      <static>1</static>
+      <link name='link_track'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/track-svg-python.dae</uri>
+            </mesh>
+            <!--<plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>-->
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode />
+              </torsional>
+            </friction>
+            <contact>
+              <ode />
+            </contact>
+            <bounce />
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <!--<cast_shadows>0</cast_shadows>-->
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/track-svg-python.dae</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://purdue_racetrack/materials/scripts</uri>
+              <uri>model://purdue_racetrack/materials/textures</uri>
+              <name>GoKart/Asphalt</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+
+    <!-- Outside ground plane -->
+    <model name='outside_ground_plane'>
+      <static>1</static>
+      <link name='link_outside_ground'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/outside.dae</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode />
+              </torsional>
+            </friction>
+            <contact>
+              <ode />
+            </contact>
+            <bounce />
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <!--<cast_shadows>0</cast_shadows>-->
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/outside.dae</uri>
+            </mesh>
+            <!--<plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>-->
+          </geometry>
+          <material>
+            <script>
+              <uri>model://purdue_racetrack/materials/scripts</uri>
+              <uri>model://purdue_racetrack/materials/textures</uri>
+              <!-- <name>GoKart/Grass1</name> -->
+              <name>GoKart/Grass2</name>
+              <!--<uri>file://media/materials/scripts/gazebo.material</uri>-->
+              <!--<name>Gazebo/Grass</name>-->
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+
+    <!-- Inside ground plane -->
+    <model name='inside_ground_plane'>
+      <static>1</static>
+      <link name='link_inside_ground'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/inside.dae</uri>
+            </mesh>
+            <!--<plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>-->
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode />
+              </torsional>
+            </friction>
+            <contact>
+              <ode />
+            </contact>
+            <bounce />
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <!--<cast_shadows>0</cast_shadows>-->
+          <geometry>
+            <mesh>
+              <uri>model://purdue_racetrack/meshes/inside.dae</uri>
+            </mesh>
+            <!--<plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>-->
+          </geometry>
+          <material>
+            <script>
+               <uri>model://purdue_racetrack/materials/scripts</uri>
+               <uri>model://purdue_racetrack/materials/textures</uri>
+              <!-- <name>GoKart/Grass1</name> -->
+               <name>GoKart/Grass2</name>
+<!--              <uri>file://media/materials/scripts/gazebo.material</uri>-->
+<!--              <name>Gazebo/Grass</name>-->
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+
+    <!-- Physics setup -->
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic' />
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+    <wind />
+
+    <!-- GPS base coordinates -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>40.437265</latitude_deg>
+      <longitude_deg>-86.945105</longitude_deg>
+      <elevation>173.269</elevation>
+      <heading_deg>0.0</heading_deg>
+    </spherical_coordinates>
+
+    <state world_name='default'>
+      <sim_time>0 0</sim_time>
+      <real_time>0 0</real_time>
+      <wall_time>1626668720 808592627</wall_time>
+      <iterations>0</iterations>
+      <light name='sun'>
+        <pose>0 0 10 0 -0 0</pose>
+      </light>
+    </state>
+
+    <!-- Default settings of user camera -->
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>64.93482898 45.36219518 6.58845 0 0.739643 3.19219</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+    <include>
+      <uri>model://track</uri>
+      <pose>55 45.3 0 0 0 0</pose>
+      <name>track</name>
+    </include> 
+
+  </world>
+</sdf>

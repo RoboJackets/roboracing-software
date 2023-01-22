@@ -1,0 +1,6 @@
+int32 STRAIGHT = 0
+int32 LEFT = 1
+int32 RIGHT = 2
+
+int32 direction
+float64 approach_angle

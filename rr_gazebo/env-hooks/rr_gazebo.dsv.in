@@ -1,0 +1,4 @@
+#ament_prepend_unique_value GAZEBO_MODEL_PATH "$AMENT_CURRENT_PREFIX/share/rr_gazebo/models"
+ament_prepend_unique_value GAZEBO_MODEL_PATH "$CMAKE_SOURCE_DIR/share/rr_gazebo/models"
+ament_prepend_unique_value GAZEBO_RESOURCE_PATH "/usr/share/gazebo-11:/usr/share/gazebo_models:$AMENT_CURRENT_PREFIX/share/rr_gazebo/worlds:$AMENT_CURRENT_PREFIX/share/@PROJECT_NAME@/media"
+ament_prepend_unique_value GAZEBO_PLUGIN_PATH "$AMENT_CURRENT_PREFIX/lib"

@@ -1,0 +1,8 @@
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/Axes.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/ChassisState.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/RaceReset.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/Steering.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/HsvTuned.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/Speed.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:msg/UrcSign.idl
+/home/isaac/roboracing_ws/src/roboracing-software/build/rr_msgs/rosidl_adapter/rr_msgs:srv/Turning.idl

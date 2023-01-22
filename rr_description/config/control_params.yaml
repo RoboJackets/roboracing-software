@@ -1,0 +1,11 @@
+control:
+  ros__parameters:
+    speed_P_left: 5.0
+    speed_P_right: 5.0
+    speed_D_left: 1.0
+    speed_D_right: 1.0
+    speed_I_left: 0.0
+    speed_I_right: 0.0
+    wheel_radius: 0.3
+    max_effort: 4.0
+    rate_var: 60.0

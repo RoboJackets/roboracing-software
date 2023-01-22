@@ -1,0 +1,8 @@
+source;share/rr_rviz_plugins/hook/cmake_prefix_path.ps1
+source;share/rr_rviz_plugins/hook/cmake_prefix_path.dsv
+source;share/rr_rviz_plugins/hook/cmake_prefix_path.sh
+source;share/rr_rviz_plugins/local_setup.bash
+source;share/rr_rviz_plugins/local_setup.dsv
+source;share/rr_rviz_plugins/local_setup.ps1
+source;share/rr_rviz_plugins/local_setup.sh
+source;share/rr_rviz_plugins/local_setup.zsh
