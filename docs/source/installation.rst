@@ -48,7 +48,7 @@ Step 3 - Add ROS to bashrc
 -------------------------------------
 .. code-block::
     
-    echo \"source /opt/ros/humble/setup.bash\" \>\> ~/.bashrc
+    echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
     source ~/.bashrc
 
 Setup Workspace
