@@ -11,10 +11,13 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(rr_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+
+ament_python_install_package(${PROJECT_NAME})
 
 
 add_executable(joystick_driver src/joystick_driver/joystick_driver.cpp)
@@ -32,9 +35,17 @@ install(
 )
 
 install(
+    PROGRAMS
+    scripts/udp_pub.py
+    scripts/udp_sub.py
+    DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
     DIRECTORY
     src
     launch
+    scripts
     DESTINATION share/${PROJECT_NAME}
 )
 
