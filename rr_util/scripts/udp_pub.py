@@ -1,4 +1,4 @@
-    #!/usr/bin/env python3
+#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -10,9 +10,9 @@ buffersize = 1024
 port = 8888
 
 # todo make these the right ips
-steeringAddressPort = ("192.168.20.3", port)
-speedAddressPort = ("192.168.20.4", port)
-myAddressPort = ("192.168.20.2", port)
+steeringAddressPort = ("192.168.0.5", port)
+speedAddressPort = ("192.168.0.4", port)
+myAddressPort = ("192.168.0.2", port)
 
 class UDPPublisher(Node):
 
@@ -32,6 +32,7 @@ class UDPPublisher(Node):
         steer_msg = "A={:.2f}".format(self.steer)   
         self.socket_client.sendto(speed_msg.encode(), speedAddressPort)
         self.socket_client.sendto(steer_msg.encode(), steeringAddressPort)
+        print(f'speed: {self.speed} steering: {self.steer}')
 
     def speed_callback(self, msg):
         self.speed = msg.linear.x

@@ -14,12 +14,14 @@ from xacro import process_file
 def generate_launch_description():
   udp_pub = Node(
     package='rr_util', 
-    executable='udp_pub.py'
+    executable='udp_pub.py',
+    output='screen'
   )
   
   udp_sub = Node(
     package='rr_util',
-    executable='udp_sub.py'
+    executable='udp_sub.py',
+    output='screen'
   )
 
   return LaunchDescription([
