@@ -279,7 +279,7 @@
     </gazebo>
 
     <!-- IMU -->
-    <gazebo reference="imu_top_link">
+    <gazebo reference="imu_link">
         <gravity>true</gravity>
         <sensor name="imu_sensor" type="imu">
             <always_on>true</always_on>
@@ -287,40 +287,19 @@
             <visualize>true</visualize>
             <topic>__default_topic__</topic>
             <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-                <topicName>imu_top</topicName>
-                <bodyName>imu_top_link</bodyName>
+                <topicName>imu</topicName>
+                <bodyName>imu_link</bodyName>
                 <updateRateHZ>20.0</updateRateHZ>
                 <gaussianNoise>0.005</gaussianNoise>
                 <xyzOffset>0 0 0</xyzOffset>
                 <rpyOffset>0 0 0</rpyOffset>
-                <frameName>imu_top_link</frameName>
+                <frameName>imu_link</frameName>
             </plugin>
             <pose>0 0 0 0 0 0</pose>
         </sensor>
     </gazebo>
-
-    <!-- IMU -->
-    <gazebo reference="imu_bottom_link">
-        <gravity>true</gravity>
-        <sensor name="imu_sensor_bottom" type="imu">
-            <always_on>true</always_on>
-            <update_rate>100</update_rate>
-            <visualize>true</visualize>
-            <topic>__default_topic__</topic>
-            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-                <topicName>imu_bottom</topicName>
-                <bodyName>imu_bottom_link</bodyName>
-                <updateRateHZ>20.0</updateRateHZ>
-                <gaussianNoise>0.005</gaussianNoise>
-                <xyzOffset>0 0 0</xyzOffset>
-                <rpyOffset>0 0 0</rpyOffset>
-                <frameName>imu_bottom_link</frameName>
-            </plugin>
-            <pose>0 0 0 0 0 0</pose>
-        </sensor>
-    </gazebo>
-
-  <gazebo>
+    
+    <gazebo>
     <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
       <parameters>$(find rr_description)/config/tricycle_control.yaml</parameters>
     </plugin>

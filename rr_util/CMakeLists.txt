@@ -17,8 +17,6 @@ find_package(nav_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-ament_python_install_package(${PROJECT_NAME})
-
 
 add_executable(joystick_driver src/joystick_driver/joystick_driver.cpp)
 ament_target_dependencies(joystick_driver
@@ -38,6 +36,7 @@ install(
     PROGRAMS
     scripts/udp_pub.py
     scripts/udp_sub.py
+    scripts/namespace_hack.py
     DESTINATION lib/${PROJECT_NAME}
 )
 

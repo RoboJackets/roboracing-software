@@ -13,6 +13,8 @@ from xacro import process_file
 
 
 def generate_launch_description():
+  DeclareLaunchArgument(name='use_sim_time', default_value='True', description='Flag to enable use_sim_time')
+
   pkg_gazebo_ros = get_package_share_directory("gazebo_ros")
   velodyne = get_package_share_directory('velodyne_description')
   pkg_rr_gazebo = get_package_share_directory("rr_gazebo")
@@ -34,7 +36,11 @@ def generate_launch_description():
   spawn_robot = Node(
     package='gazebo_ros',
     executable='spawn_entity.py',
-    arguments=['-entity', 'rigatoni', '-topic', '/robot_description']
+    arguments=['-entity', 'rigatoni', '-topic', '/robot_description'],
+  
+    remappings=[
+            ('/cmd_vel', '/tricyle_controller/cmd_vel')
+        ]
   )
   robot_state_publisher = Node(
     package='robot_state_publisher',
@@ -56,13 +62,27 @@ def generate_launch_description():
         executable='joint_state_publisher_gui',
         condition=IfCondition(LaunchConfiguration('gui'))
   )
-
   load_tricycle_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'tricycle_controller'],
         output='screen'
   )
-  
+  # robot_localization_node = Node(
+  #      package='robot_localization',
+  #      executable='ekf_node',
+  #      name='ekf_filter_node',
+  #      output='screen',
+  #      parameters=[os.path.join(pkg_rr_gazebo, 'config/ekf.yaml'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+  # ) 
+
+  cloud_to_laser =  Node(
+            package='pointcloud_to_laserscan', executable='pointcloud_to_laserscan_node',
+            remappings=[('cloud_in', ['/velodyne_points']),
+                        ('scan', ['/scan'])],
+            parameters=[{'range_min': 2.0}],
+            name='pointcloud_to_laserscan'
+        )
+
   start_rviz_cmd = Node(
     package='rviz2',
     executable='rviz2',
@@ -77,5 +97,7 @@ def generate_launch_description():
       joint_state_publisher_node,
       joint_state_publisher_gui_node,
       load_tricycle_controller,
+      # robot_localization_node,
+      cloud_to_laser,
       start_rviz_cmd
   ])
