@@ -158,9 +158,7 @@ To enable plantuml from anywhere in your file structure add the following line t
 
 .. code-block::
 
-    echo alias plantuml="'java -jar /home/<username>/java/plantuml.jar'" >> /home/<username>/.bashrc
-
-Where you replace ``<username>`` with your username. For example I would write ``/home/charlie/java/plantuml.jar``.
+    echo alias plantuml="'java -jar ~/java/plantuml.jar'" >> ~/.bashrc
 
 To ensure that it is installed correctly, run ``plantuml -testdot`` and it should output something similar to:
 
@@ -193,6 +191,11 @@ Step 4 - Build Documentation
     cd ~/roboracing_ws/src/roboracing-software/docs
     doxygen
     make html
+
+.. note:: 
+
+        If you get an error saying that it cannot build try changing the sphinx command in the Makefile to ``python -m spinx.cmd.build``
+
 
 Step 5 - View Documentation
 ----------------------------
