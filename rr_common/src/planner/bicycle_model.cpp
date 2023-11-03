@@ -63,6 +63,17 @@ void BicycleModel::RollOutPath(const Controls<1>& controls, TrajectoryRollout& r
     rollout.apply_speed = speed_model_temp.GetValue();
 }
 
+void BicycleModel::SetDynParam(double max_lateral_accel, int segment_size, double dt) {
+    max_lateral_accel_ = max_lateral_accel;
+    segment_size_ = segment_size;
+    dt_ = dt;
+}
+
+void BicycleModel::GetDynParamDefaults(rr_common::PathPlannerConfig& config) {
+    config.max_lateral_accel = max_lateral_accel_;
+    config.segment_size = segment_size_;
+    config.dt = dt_;
+}
 void BicycleModel::RollOutPath(const Controls<2>& controls, TrajectoryRollout& rollout) const {
     const size_t path_size = 1 + (segment_size_ * controls.cols());
     if (rollout.path.size() != path_size) {
